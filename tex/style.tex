@@ -1,0 +1,33 @@
+% !TeX root = ./ms.tex
+% All the packages
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{xspace}
+\usepackage[T1]{fontenc} % https://tex.stackexchange.com/a/166791
+\usepackage{textcomp}
+\usepackage{ifxetex}
+\ifxetex
+    \usepackage{fontspec}
+    \defaultfontfeatures{Extension = .otf}
+\fi
+\usepackage{fontawesome}
+\usepackage{listings}
+\usepackage{nicefrac}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% References to text content
+\newcommand{\documentname}{\textsl{article}}
+\newcommand{\figureref}[1]{\ref{fig:#1}}
+\newcommand{\Figure}[1]{Figure~\figureref{#1}}
+\newcommand{\figurelabel}[1]{\label{fig:#1}}
+\renewcommand{\eqref}[1]{\ref{eq:#1}}
+\newcommand{\Eq}[1]{Equation~(\eqref{#1})}
+\newcommand{\eq}[1]{\Eq{#1}}
+\newcommand{\eqalt}[1]{Equation~\eqref{#1}}

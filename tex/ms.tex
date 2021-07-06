@@ -1,0 +1,39 @@
+% !TeX root = ./ms.tex
+\documentclass[modern]{aastex62}
+
+% Load the corTeX style definitions
+\input{cortex}
+
+% Load the custom styles
+\input{style}
+
+% Bibliography stuff
+\bibliographystyle{aasjournal}
+
+% Begin!
+\begin{document}
+
+% Title
+\title{A Sample Article}
+
+% Author list
+\author[0000-0002-0296-3826]{Rodrigo Luger}
+\email{rluger@flatironinstitute.org}
+\affil{Center~for~Computational~Astrophysics, Flatiron~Institute, New~York, NY}
+
+% Abstract
+\begin{abstract}
+    Abstract here.
+    %
+    \href{https://github.com/rodluger/paparazzi}{\color{linkcolor}\faGithub}
+\end{abstract}
+
+% The rest of the paper
+\section{Introduction}
+Intro here.
+
+% Bibliography
+\clearpage
+\bibliography{bib}
+
+\end{document}

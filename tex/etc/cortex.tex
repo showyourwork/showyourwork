@@ -1,0 +1,70 @@
+% !TeX root = ./ms.tex
+% All the packages
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{xspace}
+\usepackage[T1]{fontenc} % https://tex.stackexchange.com/a/166791
+\usepackage{textcomp}
+\usepackage{ifxetex}
+\ifxetex
+  \usepackage{fontspec}
+  \defaultfontfeatures{Extension = .otf}
+\fi
+\usepackage{fontawesome}
+\usepackage{listings}
+\usepackage{nicefrac}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% References to text content
+\newcommand{\documentname}{\textsl{article}}
+\newcommand{\figureref}[1]{\ref{fig:#1}}
+\newcommand{\Figure}[1]{Figure~\figureref{#1}}
+\newcommand{\figurelabel}[1]{\label{fig:#1}}
+\renewcommand{\eqref}[1]{\ref{eq:#1}}
+\newcommand{\Eq}[1]{Equation~(\eqref{#1})}
+\newcommand{\eq}[1]{\Eq{#1}}
+\newcommand{\eqalt}[1]{Equation~\eqref{#1}}
+
+% Add code, proof, and animation hyperlinks
+\definecolor{linkcolor}{rgb}{0.1216,0.4667,0.7059}
+\definecolor{testpasscolor}{rgb}{0.13333333,0.5254902,0.22745098}
+\definecolor{testmissingcolor}{rgb}{1.0,0.88,0.30}
+\definecolor{testfailcolor}{rgb}{0.79607843,0.14117647,0.19215686}
+\newcommand{\codeicon}{{\color{linkcolor}\faCloudDownload}}
+\newcommand{\testmissingicon}{{\color{testmissingcolor}\faQuestion}}
+\newcommand{\testpassicon}{{\color{testpasscolor}\faCheck}}
+\newcommand{\testfailicon}{{\color{testfailcolor}\faTimes}}
+
+% TODO
+\newcommand{\codelink}[1]{\href{https://google.com}{\codeicon}\,\,}
+\newcommand{\prooflink}[1]{\href{https://google.com}{\raisebox{-0.1em}{\input{tests/#1.tex}}}}
+
+
+% Define a proof environment for open source equation proofs
+\newtagform{eqtag}[]{(}{)}
+\newcommand{\currentlabel}{None}
+\newenvironment{proof}[1]{%
+  \ifstrempty{#1}{%
+    \renewtagform{eqtag}[]{\raisebox{-0.1em}{{\testmissingicon}}\,(}{)}%
+  }{%
+    \renewtagform{eqtag}[]{\prooflink{#1}\,(}{)}%
+  }%
+  \usetagform{eqtag}%
+  \renewcommand{\currentlabel}{#1}
+  \align%
+}{%
+  \endalign%
+  \renewtagform{eqtag}[]{(}{)}%
+  \usetagform{eqtag}%
+  \message{<<<\currentlabel: \theequation>>>}%
+}
+
+% Define the `oscaption` command for open source figure captions
+\newcommand{\oscaption}[2]{\caption{#2 \codelink{#1}}}

@@ -1,0 +1,14 @@
+.vscode
+*.code-workspace
+*.ipynb_checkpoints
+*.pyc
+*.pytest_cache
+*.DS_Store
+*.ipynb_checkpoints
+*__pycache__*
+*.pdf
+*.log
+*.blg
+*.bbl
+*.aux
+*.out
