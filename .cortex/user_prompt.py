@@ -1,6 +1,7 @@
 import questionary
 from pathlib import Path
 import json
+import subprocess
 
 
 # Paths
@@ -22,7 +23,7 @@ def user_prompt():
             "orcid": "",
             "github": "",
         },
-        "repo": {"url": "https://github.com/"},
+        "repo": {"url": ""},
     }
     if (HOME / ".cortex").exists():
         with open(HOME / ".cortex", "r") as f:
@@ -64,11 +65,25 @@ def user_prompt():
         style=style,
     ).ask()
 
+    # Try to infer the GitHub url for this repo
+    try:
+        default_repo_url = subprocess.check_output(
+            ["git", "config", "--get", "remote.origin.url"]
+        ).decode()
+        if default_repo_url.endswith("\n"):
+            default_repo_url = default_repo_url[:-1]
+        if default_repo_url.endswith(".git"):
+            default_repo_url = default_repo_url[:-4]
+    except Exception as e:
+        default_repo_url = "https://github.com/{}".format(
+            defaults["author"]["github"]
+        )
+
     # Repository info
     defaults["repo"]["url"] = questionary.text(
         "URL:",
         qmark="[Repository]",
-        default="https://github.com/{}/".format(defaults["author"]["github"]),
+        default=default_repo_url,
         style=style,
     ).ask()
 
