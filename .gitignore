@@ -2,7 +2,6 @@
 .env
 .snakemake
 cortex/data/meta.json
-tex/.gitignore
 
 # VSCode
 .vscode
@@ -26,3 +25,7 @@ tex/.gitignore
 *.bbl
 *.aux
 *.out
+
+# Development only! 
+clean
+tex/.gitignore

@@ -13,3 +13,9 @@ mamba create -p ./.env
 mamba env update -p ./.env -f environment.yml
 conda activate ./.env
 ```
+
+Run
+
+```
+snakemake -c1 pdf
+```
