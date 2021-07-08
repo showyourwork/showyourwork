@@ -7,22 +7,24 @@ FIGFILES = glob.glob(str(Path("figures") / "*"))
 TESTFILES = glob.glob(str(Path("tests") / "*"))
 STYLEFILES = glob.glob(str(Path(".cortex") / "styles" / "*"))
 
+
+
 rule meta:
-    output: "data/meta.json"
-    shell: "python user_prompt.py"
+    output: ".cortex/data/meta.json"
+    shell: "cd .cortex && python user_prompt.py"
 
 rule stylesheet:
-    input: ancient("data/meta.json")
+    input: ancient(".cortex/data/meta.json")
     output: "tex/cortex.sty"
-    shell: "python generate_sty.py"
+    shell: "cd .cortex && python generate_sty.py"
 
 rule manuscript:
-    input: ancient("data/meta.json")
-    output: "tex/ms.tex", "tex/cortex.sty"
-    shell: "python generate_tex.py"
+    input: ancient(".cortex/data/meta.json")
+    output: "tex/ms.tex"
+    shell: "cd .cortex && python generate_tex.py"
 
 rule pdf:
-    input: TEXFILES, FIGFILES, TESTFILES
+    input: "tex/ms.tex", "tex/cortex.sty", TEXFILES, FIGFILES, TESTFILES
     output: "ms.pdf"
     run: 
         for f in STYLEFILES:
