@@ -2022,7 +2022,8 @@ width0pt\relax#1$}\ignorespaces}
 
 
 %% In response to request from AAS
- \usepackage[bookmarks=false,         % show bookmarks bar?
+ \usepackage[hidelinks,       % no green square around links
+     bookmarks=false,         % show bookmarks bar?
      pdfnewwindow=true,      % links in new window
      colorlinks=true,    % false: boxed links; true: colored links
      linkcolor=xlinkcolor,     % color of internal links

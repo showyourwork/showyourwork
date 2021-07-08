@@ -1,0 +1,34 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cortex}[2021/07/07 Open source science articles]
+
+% Imports
+\RequirePackage{mathtools} % equation tags
+\RequirePackage{xcolor} % custom colors
+\RequirePackage[hidelinks]{hyperref} % url links
+\RequirePackage{suffix} % allows definition of starred commmands
+
+\RequirePackage{ifxetex}
+\ifxetex
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Extension = .otf}
+\fi
+
+\RequirePackage{fontawesome}
+
+% Package options
+
+% Define equation tags for passing / failing expressions
+\definecolor{ctxGreen}{rgb}{0.13333333,0.5254902,0.22745098}
+\definecolor{ctxRed}{rgb}{0.79607843,0.14117647,0.19215686}
+\definecolor{ctxYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{ctxLink}{rgb}{0.1216,0.4667,0.7059}
+
+% Add a GitHub link to the end of the abstract
+\let\oldabstract\abstract
+\let\oldendabstract\endabstract
+\renewenvironment{abstract}{%
+  \oldabstract%
+}{%
+  \href{((- repo.url -))}{\color{ctxLink}\faGithub}
+  \oldendabstract%
+}

@@ -1,12 +1,26 @@
+# Project-specific
+.env
+.snakemake
+cortex/data/meta.json
+tex/.gitignore
+
+# VSCode
 .vscode
 *.code-workspace
+
+# Python
 *.ipynb_checkpoints
 *.pyc
 *.pytest_cache
-*.DS_Store
-*.ipynb_checkpoints
 *__pycache__*
+
+# MacOS
+*.DS_Store
+
+# Output
 *.pdf
+
+# LaTeX
 *.log
 *.blg
 *.bbl
