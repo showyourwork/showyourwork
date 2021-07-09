@@ -6,12 +6,11 @@ from pathlib import Path
 
 # Paths
 CORTEX = Path(__file__).parents[0].absolute()
-TEX = Path(__file__).parents[1].absolute() / "tex"
 
 
 def generate_sty():
     """
-    Generate a new `/tex/cortex.sty` file from a template.
+    Generate a new `styles/cortex.sty` file from a template.
 
     """
     # Special delimiters for LaTeX
@@ -32,7 +31,7 @@ def generate_sty():
         meta = json.load(f)
 
     # Generate the style file
-    with open(TEX / "cortex.sty", "w") as f:
+    with open(CORTEX / "styles" / "cortex.sty", "w") as f:
         print(
             env.get_template(
                 str(Path("templates") / "cortex.sty.jinja")

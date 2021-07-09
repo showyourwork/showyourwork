@@ -2,11 +2,9 @@ import glob
 from pathlib import Path
 
 
-TEXFILES = glob.glob(str(Path("tex") / "*"))
-FIGFILES = glob.glob(str(Path("figures") / "*"))
-TESTFILES = glob.glob(str(Path("tests") / "*"))
-STYLEFILES = glob.glob(str(Path(".cortex") / "styles" / "*"))
-
+TEX_FILES = glob.glob(str(Path("tex") / "*"))
+FIGURE_SCRIPTS = glob.glob(str(Path("figures") / "*.py"))
+PYTHON_TESTS = glob.glob(str(Path("tests") / "*"))
 
 
 # Generate the metadata file from direct user input
@@ -14,25 +12,26 @@ rule meta:
     output: ".cortex/data/meta.json"
     shell: "cd .cortex && python user_prompt.py"
 
-# Generate the `cortex.sty` stylesheet
-rule stylesheet:
-    input: ancient(".cortex/data/meta.json")
-    output: "tex/cortex.sty"
-    shell: "cd .cortex && python generate_sty.py"
-
-# Generate the skeleton `ms.tex` manuscript
-rule manuscript:
-    input: ancient(".cortex/data/meta.json")
-    output: "tex/ms.tex"
-    shell: "cd .cortex && python generate_tex.py"
+# Generate figures (TODO)
+rule figures:
+    input: "figures/{figure}.py"
+    output: "figures/{figure}{suffix,(_.*)?}.pdf"
+    shell: "cd figures && python {wildcards.figure}.py"
 
 # Compile the PDF
 rule pdf:
-    input: "tex/ms.tex", "tex/cortex.sty", TEXFILES, FIGFILES, TESTFILES
+    input: "tex/ms.tex", "tex/bib.bib", TEX_FILES, FIGURE_SCRIPTS, PYTHON_TESTS
     output: "ms.pdf"
     run: 
-        for f in STYLEFILES:
-            shell("cp {} tex/".format(f))
-        shell("tectonic -o . tex/ms.tex")
-        for f in STYLEFILES:
-            shell("rm tex/{}".format(Path(f).name))
+        shell("cd .cortex && python generate_sty.py")
+        STYLE_FILES = glob.glob(str(Path(".cortex") / "styles" / "*"))
+        try:
+            for f in STYLE_FILES:
+                shell("cp {} tex/".format(f))
+            shell("tectonic -o . tex/ms.tex")
+            for f in STYLE_FILES:
+                shell("rm tex/{}".format(Path(f).name))
+        except Exception as e:
+            for f in STYLE_FILES:
+                shell("rm tex/{}".format(Path(f).name))
+            raise e

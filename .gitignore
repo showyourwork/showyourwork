@@ -1,7 +1,8 @@
 # Project-specific
 .env
 .snakemake
-cortex/data/meta.json
+.cortex/data/meta.json
+.cortex/styles/cortex.sty
 
 # VSCode
 .vscode

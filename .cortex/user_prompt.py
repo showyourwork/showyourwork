@@ -80,12 +80,15 @@ def user_prompt():
         )
 
     # Repository info
-    defaults["repo"]["url"] = questionary.text(
+    url = questionary.text(
         "URL:",
         qmark="[Repository]",
         default=default_repo_url,
         style=style,
     ).ask()
+    if url.endswith("/"):
+        url = url[:-1]
+    defaults["repo"]["url"] = url
 
     # Update user defaults
     with open(HOME / ".cortex", "w") as f:

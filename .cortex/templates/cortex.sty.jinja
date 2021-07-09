@@ -6,16 +6,22 @@
 \RequirePackage{xcolor} % custom colors
 \RequirePackage[hidelinks]{hyperref} % url links
 \RequirePackage{suffix} % allows definition of starred commmands
-
 \RequirePackage{ifxetex}
 \ifxetex
   \RequirePackage{fontspec}
   \defaultfontfeatures{Extension = .otf}
 \fi
-
-\RequirePackage{fontawesome}
+\RequirePackage{fontawesome} % FontAwesome symbols
+\RequirePackage{letltxmacro} % command redefinitions
+\RequirePackage{xstring} % string manipulation
 
 % Package options
+
+% Author info
+\edef\myName{((- author.name -))}
+\edef\myORCID{((- author.orcid -))}
+\edef\myEmail{((- author.email -))}
+\edef\myAffil{((- author.affil -))}
 
 % Define equation tags for passing / failing expressions
 \definecolor{ctxGreen}{rgb}{0.13333333,0.5254902,0.22745098}
@@ -32,3 +38,23 @@
   \href{((- repo.url -))}{\color{ctxLink}\faGithub}
   \oldendabstract%
 }
+
+% Redefine `\includegraphics' to store current figure script
+\LetLtxMacro\oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+  % xxx.yyy --> xxx.py
+  % xxx_yyy.zzz --> xxx.py
+  \StrBefore{#2_}{_}[\strOne]%
+  \StrBefore{\strOne.}{.}[\strTwo]%
+  \edef\ctxCurrentFigureScript{\strTwo.py}%
+  \ctxCurrentFigureScript
+  \oldincludegraphics[#1]{#2}%
+}
+
+% Add a GitHub link to figure captions
+\renewcommand{\figurename}{%
+  \href{((- repo.url -))/blob/((- repo.sha -))/figures/\ctxCurrentFigureScript}{\color{ctxLink}\faGithub} Figure%
+}
+
+% Set the graphics path for figures
+\graphicspath{{../figures/}}
