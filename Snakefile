@@ -1,7 +1,12 @@
 import glob
 from pathlib import Path
+import os
 
 
+# Debug mode?
+debug = bool(int(os.environ.get("CTX_DEBUG", "0")))
+
+# Paths
 TEX_FILES = glob.glob(str(Path("tex") / "*"))
 FIGURE_SCRIPTS = glob.glob(str(Path("figures") / "*.py"))
 PYTHON_TESTS = glob.glob(str(Path("tests") / "*"))
@@ -24,14 +29,22 @@ rule pdf:
     output: "ms.pdf"
     run: 
         shell("cd .cortex && python generate_sty.py")
+        shell("cd .cortex && python check_git_status.py")
         STYLE_FILES = glob.glob(str(Path(".cortex") / "styles" / "*"))
+        TEMP_FILES = glob.glob(str(Path("figures") / "*.py.cortex"))
+
+        def clean():
+            if not debug:
+                for f in STYLE_FILES:
+                    shell("rm tex/{}".format(Path(f).name))
+                for f in TEMP_FILES:
+                    shell("rm {}".format(f))
+
         try:
             for f in STYLE_FILES:
                 shell("cp {} tex/".format(f))
             shell("tectonic -o . tex/ms.tex")
-            for f in STYLE_FILES:
-                shell("rm tex/{}".format(Path(f).name))
+            clean()
         except Exception as e:
-            for f in STYLE_FILES:
-                shell("rm tex/{}".format(Path(f).name))
+            clean()
             raise e

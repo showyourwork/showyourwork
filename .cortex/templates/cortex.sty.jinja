@@ -14,20 +14,29 @@
 \RequirePackage{fontawesome} % FontAwesome symbols
 \RequirePackage{letltxmacro} % command redefinitions
 \RequirePackage{xstring} % string manipulation
+\RequirePackage{catchfile} % read file into macro
 
 % Package options
 
 % Author info
-\edef\myName{((- author.name -))}
-\edef\myORCID{((- author.orcid -))}
-\edef\myEmail{((- author.email -))}
-\edef\myAffil{((- author.affil -))}
+\newcommand{\mainauthor}{%
+  \author[((- author.orcid -))]{((- author.name -))}
+  \email{((- author.email -))}
+  \affil{((- author.affil -))}
+}
 
-% Define equation tags for passing / failing expressions
+% Define custom colors
 \definecolor{ctxGreen}{rgb}{0.13333333,0.5254902,0.22745098}
 \definecolor{ctxRed}{rgb}{0.79607843,0.14117647,0.19215686}
 \definecolor{ctxYellow}{rgb}{1.0,0.88,0.30}
-\definecolor{ctxLink}{rgb}{0.1216,0.4667,0.7059}
+\definecolor{ctxBlue}{rgb}{0.1216,0.4667,0.7059}
+
+% Define figure link color errors
+\colorlet{ctxFigureScriptNotVersionControlled}{ctxRed}
+\colorlet{ctxFigureScriptHasUncommittedChanges}{ctxYellow}
+\colorlet{ctxFigureScriptNotFound}{ctxRed}
+\colorlet{ctxFigureScriptUnknownError}{ctxRed}
+\colorlet{ctxFigureScriptUpToDate}{ctxBlue}
 
 % Add a GitHub link to the end of the abstract
 \let\oldabstract\abstract
@@ -35,25 +44,50 @@
 \renewenvironment{abstract}{%
   \oldabstract%
 }{%
-  \href{((- repo.url -))}{\color{ctxLink}\faGithub}
+  \href{((- repo.url -))}{\color{ctxBlue}\faGithub}
   \oldendabstract%
 }
 
 % Redefine `\includegraphics' to store current figure script
 \LetLtxMacro\oldincludegraphics\includegraphics
 \renewcommand{\includegraphics}[2][]{%
+  %
+  % Infer the name of the script that generated the current figure
   % xxx.yyy --> xxx.py
   % xxx_yyy.zzz --> xxx.py
   \StrBefore{#2_}{_}[\strOne]%
   \StrBefore{\strOne.}{.}[\strTwo]%
   \edef\ctxCurrentFigureScript{\strTwo.py}%
-  \ctxCurrentFigureScript
+  %
+  % Determine the color of the link based on whether the file is
+  % up-to-date, has uncommited changes, doesn't exist, isn't tracked,
+  % etc.
+  \IfFileExists{../figures/\strTwo.py}{%
+    \IfFileExists{../figures/\strTwo.py.cortex}{%
+      % Read the color from the .cortex tmp file
+      \CatchFileEdef{%
+        \ctxCurrentFigureColor%
+      }{%
+        ../figures/\strTwo.py.cortex%
+      }{%
+        \endlinechar=-1%
+      }%
+    }{%
+      % The .cortex file is missing, so something went wrong
+      \def\ctxCurrentFigureColor{ctxFigureScriptUnknownError}%
+    }%
+  }{%
+    % The figure script itself is missing
+    \def\ctxCurrentFigureColor{ctxFigureScriptNotFound}%
+  }
+  %
+  % Include the figure as usual
   \oldincludegraphics[#1]{#2}%
 }
 
 % Add a GitHub link to figure captions
 \renewcommand{\figurename}{%
-  \href{((- repo.url -))/blob/((- repo.sha -))/figures/\ctxCurrentFigureScript}{\color{ctxLink}\faGithub} Figure%
+  \href{((- repo.url -))/blob/((- repo.sha -))/figures/\ctxCurrentFigureScript}{\color{\ctxCurrentFigureColor}\faGithub} Figure%
 }
 
 % Set the graphics path for figures

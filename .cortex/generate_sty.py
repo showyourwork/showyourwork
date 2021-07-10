@@ -2,6 +2,8 @@ import jinja2
 import os
 import json
 from pathlib import Path
+import subprocess
+import glob
 
 
 # Paths
@@ -29,6 +31,16 @@ def generate_sty():
     # Load the metadata
     with open(CORTEX / "data" / "meta.json", "r") as f:
         meta = json.load(f)
+
+    # Get the current git hash
+    try:
+        meta["repo"]["sha"] = (
+            subprocess.check_output(["git", "rev-parse", "HEAD"])
+            .decode()
+            .replace("\n", "")
+        )
+    except:
+        meta["repo"]["sha"] = meta["repo"]["branch"]
 
     # Generate the style file
     with open(CORTEX / "styles" / "cortex.sty", "w") as f:

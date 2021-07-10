@@ -79,6 +79,16 @@ def user_prompt():
             defaults["author"]["github"]
         )
 
+    # Try to infer the current GitHub branch
+    try:
+        default_repo_branch = subprocess.check_output(
+            ["git", "branch", "--show-current"]
+        ).decode()
+        if default_repo_branch.endswith("\n"):
+            default_repo_branch = default_repo_branch[:-1]
+    except Exception as e:
+        default_repo_branch = "main"
+
     # Repository info
     url = questionary.text(
         "URL:",
@@ -89,6 +99,13 @@ def user_prompt():
     if url.endswith("/"):
         url = url[:-1]
     defaults["repo"]["url"] = url
+
+    defaults["repo"]["branch"] = questionary.text(
+        "Main branch:",
+        qmark="[Repository]",
+        default=default_repo_branch,
+        style=style,
+    ).ask()
 
     # Update user defaults
     with open(HOME / ".cortex", "w") as f:
