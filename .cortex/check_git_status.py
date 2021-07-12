@@ -11,10 +11,14 @@ def check_git_status(FIGURE_SCRIPTS=None):
 
     # By default, check all figure scripts
     if FIGURE_SCRIPTS is None:
-        FIGURE_SCRIPTS = glob.glob(str(ROOT / "figures" / "*.py"))
+        FIGURE_SCRIPTS = glob.glob(str(Path("figures") / "*.py"))
 
     # Check for figure scripts with uncommited changes
     for file in FIGURE_SCRIPTS:
+
+        ctx_file = (
+            ROOT / ".cortex" / "data" / "{}.cortex".format(Path(file).name)
+        )
 
         # Check if the file is version controlled
         try:
@@ -27,7 +31,7 @@ def check_git_status(FIGURE_SCRIPTS=None):
             )
         except Exception as e:
             # File is not version controlled
-            with open(ROOT / "{}.cortex".format(file), "w") as f:
+            with open(ctx_file, "w") as f:
                 print("ctxFigureScriptNotVersionControlled", file=f)
         else:
             # File is version controlled
@@ -45,9 +49,9 @@ def check_git_status(FIGURE_SCRIPTS=None):
                     raise Exception("Uncommitted changes!")
             except Exception as e:
                 # Assume uncommited changes
-                with open(ROOT / "{}.cortex".format(file), "w") as f:
+                with open(ctx_file, "w") as f:
                     print("ctxFigureScriptHasUncommittedChanges", file=f)
             else:
                 # File is good!
-                with open(ROOT / "{}.cortex".format(file), "w") as f:
+                with open(ctx_file, "w") as f:
                     print("ctxFigureScriptUpToDate", file=f)

@@ -1,1 +1,5 @@
 debug: False
+quiet: False
+figure_extensions:
+  - pdf
+  - png

@@ -33,7 +33,3 @@ tex/xstring.sty
 *.bbl
 *.aux
 *.out
-
-# Development only! 
-clean
-tex/.gitignore

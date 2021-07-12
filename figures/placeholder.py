@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+#
 fig = plt.figure()
 x = np.linspace(-1, 1, 1000)
 for sgn in [-1, 1]:

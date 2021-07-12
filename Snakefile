@@ -13,6 +13,14 @@ from user_prompt import user_prompt
 
 # Config
 configfile: "config.yml"
+debug = config["debug"]
+tectonic_flags = []
+if debug:
+    tectonic_flags += ["--print"]
+if not config["quiet"]:
+    tectonic_flags += ["--keep-logs"] 
+tectonic_flags = " ".join(tectonic_flags)
+figext = "({})".format("|".join(config["figure_extensions"]))
 
 
 # Generate the metadata file from direct user input
@@ -44,8 +52,8 @@ checkpoint check_figure_scripts:
         infer_figure_scripts()
 
 
-# Return active figure scripts (.py)
-def figure_scripts(wildcards):
+# Return active figure script metadata (.py.cortex)
+def figure_metadata(wildcards):
 
     # Sleeps until `check_figure_scripts` has run
     checkpoints.check_figure_scripts.get(**wildcards)
@@ -60,7 +68,11 @@ def figure_scripts(wildcards):
     # Check the git status of each one
     check_git_status(scripts)
 
-    return scripts
+    # Return the metadata files
+    return [
+        str(Path(".cortex") / "data" / "{}.cortex".format(Path(script).name)) 
+        for script in scripts
+    ]
 
 
 # Return active figure files (.pdf, .png, etc)
@@ -73,18 +85,16 @@ def figure_files(wildcards):
     with open(Path(".cortex") / "data" / "figure_scripts.json", "r") as f:
         scripts = json.load(f)
 
-    # We need a list of file names
-    files = [file for files in scripts.values() for file in files]
-
-    return files
+    # Return all figure files
+    return [file for files in scripts.values() for file in files]
 
 
 # Generate figures
 rule figures:
     input: "figures/{script}.py"
-    output: "figures/{script}.{ext}"
+    output: "figures/{script}.{figext}"
     wildcard_constraints:
-        ext="(pdf|png)"
+        figext=figext
     shell: 
         "cd figures && python {wildcards.script}.py"
 
@@ -92,33 +102,28 @@ rule figures:
 # Alternative figure rule (if file names use underscore syntax)
 rule figures_alt:
     input: "figures/{script}.py"
-    output: "figures/{script}_{suff}.{ext}"
+    output: "figures/{script}_{suff}.{figext}"
     wildcard_constraints:
-        ext="(pdf|png)"
+        figext=figext
     shell: 
         "cd figures && python {wildcards.script}.py"
 
 
 # Compile the PDF
 rule pdf:
-    input: "tex/ms.tex", "tex/bib.bib", figure_files
+    input: "tex/ms.tex", "tex/bib.bib", figure_files, figure_metadata
     output: "ms.pdf"
-    run: 
-        # Compile the PDF
-        if config["debug"]:
-            shell("cd tex && tectonic --keep-logs --print ms.tex")
-        else:
-            shell("cd tex && tectonic --keep-logs ms.tex")
-        shell("mv tex/ms.pdf .")
+    shell: f"cd tex && tectonic {tectonic_flags} ms.tex && mv ms.pdf ../"
 
 
 # Remove all temporary files
 onsuccess:
-    TEMP_FILES = STYLE_FILES_OUT
-    TEMP_FILES += glob.glob(str(Path("figures") / "*.py.cortex"))
-    for suff in TEMP_SUFFS:
-        for f in glob.glob(str(Path("tex") / suff)):
-            if "cortex.log" not in f:
-                TEMP_FILES.append(f)
-    for file in TEMP_FILES:
-        os.remove(file)
+    if not debug:
+        TEMP_FILES = STYLE_FILES_OUT
+        TEMP_FILES += glob.glob(str(Path("figures") / "*.py.cortex"))
+        for suff in TEMP_SUFFS:
+            for f in glob.glob(str(Path("tex") / suff)):
+                if "cortex.log" not in f:
+                    TEMP_FILES.append(f)
+        for file in TEMP_FILES:
+            os.remove(file)

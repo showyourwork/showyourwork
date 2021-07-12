@@ -76,6 +76,7 @@
 
   % Define color error codes
   \colorlet{ctxGithubLinkError}{ctxRed}
+  \colorlet{ctxGithubLinkWarning}{ctxYellow}
   \colorlet{ctxGithubLinkAllGood}{ctxBlue}
   \colorlet{ctxFigureScriptNotFound}{ctxRed}
   \colorlet{ctxFigureScriptNotVersionControlled}{ctxRed}
@@ -85,6 +86,7 @@
 
   % Total error counter
   \newtotcounter{ctxGithubErrors}
+  \newtotcounter{ctxGithubWarnings}
 
   % Add a GitHub link to the end of the abstract
   \let\oldabstract\abstract
@@ -94,13 +96,15 @@
   }{%
     \href{((- repo.url -))}{
       \ifnum\totvalue{ctxGithubErrors}=0%
-        \color{ctxGithubLinkAllGood}%
-        \faGithub
+        \ifnum\totvalue{ctxGithubWarnings}=0%
+          \color{ctxGithubLinkAllGood}%
+        \else
+          \color{ctxGithubLinkWarning}%
+        \fi
       \else%
         \color{ctxGithubLinkError}%
-        \faGithub
-        \, \textbf{[\total{ctxGithubErrors}]}
       \fi%
+      \faGithub
     }
     \oldendabstract%
   }
@@ -116,32 +120,34 @@
     % up-to-date, has uncommited changes, doesn't exist, isn't tracked,
     % etc.
     \IfFileExists{../figures/\ctxCurrentFigureScript}{%
-      \IfFileExists{../figures/\ctxCurrentFigureScript.cortex}{%
+      \IfFileExists{../.cortex/data/\ctxCurrentFigureScript.cortex}{%
         % Read the color from the .cortex tmp file
         \CatchFileEdef{\ctxCurrentFigureColor}{%
-          ../figures/\ctxCurrentFigureScript.cortex%
+          ../.cortex/data/\ctxCurrentFigureScript.cortex%
         }{\endlinechar=-1}%
         \def\tmpstr{ctxFigureScriptUpToDate}%
         \ifx\ctxCurrentFigureColor\tmpstr%
         \else%
           \def\tmpstr{ctxFigureScriptNotVersionControlled}%
           \ifx\ctxCurrentFigureColor\tmpstr%
+            \addtocounter{ctxGithubErrors}{1}%
             \ctxLogMessage{ERROR: File `figures/\ctxCurrentFigureScript` is not version controlled by git.}%
           \else%
             \def\tmpstr{ctxFigureScriptHasUncommittedChanges}%
             \ifx\ctxCurrentFigureColor\tmpstr%
+              \addtocounter{ctxGithubWarnings}{1}%
               \ctxLogMessage{WARNING: File `figures/\ctxCurrentFigureScript` has uncommitted changes.}%
             \else
               % This branch shouldn't ever be reached...
+              \addtocounter{ctxGithubErrors}{1}%
               \ctxLogMessage{ERROR: Error processing `figures/\ctxCurrentFigureScript`.}%
             \fi%
           \fi%
-          \addtocounter{ctxGithubErrors}{1}%
         \fi%
       }{%
         % The .cortex file is missing, so something went wrong
         \addtocounter{ctxGithubErrors}{1}
-        \ctxLogMessage{ERROR: Can't find file `figures/\ctxCurrentFigureScript.cortex`.}
+        \ctxLogMessage{ERROR: Can't find file `../.cortex/data/\ctxCurrentFigureScript.cortex`.}
         \def\ctxCurrentFigureColor{ctxFigureScriptUnknownError}%
       }%
     }{%
