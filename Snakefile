@@ -43,7 +43,10 @@ rule pdf:
         try:
             for f in STYLE_FILES:
                 shell("cp {} tex/".format(f))
-            shell("tectonic -o . tex/ms.tex")
+            if debug:
+                shell("tectonic --print -o . tex/ms.tex")
+            else:
+                shell("tectonic -o . tex/ms.tex")
             clean()
         except Exception as e:
             clean()

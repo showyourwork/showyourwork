@@ -6192,7 +6192,7 @@ Please fix, or don't use square bracket argument with
 
 
 %% Last digit might be X
-\def\xauthor[#1]#2{\def\testone{#1-}\def\firstarg{#1}
+\def\xauthor[#1]#2{\edef\testone{#1-}\edef\firstarg{#1}
 \setbox0=\hbox{\expandafter\lookatOrcid\testone {}-{}-{}-{}-
 \expandafter\lookforDigits\one {}{}{}{}
 \expandafter\lookforDigits\two {}{}{}{}
