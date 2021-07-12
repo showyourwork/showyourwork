@@ -3,14 +3,13 @@ from pathlib import Path
 import os
 
 
-# Debug mode?
-debug = bool(int(os.environ.get("CTX_DEBUG", "0")))
-
 # Paths
 TEX_FILES = glob.glob(str(Path("tex") / "*"))
 FIGURE_SCRIPTS = glob.glob(str(Path("figures") / "*.py"))
 PYTHON_TESTS = glob.glob(str(Path("tests") / "*"))
 
+# Config
+configfile: "config.yml"
 
 # Generate the metadata file from direct user input
 rule meta:
@@ -34,7 +33,7 @@ rule pdf:
         TEMP_FILES = glob.glob(str(Path("figures") / "*.py.cortex"))
 
         def clean():
-            if not debug:
+            if not config["debug"]:
                 for f in STYLE_FILES:
                     shell("rm tex/{}".format(Path(f).name))
                 for f in TEMP_FILES:
@@ -43,10 +42,11 @@ rule pdf:
         try:
             for f in STYLE_FILES:
                 shell("cp {} tex/".format(f))
-            if debug:
-                shell("tectonic --print -o . tex/ms.tex")
+            if config["debug"]:
+                shell("tectonic --keep-logs --print tex/ms.tex")
             else:
-                shell("tectonic -o . tex/ms.tex")
+                shell("tectonic tex/ms.tex")
+            shell("mv tex/ms.pdf .")
             clean()
         except Exception as e:
             clean()
