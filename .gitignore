@@ -8,6 +8,8 @@ tex/aasjournal.bst
 tex/aastex62.cls
 tex/cortex.sty
 tex/revtex4-1.cls
+tex/xstring.tex
+tex/xstring.sty
 
 # VSCode
 .vscode

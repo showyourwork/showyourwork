@@ -114,7 +114,3 @@ def user_prompt():
     # Update this repo's config
     with open(CORTEX / "data" / "meta.json", "w") as f:
         json.dump(defaults, f)
-
-
-if __name__ == "__main__":
-    user_prompt()

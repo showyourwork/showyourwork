@@ -1,3 +1,4 @@
+from cortex_version import __version__
 import jinja2
 import os
 import json
@@ -42,6 +43,10 @@ def generate_sty():
     except:
         meta["repo"]["sha"] = meta["repo"]["branch"]
 
+    # Miscellaneous
+    meta["cortex"] = {}
+    meta["cortex"]["version"] = __version__
+
     # Generate the style file
     with open(CORTEX / "styles" / "cortex.sty", "w") as f:
         print(
@@ -50,7 +55,3 @@ def generate_sty():
             ).render(**meta),
             file=f,
         )
-
-
-if __name__ == "__main__":
-    generate_sty()
