@@ -3,6 +3,9 @@ from pathlib import Path
 import json
 import os
 import shutil
+
+
+# Import cortex
 import sys
 sys.path.insert(1, ".cortex")
 from generate_sty import generate_sty
