@@ -16,6 +16,7 @@ def check_git_status(FIGURE_SCRIPTS=None):
     # Check for figure scripts with uncommited changes
     for file in FIGURE_SCRIPTS:
 
+        # Temporary metadata file
         ctx_file = (
             ROOT / ".cortex" / "data" / "{}.cortex".format(Path(file).name)
         )
@@ -31,11 +32,8 @@ def check_git_status(FIGURE_SCRIPTS=None):
             )
         except Exception as e:
             # File is not version controlled
-            with open(ctx_file, "w") as f:
-                print("ctxFigureScriptNotVersionControlled", file=f)
+            error_code = "ctxFigureScriptNotVersionControlled"
         else:
-            # File is version controlled
-
             # Check if the file has uncommitted changes
             try:
                 status = (
@@ -49,9 +47,16 @@ def check_git_status(FIGURE_SCRIPTS=None):
                     raise Exception("Uncommitted changes!")
             except Exception as e:
                 # Assume uncommited changes
-                with open(ctx_file, "w") as f:
-                    print("ctxFigureScriptHasUncommittedChanges", file=f)
+                error_code = "ctxFigureScriptHasUncommittedChanges"
             else:
                 # File is good!
-                with open(ctx_file, "w") as f:
-                    print("ctxFigureScriptUpToDate", file=f)
+                error_code = "ctxFigureScriptUpToDate"
+
+        if ctx_file.exists():
+            with open(ctx_file, "r") as f:
+                ctx_file_contents = f.read().replace("\n", "")
+        else:
+            ctx_file_contents = ""
+        if ctx_file_contents != error_code:
+            with open(ctx_file, "w") as f:
+                print(error_code, file=f)
