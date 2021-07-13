@@ -335,12 +335,7 @@ def get_script_metadata(clobber=False):
             label = get_figure_label(figure)
             script = get_figure_script(label)
             files = get_figure_files(figure)
-            status = get_git_status("figures", script)
-            figures[label] = {
-                "script": script,
-                "files": files,
-                "status": status,
-            }
+            figures[label] = {"script": script, "files": files}
 
         # Parse equations
         equations = {}
@@ -348,8 +343,7 @@ def get_script_metadata(clobber=False):
             labels = get_equation_labels(equation)
             for label in labels:
                 script = get_equation_script(label)
-                status = get_git_status("tests", script)
-                equations[label] = {"script": script, "status": status}
+                equations[label] = {"script": script}
 
         # Store as JSON
         scripts = {"figures": figures, "equations": equations}
@@ -391,21 +385,21 @@ def get_metadata(clobber=False):
         meta["gen_tree"] = False
 
         # Figure and equation metadata
-        status = 0
+        global_status = 0
         meta["labels"] = {}
         for label, value in scripts["figures"].items():
-            meta["labels"]["{}_script".format(label)] = value["script"]
-            meta["labels"]["{}_status".format(label)] = ERROR_CODES[
-                value["status"]
-            ]
-            status = max(status, value["status"])
+            script = value["script"]
+            status = get_git_status("figures", script)
+            meta["labels"]["{}_script".format(label)] = script
+            meta["labels"]["{}_status".format(label)] = ERROR_CODES[status]
+            global_status = max(global_status, status)
         for label, value in scripts["equations"].items():
-            meta["labels"]["{}_script".format(label)] = value["script"]
-            meta["labels"]["{}_status".format(label)] = ERROR_CODES[
-                value["status"]
-            ]
-            status = max(status, value["status"])
-        meta["status"] = ERROR_CODES[status]
+            script = value["script"]
+            status = get_git_status("tests", script)
+            meta["labels"]["{}_script".format(label)] = script
+            meta["labels"]["{}_status".format(label)] = ERROR_CODES[status]
+            global_status = max(global_status, status)
+        meta["status"] = ERROR_CODES[global_status]
 
         # Store as JSON
         save_json(meta, ROOT / ".cortex" / "data" / "meta.json")
@@ -418,6 +412,18 @@ def get_metadata(clobber=False):
             meta = json.load(f)
 
         return meta
+
+
+def get_scripts():
+    # Get all active figure & equation python scripts
+    with open(ROOT / ".cortex" / "data" / "scripts.json", "r") as f:
+        scripts_dict = json.load(f)
+    scripts = []
+    for value in scripts_dict["figures"].values():
+        scripts.append("figures/{}".format(value["script"]))
+    for value in scripts_dict["equations"].values():
+        scripts.append("tests/{}".format(value["script"]))
+    return scripts
 
 
 def gen_pdf():
