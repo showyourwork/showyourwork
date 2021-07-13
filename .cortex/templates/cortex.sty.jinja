@@ -1,6 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{cortex}[2021/07/07 Open source science articles]
 
+
 % Imports
 \RequirePackage{mathtools} % equation tags
 \RequirePackage{xcolor} % custom colors
@@ -16,21 +17,83 @@
 \RequirePackage{xstring} % string manipulation
 \RequirePackage{catchfile} % read file into macro
 \RequirePackage{totcount} % count total number of errors
+\RequirePackage[notref, notcite]{showkeys} % get label refs
+\RequirePackage{marginnote} % margin notes
+
+
+((* if gen_tree *))
 
 % Logging
 \newwrite\ctxLogFile
-\ifdefined\ctxDryRun
-  \immediate\openout\ctxLogFile=cortex-dryrun.log
-\else
-  \immediate\openout\ctxLogFile=cortex.log
-\fi
+\immediate\openout\ctxLogFile=cortex.xml
 \newcommand\ctxLogMessage[1]{%
   \protected@write
   \ctxLogFile
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
 }
-\ctxLogMessage{This is CorTeX v((- cortex.version -)).}
+\ctxLogMessage{<HTML>}
+\AtEndDocument{\ctxLogMessage{</HTML>}}
+
+% Log all figure and equation labels
+\renewcommand\showkeyslabelformat[1]{%
+  \IfBeginWith*{#1}{eq:}{%
+    % Equation label
+    \StrBehind*{#1}{eq:}[\ctxCurrentLabelName]
+    \ctxLogMessage{<LABEL>\ctxCurrentLabelName</LABEL>}%
+  }{}
+  \IfBeginWith*{#1}{fig:}{%
+    % Figure label
+    \StrBehind*{#1}{fig:}[\ctxCurrentLabelName]
+    \ctxLogMessage{<LABEL>\ctxCurrentLabelName</LABEL>}%
+  }{}
+}
+
+% Log figures
+\let\oldfigure\figure
+\let\oldendfigure\endfigure
+\renewenvironment{figure}{%
+  \ctxLogMessage{<FIGURE>}%
+  \oldfigure%
+}{%
+  \oldendfigure%
+  \ctxLogMessage{</FIGURE>}%
+}
+
+% Log equations
+\let\oldalign\align
+\let\oldendalign\endalign
+\renewenvironment{align}{%
+  \ctxLogMessage{<ALIGN>}%
+  \oldalign%
+}{%
+  \oldendalign%
+  \ctxLogMessage{</ALIGN>}%
+}
+
+% Log figure captions
+\renewcommand{\caption}{%
+  \ctxLogMessage{<CAPTION />}%
+}
+
+% Log graphics
+\renewcommand{\includegraphics}[2][]{%
+  \ctxLogMessage{<GRAPHICS>#2</GRAPHICS>}%
+}
+
+% Disable author info
+\newcommand{\myName}{}
+\newcommand{\myEmail}{}
+\newcommand{\myAffil}{}
+\newcommand{\myORCID}{}
+\renewcommand{\author}[2][]{}
+\renewcommand{\email}{}
+\renewcommand{\affil}{}
+
+% Disable bibliography
+\renewcommand{\bibliography}[1]{}
+
+((* else *))
 
 % Author info
 \newcommand{\myName}{((- author.name -))}
@@ -38,138 +101,76 @@
 \newcommand{\myAffil}{((- author.affil -))}
 \newcommand{\myORCID}{((- author.orcid -))}
 
-% Infer the name of the script that generated the current figure
-\newcommand\ctxInferFigureScript[1]{
-  % xxx.yyy --> xxx.py
-  % xxx_yyy.zzz --> xxx.py
-  \StrBefore{#1_}{_}[\strOne]%
-  \StrBefore{\strOne.}{.}[\strTwo]%
-  \edef\ctxCurrentFigureScript{\strTwo.py}%
+% Logging
+\newwrite\ctxLogFile
+\immediate\openout\ctxLogFile=cortex.log
+\newcommand\ctxLogMessage[1]{%
+  \protected@write
+  \ctxLogFile
+  {\let\tmp\write\def\write{\immediate\tmp}}%
+  {#1}%
+}
+\ctxLogMessage{This is CorTeX v((- version -)).}
+
+% Define custom colors
+\definecolor{ctxRed}{rgb}{0.80,0.14,0.19}
+\definecolor{ctxOrange}{rgb}{1.0,0.65,0.0}
+\definecolor{ctxYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{ctxBlue}{rgb}{0.12,0.47,0.71}
+
+% Error codes (colors)
+\colorlet{ctxScriptDoesNotExist}{ctxRed}
+\colorlet{ctxScriptNotVersionControlled}{ctxOrange}
+\colorlet{ctxScriptHasUncommittedChanges}{ctxYellow}
+\colorlet{ctxScriptUpToDate}{ctxBlue}
+
+% Key-value pairs
+% See https://tex.stackexchange.com/a/48931
+\def\addvalue#1#2{\expandafter\gdef\csname ctx@data@\detokenize{#1}\endcsname{#2}}
+\def\usevalue#1{%
+\ifcsname ctx@data@#1\endcsname%
+  \csname ctx@data@#1\expandafter\endcsname%
+\else%
+  \expandafter\ERROR
+\fi%
+}
+((* for key, value in labels.items() *))
+\addvalue{((- key -))}{((- value -))}
+((* endfor *))
+
+% Add a GitHub link to the end of the abstract
+\let\oldabstract\abstract
+\let\oldendabstract\endabstract
+\renewenvironment{abstract}{%
+  \oldabstract%
+}{%
+  \marginnote{%
+    \href{((- repo.url -))}{%
+      \color{((- status -))}%
+      \faGithub%
+    }
+  }
+  \oldendabstract%
 }
 
-\ifdefined\ctxDryRun
+% Hack `showkeys' to show a GitHub link for figures & equations
+% See https://tex.stackexchange.com/a/580553
+\renewcommand\showkeyslabelformat[1]{%
+  \IfBeginWith*{#1}{eq:}{\StrBehind*{#1}{eq:}[\ctxCurrentLabelName]%
+    \normalfont%
+    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\ctxCurrentLabelName_script}}{%
+      \color{\usevalue{\ctxCurrentLabelName_status}}\faGithub%
+    }%
+  }{}%
+  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\ctxCurrentLabelName]%
+    \normalfont%
+    \href{((- repo.url -))/blob/((- sha -))/figures/\usevalue{\ctxCurrentLabelName_script}}{%
+      \color{\usevalue{\ctxCurrentLabelName_status}}\faGithub%
+    }%
+  }{}%
+}
 
-  %
-  % --- Dry run ---
-  %
+% Set the graphics path for all figures
+\graphicspath{{../figures/}}
 
-  % Disable figures, but keep track of args
-  \renewcommand{\includegraphics}[2][]{%
-    \ctxInferFigureScript{#2}
-    \ctxLogMessage{FIGURE: `\ctxCurrentFigureScript` --> `#2`.}
-  }
-
-  % Disable bibliography
-  \renewcommand{\bibliography}[1]{}
-
-\else
-
-  %
-  % --- Main run ---
-  %
-
-  % Define custom colors
-  \definecolor{ctxGreen}{rgb}{0.13333333,0.5254902,0.22745098}
-  \definecolor{ctxRed}{rgb}{0.79607843,0.14117647,0.19215686}
-  \definecolor{ctxYellow}{rgb}{1.0,0.88,0.30}
-  \definecolor{ctxBlue}{rgb}{0.1216,0.4667,0.7059}
-
-  % Define color error codes
-  \colorlet{ctxGithubLinkError}{ctxRed}
-  \colorlet{ctxGithubLinkWarning}{ctxYellow}
-  \colorlet{ctxGithubLinkAllGood}{ctxBlue}
-  \colorlet{ctxFigureScriptNotFound}{ctxRed}
-  \colorlet{ctxFigureScriptNotVersionControlled}{ctxRed}
-  \colorlet{ctxFigureScriptUnknownError}{ctxRed}
-  \colorlet{ctxFigureScriptHasUncommittedChanges}{ctxYellow}
-  \colorlet{ctxFigureScriptUpToDate}{ctxBlue}
-
-  % Total error counter
-  \newtotcounter{ctxGithubErrors}
-  \newtotcounter{ctxGithubWarnings}
-
-  % Add a GitHub link to the end of the abstract
-  \let\oldabstract\abstract
-  \let\oldendabstract\endabstract
-  \renewenvironment{abstract}{%
-    \oldabstract%
-  }{%
-    \href{((- repo.url -))}{
-      \ifnum\totvalue{ctxGithubErrors}=0%
-        \ifnum\totvalue{ctxGithubWarnings}=0%
-          \color{ctxGithubLinkAllGood}%
-        \else
-          \color{ctxGithubLinkWarning}%
-        \fi
-      \else%
-        \color{ctxGithubLinkError}%
-      \fi%
-      \faGithub
-    }
-    \oldendabstract%
-  }
-
-  % Redefine `\includegraphics' to process current figure script
-  \LetLtxMacro\oldincludegraphics\includegraphics
-  \renewcommand{\includegraphics}[2][]{%
-    %
-    % Infer the name of the script that generated the current figure
-    \ctxInferFigureScript{#2}
-    %
-    % Determine the color of the link based on whether the file is
-    % up-to-date, has uncommited changes, doesn't exist, isn't tracked,
-    % etc.
-    \IfFileExists{../figures/\ctxCurrentFigureScript}{%
-      \IfFileExists{../.cortex/data/\ctxCurrentFigureScript.cortex}{%
-        % Read the color from the .cortex tmp file
-        \CatchFileEdef{\ctxCurrentFigureColor}{%
-          ../.cortex/data/\ctxCurrentFigureScript.cortex%
-        }{\endlinechar=-1}%
-        \def\tmpstr{ctxFigureScriptUpToDate}%
-        \ifx\ctxCurrentFigureColor\tmpstr%
-        \else%
-          \def\tmpstr{ctxFigureScriptNotVersionControlled}%
-          \ifx\ctxCurrentFigureColor\tmpstr%
-            \addtocounter{ctxGithubErrors}{1}%
-            \ctxLogMessage{ERROR: File `figures/\ctxCurrentFigureScript` is not version controlled by git.}%
-          \else%
-            \def\tmpstr{ctxFigureScriptHasUncommittedChanges}%
-            \ifx\ctxCurrentFigureColor\tmpstr%
-              \addtocounter{ctxGithubWarnings}{1}%
-              \ctxLogMessage{WARNING: File `figures/\ctxCurrentFigureScript` has uncommitted changes.}%
-            \else
-              % This branch shouldn't ever be reached...
-              \addtocounter{ctxGithubErrors}{1}%
-              \ctxLogMessage{ERROR: Error processing `figures/\ctxCurrentFigureScript`.}%
-            \fi%
-          \fi%
-        \fi%
-      }{%
-        % The .cortex file is missing, so something went wrong
-        \addtocounter{ctxGithubErrors}{1}
-        \ctxLogMessage{ERROR: Can't find file `../.cortex/data/\ctxCurrentFigureScript.cortex`.}
-        \def\ctxCurrentFigureColor{ctxFigureScriptUnknownError}%
-      }%
-    }{%
-      % The figure script itself is missing
-      \addtocounter{ctxGithubErrors}{1}
-      \ctxLogMessage{ERROR: Can't find figure script `figures/\ctxCurrentFigureScript`.}
-      \def\ctxCurrentFigureColor{ctxFigureScriptNotFound}%
-    }
-    % Include the figure as usual
-    \oldincludegraphics[#1]{#2}%
-  }
-
-  % Add a GitHub link to figure captions
-  \renewcommand{\figurename}{%
-    \href{%
-      ((- repo.url -))/blob/((- repo.sha -))/figures/\ctxCurrentFigureScript%
-    }{\color{\ctxCurrentFigureColor}\faGithub} Figure%
-    % Log the URL so we can check whether it's valid later
-    \ctxLogMessage{URL: ((- repo.url -))/blob/((- repo.sha -))/figures/\ctxCurrentFigureScript}
-  }
-
-  % Set the graphics path for all figures
-  \graphicspath{{../figures/}}
-
-\fi
+((* endif *))

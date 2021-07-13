@@ -2,7 +2,7 @@
 .env
 .snakemake
 .cortex/data/meta.json
-.cortex/styles/cortex.sty
+.cortex/tex/cortex.sty
 *.*.cortex
 tex/aasjournal.bst
 tex/aastex62.cls

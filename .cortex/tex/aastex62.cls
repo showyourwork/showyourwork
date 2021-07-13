@@ -5624,7 +5624,7 @@ by 1\relax}\ignorespaces}%
  \c@mpfootnote\z@
  \let\@makefnmark\frontmatter@makefnmark
   \frontmatter@setup
-  \thispagestyle{titlepage}\label{FirstPage}%
+  \thispagestyle{titlepage}%\label{FirstPage}%
 \ifmodern\leftskip=0pt\rightskip\leftskip\fi
   \frontmatter@title@produce
   \groupauthors@sw{%
