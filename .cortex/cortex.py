@@ -322,9 +322,10 @@ def get_script_metadata(clobber=False):
         # Generate the XML file
         with TemporaryTexFiles(gen_tree=True):
             subprocess.check_output(
-                ["tectonic", "--keep-logs", "ms.tex"],
+                ["tectonic", "--keep-logs", "-r", "0", "ms.tex"],
                 cwd=str(ROOT / "tex"),
             )
+            os.remove(ROOT / "tex" / "ms.pdf")
             root = ET.parse(ROOT / "tex" / "cortex.xml").getroot()
 
         # Parse figures
@@ -368,9 +369,9 @@ def get_metadata(clobber=False):
 
     if clobber or not (ROOT / ".cortex" / "data" / "meta.json").exists():
 
-        # Load the metadata
+        # Load the metadata (no clobber)
         user = get_user_metadata()
-        scripts = get_script_metadata(clobber=clobber)
+        scripts = get_script_metadata()
 
         # Get the current git hash
         meta = dict(user)
@@ -419,9 +420,10 @@ def get_metadata(clobber=False):
         return meta
 
 
-def gen_pdf(clobber=False):
-    with TemporaryTexFiles(**get_metadata(clobber=clobber)):
+def gen_pdf():
+    with TemporaryTexFiles(**get_metadata()):
         subprocess.check_output(
             ["tectonic", "--keep-logs", "ms.tex"],
             cwd=str(ROOT / "tex"),
         )
+        shutil.move(ROOT / "tex" / "ms.pdf", ROOT)
