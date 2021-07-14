@@ -28,3 +28,11 @@ jobs:
         shell: bash -l {0}
         run: |
           snakemake -c1
+
+      - name: Upload the paper
+        uses: dfm/force-push-branch-action@v1
+        with:
+          branch-suffix: "-pdf"
+          commit-message: "Committing automatically from GitHub Actions"
+          path: |
+            ms.pdf

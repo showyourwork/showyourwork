@@ -9,9 +9,9 @@ rule pdf:
         "tex/ms.tex", 
         "tex/bib.bib",
         ".cortex/data/meta.json", 
-        "tests/tests.status"
+        "tests/tests.status",
         figures,
-        test_results,
+        test_results
     output: 
         "ms.pdf"
     run: 
