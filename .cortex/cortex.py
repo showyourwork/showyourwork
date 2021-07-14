@@ -217,7 +217,7 @@ def get_user_metadata(clobber=True):
     if os.getenv("GITHUB_ACTIONS", None) is not None:
 
         # If we're on GitHub actions, use the version-controlled file instead
-        with open(ROOT / ".github" / "wokflows" / "user.json", "r") as f:
+        with open(ROOT / ".cortex" / "data" / "user-cache.json", "r") as f:
             user = json.load(f)
         save_json(user, ROOT / ".cortex" / "data" / "user.json")
         return user
@@ -327,9 +327,9 @@ def get_user_metadata(clobber=True):
         # Update this repo's config
         save_json(user, ROOT / ".cortex" / "data" / "user.json")
 
-        # Update the version-controlled JSON so we can access
-        # it on GitHub Actions
-        save_json(user, ROOT / ".github" / "workflows" / "user.json")
+        # Update the cached, version-controlled JSON so we
+        # can access it on GitHub Actions
+        save_json(user, ROOT / ".cortex" / "data" / "user-cache.json")
 
         return user
 

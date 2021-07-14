@@ -2,6 +2,7 @@
 .env
 .snakemake
 .cortex/data/*.json
+!.cortex/data/user-cache.json
 .cortex/tex/cortex.sty
 tests/*.status
 tex/aasjournal.bst

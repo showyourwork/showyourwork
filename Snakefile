@@ -66,6 +66,7 @@ checkpoint script_info:
 rule user_info:
     output: 
         ".cortex/data/user.json"
+    priority: 99
     run: 
         get_user_metadata()
 
