@@ -26,7 +26,7 @@ jobs:
             ${{ github.workspace }}/figures
             ${{ github.workspace }}/tests
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('${{ github.workspace }}/.cortex/data/*.json', '${{ github.workspace }}/tex/*', '${{ github.workspace }}/figures/*.py', '${{ github.workspace }}/tests/*.py') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.cortex/data/*.json', 'tex/*', 'figures/*.py', 'tests/*.py') }}
 
       - name: Cache info
         shell: bash -l {0}
