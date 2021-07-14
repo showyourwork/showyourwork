@@ -25,8 +25,15 @@ jobs:
             tex
             figures
             tests
+            ms.pdf
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('.cortex/data/*.json', 'tex/*', 'figures/*.py', 'tests/*.py') }}
+            ${{ runner.os }}-${{ env.CACHE_NUMBER }}-${{ 
+              hashFiles(
+                '.cortex/data/*.json', 
+                'tex/*', 
+                'figures/*.py', 
+                'tests/*.py'
+              ) }}
 
       - name: Cache info
         shell: bash -l {0}
@@ -35,6 +42,7 @@ jobs:
           ls -lahtr tex
           ls -lahtr figures
           ls -lahtr tests
+          ls -lahtr ms.pdf
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
