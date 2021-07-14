@@ -26,7 +26,16 @@ jobs:
             ~/figures
             ~/tests
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ 
+              hashFiles('~/.cortex/data/*.json', '~/tex/*', '~/figures/*.py', '~/tests/*.py') }}
+
+      - name: Cache info
+        shell: bash -l {0}
+        run: |
+          ls -lahtr ~/.cortex/data
+          ls -lahtr ~/tex
+          ls -lahtr ~/figures
+          ls -lahtr ~/tests
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -36,6 +45,11 @@ jobs:
           channel-priority: strict
           activate-environment: cortex
           environment-file: environment.yml
+
+      - name: Generate the DAG
+        shell: bash -l {0}
+        run: |
+          snakemake --dag | dot -Tpdf > dag.pdf
 
       - name: Build the paper
         shell: bash -l {0}
@@ -49,3 +63,4 @@ jobs:
           commit-message: "Committing automatically from GitHub Actions"
           path: |
             ms.pdf
+            dag.pdf
