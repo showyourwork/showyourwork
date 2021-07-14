@@ -9,7 +9,12 @@ import shutil
 from pathlib import Path
 import sys
 
+
 sys.path.insert(1, ".cortex")
+import cortex
+
+cortex.config = config
+
 from cortex import (
     get_scripts,
     gen_pdf,
@@ -20,21 +25,24 @@ from cortex import (
 
 
 def scripts(wildcards, tags=["figures", "tests"]):
-    checkpoints.check_scripts.get(**wildcards)
+    checkpoints.script_meta.get(**wildcards)
     return list(get_scripts(tags=tags).keys())
 
 
-def figures(wildcards, flat=True):
-    checkpoints.check_scripts.get(**wildcards)
+def figures(wildcards):
+    checkpoints.script_meta.get(**wildcards)
     figures = list(get_scripts(tags=["figures"]).values())
-    if flat:
-        return [lst for entry in figures for lst in entry]
-    else:
-        return figures
+    return [lst for entry in figures for lst in entry]
+
+
+def test_results(wildcards):
+    checkpoints.script_meta.get(**wildcards)
+    tests = list(get_scripts(tags=["tests"]).values())
+    return [lst for entry in tests for lst in entry]
 
 
 def figure_script(wildcards):
-    checkpoints.check_scripts.get(**wildcards)
+    checkpoints.script_meta.get(**wildcards)
     figure = wildcards.figure
     scripts = get_scripts(tags=["figures"])
     for script, files in scripts.items():
@@ -54,7 +62,7 @@ def figure_cache(wildcards, output=None):
 
 
 def figure_other(wildcards, output=None):
-    checkpoints.check_scripts.get(**wildcards)
+    checkpoints.script_meta.get(**wildcards)
     all_output = get_scripts(tags=["figures"])[figure_script(wildcards)]
     return [Path(file) for file in all_output if file != output[0]]
 
@@ -67,3 +75,24 @@ def run_figure(params):
         for file in params.other:
             if file.exists():
                 shutil.move(file, Path(".cortex") / "data")
+
+
+figure_wildcards = "figures/(.*?)\.{}".format(
+    "|".join(
+        config.get(
+            "figure_extensions",
+            ["pdf", "png", "epsfont", "jpg", "jpeg", "gif"],
+        )
+    )
+)
+
+
+def run_test(input, output):
+    passed = r"\\\def\\\ctxCurrentTestBadge{\\\color{ctxTestPassed}\\\faCheck}"
+    failed = r"\\\def\\\ctxCurrentTestBadge{\\\color{ctxTestFailed}\\\faTimes}"
+    shell(
+        "{{ py.test {input[0]} &>/dev/null && echo {passed} || echo {failed} ; }} > {output[0]}"
+    )
+
+
+test_wildcards = "tests/test_(.*?)\.py"

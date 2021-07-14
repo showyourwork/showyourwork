@@ -1,7 +1,4 @@
 configfile: "config.yml"
-debug = config["debug"]
-quiet = config["quiet"]
-ext = "|".join(config["figure_extensions"])
 
 
 include: ".cortex/functions.py"
@@ -12,7 +9,9 @@ rule pdf:
         "tex/ms.tex", 
         "tex/bib.bib",
         ".cortex/data/meta.json", 
-        figures
+        figures,
+        test_results,
+        "tests/tests.status"
     output: 
         "ms.pdf"
     run: 
@@ -25,7 +24,7 @@ rule figure:
     output: 
         "{figure}"
     wildcard_constraints:
-        figure="figures/(.*?)\.{}".format(ext)
+        figure=figure_wildcards
     params:
         script=figure_script_base_name,
         cache=figure_cache,
@@ -34,7 +33,36 @@ rule figure:
         run_figure(params)
 
 
-checkpoint check_scripts:
+rule test:
+    input: 
+        "{test}"
+    output: 
+        "{test}.status"
+    wildcard_constraints:
+        test=test_wildcards
+    run: 
+        run_test(input, output)
+
+
+rule foo:
+    input:
+        test_results
+    output:
+        "tests/tests.status"
+    run:
+        failures = 0
+        for file in input:
+            with open(file, "r") as f:
+                if "ctxTestFailed" in f.read():
+                    failures += 1
+        if failures == 0:
+            badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestPassed}\\\faCheck}"
+        else:
+            badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestFailed}\\\faTimes}"
+        shell("echo {badge} > {output[0]}")
+
+
+checkpoint script_meta:
     input: 
         "tex/ms.tex"
     output: 

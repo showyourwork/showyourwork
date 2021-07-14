@@ -117,12 +117,15 @@
 \definecolor{ctxOrange}{rgb}{1.0,0.65,0.0}
 \definecolor{ctxYellow}{rgb}{1.0,0.88,0.30}
 \definecolor{ctxBlue}{rgb}{0.12,0.47,0.71}
+\definecolor{ctxGreen}{rgb}{0.13,0.53,0.23}
 
 % Error codes (colors)
 \colorlet{ctxScriptDoesNotExist}{ctxRed}
 \colorlet{ctxScriptNotVersionControlled}{ctxOrange}
 \colorlet{ctxScriptHasUncommittedChanges}{ctxYellow}
 \colorlet{ctxScriptUpToDate}{ctxBlue}
+\colorlet{ctxTestPassed}{ctxGreen}
+\colorlet{ctxTestFailed}{ctxRed}
 
 % Key-value pairs
 % See https://tex.stackexchange.com/a/48931
@@ -145,9 +148,13 @@
   \oldabstract%
 }{%
   \marginnote{%
-    \href{((- repo.url -))}{%
+    \href{((- repo.url -))/tree/((- sha -))/}{%
       \color{((- status -))}%
       \faGithub%
+    }%
+    \input{../tests/tests.status}%
+    \href{((- repo.url -))/blob/((- sha -))/tests}{%
+      \ctxTestsBadge%
     }
   }
   \oldendabstract%
@@ -160,6 +167,10 @@
     \normalfont%
     \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\ctxCurrentLabelName_script}}{%
       \color{\usevalue{\ctxCurrentLabelName_status}}\faGithub%
+    }%
+    \input{../tests/test_\ctxCurrentLabelName.py.status}%
+    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\ctxCurrentLabelName_script}}{%
+      \ctxCurrentTestBadge%
     }%
   }{}%
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\ctxCurrentLabelName]%

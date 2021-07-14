@@ -16,6 +16,10 @@ import os
 ROOT = Path(__file__).parents[1].absolute()
 
 
+# Config (overridden during make)
+config = {}
+
+
 # Git error codes
 ctxScriptDoesNotExist = 3
 ctxScriptNotVersionControlled = 2
@@ -57,12 +61,15 @@ class TemporaryTexFiles:
             shutil.copy(file, ROOT / "tex")
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        files = [str(ROOT / "tex" / Path(file).name) for file in self.files]
-        for suff in ["*.log", "*.blg", "*.xml"]:
-            for f in glob.glob(str(ROOT / "tex" / suff)):
-                files.append(f)
-        for file in files:
-            os.remove(file)
+        if not config.get("debug", False):
+            files = [
+                str(ROOT / "tex" / Path(file).name) for file in self.files
+            ]
+            for suff in ["*.log", "*.blg", "*.xml"]:
+                for f in glob.glob(str(ROOT / "tex" / suff)):
+                    files.append(f)
+            for file in files:
+                os.remove(file)
 
 
 def get_git_status(path, script):
@@ -113,6 +120,10 @@ def get_equation_labels(equation):
 
 def get_equation_script(label):
     return "test_{}.py".format(label)
+
+
+def get_equation_files(label):
+    return ["test_{}.py.status".format(label)]
 
 
 def check_figure_format(figure):
@@ -343,7 +354,8 @@ def get_script_metadata(clobber=True):
             labels = get_equation_labels(equation)
             for label in labels:
                 script = get_equation_script(label)
-                tests[label] = {"script": script}
+                files = get_equation_files(label)
+                tests[label] = {"script": script, "files": files}
 
         # Store as JSON
         scripts = {"figures": figures, "tests": tests}
