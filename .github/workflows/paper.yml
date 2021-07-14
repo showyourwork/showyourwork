@@ -2,7 +2,7 @@ name: paper
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   paper:
