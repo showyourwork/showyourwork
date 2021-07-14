@@ -19,6 +19,7 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-file: environment.yml
+          environment-name: paper
 
       - name: Build the paper
         shell: bash -l {0}
