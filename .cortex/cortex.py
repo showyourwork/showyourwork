@@ -199,8 +199,11 @@ def save_json(contents, file):
     """
     current = json.dumps(contents, indent=4)
     if Path(file).exists():
-        with open(file, "r") as f:
-            existing = json.load(f)
+        try:
+            with open(file, "r") as f:
+                existing = json.load(f)
+        except json.JSONDecodeError as e:
+            existing = None
         if existing != current:
             with open(file, "w") as f:
                 print(current, file=f)
@@ -211,7 +214,15 @@ def save_json(contents, file):
 
 def get_user_metadata(clobber=True):
 
-    if clobber or not (ROOT / ".cortex" / "data" / "user.json").exists():
+    if os.getenv("GITHUB_ACTIONS", None) is not None:
+
+        # If we're on GitHub actions, use the version-controlled file instead
+        with open(ROOT / ".github" / "wokflows" / "user.json", "r") as f:
+            user = json.load(f)
+        save_json(user, ROOT / ".cortex" / "data" / "user.json")
+        return user
+
+    elif clobber or not (ROOT / ".cortex" / "data" / "user.json").exists():
 
         # Custom style
         style = questionary.Style([])
@@ -316,14 +327,18 @@ def get_user_metadata(clobber=True):
         # Update this repo's config
         save_json(user, ROOT / ".cortex" / "data" / "user.json")
 
+        # Update the version-controlled JSON so we can access
+        # it on GitHub Actions
+        save_json(user, ROOT / ".github" / "workflows" / "user.json")
+
         return user
 
     else:
 
         with open(ROOT / ".cortex" / "data" / "user.json", "r") as f:
-            defaults = json.load(f)
+            user = json.load(f)
 
-        return defaults
+        return user
 
 
 def get_script_metadata(clobber=True):

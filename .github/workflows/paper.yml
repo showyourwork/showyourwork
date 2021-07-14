@@ -1,0 +1,26 @@
+name: paper
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  paper:
+    name: Build the paper
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install mamba
+        uses: mamba-org/provision-with-micromamba@main
+        with:
+          environment-file: environment.yml
+
+      - name: Build the paper
+        shell: bash -l {0}
+        run: |
+          snakemake -c1

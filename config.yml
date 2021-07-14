@@ -1,4 +1,4 @@
-debug: True
+debug: False
 quiet: False
 figure_extensions:
     - pdf
