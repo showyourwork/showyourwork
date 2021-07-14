@@ -15,12 +15,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache conda
+      - name: Cache the repo
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 1
+          CACHE_NUMBER: 0
         with:
-          path: ~/conda_pkgs_dir
+          path: |
+            ~/.cortex/data
+            ~/tex
+            ~/figures
+            ~/tests
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
 
@@ -32,7 +36,6 @@ jobs:
           channel-priority: strict
           activate-environment: cortex
           environment-file: environment.yml
-          use-only-tar-bz2: true
 
       - name: Build the paper
         shell: bash -l {0}
