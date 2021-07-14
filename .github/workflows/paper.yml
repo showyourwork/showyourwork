@@ -21,13 +21,12 @@ jobs:
           CACHE_NUMBER: 0
         with:
           path: |
-            $GITHUB_WORKSPACE/.cortex/data
-            $GITHUB_WORKSPACE/tex
-            $GITHUB_WORKSPACE/figures
-            $GITHUB_WORKSPACE/tests
+            ${{ github.workspace }}/.cortex/data
+            ${{ github.workspace }}/tex
+            ${{ github.workspace }}/figures
+            ${{ github.workspace }}/tests
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ 
-              hashFiles('$GITHUB_WORKSPACE/.cortex/data/*.json', '$GITHUB_WORKSPACE/tex/*', '$GITHUB_WORKSPACE/figures/*.py', '$GITHUB_WORKSPACE/tests/*.py') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('${{ github.workspace }}/.cortex/data/*.json', '${{ github.workspace }}/tex/*', '${{ github.workspace }}/figures/*.py', '${{ github.workspace }}/tests/*.py') }}
 
       - name: Cache info
         shell: bash -l {0}
