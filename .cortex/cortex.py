@@ -198,7 +198,7 @@ def save_json(contents, file):
             print(current, file=f)
 
 
-def get_user_metadata(clobber=False):
+def get_user_metadata(clobber=True):
 
     if clobber or not (ROOT / ".cortex" / "data" / "user.json").exists():
 
@@ -315,7 +315,7 @@ def get_user_metadata(clobber=False):
         return defaults
 
 
-def get_script_metadata(clobber=False):
+def get_script_metadata(clobber=True):
 
     if clobber or not (ROOT / ".cortex" / "data" / "user.json").exists():
 
@@ -359,13 +359,13 @@ def get_script_metadata(clobber=False):
         return scripts
 
 
-def get_metadata(clobber=False):
+def get_metadata(clobber=True):
 
     if clobber or not (ROOT / ".cortex" / "data" / "meta.json").exists():
 
-        # Load the metadata (no clobber)
-        user = get_user_metadata()
-        scripts = get_script_metadata()
+        # Load the metadata
+        user = get_user_metadata(clobber=False)
+        scripts = get_script_metadata(clobber=False)
 
         # Get the current git hash
         meta = dict(user)
@@ -428,7 +428,7 @@ def get_scripts(tags=["figures", "tests"]):
 
 
 def gen_pdf():
-    with TemporaryTexFiles(**get_metadata()):
+    with TemporaryTexFiles(**get_metadata(clobber=False)):
         subprocess.check_output(
             ["tectonic", "--keep-logs", "ms.tex"],
             cwd=str(ROOT / "tex"),
