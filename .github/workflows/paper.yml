@@ -21,21 +21,21 @@ jobs:
           CACHE_NUMBER: 0
         with:
           path: |
-            ~/.cortex/data
-            ~/tex
-            ~/figures
-            ~/tests
+            $GITHUB_WORKSPACE/.cortex/data
+            $GITHUB_WORKSPACE/tex
+            $GITHUB_WORKSPACE/figures
+            $GITHUB_WORKSPACE/tests
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ 
-              hashFiles('~/.cortex/data/*.json', '~/tex/*', '~/figures/*.py', '~/tests/*.py') }}
+              hashFiles('$GITHUB_WORKSPACE/.cortex/data/*.json', '$GITHUB_WORKSPACE/tex/*', '$GITHUB_WORKSPACE/figures/*.py', '$GITHUB_WORKSPACE/tests/*.py') }}
 
       - name: Cache info
         shell: bash -l {0}
         run: |
-          ls -lahtr ~/.cortex/data
-          ls -lahtr ~/tex
-          ls -lahtr ~/figures
-          ls -lahtr ~/tests
+          ls -lahtr $GITHUB_WORKSPACE/.cortex/data
+          ls -lahtr $GITHUB_WORKSPACE/tex
+          ls -lahtr $GITHUB_WORKSPACE/figures
+          ls -lahtr $GITHUB_WORKSPACE/tests
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
