@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache Conda
+      - name: Cache conda
         uses: actions/cache@v2
         env:
           CACHE_NUMBER: 0
@@ -24,14 +24,15 @@ jobs:
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
 
-      - name: Set up Conda
+      - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           mamba-version: "*"
           channels: conda-forge,defaults,bioconda
-          channel-priority: true
+          channel-priority: strict
           activate-environment: cortex
           environment-file: environment.yml
+          use-only-tar-bz2: true
 
       - name: Build the paper
         shell: bash -l {0}
