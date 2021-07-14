@@ -42,7 +42,6 @@ jobs:
           ls -lahtr tex
           ls -lahtr figures
           ls -lahtr tests
-          ls -lahtr ms.pdf
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
