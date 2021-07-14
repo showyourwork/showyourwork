@@ -1,5 +1,9 @@
 debug: False
 quiet: False
 figure_extensions:
-  - pdf
-  - png
+    - pdf
+    - png
+    - eps
+    - jpg
+    - jpeg
+    - gif

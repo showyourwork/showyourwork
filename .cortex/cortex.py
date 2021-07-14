@@ -337,16 +337,16 @@ def get_script_metadata(clobber=False):
             files = get_figure_files(figure)
             figures[label] = {"script": script, "files": files}
 
-        # Parse equations
-        equations = {}
+        # Parse equation tests
+        tests = {}
         for equation in root.findall("ALIGN"):
             labels = get_equation_labels(equation)
             for label in labels:
                 script = get_equation_script(label)
-                equations[label] = {"script": script}
+                tests[label] = {"script": script}
 
         # Store as JSON
-        scripts = {"figures": figures, "equations": equations}
+        scripts = {"figures": figures, "tests": tests}
         save_json(scripts, ROOT / ".cortex" / "data" / "scripts.json")
 
         return scripts
@@ -393,7 +393,7 @@ def get_metadata(clobber=False):
             meta["labels"]["{}_script".format(label)] = script
             meta["labels"]["{}_status".format(label)] = ERROR_CODES[status]
             global_status = max(global_status, status)
-        for label, value in scripts["equations"].items():
+        for label, value in scripts["tests"].items():
             script = value["script"]
             status = get_git_status("tests", script)
             meta["labels"]["{}_script".format(label)] = script
@@ -414,15 +414,16 @@ def get_metadata(clobber=False):
         return meta
 
 
-def get_scripts():
+def get_scripts(tags=["figures", "tests"]):
     # Get all active figure & equation python scripts
     with open(ROOT / ".cortex" / "data" / "scripts.json", "r") as f:
         scripts_dict = json.load(f)
-    scripts = []
-    for value in scripts_dict["figures"].values():
-        scripts.append("figures/{}".format(value["script"]))
-    for value in scripts_dict["equations"].values():
-        scripts.append("tests/{}".format(value["script"]))
+    scripts = {}
+    for tag in tags:
+        for value in scripts_dict[tag].values():
+            scripts[("{}/{}".format(tag, value["script"]))] = [
+                "{}/{}".format(tag, file) for file in value.get("files", [])
+            ]
     return scripts
 
 
