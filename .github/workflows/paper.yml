@@ -15,11 +15,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install mamba
-        uses: mamba-org/provision-with-micromamba@main
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
+          mamba-version: "*"
+          channels: conda-forge,defaults,bioconda
+          channel-priority: true
+          activate-environment: cortex
           environment-file: environment.yml
-          environment-name: paper
 
       - name: Build the paper
         shell: bash -l {0}
