@@ -25,24 +25,24 @@ from cortex import (
 
 
 def scripts(wildcards, tags=["figures", "tests"]):
-    checkpoints.script_meta.get(**wildcards)
+    checkpoints.script_info.get(**wildcards)
     return list(get_scripts(tags=tags).keys())
 
 
 def figures(wildcards):
-    checkpoints.script_meta.get(**wildcards)
+    checkpoints.script_info.get(**wildcards)
     figures = list(get_scripts(tags=["figures"]).values())
     return [lst for entry in figures for lst in entry]
 
 
 def test_results(wildcards):
-    checkpoints.script_meta.get(**wildcards)
+    checkpoints.script_info.get(**wildcards)
     tests = list(get_scripts(tags=["tests"]).values())
     return [lst for entry in tests for lst in entry]
 
 
 def figure_script(wildcards):
-    checkpoints.script_meta.get(**wildcards)
+    checkpoints.script_info.get(**wildcards)
     figure = wildcards.figure
     scripts = get_scripts(tags=["figures"])
     for script, files in scripts.items():
@@ -57,12 +57,12 @@ def figure_script_base_name(wildcards):
     return Path(figure_script(wildcards)).name
 
 
-def figure_cache(wildcards, output=None):
+def figure_cache(wildcards, output):
     return Path(".cortex") / "data" / Path(output[0]).name
 
 
-def figure_other(wildcards, output=None):
-    checkpoints.script_meta.get(**wildcards)
+def figure_other(wildcards, output):
+    checkpoints.script_info.get(**wildcards)
     all_output = get_scripts(tags=["figures"])[figure_script(wildcards)]
     return [Path(file) for file in all_output if file != output[0]]
 
@@ -96,3 +96,16 @@ def run_test(input, output):
 
 
 test_wildcards = "tests/test_(.*?)\.py"
+
+
+def run_test_status(input, output):
+    failures = 0
+    for file in input:
+        with open(file, "r") as f:
+            if "ctxTestFailed" in f.read():
+                failures += 1
+    if failures == 0:
+        badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestPassed}\\\faCheck}"
+    else:
+        badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestFailed}\\\faTimes}"
+    shell("echo {badge} > {output[0]}")

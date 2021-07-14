@@ -44,41 +44,33 @@ rule test:
         run_test(input, output)
 
 
-rule foo:
+rule test_status:
     input:
         test_results
     output:
         "tests/tests.status"
     run:
-        failures = 0
-        for file in input:
-            with open(file, "r") as f:
-                if "ctxTestFailed" in f.read():
-                    failures += 1
-        if failures == 0:
-            badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestPassed}\\\faCheck}"
-        else:
-            badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestFailed}\\\faTimes}"
-        shell("echo {badge} > {output[0]}")
+        run_test_status(input, output)
 
 
-checkpoint script_meta:
+checkpoint script_info:
     input: 
         "tex/ms.tex"
     output: 
         ".cortex/data/scripts.json"
     run: 
         get_script_metadata()
+        get_metadata()
 
 
-rule user_meta:
+rule user_info:
     output: 
         ".cortex/data/user.json"
     run: 
         get_user_metadata()
 
 
-rule meta:
+rule metadata:
     input: 
         ".cortex/data/user.json", scripts
     output: 
