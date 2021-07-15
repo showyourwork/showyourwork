@@ -78,7 +78,7 @@ def restore_cache():
     # output was cached, mark it as ancient to prevent Snakemake
     # from re-running it.
     for script in glob(str(ROOT / "figures" / "*.py")):
-        script_rel = str(Path("figures") / script.name)
+        script_rel = str(Path("figures") / Path(script).name)
         if script_rel not in files:
             subprocess.check_output(
                 ["touch", "-a", "-m", "-t", ANCIENT, script]
@@ -86,7 +86,7 @@ def restore_cache():
             print("File `{}` marked as ANCIENT.".format(script_rel))
 
     for script in glob(str(ROOT / "tests" / "test_*.py")):
-        script_rel = str(Path("tests") / script.name)
+        script_rel = str(Path("tests") / Path(script).name)
         if script_rel not in files:
             subprocess.check_output(
                 ["touch", "-a", "-m", "-t", ANCIENT, script]
