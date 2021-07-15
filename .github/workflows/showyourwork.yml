@@ -97,6 +97,9 @@ jobs:
         run: |
           source "${{ env.MAMBA_ENV }}/bin/activate"
           python .github/workflows/cache.py --restore
+          ls -lahtr .cache
+          ls -lahtr .cache/figures
+          ls -lahtr .cache/tests
 
       - name: Build the paper
         run: |
@@ -115,6 +118,8 @@ jobs:
           source "${{ env.MAMBA_ENV }}/bin/activate"
           python .github/workflows/cache.py --update
           ls -lahtr .cache
+          ls -lahtr .cache/figures
+          ls -lahtr .cache/tests
 
       - name: Upload the paper
         uses: dfm/force-push-branch-action@v1
