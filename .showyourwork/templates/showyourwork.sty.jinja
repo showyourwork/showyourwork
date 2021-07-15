@@ -93,9 +93,12 @@
 % Disable bibliography
 \renewcommand{\bibliography}[1]{}
 
-% Disable misc
+% Disable user-facing commands
+\newcommand\GitHubSHA{}
 \newcommand\GitHubIcon{}
 \newcommand\GitHubIconRed{}
+\newcommand\GitHubIconOrange{}
+\newcommand\GitHubIconYellow{}
 \newcommand\GitHubIconBlue{}
 \newcommand\TestPassIcon{}
 \newcommand\TestFailIcon{}
@@ -134,9 +137,12 @@
 \colorlet{sywTestPassed}{sywGreen}
 \colorlet{sywTestFailed}{sywRed}
 
-% User-facing
+% User-facing commands
+\newcommand\GitHubSHA{((- sha -))}
 \newcommand\GitHubIcon{\faGithub\xspace}
 \newcommand\GitHubIconRed{{\color{sywRed}\faGithub}\xspace}
+\newcommand\GitHubIconOrange{{\color{sywOrange}\faGithub}\xspace}
+\newcommand\GitHubIconYellow{{\color{sywYellow}\faGithub}\xspace}
 \newcommand\GitHubIconBlue{{\color{sywBlue}\faGithub}\xspace}
 \newcommand\TestPassIcon{{\color{sywTestPassed}\faCheck}\xspace}
 \newcommand\TestFailIcon{{\color{sywTestFailed}\faTimes}\xspace}
