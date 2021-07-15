@@ -74,9 +74,19 @@ def restore_cache():
     # Get all files modified since that commit
     files = get_modified_files(commit)
 
-    #
+    # If a script has not changed since the commit at which its
+    # output was cached, mark it as ancient to prevent Snakemake
+    # from re-running it.
     for script in glob(str(ROOT / "figures" / "*.py")):
         script_rel = str(Path("figures") / script.name)
+        if script_rel not in files:
+            subprocess.check_output(
+                ["touch", "-a", "-m", "-t", ANCIENT, script]
+            )
+            print("File `{}` marked as ANCIENT.".format(script_rel))
+
+    for script in glob(str(ROOT / "tests" / "test_*.py")):
+        script_rel = str(Path("tests") / script.name)
         if script_rel not in files:
             subprocess.check_output(
                 ["touch", "-a", "-m", "-t", ANCIENT, script]
@@ -105,7 +115,7 @@ def update_cache():
         print("Cached file tests/{}.".format(Path(file).name))
 
     # Store the current commit
-    commit = subprocess.check_output(["git" "rev-parse" "HEAD"]).decode()
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
     with open(ROOT / ".cache" / "commit", "w") as f:
         print(commit, file=f)
 
