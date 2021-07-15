@@ -21,27 +21,14 @@ jobs:
           CACHE_NUMBER: 0
         with:
           path: |
-            .showyourwork/data
-            tex
-            figures
-            tests
-            ms.pdf
+            .cache
           key:
-            ${{ runner.os }}-${{ env.CACHE_NUMBER }}-${{ 
-              hashFiles(
-                '.showyourwork/data/*.json', 
-                'tex/*', 
-                'figures/*.py', 
-                'tests/*.py'
-              ) }}
+            ${{ runner.os }}-${{ env.CACHE_NUMBER }}
 
-      - name: Cache info
+      - name: Process the cache
         shell: bash -l {0}
         run: |
-          ls -lahtr .showyourwork/data
-          ls -lahtr tex
-          ls -lahtr figures
-          ls -lahtr tests
+          echo "TODO"
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -52,15 +39,22 @@ jobs:
           activate-environment: showyourwork
           environment-file: environment.yml
 
+      - name: Build the paper
+        shell: bash -l {0}
+        run: |
+          snakemake -c1
+
       - name: Generate the DAG
         shell: bash -l {0}
         run: |
           snakemake --dag | dot -Tpdf > dag.pdf
 
-      - name: Build the paper
+      - name: Cache the figures and test results
         shell: bash -l {0}
         run: |
-          snakemake -c1
+          mkdir -p .cache
+          cp -r figures .cache/figures
+          cp -r tests .cache/tests
 
       - name: Upload the paper
         uses: dfm/force-push-branch-action@v1

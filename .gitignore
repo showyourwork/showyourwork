@@ -12,6 +12,7 @@ tex/revtex4-1.cls
 tex/xstring.tex
 tex/xstring.sty
 tex/showyourwork.xml
+tex/showyourwork.png
 
 # VSCode
 .vscode
