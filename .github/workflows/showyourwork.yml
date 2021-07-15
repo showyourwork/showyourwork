@@ -102,8 +102,6 @@ jobs:
       - name: Build the paper
         run: |
           source "${{ env.MAMBA_ENV }}/bin/activate"
-          ls -lahtr figures
-          ls -lahtr tests
           snakemake -c1
 
       - name: Generate the DAG

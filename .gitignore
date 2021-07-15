@@ -1,5 +1,6 @@
 # Project-specific
 .env
+envs
 .cache
 .snakemake
 .showyourwork/data/*.json
