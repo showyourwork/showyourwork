@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-fig = plt.figure()
-x = np.linspace(-1, 1, 1000)
-for sgn in [-1, 1]:
-    y = 4.0 / 5.0 * (sgn * np.sqrt(1.0 - x ** 2) + np.sqrt(np.abs(x)))
-    plt.plot(x, y, "C0-", lw=2)
-plt.xlim(-2.5, 2.5)
+# https://mathworld.wolfram.com/HeartCurve.html
+fig = plt.figure(figsize=(7, 5))
+t = np.linspace(-np.pi, np.pi, 1000)
+x = 16 * np.sin(t) ** 3
+y = 13 * np.cos(t) - 5 * np.cos(2 * t) - 2 * np.cos(3 * t) - np.cos(4 * t)
+plt.plot(x, y, "C0-", lw=2)
 plt.gca().axis("off")
 fig.savefig("heart.pdf", bbox_inches="tight")

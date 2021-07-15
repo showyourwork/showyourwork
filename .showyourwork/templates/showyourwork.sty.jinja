@@ -19,7 +19,7 @@
 \RequirePackage{totcount} % count total number of errors
 \RequirePackage[notref, notcite]{showkeys} % get label refs
 \RequirePackage{marginnote} % margin notes
-
+\RequirePackage{xspace} % better spacing after icons
 
 ((* if gen_tree *))
 
@@ -93,6 +93,13 @@
 % Disable bibliography
 \renewcommand{\bibliography}[1]{}
 
+% Disable misc
+\newcommand\GitHubIcon{}
+\newcommand\GitHubIconRed{}
+\newcommand\GitHubIconBlue{}
+\newcommand\TestPassIcon{}
+\newcommand\TestFailIcon{}
+
 ((* else *))
 
 % Author info
@@ -126,6 +133,13 @@
 \colorlet{sywScriptUpToDate}{sywBlue}
 \colorlet{sywTestPassed}{sywGreen}
 \colorlet{sywTestFailed}{sywRed}
+
+% User-facing
+\newcommand\GitHubIcon{\faGithub\xspace}
+\newcommand\GitHubIconRed{{\color{sywRed}\faGithub}\xspace}
+\newcommand\GitHubIconBlue{{\color{sywBlue}\faGithub}\xspace}
+\newcommand\TestPassIcon{{\color{sywTestPassed}\faCheck}\xspace}
+\newcommand\TestFailIcon{{\color{sywTestFailed}\faTimes}\xspace}
 
 % Key-value pairs
 % See https://tex.stackexchange.com/a/48931
