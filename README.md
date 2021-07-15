@@ -6,7 +6,7 @@
     <img src="https://img.shields.io/badge/Use%20this%20template-2EA44F.svg?style=flat" alt="Use this template"/>
   </a>
   <a href="https://github.com/rodluger/showyourwork/blob/main-pdf/ms.pdf">
-    <img src="https://img.shields.io/badge/View%20the%20sample%20article-blue.svg?style=flat" alt="Use this template"/>
+    <img src="https://img.shields.io/badge/Read%20sample%20article-blue.svg?style=flat" alt="Use this template"/>
   </a>
 </p>
 
