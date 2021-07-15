@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# https://mathworld.wolfram.com/HeartCurve.html
+# The Heart Curve. See https://mathworld.wolfram.com/HeartCurve.html
 fig = plt.figure(figsize=(7, 5))
 t = np.linspace(-np.pi, np.pi, 1000)
 x = 16 * np.sin(t) ** 3

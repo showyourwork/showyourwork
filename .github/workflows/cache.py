@@ -54,14 +54,14 @@ def restore_cache():
         for file in glob(
             str(ROOT / ".cache" / "figures" / "*.{}".format(ext))
         ):
-            shutil.copy(file, ROOT / "figures")
+            shutil.copy2(file, ROOT / "figures")
             print(
                 "Restored file figures/{} from cache.".format(Path(file).name)
             )
 
     # Cache test results
     for file in glob(str(ROOT / ".cache" / "tests" / "*.status")):
-        shutil.copy(file, ROOT / "tests")
+        shutil.copy2(file, ROOT / "tests")
         print("Restored file tests/{} from cache.".format(Path(file).name))
 
     # Get the commit when the files were cached
@@ -109,12 +109,12 @@ def update_cache():
     # Cache figure files
     for ext in get_figure_extensions():
         for file in glob(str(ROOT / "figures" / "*.{}".format(ext))):
-            shutil.copy(file, ROOT / ".cache" / "figures")
+            shutil.copy2(file, ROOT / ".cache" / "figures")
             print("Cached file figures/{}.".format(Path(file).name))
 
     # Cache test results
     for file in glob(str(ROOT / "tests" / "*.status")):
-        shutil.copy(file, ROOT / ".cache" / "tests")
+        shutil.copy2(file, ROOT / ".cache" / "tests")
         print("Cached file tests/{}.".format(Path(file).name))
 
     # Store the current commit
