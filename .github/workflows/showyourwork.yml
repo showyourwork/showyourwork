@@ -95,13 +95,9 @@ jobs:
             ${{ runner.os }}-${{ env.SYW_CACHE_NUMBER }}
 
       - name: Restore the cached figures and test results
-        if: steps.cache-showyourwork.outputs.cache-hit == 'true'
         run: |
           source "${{ env.MAMBA_ENV }}/bin/activate"
           python .github/workflows/cache.py --restore
-          ls -lahtr .cache
-          ls -lahtr .cache/figures
-          ls -lahtr .cache/tests
 
       - name: Build the paper
         run: |
