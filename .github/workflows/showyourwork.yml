@@ -1,11 +1,11 @@
-name: paper
+name: showyourwork
 
 on:
   push:
     branches: [main]
 
 jobs:
-  paper:
+  showyourwork:
     name: Build the paper
     runs-on: ubuntu-latest
     steps:
@@ -21,7 +21,7 @@ jobs:
           CACHE_NUMBER: 0
         with:
           path: |
-            .cortex/data
+            .showyourwork/data
             tex
             figures
             tests
@@ -29,7 +29,7 @@ jobs:
           key:
             ${{ runner.os }}-${{ env.CACHE_NUMBER }}-${{ 
               hashFiles(
-                '.cortex/data/*.json', 
+                '.showyourwork/data/*.json', 
                 'tex/*', 
                 'figures/*.py', 
                 'tests/*.py'
@@ -38,7 +38,7 @@ jobs:
       - name: Cache info
         shell: bash -l {0}
         run: |
-          ls -lahtr .cortex/data
+          ls -lahtr .showyourwork/data
           ls -lahtr tex
           ls -lahtr figures
           ls -lahtr tests
@@ -49,7 +49,7 @@ jobs:
           mamba-version: "*"
           channels: conda-forge,defaults,bioconda
           channel-priority: strict
-          activate-environment: cortex
+          activate-environment: showyourwork
           environment-file: environment.yml
 
       - name: Generate the DAG

@@ -1,17 +1,17 @@
 # Project-specific
 .env
 .snakemake
-.cortex/data/*.json
-!.cortex/data/user-cache.json
-.cortex/tex/cortex.sty
+.showyourwork/data/*.json
+!.showyourwork/data/user-cache.json
+.showyourwork/tex/showyourwork.sty
 tests/*.status
 tex/aasjournal.bst
 tex/aastex62.cls
-tex/cortex.sty
+tex/showyourwork.sty
 tex/revtex4-1.cls
 tex/xstring.tex
 tex/xstring.sty
-tex/cortex.xml
+tex/showyourwork.xml
 
 # VSCode
 .vscode

@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{cortex}[2021/07/07 Open source science articles]
+\ProvidesPackage{showyourwork}[2021/07/07 Open source science articles]
 
 
 % Imports
@@ -24,28 +24,28 @@
 ((* if gen_tree *))
 
 % Logging
-\newwrite\ctxLogFile
-\immediate\openout\ctxLogFile=cortex.xml
-\newcommand\ctxLogMessage[1]{%
+\newwrite\sywLogFile
+\immediate\openout\sywLogFile=showyourwork.xml
+\newcommand\sywLogMessage[1]{%
   \protected@write
-  \ctxLogFile
+  \sywLogFile
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
 }
-\ctxLogMessage{<HTML>}
-\AtEndDocument{\ctxLogMessage{</HTML>}}
+\sywLogMessage{<HTML>}
+\AtEndDocument{\sywLogMessage{</HTML>}}
 
 % Log all figure and equation labels
 \renewcommand\showkeyslabelformat[1]{%
   \IfBeginWith*{#1}{eq:}{%
     % Equation label
-    \StrBehind*{#1}{eq:}[\ctxCurrentLabelName]
-    \ctxLogMessage{<LABEL>\ctxCurrentLabelName</LABEL>}%
+    \StrBehind*{#1}{eq:}[\sywCurrentLabelName]
+    \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
   }{}
   \IfBeginWith*{#1}{fig:}{%
     % Figure label
-    \StrBehind*{#1}{fig:}[\ctxCurrentLabelName]
-    \ctxLogMessage{<LABEL>\ctxCurrentLabelName</LABEL>}%
+    \StrBehind*{#1}{fig:}[\sywCurrentLabelName]
+    \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
   }{}
 }
 
@@ -53,32 +53,32 @@
 \let\oldfigure\figure
 \let\oldendfigure\endfigure
 \renewenvironment{figure}{%
-  \ctxLogMessage{<FIGURE>}%
+  \sywLogMessage{<FIGURE>}%
   \oldfigure%
 }{%
   \oldendfigure%
-  \ctxLogMessage{</FIGURE>}%
+  \sywLogMessage{</FIGURE>}%
 }
 
 % Log equations
 \let\oldalign\align
 \let\oldendalign\endalign
 \renewenvironment{align}{%
-  \ctxLogMessage{<ALIGN>}%
+  \sywLogMessage{<ALIGN>}%
   \oldalign%
 }{%
   \oldendalign%
-  \ctxLogMessage{</ALIGN>}%
+  \sywLogMessage{</ALIGN>}%
 }
 
 % Log figure captions
 \renewcommand{\caption}{%
-  \ctxLogMessage{<CAPTION />}%
+  \sywLogMessage{<CAPTION />}%
 }
 
 % Log graphics
 \renewcommand{\includegraphics}[2][]{%
-  \ctxLogMessage{<GRAPHICS>#2</GRAPHICS>}%
+  \sywLogMessage{<GRAPHICS>#2</GRAPHICS>}%
 }
 
 % Disable author info
@@ -102,37 +102,37 @@
 \newcommand{\myORCID}{((- author.orcid -))}
 
 % Logging
-\newwrite\ctxLogFile
-\immediate\openout\ctxLogFile=cortex.log
-\newcommand\ctxLogMessage[1]{%
+\newwrite\sywLogFile
+\immediate\openout\sywLogFile=showyourwork.log
+\newcommand\sywLogMessage[1]{%
   \protected@write
-  \ctxLogFile
+  \sywLogFile
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
 }
-\ctxLogMessage{This is CorTeX v((- version -)).}
+\sywLogMessage{This is ShowYourWork v((- version -)).}
 
 % Define custom colors
-\definecolor{ctxRed}{rgb}{0.80,0.14,0.19}
-\definecolor{ctxOrange}{rgb}{1.0,0.65,0.0}
-\definecolor{ctxYellow}{rgb}{1.0,0.88,0.30}
-\definecolor{ctxBlue}{rgb}{0.12,0.47,0.71}
-\definecolor{ctxGreen}{rgb}{0.13,0.53,0.23}
+\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
+\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
+\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
+\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
 
 % Error codes (colors)
-\colorlet{ctxScriptDoesNotExist}{ctxRed}
-\colorlet{ctxScriptNotVersionControlled}{ctxOrange}
-\colorlet{ctxScriptHasUncommittedChanges}{ctxYellow}
-\colorlet{ctxScriptUpToDate}{ctxBlue}
-\colorlet{ctxTestPassed}{ctxGreen}
-\colorlet{ctxTestFailed}{ctxRed}
+\colorlet{sywScriptDoesNotExist}{sywRed}
+\colorlet{sywScriptNotVersionControlled}{sywOrange}
+\colorlet{sywScriptHasUncommittedChanges}{sywYellow}
+\colorlet{sywScriptUpToDate}{sywBlue}
+\colorlet{sywTestPassed}{sywGreen}
+\colorlet{sywTestFailed}{sywRed}
 
 % Key-value pairs
 % See https://tex.stackexchange.com/a/48931
-\def\addvalue#1#2{\expandafter\gdef\csname ctx@data@\detokenize{#1}\endcsname{#2}}
+\def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{#2}}
 \def\usevalue#1{%
-\ifcsname ctx@data@#1\endcsname%
-  \csname ctx@data@#1\expandafter\endcsname%
+\ifcsname syw@data@#1\endcsname%
+  \csname syw@data@#1\expandafter\endcsname%
 \else%
   \expandafter\ERROR
 \fi%
@@ -154,7 +154,7 @@
     }%
     \input{../tests/tests.status}%
     \href{((- repo.url -))/blob/((- sha -))/tests}{%
-      \ctxTestsBadge%
+      \sywTestsBadge%
     }
   }
   \oldendabstract%
@@ -163,20 +163,20 @@
 % Hack `showkeys' to show a GitHub link for figures & equations
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
-  \IfBeginWith*{#1}{eq:}{\StrBehind*{#1}{eq:}[\ctxCurrentLabelName]%
+  \IfBeginWith*{#1}{eq:}{\StrBehind*{#1}{eq:}[\sywCurrentLabelName]%
     \normalfont%
-    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\ctxCurrentLabelName_script}}{%
-      \color{\usevalue{\ctxCurrentLabelName_status}}\faGithub%
+    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\sywCurrentLabelName_script}}{%
+      \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
     }%
-    \input{../tests/test_\ctxCurrentLabelName.py.status}%
-    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\ctxCurrentLabelName_script}}{%
-      \ctxCurrentTestBadge%
+    \input{../tests/test_\sywCurrentLabelName.py.status}%
+    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\sywCurrentLabelName_script}}{%
+      \sywCurrentTestBadge%
     }%
   }{}%
-  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\ctxCurrentLabelName]%
+  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \normalfont%
-    \href{((- repo.url -))/blob/((- sha -))/figures/\usevalue{\ctxCurrentLabelName_script}}{%
-      \color{\usevalue{\ctxCurrentLabelName_status}}\faGithub%
+    \href{((- repo.url -))/blob/((- sha -))/figures/\usevalue{\sywCurrentLabelName_script}}{%
+      \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
     }%
   }{}%
 }

@@ -10,12 +10,12 @@ from pathlib import Path
 import sys
 
 
-sys.path.insert(1, ".cortex")
-import cortex
+sys.path.insert(1, ".showyourwork")
+import showyourwork
 
-cortex.config = config
+showyourwork.config = config
 
-from cortex import (
+from showyourwork import (
     get_scripts,
     gen_pdf,
     get_user_metadata,
@@ -58,7 +58,7 @@ def figure_script_base_name(wildcards):
 
 
 def figure_cache(wildcards, output):
-    return Path(".cortex") / "data" / Path(output[0]).name
+    return Path(".showyourwork") / "data" / Path(output[0]).name
 
 
 def figure_other(wildcards, output):
@@ -74,7 +74,7 @@ def run_figure(params):
         shell("cd figures && python {params.script}")
         for file in params.other:
             if file.exists():
-                shutil.move(file, Path(".cortex") / "data")
+                shutil.move(file, Path(".showyourwork") / "data")
 
 
 figure_wildcards = "figures/(.*?)\.{}".format(
@@ -88,8 +88,8 @@ figure_wildcards = "figures/(.*?)\.{}".format(
 
 
 def run_test(input, output):
-    passed = r"\\\def\\\ctxCurrentTestBadge{\\\color{ctxTestPassed}\\\faCheck}"
-    failed = r"\\\def\\\ctxCurrentTestBadge{\\\color{ctxTestFailed}\\\faTimes}"
+    passed = r"\\\def\\\sywCurrentTestBadge{\\\color{sywTestPassed}\\\faCheck}"
+    failed = r"\\\def\\\sywCurrentTestBadge{\\\color{sywTestFailed}\\\faTimes}"
     shell(
         "{{ py.test {input[0]} &>/dev/null && echo {passed} || echo {failed} ; }} > {output[0]}"
     )
@@ -102,10 +102,10 @@ def run_test_status(input, output):
     failures = 0
     for file in input:
         with open(file, "r") as f:
-            if "ctxTestFailed" in f.read():
+            if "sywTestFailed" in f.read():
                 failures += 1
     if failures == 0:
-        badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestPassed}\\\faCheck}"
+        badge = r"\\\def\\\sywTestsBadge{\\\color{sywTestPassed}\\\faCheck}"
     else:
-        badge = r"\\\def\\\ctxTestsBadge{\\\color{ctxTestFailed}\\\faTimes}"
+        badge = r"\\\def\\\sywTestsBadge{\\\color{sywTestFailed}\\\faTimes}"
     shell("echo {badge} > {output[0]}")

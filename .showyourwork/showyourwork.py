@@ -1,4 +1,4 @@
-from cortex_version import __version__
+from showyourwork_version import __version__
 import glob
 from pathlib import Path
 import shutil
@@ -21,15 +21,15 @@ config = {}
 
 
 # Git error codes
-ctxScriptDoesNotExist = 3
-ctxScriptNotVersionControlled = 2
-ctxScriptHasUncommittedChanges = 1
-ctxScriptUpToDate = 0
+sywScriptDoesNotExist = 3
+sywScriptNotVersionControlled = 2
+sywScriptHasUncommittedChanges = 1
+sywScriptUpToDate = 0
 ERROR_CODES = {
-    ctxScriptDoesNotExist: "ctxScriptDoesNotExist",
-    ctxScriptNotVersionControlled: "ctxScriptNotVersionControlled",
-    ctxScriptHasUncommittedChanges: "ctxScriptHasUncommittedChanges",
-    ctxScriptUpToDate: "ctxScriptUpToDate",
+    sywScriptDoesNotExist: "sywScriptDoesNotExist",
+    sywScriptNotVersionControlled: "sywScriptNotVersionControlled",
+    sywScriptHasUncommittedChanges: "sywScriptHasUncommittedChanges",
+    sywScriptUpToDate: "sywScriptUpToDate",
 }
 
 
@@ -43,20 +43,22 @@ JINJA_ENV = jinja2.Environment(
     comment_end_string="=))",
     trim_blocks=True,
     autoescape=False,
-    loader=jinja2.FileSystemLoader(ROOT / ".cortex" / "templates"),
+    loader=jinja2.FileSystemLoader(ROOT / ".showyourwork" / "templates"),
 )
 
 
 class TemporaryTexFiles:
     def __init__(self, **kwargs):
-        with open(ROOT / ".cortex" / "tex" / "cortex.sty", "w") as f:
-            cortex_sty = JINJA_ENV.get_template("cortex.sty.jinja").render(
-                **kwargs
-            )
-            print(cortex_sty, file=f)
+        with open(
+            ROOT / ".showyourwork" / "tex" / "showyourwork.sty", "w"
+        ) as f:
+            showyourwork_sty = JINJA_ENV.get_template(
+                "showyourwork.sty.jinja"
+            ).render(**kwargs)
+            print(showyourwork_sty, file=f)
 
     def __enter__(self):
-        self.files = glob.glob(str(ROOT / ".cortex" / "tex" / "*"))
+        self.files = glob.glob(str(ROOT / ".showyourwork" / "tex" / "*"))
         for file in self.files:
             shutil.copy(file, ROOT / "tex")
 
@@ -75,7 +77,7 @@ class TemporaryTexFiles:
 def get_git_status(path, script):
     # Check if the file exists
     if not (ROOT / path / script).exists():
-        error_code = ctxScriptDoesNotExist
+        error_code = sywScriptDoesNotExist
     else:
         # Check if the file is version controlled
         try:
@@ -90,7 +92,7 @@ def get_git_status(path, script):
             )
         except Exception as e:
             # File is not version controlled
-            error_code = ctxScriptNotVersionControlled
+            error_code = sywScriptNotVersionControlled
         else:
             # Check if the file has uncommitted changes
             try:
@@ -107,10 +109,10 @@ def get_git_status(path, script):
                     raise Exception("Uncommitted changes!")
             except Exception as e:
                 # Assume uncommited changes
-                error_code = ctxScriptHasUncommittedChanges
+                error_code = sywScriptHasUncommittedChanges
             else:
                 # File is good!
-                error_code = ctxScriptUpToDate
+                error_code = sywScriptUpToDate
     return error_code
 
 
@@ -217,12 +219,16 @@ def get_user_metadata(clobber=True):
     if os.getenv("GITHUB_ACTIONS", None) is not None:
 
         # If we're on GitHub actions, use the version-controlled file instead
-        with open(ROOT / ".cortex" / "data" / "user-cache.json", "r") as f:
+        with open(
+            ROOT / ".showyourwork" / "data" / "user-cache.json", "r"
+        ) as f:
             user = json.load(f)
-        save_json(user, ROOT / ".cortex" / "data" / "user.json")
+        save_json(user, ROOT / ".showyourwork" / "data" / "user.json")
         return user
 
-    elif clobber or not (ROOT / ".cortex" / "data" / "user.json").exists():
+    elif (
+        clobber or not (ROOT / ".showyourwork" / "data" / "user.json").exists()
+    ):
 
         # Custom style
         style = questionary.Style([])
@@ -238,8 +244,8 @@ def get_user_metadata(clobber=True):
             },
             "repo": {"url": ""},
         }
-        if (Path.home() / ".cortex").exists():
-            with open(Path.home() / ".cortex", "r") as f:
+        if (Path.home() / ".showyourwork").exists():
+            with open(Path.home() / ".showyourwork", "r") as f:
                 user.update(json.load(f))
 
         # Primary author info
@@ -322,20 +328,20 @@ def get_user_metadata(clobber=True):
         ).ask()
 
         # Update user defaults
-        save_json(user, Path.home() / ".cortex")
+        save_json(user, Path.home() / ".showyourwork")
 
         # Update this repo's config
-        save_json(user, ROOT / ".cortex" / "data" / "user.json")
+        save_json(user, ROOT / ".showyourwork" / "data" / "user.json")
 
         # Update the cached, version-controlled JSON so we
         # can access it on GitHub Actions
-        save_json(user, ROOT / ".cortex" / "data" / "user-cache.json")
+        save_json(user, ROOT / ".showyourwork" / "data" / "user-cache.json")
 
         return user
 
     else:
 
-        with open(ROOT / ".cortex" / "data" / "user.json", "r") as f:
+        with open(ROOT / ".showyourwork" / "data" / "user.json", "r") as f:
             user = json.load(f)
 
         return user
@@ -343,7 +349,7 @@ def get_user_metadata(clobber=True):
 
 def get_script_metadata(clobber=True):
 
-    if clobber or not (ROOT / ".cortex" / "data" / "user.json").exists():
+    if clobber or not (ROOT / ".showyourwork" / "data" / "user.json").exists():
 
         # Generate the XML file
         with TemporaryTexFiles(gen_tree=True):
@@ -352,7 +358,7 @@ def get_script_metadata(clobber=True):
                 cwd=str(ROOT / "tex"),
             )
             os.remove(ROOT / "tex" / "ms.pdf")
-            root = ET.parse(ROOT / "tex" / "cortex.xml").getroot()
+            root = ET.parse(ROOT / "tex" / "showyourwork.xml").getroot()
 
         # Parse figures
         figures = {}
@@ -374,13 +380,13 @@ def get_script_metadata(clobber=True):
 
         # Store as JSON
         scripts = {"figures": figures, "tests": tests}
-        save_json(scripts, ROOT / ".cortex" / "data" / "scripts.json")
+        save_json(scripts, ROOT / ".showyourwork" / "data" / "scripts.json")
 
         return scripts
 
     else:
 
-        with open(ROOT / ".cortex" / "data" / "scripts.json", "r") as f:
+        with open(ROOT / ".showyourwork" / "data" / "scripts.json", "r") as f:
             scripts = json.load(f)
 
         return scripts
@@ -388,7 +394,7 @@ def get_script_metadata(clobber=True):
 
 def get_metadata(clobber=True):
 
-    if clobber or not (ROOT / ".cortex" / "data" / "meta.json").exists():
+    if clobber or not (ROOT / ".showyourwork" / "data" / "meta.json").exists():
 
         # Load the metadata
         user = get_user_metadata(clobber=False)
@@ -429,13 +435,13 @@ def get_metadata(clobber=True):
         meta["status"] = ERROR_CODES[global_status]
 
         # Store as JSON
-        save_json(meta, ROOT / ".cortex" / "data" / "meta.json")
+        save_json(meta, ROOT / ".showyourwork" / "data" / "meta.json")
 
         return meta
 
     else:
 
-        with open(ROOT / ".cortex" / "data" / "meta.json", "r") as f:
+        with open(ROOT / ".showyourwork" / "data" / "meta.json", "r") as f:
             meta = json.load(f)
 
         return meta
@@ -443,7 +449,7 @@ def get_metadata(clobber=True):
 
 def get_scripts(tags=["figures", "tests"]):
     # Get all active figure & equation python scripts
-    with open(ROOT / ".cortex" / "data" / "scripts.json", "r") as f:
+    with open(ROOT / ".showyourwork" / "data" / "scripts.json", "r") as f:
         scripts_dict = json.load(f)
     scripts = {}
     for tag in tags:

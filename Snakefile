@@ -1,14 +1,14 @@
 configfile: "config.yml"
 
 
-include: ".cortex/functions.py"
+include: ".showyourwork/functions.py"
 
 
 rule pdf:
     input: 
         "tex/ms.tex", 
         "tex/bib.bib",
-        ".cortex/data/meta.json", 
+        ".showyourwork/data/meta.json", 
         "tests/tests.status",
         figures,
         test_results
@@ -57,7 +57,7 @@ checkpoint script_info:
     input: 
         "tex/ms.tex"
     output: 
-        ".cortex/data/scripts.json"
+        ".showyourwork/data/scripts.json"
     run: 
         get_script_metadata()
         get_metadata()
@@ -65,7 +65,7 @@ checkpoint script_info:
 
 rule user_info:
     output: 
-        ".cortex/data/user.json"
+        ".showyourwork/data/user.json"
     priority: 99
     run: 
         get_user_metadata()
@@ -73,8 +73,8 @@ rule user_info:
 
 rule metadata:
     input: 
-        ".cortex/data/user.json", scripts
+        ".showyourwork/data/user.json", scripts
     output: 
-        ".cortex/data/meta.json"
+        ".showyourwork/data/meta.json"
     run: 
         get_metadata()
