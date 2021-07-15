@@ -99,9 +99,10 @@ def update_cache():
     Cache all figure files and test results.
 
     """
-    # Create the cache folder
-    if not Path(ROOT / ".cache").exists():
-        os.mkdir(ROOT / ".cache")
+    # Clear the existing cache
+    if (ROOT / ".cache").exists():
+        shutil.rmtree(ROOT / ".cache")
+    os.mkdir(ROOT / ".cache")
 
     # Cache figure files
     for ext in get_figure_extensions():

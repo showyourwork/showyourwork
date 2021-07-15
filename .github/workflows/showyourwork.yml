@@ -4,16 +4,79 @@ on:
   push:
     branches: [main]
 
+env:
+  MAMBA_CACHE_NUMBER: 0
+  SYW_CACHE_NUMBER: 2
+  MAMBA_ENV: sywenv
+
 jobs:
-  showyourwork:
-    name: Build the paper
+
+  # https://github.com/conda-incubator/setup-miniconda/issues/155#issuecomment-846598562
+  setup-mamba:
+    name: Setup mamba environment
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
 
       - name: Checkout the repo
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      
+      - name: Cache mamba environment
+        id: cache-mamba
+        uses: actions/cache@v2
+        with:
+          path: "${{ env.MAMBA_ENV }}.tar.gz"
+          key:
+            ${{ runner.os }}-${{ env.MAMBA_CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
+      
+      - name: Setup mamba environment
+        if: steps.cache-mamba.outputs.cache-hit != 'true'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          use-mamba: true
+          auto-update-conda: false
+          activate-environment: ${{ env.MAMBA_ENV }}
+          environment-file: environment.yml
+          auto-activate-base: false
+
+      - name: Pack mamba environment
+        if: steps.cache-mamba.outputs.cache-hit != 'true'
+        run: |
+          conda pack --force -n ${{ env.MAMBA_ENV }}
+
+  showyourwork:
+    name: Build the paper
+    needs: [setup-mamba]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get mamba cache
+        id: mamba-cache
+        uses: actions/cache@v2
+        with:
+          path: "${{ env.MAMBA_ENV }}.tar.gz"
+          key:
+            ${{ runner.os }}-${{ env.MAMBA_CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
+
+      - name: Unpack mamba environment
+        run: |
+          mkdir -p "${{ env.MAMBA_ENV }}"
+          tar -xzf "${{ env.MAMBA_ENV }}.tar.gz" -C "${{ env.MAMBA_ENV }}"
+          source "${{ env.MAMBA_ENV }}/bin/activate"
+          conda-unpack
 
       # https://github.com/actions/cache/issues/432#issuecomment-740376179
       - name: Generate random cache key
@@ -22,63 +85,42 @@ jobs:
 
       - name: Cache showyourwork
         uses: actions/cache@v2
-        env:
-          CACHE_NUMBER: 1
         with:
           path: |
             .cache
           key:
-            ${{ runner.os }}-${{ env.CACHE_NUMBER }}-${{ hashFiles('random-cache-key') }}
+            ${{ runner.os }}-${{ env.SYW_CACHE_NUMBER }}-${{ hashFiles('random-cache-key') }}
           restore-keys:
-            ${{ runner.os }}-${{ env.CACHE_NUMBER }}
+            ${{ runner.os }}-${{ env.SYW_CACHE_NUMBER }}
 
       - name: Restore the cached figures and test results
-        shell: bash -l {0}
         run: |
+          source "${{ env.MAMBA_ENV }}/bin/activate"
           python .github/workflows/cache.py --restore
 
-      - name: Cache conda
-        uses: actions/cache@v2
-        env:
-          CACHE_NUMBER: 0
-        with:
-          path: ~/conda_pkgs_dir
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
-            hashFiles('environment.yml') }}
-
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          mamba-version: "*"
-          channels: conda-forge,defaults,bioconda
-          channel-priority: strict
-          activate-environment: showyourwork
-          environment-file: environment.yml
-          use-only-tar-bz2: true
-
       - name: Build the paper
-        shell: bash -l {0}
         run: |
+          source "${{ env.MAMBA_ENV }}/bin/activate"
           ls -lahtr figures
           ls -lahtr tests
           snakemake -c1
 
       - name: Generate the DAG
-        shell: bash -l {0}
         run: |
+          source "${{ env.MAMBA_ENV }}/bin/activate"
           snakemake --dag | dot -Tpdf > dag.pdf
 
       - name: Update the cached figures and test results
-        shell: bash -l {0}
         run: |
+          source "${{ env.MAMBA_ENV }}/bin/activate"
           python .github/workflows/cache.py --update
+          ls -lahtr .cache
 
       - name: Upload the paper
         uses: dfm/force-push-branch-action@v1
         with:
           branch-suffix: "-pdf"
-          commit-message: "Committing automatically from GitHub Actions"
+          commit-message: "Automatic commit from GitHub Actions"
           path: |
             ms.pdf
             dag.pdf
