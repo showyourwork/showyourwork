@@ -1,48 +1,38 @@
-% !TeX root = ./ms.tex
 \documentclass[modern]{aastex62}
 \usepackage{showyourwork}
 
-% Bibliography stuff
+% Bibliography
 \bibliographystyle{aasjournal}
 
+% Custom styles for this sample paper
 \usepackage{listings}
 \def\zz{\color{red}\textless\bgroup\itshape\aftergroup\endzz}
 \def\endzz{\textgreater\egroup}
 \definecolor{background}{rgb}{0.94,0.95,0.96}
 \definecolor{linenumbers}{rgb}{0.74,0.75,0.76}
+\lstset{
+    basicstyle=\ttfamily\lst@ifdisplaystyle\scriptsize\fi,
+    numbers=left,
+    numberstyle=\color{linenumbers},
+    xleftmargin=5pt,
+    xrightmargin=5pt,
+    frame=single,
+    backgroundcolor=\color{background},
+    belowcaptionskip=5em,
+    aboveskip=2em,
+    belowskip=2em,
+    framesep=5pt
+}
 \lstdefinestyle{LaTeX}{
     language=[LaTeX]TeX,
     breaklines=true,
-    keywordstyle=\color{blue},
-    identifierstyle=\color{magenta},
-    moredelim=**[is][\zz]{@<}{>@},
-    basicstyle=\ttfamily\lst@ifdisplaystyle\scriptsize\fi,
-    numbers=left,
-    numberstyle=\color{linenumbers},
-    xleftmargin=5pt,
-    xrightmargin=5pt,
-    frame=single,
-    backgroundcolor=\color{background},
-    belowcaptionskip=5em,
-    aboveskip=2em,
-    belowskip=2em,
-    framesep=5pt
+    moredelim=**[is][\zz]{@<}{>@}
 }
 \lstdefinestyle{bash}{
     language=bash,
-    basicstyle=\ttfamily\lst@ifdisplaystyle\scriptsize\fi,
-    numbers=left,
-    numberstyle=\color{linenumbers},
-    xleftmargin=5pt,
-    xrightmargin=5pt,
-    frame=single,
-    backgroundcolor=\color{background},
-    belowcaptionskip=5em,
-    aboveskip=2em,
-    belowskip=2em,
-    framesep=5pt
+    moredelim=**[is][\zz]{@<}{>@}
 }
-
+\newcommand{\xxx}[1]{\emph{\color{red}#1}}
 
 % Begin!
 \begin{document}
@@ -50,7 +40,7 @@
 % Title
 \title{Show Your Work!}
 
-% Author list
+% Author list (showyourwork knows about you!)
 \author[\myORCID]{\myName}
 \email{\myEmail}
 \affil{\myAffil}
@@ -67,29 +57,54 @@
     The \LaTeX\, stylesheet is based on the \href{https://journals.aas.org/aastex-package-for-manuscript-preparation/}{AASTeX} markup package, and the paper-building workflow is implemented using \texttt{Snakemake}.
 \end{abstract}
 
-% The rest of the paper
+% Begin the paper body
 \section{Introduction}
 
 The \showyourwork workflow is part of an attempt to tackle (at least in part) the ongoing reproducibility crisis in the natural sciences \citep[see, e.g.,][]{Baker2016}.
-The idea behind this workflow is simple: to make it easy for authors to publish the code that generated the results (and in particular the figures) in a scientific article.
+The idea behind this workflow is extremely simple: to make it easy for authors to publish the code that generated the results (and in particular the figures) in a scientific article.
 This workflow ensures that the compiled article PDF is always in sync with the code that was used to generate its results.
 It does this automatically---and seamlessly---with the help of the \texttt{Snakemake} workflow management system \citep{Molder2021}, the \href{https://journals.aas.org/aastex-package-for-manuscript-preparation/}{AASTeX} markup package, the \href{https://github.com/tectonic-typesetting/tectonic}{tectonic} typesetting engine, and the \href{https://github.com/features/actions}{GitHub Actions} Continuous Integration/Deployment tool. Currently, \showyourwork requires all scripts to be in \texttt{Python}, although support for other languages will be added in the future.
 
+To get started with this workflow, \href{https://github.com/rodluger/showyourwork/generate}{click here} to generate a fresh GitHub repository based on the \showyourwork template.
+Clone your new repository locally and navigate to it, then run
+%
+\begin{lstlisting}[style=bash]
+conda install -c conda-forge mamba
+mamba create -p ./envs
+mamba env update -p ./envs -f environment.yml
+conda activate ./envs
+\end{lstlisting}
+%
+to install \texttt{mamba} and activate the \texttt{conda} environment for the repository.%
+\footnote{If you don't have \texttt{conda}, you can install it \href{here}{https://conda.io/projects/conda/en/latest/user-guide/install/index.html}.}
+
+You are now inside an isolated \texttt{conda} environment, which ensures the reproducibility of the workflow across different machines and operating systems. You can always return to the base environment by running \lstinline[style=bash]!conda deactivate!.
+
+\pagebreak
 \section{The workflow}
 
 \begin{figure}[t!]
     \begin{centering}
         \includegraphics[width=\linewidth]{dag.pdf}
         \caption{
-            The directed acyclic graph (DAG) corresponding to the workflow that generated this article. Honestly I'm a little surprise the universe didn't implode when this figure was generated.
+            The directed acyclic graph (DAG) corresponding to the workflow that generated this article.
+            If you're reading this caption, that means the universe did not implode when this figure was generated and this whole sketchy operation was totally worth it.
         }
         \label{fig:dag}
     \end{centering}
 \end{figure}
 
+The \showyourwork workflow is built on \texttt{Snakemake}, a \texttt{Python}-based modern alternative to the Linux \texttt{make} command.
+The workflow is defined in the \texttt{Snakefile}, which sits in the top level of the repository and tells \texttt{Snakemake} how to generate all of the figures, how to run any tests, and how to compile the article into a PDF.
+All of this can be done with a single command:
+%
 \begin{lstlisting}[style=bash]
 snakemake -c1
 \end{lstlisting}
+%
+which invokes \texttt{Snakemake} on a single CPU core (you can do \lstinline[style=bash]!-c@<n>@! instead to enable multiprocessing on \lstinline[style=bash]!@<n>@! cores). Figure~\ref{fig:dag} shows a directed acyclic graph (DAG) illustrating the workflow for compiling the paper you are currently reading.
+
+\xxx{More info on this soon!}
 
 \section{Figures}
 
@@ -164,6 +179,8 @@ This time, \showyourwork inferred that the script \texttt{figures/fractal.py} pr
 
 
 \section{Equations}
+
+\xxx{More info on this soon!}
 
 Here is the parametric equation for the heart in Figure~\ref{fig:heart}:
 %
