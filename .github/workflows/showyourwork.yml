@@ -15,14 +15,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      # https://github.com/actions/cache/issues/432#issuecomment-740376179
+      - name: Generate random cache key
+        id: random-cache-key
+        run: head /dev/random -c 32 > random-cache-key
+
       - name: Cache showyourwork
         uses: actions/cache@v2
         env:
-          CACHE_NUMBER: 0
+          CACHE_NUMBER: 1
         with:
           path: |
             .cache
           key:
+            ${{ runner.os }}-${{ env.CACHE_NUMBER }}-${{ hashFiles('random-cache-key') }}
+          restore-keys:
             ${{ runner.os }}-${{ env.CACHE_NUMBER }}
 
       - name: Restore the cached figures and test results
