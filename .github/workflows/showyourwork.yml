@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache the repo
+      - name: Cache showyourwork
         uses: actions/cache@v2
         env:
           CACHE_NUMBER: 0
@@ -25,10 +25,20 @@ jobs:
           key:
             ${{ runner.os }}-${{ env.CACHE_NUMBER }}
 
-      - name: Restore the cache
+      - name: Restore the cached figures and test results
         shell: bash -l {0}
         run: |
           python .github/workflows/cache.py --restore
+
+      - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('environment.yml') }}
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -38,6 +48,7 @@ jobs:
           channel-priority: strict
           activate-environment: showyourwork
           environment-file: environment.yml
+          use-only-tar-bz2: true
 
       - name: Build the paper
         shell: bash -l {0}
@@ -49,7 +60,7 @@ jobs:
         run: |
           snakemake --dag | dot -Tpdf > dag.pdf
 
-      - name: Cache the figures and test results
+      - name: Update the cached figures and test results
         shell: bash -l {0}
         run: |
           python .github/workflows/cache.py --update
