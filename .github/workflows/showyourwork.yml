@@ -25,10 +25,10 @@ jobs:
           key:
             ${{ runner.os }}-${{ env.CACHE_NUMBER }}
 
-      - name: Process the cache
+      - name: Restore the cache
         shell: bash -l {0}
         run: |
-          echo "TODO"
+          python .github/workflows/cache.py --restore
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -52,9 +52,7 @@ jobs:
       - name: Cache the figures and test results
         shell: bash -l {0}
         run: |
-          mkdir -p .cache
-          cp -r figures .cache/figures
-          cp -r tests .cache/tests
+          python .github/workflows/cache.py --update
 
       - name: Upload the paper
         uses: dfm/force-push-branch-action@v1

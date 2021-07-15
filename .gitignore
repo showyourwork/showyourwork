@@ -1,5 +1,6 @@
 # Project-specific
 .env
+.cache
 .snakemake
 .showyourwork/data/*.json
 !.showyourwork/data/user-cache.json
