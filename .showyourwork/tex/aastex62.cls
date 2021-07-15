@@ -147,7 +147,7 @@ track changes, new `modern' style and much more, by Amy Hendrickson,%
 %
 \newcommand{\showyourwork}{%
     \href{https://github.com/rodluger/showyourwork}%
-    {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.png}}}%
+    {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}%
 }
 
 \newif\ifmanu
