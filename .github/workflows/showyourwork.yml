@@ -84,6 +84,7 @@ jobs:
         run: head /dev/random -c 32 > random-cache-key
 
       - name: Cache showyourwork
+        id: cache-showyourwork
         uses: actions/cache@v2
         with:
           path: |
@@ -94,6 +95,7 @@ jobs:
             ${{ runner.os }}-${{ env.SYW_CACHE_NUMBER }}
 
       - name: Restore the cached figures and test results
+        if: steps.cache-showyourwork.outputs.cache-hit == 'true'
         run: |
           source "${{ env.MAMBA_ENV }}/bin/activate"
           python .github/workflows/cache.py --restore
