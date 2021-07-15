@@ -114,8 +114,8 @@ if __name__ == "__main__":
 
     # Command line options
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--restore")
-    parser.add_argument("-u", "--update")
+    parser.add_argument("-r", "--restore", action="store_true")
+    parser.add_argument("-u", "--update", action="store_true")
     args = parser.parse_args()
     if args.restore:
         restore_cache()
