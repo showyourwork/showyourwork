@@ -6,7 +6,7 @@ on:
 
 env:
   MAMBA_CACHE_NUMBER: 0
-  SYW_CACHE_NUMBER: 2
+  SYW_CACHE_NUMBER: 3
   MAMBA_ENV: sywenv
 
 jobs:

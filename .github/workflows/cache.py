@@ -103,6 +103,8 @@ def update_cache():
     if (ROOT / ".cache").exists():
         shutil.rmtree(ROOT / ".cache")
     os.mkdir(ROOT / ".cache")
+    os.mkdir(ROOT / ".cache" / "figures")
+    os.mkdir(ROOT / ".cache" / "tests")
 
     # Cache figure files
     for ext in get_figure_extensions():
