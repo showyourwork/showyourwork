@@ -51,7 +51,7 @@
     The philosophy of the workflow is straightforward: everything needed to exactly reproduce the article \emph{from scratch} is version-controlled and open-source on GitHub.
     Whenever new commits are pushed to GitHub, the paper is automatically re-compiled on the cloud.
     In this process, all of the figures in the article are generated on-the-fly from \texttt{Python} scripts and all equations are ``checked'' using associated \texttt{pytest} test scripts.
-    The \showyourwork package also annotates the PDF with status badges and links to the exact scripts that generated it.
+    The \showyourwork workflow also annotates the PDF with status badges and links to the exact scripts that generated it.
     For example, the icons in the right margin of this abstract point to the exact version of the repository that generated this PDF and to the directory containing tests that ensure the validity of the math in the paper.
     The color of the GitHub icon (\GitHubIcon) indicates the open-source ``status'' of the paper, ranging from \GitHubIconRed (issues with version control) to \GitHubIconBlue (tip top shape), and the pass/fail badge indicates whether the tests all passed (\TestPassIcon) or if one or more tests failed (\TestFailIcon).
     The \LaTeX\, stylesheet is based on the \href{https://journals.aas.org/aastex-package-for-manuscript-preparation/}{AASTeX} markup package, and the paper-building workflow is implemented using \texttt{Snakemake}.
