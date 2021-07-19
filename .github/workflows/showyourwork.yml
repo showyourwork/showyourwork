@@ -2,7 +2,8 @@ name: showyourwork
 
 on:
   push:
-    branches: []
+    branches-ignore:
+      - '**'
 
 env:
   MAMBA_CACHE_NUMBER: 0
