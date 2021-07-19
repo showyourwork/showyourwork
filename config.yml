@@ -1,9 +1,0 @@
-debug: False
-quiet: False
-figure_extensions:
-    - pdf
-    - png
-    - eps
-    - jpg
-    - jpeg
-    - gif

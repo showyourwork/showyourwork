@@ -2,7 +2,7 @@ name: showyourwork
 
 on:
   push:
-    branches: [main]
+    branches: []
 
 env:
   MAMBA_CACHE_NUMBER: 0
@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      
+
       - name: Cache mamba environment
         id: cache-mamba
         uses: actions/cache@v2
@@ -32,7 +32,7 @@ jobs:
           path: "${{ env.MAMBA_ENV }}.tar.gz"
           key:
             ${{ runner.os }}-${{ env.MAMBA_CACHE_NUMBER }}-${{ hashFiles('environment.yml') }}
-      
+
       - name: Setup mamba environment
         if: steps.cache-mamba.outputs.cache-hit != 'true'
         uses: conda-incubator/setup-miniconda@v2

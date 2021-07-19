@@ -106,10 +106,10 @@
 ((* else *))
 
 % Author info
-\newcommand{\myName}{((- author.name -))}
-\newcommand{\myEmail}{((- author.email -))}
-\newcommand{\myAffil}{((- author.affil -))}
-\newcommand{\myORCID}{((- author.orcid -))}
+\newcommand{\myName}{((- user.name -))}
+\newcommand{\myEmail}{((- user.email -))}
+\newcommand{\myAffil}{((- user.affil -))}
+\newcommand{\myORCID}{((- user.orcid -))}
 
 % Logging
 \newwrite\sywLogFile
@@ -134,8 +134,6 @@
 \colorlet{sywScriptNotVersionControlled}{sywOrange}
 \colorlet{sywScriptHasUncommittedChanges}{sywYellow}
 \colorlet{sywScriptUpToDate}{sywBlue}
-\colorlet{sywTestPassed}{sywGreen}
-\colorlet{sywTestFailed}{sywRed}
 
 % User-facing commands
 \newcommand\GitHubSHA{((- sha -))}
@@ -144,8 +142,6 @@
 \newcommand\GitHubIconOrange{{\color{sywOrange}\faGithub}\xspace}
 \newcommand\GitHubIconYellow{{\color{sywYellow}\faGithub}\xspace}
 \newcommand\GitHubIconBlue{{\color{sywBlue}\faGithub}\xspace}
-\newcommand\TestPassIcon{{\color{sywTestPassed}\faCheck}\xspace}
-\newcommand\TestFailIcon{{\color{sywTestFailed}\faTimes}\xspace}
 
 % Key-value pairs
 % See https://tex.stackexchange.com/a/48931
@@ -172,10 +168,6 @@
       \color{((- status -))}%
       \faGithub%
     }%
-    \input{../tests/tests.status}%
-    \href{((- repo.url -))/blob/((- sha -))/tests}{%
-      \sywTestsBadge%
-    }
   }
   \oldendabstract%
 }
@@ -183,25 +175,15 @@
 % Hack `showkeys' to show a GitHub link for figures & equations
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
-  \IfBeginWith*{#1}{eq:}{\StrBehind*{#1}{eq:}[\sywCurrentLabelName]%
-    \normalfont%
-    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\sywCurrentLabelName_script}}{%
-      \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
-    }%
-    \input{../tests/test_\sywCurrentLabelName.py.status}%
-    \href{((- repo.url -))/blob/((- sha -))/tests/\usevalue{\sywCurrentLabelName_script}}{%
-      \sywCurrentTestBadge%
-    }%
-  }{}%
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \normalfont%
-    \href{((- repo.url -))/blob/((- sha -))/figures/\usevalue{\sywCurrentLabelName_script}}{%
+    \href{((- repo.url -))/blob/((- sha -))/\usevalue{\sywCurrentLabelName_script}}{%
       \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
     }%
   }{}%
 }
 
 % Set the graphics path for all figures
-\graphicspath{{../figures/}}
+\graphicspath{{((- graphicspath -))}}
 
 ((* endif *))

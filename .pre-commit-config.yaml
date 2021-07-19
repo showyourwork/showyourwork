@@ -1,0 +1,24 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+  - id: trailing-whitespace
+    exclude: lib
+  - id: end-of-file-fixer
+    exclude: lib
+  - id: debug-statements
+    exclude: lib
+  - id: check-merge-conflict
+
+- repo: https://github.com/psf/black
+  rev: 19.3b0
+  hooks:
+  - id: black
+    language_version: python3.7
+    exclude: vendor
+
+- repo: https://github.com/dfm/black_nbconvert
+  rev: stable
+  hooks:
+  - id: black_nbconvert
+    exclude: vendor
