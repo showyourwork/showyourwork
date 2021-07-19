@@ -20,8 +20,13 @@ def main():
         for ext in FIGURE_EXTENSIONS:
             for file in glob(USER / "figures" / f"*.{ext}"):
                 os.remove(file)
-        if (USER / "ms.pdf").exists():
-            os.remove(USER / "ms.pdf")
+        for file in [
+            USER / "ms.pdf",
+            USER / "Snakefile",
+            USER / "helpers.smk",
+        ]:
+            if file.exists():
+                os.remove(file)
         return
 
     # Process Snakemake defaults

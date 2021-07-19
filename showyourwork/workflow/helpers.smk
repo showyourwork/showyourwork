@@ -36,9 +36,12 @@ def cache_cmd(wildcards, input, output):
             other = [
                 Path(file).name for file in entry["files"] if file != output[0]
             ]
-    return " && ".join(
-        [f"mv {file} {TEMP / PROJECT / 'figures'}" for file in other]
-    )
+    if len(other):
+        return " && ".join(
+            [f"mv {file} {TEMP / PROJECT / 'figures'}" for file in other]
+        )
+    else:
+        return ":"
 
 
 def cached_figure(wildcards, input, output):

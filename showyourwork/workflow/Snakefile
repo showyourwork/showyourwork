@@ -29,12 +29,10 @@ rule figure:
     conda:
         "environment.yml"
     shell:
-        """
-        cd figures &&
-        [ -f {params.cached_figure} ] &&
-        {{ mv {params.cached_figure} .; }} ||
-        {{ python {params.script_name} && {params.cache_cmd}; }}
-        """
+        ("cd figures && "
+        "[ -f {params.cached_figure} ] && "
+        "{{ mv {params.cached_figure} . ; }} || "
+        "{{ python {params.script_name} && {params.cache_cmd} ; }}")
 
 
 rule user_info:
@@ -47,7 +45,7 @@ rule user_info:
 
 rule repo_info:
     output:
-        TEMP / "user" / "repo.json"
+        TEMP / PROJECT / "repo.json"
     priority: 98
     run:
         run_repo_info()
