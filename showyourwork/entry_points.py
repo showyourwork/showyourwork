@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("-r", "--restore-cache", action="store_true")
     parser.add_argument("-u", "--update-cache", action="store_true")
+    parser.add_argument("-d", "--dag", action="store_true")
     args, snakemake_args = parser.parse_known_args(sys.argv[1:])
 
     # Subprograms
@@ -36,6 +37,16 @@ def main():
         return
     elif args.update_cache:
         update_cache()
+        return
+    elif args.dag:
+        dag = subprocess.check_output(
+            ["snakemake", "--dag"], cwd=USER
+        ).decode()
+        with open("dag.dag", "w") as f:
+            print(dag, file=f)
+        with open("dag.pdf", "wb") as f:
+            f.write(subprocess.check_output(["dot", "-Tpdf", "dag.dag"]))
+        os.remove("dag.dag")
         return
 
     # Process Snakemake defaults
