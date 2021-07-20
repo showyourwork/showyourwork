@@ -31,7 +31,7 @@ def get_modified_files(commit="HEAD^"):
 
 def restore_cache():
     """
-    Restore cached figure files and test results.
+    Restore cached output files.
 
     """
     # Copy the cached figure files
@@ -44,11 +44,6 @@ def restore_cache():
                 "Restored file figures/{} from cache.".format(Path(file).name)
             )
 
-    # Cache test results
-    for file in glob(str(USER / ".cache" / "tests" / "*.status")):
-        shutil.copy2(file, USER / "tests")
-        print("Restored file tests/{} from cache.".format(Path(file).name))
-
     # Get the commit when the files were cached
     try:
         with open(USER / ".cache" / "commit", "r") as f:
@@ -59,19 +54,15 @@ def restore_cache():
     # Get all files modified since that commit
     files = get_modified_files(commit)
 
-    # If a script has not changed since the commit at which its
+    # If an input file has not changed since the commit at which its
     # output was cached, mark it as ancient to prevent Snakemake
     # from re-running it.
-    for script in glob(str(USER / "figures" / "*.py")):
+    input_scripts = glob(str(USER / "figures" / "*.py"))
+    input_scripts += glob(str(USER / "tex" / "*.bib"))
+    input_scripts += [str(USER / "tex" / "ms.tex")]
+    input_scripts += [str(USER / "environment.yml")]
+    for script in input_scripts:
         script_rel = str(Path("figures") / Path(script).name)
-        if script_rel not in files:
-            subprocess.check_output(
-                ["touch", "-a", "-m", "-t", ANCIENT, script]
-            )
-            print("File `{}` marked as ANCIENT.".format(script_rel))
-
-    for script in glob(str(USER / "tests" / "test_*.py")):
-        script_rel = str(Path("tests") / Path(script).name)
         if script_rel not in files:
             subprocess.check_output(
                 ["touch", "-a", "-m", "-t", ANCIENT, script]
@@ -81,7 +72,7 @@ def restore_cache():
 
 def update_cache():
     """
-    Cache all figure files and test results.
+    Cache output files.
 
     """
     # Clear the existing cache
@@ -89,18 +80,12 @@ def update_cache():
         shutil.rmtree(USER / ".cache")
     os.mkdir(USER / ".cache")
     os.mkdir(USER / ".cache" / "figures")
-    os.mkdir(USER / ".cache" / "tests")
 
     # Cache figure files
     for ext in FIGURE_EXTENSIONS:
         for file in glob(str(USER / "figures" / "*.{}".format(ext))):
             shutil.copy2(file, USER / ".cache" / "figures")
             print("Cached file figures/{}.".format(Path(file).name))
-
-    # Cache test results
-    for file in glob(str(USER / "tests" / "*.status")):
-        shutil.copy2(file, USER / ".cache" / "tests")
-        print("Cached file tests/{}.".format(Path(file).name))
 
     # Store the current commit
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
