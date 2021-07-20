@@ -3,7 +3,6 @@ from ..constants import *
 from ..utils import save_json
 from .repo import get_repo_metadata
 from .scripts import get_script_metadata, get_script_status
-from .user import get_user_metadata
 import json
 
 
@@ -13,9 +12,8 @@ def get_metadata(clobber=True):
 
         # Load the metadata
         repo = get_repo_metadata(clobber=False)
-        user = get_user_metadata(clobber=False)
         scripts = get_script_metadata(clobber=False)
-        meta = dict(user=user, repo=repo)
+        meta = dict(repo=repo)
 
         # Miscellaneous
         meta["version"] = __version__

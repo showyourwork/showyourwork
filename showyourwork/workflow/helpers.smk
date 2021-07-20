@@ -60,10 +60,6 @@ def run_pdf():
     )
 
 
-def run_user_info():
-    showyourwork.meta.get_user_metadata(clobber=True)
-
-
 def run_repo_info():
     showyourwork.meta.get_repo_metadata(clobber=True)
 

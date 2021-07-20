@@ -81,15 +81,6 @@
   \sywLogMessage{<GRAPHICS>#2</GRAPHICS>}%
 }
 
-% Disable author info
-\newcommand{\myName}{}
-\newcommand{\myEmail}{}
-\newcommand{\myAffil}{}
-\newcommand{\myORCID}{}
-\renewcommand{\author}[2][]{}
-\renewcommand{\email}{}
-\renewcommand{\affil}{}
-
 % Disable bibliography
 \renewcommand{\bibliography}[1]{}
 
@@ -104,12 +95,6 @@
 \newcommand\TestFailIcon{}
 
 ((* else *))
-
-% Author info
-\newcommand{\myName}{((- user.name -))}
-\newcommand{\myEmail}{((- user.email -))}
-\newcommand{\myAffil}{((- user.affil -))}
-\newcommand{\myORCID}{((- user.orcid -))}
 
 % Logging
 \newwrite\sywLogFile

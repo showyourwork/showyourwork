@@ -35,18 +35,10 @@ rule figure:
         "{{ python {params.script_name} && {params.cache_cmd} ; }}")
 
 
-rule user_info:
-    output:
-        TEMP / "user" / "user.json"
-    priority: 99
-    run:
-        run_user_info()
-
-
 rule repo_info:
     output:
         TEMP / PROJECT / "repo.json"
-    priority: 98
+    priority: 99
     run:
         run_repo_info()
 
@@ -62,7 +54,6 @@ checkpoint script_info:
 
 rule metadata:
     input:
-        TEMP / "user" / "user.json",
         TEMP / PROJECT / "repo.json",
         TEMP / PROJECT / "scripts.json"
     output:
