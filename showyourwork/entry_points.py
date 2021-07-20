@@ -1,5 +1,6 @@
 from .constants import *
 from .utils import glob
+from .cache import restore_cache, update_cache
 import subprocess
 import shutil
 import os
@@ -13,9 +14,11 @@ def main():
     # Parse command line args
     parser = argparse.ArgumentParser()
     parser.add_argument("--clean", action="store_true")
+    parser.add_argument("-r", "--restore-cache", action="store_true")
+    parser.add_argument("-u", "--update-cache", action="store_true")
     args, snakemake_args = parser.parse_known_args(sys.argv[1:])
 
-    # Clean
+    # Subprograms
     if args.clean:
         for ext in FIGURE_EXTENSIONS:
             for file in glob(USER / "figures" / f"*.{ext}"):
@@ -27,6 +30,12 @@ def main():
         ]:
             if file.exists():
                 os.remove(file)
+        return
+    elif args.restore_cache:
+        restore_cache()
+        return
+    elif args.update_cache:
+        update_cache()
         return
 
     # Process Snakemake defaults
