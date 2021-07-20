@@ -39,6 +39,9 @@ def main():
         update_cache()
         return
     elif args.dag:
+        files = glob(ROOT / "workflow" / "*")
+        for file in files:
+            shutil.copy(file, USER)
         dag = subprocess.check_output(
             ["snakemake", "--dag"], cwd=USER
         ).decode()
@@ -47,6 +50,8 @@ def main():
         with open("dag.pdf", "wb") as f:
             f.write(subprocess.check_output(["dot", "-Tpdf", "dag.dag"]))
         os.remove("dag.dag")
+        for file in files:
+            os.remove(USER / Path(file).name)
         return
 
     # Process Snakemake defaults
