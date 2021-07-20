@@ -45,11 +45,15 @@ def main():
         dag = subprocess.check_output(
             ["snakemake", "--dag"], cwd=USER
         ).decode()
-        with open("dag.dag", "w") as f:
+        with open(USER / "dag.dag", "w") as f:
             print(dag, file=f)
-        with open("dag.pdf", "wb") as f:
-            f.write(subprocess.check_output(["dot", "-Tpdf", "dag.dag"]))
-        os.remove("dag.dag")
+        with open(USER / "dag.pdf", "wb") as f:
+            f.write(
+                subprocess.check_output(
+                    ["dot", "-Tpdf", str(USER / "dag.dag")]
+                )
+            )
+        os.remove(USER / "dag.dag")
         for file in files:
             os.remove(USER / Path(file).name)
         return
