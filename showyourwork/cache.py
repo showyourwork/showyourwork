@@ -50,7 +50,12 @@ def restore_cache():
         return
 
     # Get all files modified since that commit
-    files = get_modified_files(commit)
+    try:
+        files = get_modified_files(commit)
+    except Exception as e:
+        # Can potentially fail if force-pushing is involved!
+        print(e)
+        return
 
     # If an input file has not changed since the commit at which its
     # output was cached, mark it as ancient to prevent Snakemake
