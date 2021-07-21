@@ -8,7 +8,7 @@ import json
 
 def get_metadata(clobber=True):
 
-    if clobber or not (TEMP / PROJECT / "meta.json").exists():
+    if clobber or not (TEMP / "meta.json").exists():
 
         # Load the metadata
         repo = get_repo_metadata(clobber=False)
@@ -32,13 +32,13 @@ def get_metadata(clobber=True):
         meta["status"] = str(meta["status"])
 
         # Store as JSON
-        save_json(meta, TEMP / PROJECT / "meta.json")
+        save_json(meta, TEMP / "meta.json")
 
         return meta
 
     else:
 
-        with open(TEMP / PROJECT / "meta.json", "r") as f:
+        with open(TEMP / "meta.json", "r") as f:
             meta = json.load(f)
 
         return meta

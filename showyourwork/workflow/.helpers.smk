@@ -1,6 +1,6 @@
 import showyourwork
 from showyourwork.utils import glob
-from showyourwork.constants import TEMP, PROJECT, USER, FIGURE_EXTENSIONS
+from showyourwork.constants import TEMP, USER, FIGURE_EXTENSIONS
 from pathlib import Path
 
 
@@ -38,14 +38,14 @@ def cache_cmd(wildcards, input, output):
             ]
     if len(other):
         return " && ".join(
-            [f"mv {file} {TEMP / PROJECT / 'figures'}" for file in other]
+            [f"mv {file} {TEMP / 'figures'}" for file in other]
         )
     else:
         return ":"
 
 
 def cached_figure(wildcards, input, output):
-    return str(TEMP / PROJECT / output[0])
+    return str(TEMP / output[0])
 
 
 def script_name(wildcards, input):
@@ -54,7 +54,7 @@ def script_name(wildcards, input):
 
 def run_pdf():
     showyourwork.utils.make_pdf(
-        tmpdir=TEMP / PROJECT / "tex",
+        tmpdir=TEMP / "tex",
         publish=True,
         **showyourwork.meta.get_metadata(clobber=False),
     )

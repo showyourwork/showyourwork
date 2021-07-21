@@ -7,7 +7,6 @@ __all__ = [
     "TEMP",
     "ROOT",
     "USER",
-    "PROJECT",
     "FIGURE_EXTENSIONS",
     "ScriptDoesNotExist",
     "ScriptNotVersionControlled",
@@ -16,61 +15,19 @@ __all__ = [
 ]
 
 
-def get_project_name():
-    """
-    Attempt to infer the name of the current git repo.
-
-    """
-    try:
-        url = (
-            subprocess.check_output(
-                ["git", "config", "--get", "remote.origin.url"],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            .decode()
-            .replace("\n", "")
-        )
-        name = url.split("/")[-1]
-    except:
-        try:
-            name = (
-                Path(
-                    subprocess.check_output(
-                        ["git", "rev-parse", "--show-toplevel"],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    .decode()
-                    .replace("\n", "")
-                )
-                .absolute()
-                .name
-            )
-        except:
-            name = Path(os.getcwd()).absolute().name
-    return name
-
-
 # Useful paths
-TEMP = Path.home() / ".showyourwork"
 ROOT = Path(__file__).parents[0].absolute()
 USER = Path(os.getcwd()).absolute()
-
-
-# Name of the user's project
-PROJECT = get_project_name()
-
+TEMP = USER / ".showyourwork"
 
 # Recognized figure extensions
 FIGURE_EXTENSIONS = ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]
 
 
 # Make temporary paths if needed
-(TEMP / PROJECT / "tex").mkdir(exist_ok=True, parents=True)
-(TEMP / PROJECT / "figures").mkdir(exist_ok=True, parents=True)
-(TEMP / PROJECT / "tree").mkdir(exist_ok=True, parents=True)
-(TEMP / "user").mkdir(exist_ok=True, parents=True)
+(TEMP / "tex").mkdir(exist_ok=True, parents=True)
+(TEMP / "figures").mkdir(exist_ok=True, parents=True)
+(TEMP / "tree").mkdir(exist_ok=True, parents=True)
 
 
 # Error codes

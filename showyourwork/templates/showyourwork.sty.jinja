@@ -121,7 +121,7 @@
 \colorlet{sywScriptUpToDate}{sywBlue}
 
 % User-facing commands
-\newcommand\GitHubSHA{((- sha -))}
+\newcommand\GitHubSHA{((- repo.sha -))}
 \newcommand\GitHubIcon{\faGithub\xspace}
 \newcommand\GitHubIconRed{{\color{sywRed}\faGithub}\xspace}
 \newcommand\GitHubIconOrange{{\color{sywOrange}\faGithub}\xspace}
@@ -149,7 +149,7 @@
   \oldabstract%
 }{%
   \marginnote{%
-    \href{((- repo.url -))/tree/((- sha -))/}{%
+    \href{((- repo.url -))/tree/((- repo.sha -))/}{%
       \color{((- status -))}%
       \faGithub%
     }%
@@ -162,7 +162,7 @@
 \renewcommand\showkeyslabelformat[1]{%
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \normalfont%
-    \href{((- repo.url -))/blob/((- sha -))/\usevalue{\sywCurrentLabelName_script}}{%
+    \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
       \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
     }%
   }{}%

@@ -1,12 +1,12 @@
 
-include: "helpers.smk"
+include: ".helpers.smk"
 
 
 rule pdf:
     input:
         "tex/ms.tex",
         glob("tex/*.bib"),
-        TEMP / PROJECT / "meta.json",
+        TEMP / "meta.json",
         figures
     output:
         "ms.pdf"
@@ -37,7 +37,7 @@ rule figure:
 
 rule repo_info:
     output:
-        TEMP / PROJECT / "repo.json"
+        TEMP / "repo.json"
     priority: 99
     run:
         run_repo_info()
@@ -47,16 +47,16 @@ checkpoint script_info:
     input:
         "tex/ms.tex"
     output:
-        TEMP / PROJECT / "scripts.json"
+        TEMP / "scripts.json"
     run:
         run_script_info()
 
 
 rule metadata:
     input:
-        TEMP / PROJECT / "repo.json",
-        TEMP / PROJECT / "scripts.json"
+        TEMP / "repo.json",
+        TEMP / "scripts.json"
     output:
-        TEMP / PROJECT / "meta.json"
+        TEMP / "meta.json"
     run:
         run_metadata()

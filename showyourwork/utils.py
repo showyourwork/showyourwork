@@ -19,7 +19,7 @@ def glob(pathname, **kwargs):
 
 
 def make_pdf(
-    tmpdir=TEMP / PROJECT / "tex",
+    tmpdir=TEMP / "tex",
     publish=True,
     tectonic_args=["--keep-logs", "--keep-intermediates"],
     **jinja_kwargs,

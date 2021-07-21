@@ -12,7 +12,6 @@ def get_repo_url():
         url = (
             subprocess.check_output(
                 ["git", "config", "--get", "remote.origin.url"],
-                stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 cwd=USER,
             )
@@ -31,7 +30,6 @@ def get_repo_branch():
         branch = (
             subprocess.check_output(
                 ["git", "branch", "--show-current"],
-                stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 cwd=USER,
             )
@@ -48,7 +46,6 @@ def get_repo_sha():
         sha = (
             subprocess.check_output(
                 ["git", "rev-parse", "HEAD"],
-                stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 cwd=USER,
             )
@@ -65,7 +62,7 @@ def get_repo_metadata(clobber=True):
     Return repository metadata.
 
     """
-    if clobber or not (TEMP / "user" / "repo.json").exists():
+    if clobber or not (TEMP / "repo.json").exists():
 
         # Get git info
         repo = {}
@@ -73,12 +70,12 @@ def get_repo_metadata(clobber=True):
         repo["branch"] = get_repo_branch()
 
         # Save
-        save_json(repo, TEMP / PROJECT / "repo.json")
+        save_json(repo, TEMP / "repo.json")
 
     else:
 
         # Load from profile
-        with open(TEMP / PROJECT / "repo.json", "r") as f:
+        with open(TEMP / "repo.json", "r") as f:
             repo = json.load(f)
 
         # Check if the cached info is good

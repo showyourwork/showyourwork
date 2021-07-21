@@ -85,18 +85,16 @@ def get_figure_files(figure):
 
 def get_script_metadata(clobber=True):
 
-    if clobber or not (TEMP / PROJECT / "scripts.json").exists():
+    if clobber or not (TEMP / "scripts.json").exists():
 
         # Generate the XML file
         make_pdf(
-            tmpdir=TEMP / PROJECT / "tree",
+            tmpdir=TEMP / "tree",
             publish=False,
             tectonic_args=["--keep-logs", "--keep-intermediates", "-r", "0"],
             gen_tree=True,
         )
-        root = ParseXMLTree(
-            TEMP / PROJECT / "tree" / "showyourwork.xml"
-        ).getroot()
+        root = ParseXMLTree(TEMP / "tree" / "showyourwork.xml").getroot()
 
         # Parse figures
         figures = {}
@@ -109,13 +107,13 @@ def get_script_metadata(clobber=True):
 
         # Store as JSON
         scripts = {"figures": figures}
-        save_json(scripts, TEMP / PROJECT / "scripts.json")
+        save_json(scripts, TEMP / "scripts.json")
 
         return scripts
 
     else:
 
-        with open(TEMP / PROJECT / "scripts.json", "r") as f:
+        with open(TEMP / "scripts.json", "r") as f:
             scripts = json.load(f)
 
         return scripts
@@ -137,7 +135,6 @@ def get_script_status(script):
                 subprocess.check_output(
                     ["git", "ls-files", "--error-unmatch", script],
                     cwd=USER,
-                    stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
                 .decode()
@@ -153,7 +150,6 @@ def get_script_status(script):
                     subprocess.check_output(
                         ["git", "status", "-s", script],
                         cwd=USER,
-                        stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
                     .decode()
