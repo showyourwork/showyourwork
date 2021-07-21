@@ -1,4 +1,4 @@
-name: Notify cookiecutter-showyourwork
+name: notify
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Create repository dispatch event
+      - name: Notify cookiecutter-showyourwork
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
