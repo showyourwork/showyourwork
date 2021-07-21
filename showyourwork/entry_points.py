@@ -52,11 +52,13 @@ def main():
         update_cache()
         return
     elif args.dag:
-        files = glob(ROOT / "workflow" / "*")
+        files = list(
+            (ROOT / "workflow").glob("*")
+        )  # NOTE: this includes dotfiles
         for file in files:
             shutil.copy(file, USER)
         dag = subprocess.check_output(
-            ["snakemake", "--dag"], cwd=USER
+            ["snakemake", "--dag", "--snakefile", ".Snakefile"], cwd=USER
         ).decode()
         with open(USER / "dag.dag", "w") as f:
             print(dag, file=f)
