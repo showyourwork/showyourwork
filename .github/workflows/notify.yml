@@ -13,5 +13,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
-          gh api repos/rodluger/cookiecutter-showyourwork/dispatches \
-              --raw-field event_type=showyourwork_update
+          curl \
+            -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H 'Accept: application/vnd.github.v3+json' \
+            "https://api.github.com/repos/rodluger/cookiecutter-showyourwork/dispatches" \
+            -d '{"event_type": "generate_example", "client_payload": {"repo": "$GITHUB_REPOSITORY", "sha": "$GITHUB_SHA"}}'
