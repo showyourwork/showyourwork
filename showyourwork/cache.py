@@ -20,7 +20,8 @@ def get_modified_files(commit="HEAD^"):
         file
         for file in (
             subprocess.check_output(
-                ["git", "diff", "HEAD", commit, "--name-only"]
+                ["git", "diff", "HEAD", commit, "--name-only"],
+                stderr=subprocess.DEVNULL,
             )
             .decode()
             .split("\n")
