@@ -1,11 +1,11 @@
-name: notify
+name: dispatch
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  notify:
+  dispatch:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
@@ -19,20 +19,8 @@ jobs:
           pip install cookiecutter
 
       - name: Generate rodluger/showyourwork-sandbox
-        shell: bash -l {0}
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        run: |
-          rm -rf ~/.cookiecutterrc
-          echo "default_context:" >> ~/.cookiecutterrc
-          echo "    github_repo: \"showyourwork-sandbox\"" >> ~/.cookiecutterrc
-          echo "    github_user: \"rodluger\"" >> ~/.cookiecutterrc
-          echo "    author_name: \"Rodrigo Luger\"" >> ~/.cookiecutterrc
-          echo "    _source_repo: \"${GITHUB_REPOSITORY}\"" >> ~/.cookiecutterrc
-          cookiecutter --no-input gh:rodluger/cookiecutter-showyourwork
-          cd showyourwork-sandbox
-          git init
-          git checkout --orphan main
-          git add .
-          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "auto commit from gh-actions"
-          git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-sandbox main
+          TARGET_REPOSITORY: rodluger/showyourwork-example
+          ADD_CALLBACK: true
+        run: bash dispatch.sh

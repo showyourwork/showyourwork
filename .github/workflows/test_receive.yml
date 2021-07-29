@@ -1,10 +1,10 @@
-name: notify
+name: tests
 
 on:
   repository_dispatch:
 
 jobs:
-  notify:
+  receive:
     runs-on: ubuntu-latest
     env:
       BUILD_OUTCOME: ${{ github.event.client_payload.build_outcome }}"
