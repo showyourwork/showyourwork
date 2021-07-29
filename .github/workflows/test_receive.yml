@@ -1,0 +1,14 @@
+name: notify
+
+on:
+  repository_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_OUTCOME: ${{ github.event.client_payload.build_outcome }}"
+    steps:
+      - name: Receive test info
+        run: |
+          [[ ${BUILD_OUTCOME} == "success" ]] && exit 0 || exit 1
