@@ -2,6 +2,7 @@ name: notify
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   notify:
