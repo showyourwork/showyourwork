@@ -11,10 +11,13 @@ jobs:
       TEST_REPO: ${{ github.event.client_payload.test_repo }}"
       RUN_ID: ${{ github.event.client_payload.run_id }}"
     steps:
-      - name: Receive test info
+      - name: Test info
         run: |
+          echo "::echo::off"
           BUILD_OUTCOME="${BUILD_OUTCOME%\"}"
           TEST_REPO="${TEST_REPO%\"}"
           RUN_ID="${RUN_ID%\"}"
           echo "Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
+          echo "::set-output name=test_url::https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}
+          echo "::warning::Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
           [[ ${BUILD_OUTCOME} == "success" ]] && exit 0 || exit 1
