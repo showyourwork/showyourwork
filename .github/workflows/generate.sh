@@ -15,4 +15,4 @@ git init
 git checkout --orphan main
 git add .
 git -c user.name="${GITHUB_REPOSITORY}" -c user.email="${GITHUB_REPOSITORY}" commit -m "auto commit from \"${GITHUB_REPOSITORY}\""
-git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/${TARGET_REPOSITORY} main
+git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/${TARGET_REPOSITORY} main
