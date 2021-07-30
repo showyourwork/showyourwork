@@ -31,7 +31,7 @@ def main():
     args, snakemake_args = parser.parse_known_args(sys.argv[1:])
 
     # Subprograms
-    cmds = ["clean", "Clean", "new", "dag", "restore_cahe", "update_cache"]
+    cmds = ["clean", "Clean", "new", "dag", "restore_cache", "update_cache"]
     assert (
         sum([int(getattr(args, cmd, False)) for cmd in cmds]) < 2
     ), "Options conflict!"  # Only one is allowed at a time!
