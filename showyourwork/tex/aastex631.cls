@@ -1,11 +1,11 @@
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% AASTeX62.cls                                  %%
-%% Jan 6, 2018                                   %%
-%% Copyright 2018 American Astronomical Society  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  AASTEX631.cls                                 %%
+%%  Jan 29f, 2021                                  %%
+%%                                                %%
+%% Copyright 2021 American Astronomical Society   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\def\currversion{6.2}
+\def\currversion{6.3.1f}
 
 %%
 %%    These files are distributed
@@ -54,7 +54,7 @@
 %%% The Current Maintainer of this work is Greg Schwarz <greg.schwarz@aas.org>
 %%% This work consists of the file aastex.cls
 
-%%%     copyright       = "Copyright (C) 2016 American Astronomical Society
+%%%     copyright       = "Copyright (C) 2016--2020 American Astronomical Society
 %%%
 %%%                        This work may be distributed and/or modified under the
 %%%                        conditions of the LaTeX Project Public License, either version 1.3
@@ -81,8 +81,9 @@
 %%%     abstract        = "formatter for AAS journal submissions",
 %%%  }
 
-\ProvidesClass{aastex62}%%%
- [2017/10/16 Version 6.2/AAS markup document class]%
+
+\ProvidesClass{aastex631}%%%
+ [2020/12/20 Version 6.3.1d/AAS markup document class]%
 {}
 \ClassInfo{aastex}{%
 ^^J
@@ -103,6 +104,7 @@ track changes, new `modern' style and much more, by Amy Hendrickson,%
 ^^J
 ^^J
 }%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% aastex.cls version 2.0 is a based on emulateapj.cls, version January 23, 2015,
@@ -144,11 +146,7 @@ track changes, new `modern' style and much more, by Amy Hendrickson,%
 %      numberedappendix: Legacy command, will produce same results as lettered appendix, since we don't want more
 %                        than one `section 1' in article: will cause problems for cross referencing.
 
-%
-\newcommand{\showyourwork}{%
-    \href{https://github.com/rodluger/showyourwork}%
-    {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}\hspace{0.2em}%
-}
+%    anonymous: to not list authors/affiliations be listed
 
 \newif\ifmanu
 \newif\iftwelvepoint
@@ -178,10 +176,12 @@ track changes, new `modern' style and much more, by Amy Hendrickson,%
 
 %% left in from older version, in case it could be useful:
 
-\DeclareOption{twocolumn}{\twocolstyletrue\@two@coltrue\twelvepointfalse}
+
+
+\DeclareOption{twocolumn}{\onecolstylefalse\twocolstyletrue\@two@coltrue\twelvepointfalse}
 
 %% default style
-\DeclareOption{onecolumn}{\onecolstyletrue}
+\DeclareOption{onecolumn}{\onecolstyletrue\twocolstylefalse}
 
 %% obsolete option
 \DeclareOption{revtex4}{\typeout{=================^^J^^J!!! The revtex4 option no longer
@@ -189,10 +189,7 @@ track changes, new `modern' style and much more, by Amy Hendrickson,%
  Thank-you!^^J^^J=================}\stop}
 
 \newif\if@two@col@app
-\DeclareOption{twocolappendix}{\typeout{^^J^^J The option^^J
-`twocolappendix' no
-longer works! onecolappendix is preferred,^^J
-and is the default.^^J^^J}\stop}%\@two@col@apptrue}
+\DeclareOption{twocolappendix}{\@two@col@apptrue}
 \DeclareOption{onecolappendix}{\@two@col@appfalse}%% this is default
 
 \newif\iflongauthor
@@ -204,9 +201,9 @@ and is the default.^^J^^J}\stop}%\@two@col@apptrue}
    \def\astro#1{\leavevmode\hbox{\astro@font#1}}%
    \def\load@astro@font{%
 \iftwelvepoint
- \font\astro@font=Astrosym at 8pt
+ \font\astro@font=astrosym at 8pt
 \else
- \font\astro@font=Astrosym at 7pt
+ \font\astro@font=astrosym at 7pt
 \fi
 }%
    \AtBeginDocument{\load@astro@font}
@@ -259,6 +256,10 @@ access fonts for the \string\astro\space command
 \newif\iftrack
 \DeclareOption{trackchanges}{\global\tracktrue}
 
+\newif\ifanonymous
+\DeclareOption{anonymous}{\global\anonymoustrue}
+
+
 %% End AH Options
 
 \ExecuteOptions{onecolumn,onecolappendix,letteredappendix}%
@@ -293,18 +294,18 @@ revtex4-1.cls^^J^^J}\stop
 %% Passing options to revtex while loading:
   \iftwelvepoint
       \iflongauthor
-         \LoadClass[nofootinbib,showkeys,showfeats,twoside,floatfix,unsortedaddress,flushbottom,12pt,aps,pra]
+         \LoadClass[nofootinbib,showkeys,twoside,floatfix,unsortedaddress,flushbottom,12pt,aps,pra]
           {\@revtex@cls}
      \else
-        \LoadClass[nofootinbib,showkeys,showfeats,twoside,floatfix,superscriptaddress,flushbottom,12pt,aps,pra]
+        \LoadClass[nofootinbib,showkeys,twoside,floatfix,superscriptaddress,flushbottom,12pt,aps,pra]
        {\@revtex@cls}
      \fi
   \else %not twelvepoint
      \iflongauthor
-         \LoadClass[nofootinbib,showkeys,showfeats,twoside,floatfix,unsortedaddress,flushbottom,10pt,aps,pra]
+         \LoadClass[nofootinbib,showkeys,twoside,floatfix,unsortedaddress,flushbottom,10pt,aps,pra]
          {\@revtex@cls}
      \else
-        \LoadClass[nofootinbib,showkeys,showfeats,twoside,floatfix,superscriptaddress,flushbottom,10pt,aps,pra]
+        \LoadClass[nofootinbib,showkeys,twoside,floatfix,superscriptaddress,flushbottom,10pt,aps,pra]
         {\@revtex@cls}
     \fi
   \fi
@@ -624,14 +625,14 @@ revtex4-1.cls^^J^^J}\stop
 
 %% running heads:
 \def\lefthead#1{\gdef\@versohead{#1}} \lefthead{\relax}
-\def\righthead#1{\gdef\@rectohead{#1}} \righthead{\relax}
+\def\righthead#1{\ifanonymous\gdef\@rectohead{Anonymous author(s)}\else\gdef\@rectohead{#1}\fi} \righthead{\relax}
 \let\shorttitle\lefthead
 \let\shortauthors\righthead
 
 \def\ps@apjheads{\let\@mkboth\markboth
      \def\@evenfoot{}
-    \def\@evenhead{\lower9mm\hbox to\textwidth{
-                     \rm\thepage\hfil \rm\textsc{\@rectohead} \hfil}}}
+    \def\@evenhead{\lower9mm\hbox to\textwidth{%
+                     \rm\thepage\hfill\textsc{\@rectohead}\hfill}}}
     \def\@oddfoot{}
     \def\@oddhead{\lower9mm\hbox to\textwidth{
                      \hfil\rm\textsc{\@versohead}\hfil \rm\thepage}}
@@ -656,7 +657,7 @@ revtex4-1.cls^^J^^J}\stop
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 \noindent{\sc Draft version \today}\\[2pt]
-{\footnotesize Typeset using \LaTeX\ {\bf RNAAS} style in AASTeX62 + \showyourwork}
+{\footnotesize Typeset using \LaTeX\ {\bf RNAAS} style in AASTeX631}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 \vbox to 0pt{\vskip-48pt\normalsize\rptloopnum=0\loop
@@ -674,7 +675,7 @@ revtex4-1.cls^^J^^J}\stop
 \raggedright
 {\sc Draft version \today}\\[2pt]
 {\footnotesize
-Typeset using \LaTeX\ {\bf modern} style in AASTeX62 + \showyourwork}
+Typeset using \LaTeX\ {\bf modern} style in AASTeX631}
 \vskip48pt
 }
 \else
@@ -683,7 +684,7 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX62 + \showyourwork}
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 \noindent{\sc Draft version \today}\\[2pt]
-{\footnotesize Typeset using \LaTeX\ {\bf preprint} style in AASTeX62 + \showyourwork}
+{\footnotesize Typeset using \LaTeX\ {\bf preprint} style in AASTeX631}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 %%
@@ -691,7 +692,8 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX62 + \showyourwork}
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ {\bf preprint2} style in AASTeX62 + \showyourwork}
+{\footnotesize Typeset using \LaTeX\ {\bf preprint2} style in
+AASTeX631}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 %%
@@ -699,7 +701,8 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX62 + \showyourwork}
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ {\bf twocolumn} style in AASTeX62 + \showyourwork}
+{\footnotesize Typeset using \LaTeX\ {\bf twocolumn} style in
+AASTeX631}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 \ifmanu
@@ -707,14 +710,14 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX62 + \showyourwork}
 \footnotesize
 \noindent\textsc{\@journalinfo}\\[-8pt]
 {\footnotesize Typeset using \LaTeX\ {\bf manuscript} style in
-AASTeX62 + \showyourwork}
+AASTeX631}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 %% Default
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ default style in AASTeX62 + \showyourwork}%% default style
+{\footnotesize Typeset using \LaTeX\ default style in AASTeX631}%% default style
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \fi\fi\fi\fi\fi
 %%
@@ -730,7 +733,9 @@ AASTeX62 + \showyourwork}
   \@title
 %% October 2017, was +12pt
   \@ifx{\@title@aux\@title@aux@cleared}{}{%
+\ifanonymous\else%% added may 20, 2020
   \expandafter\frontmatter@footnote\expandafter{\@title@aux}%
+\fi
   }%
   \par
 %% \class@warn{Unused short title ignored}%
@@ -750,19 +755,21 @@ AASTeX62 + \showyourwork}
 \newcount\endfncount
 \long\def\tempfootnote#1{\global\advance\fncount by 1\relax%
 \expandafter\gdef\csname
-footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
-
-\long\def\abstracttempfootnote#1{\global\advance\fncount by 1\relax%
-\expandafter\gdef\csname absfootnote\the\fncount\endcsname{#1}}
+footnote\the\fncount\endcsname{\if@two@col\hsize=.5\textwidth
+\advance\hsize by -18pt
+\fi\relax#1}}
 
 \def\tempfootnoteintitle#1{}
 
 \long\def\ltx@foottext#1#2{%
  \begingroup
-  \expandafter\ltx@make@current@footnote\expandafter{\@mpfn}{#1}%
-\@footnotetext{#2}%
+\expandafter\ltx@make@current@footnote\expandafter{\@mpfn}{#1}%
+\@footnotetext{\vtop{\iftwocolstyle\hsize=.5\textwidth
+\advance\hsize-18pt
+\fi #2\vskip2pt}}% fixed for two col style, march 15, 2019
  \endgroup
 }%
+
 
 \def\kickoutfootnotes{\c@footnote=0\relax%
 \loop\advance\endfncount by 1\relax%
@@ -777,7 +784,7 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
 \renewcommand\title[2][]{%
 \def\@title{\setbox0=\vbox{\let\footnote\tempfootnote #2}%
 {\let\footnote\tempfootnoteintitle%\uppercase
-{#2}}%% here???
+{#2}}%% right place for kickoutfootnotes below
 \kickoutfootnotes
 \ifdoublespace\vskip 3\baselineskip\fi
 }%
@@ -785,10 +792,16 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
  \let\@AF@join\@title@join
 }%
 
-\def\frontmatter@title@format{\ifrnaas
-\large\scshape\centering
-\else
-\normalsize\centering\fi}
+\def\frontmatter@title@format{
+%% No exception for rnaas, May, 2019
+%\ifrnaas
+%\large\scshape\centering
+%\else
+\normalsize
+%% added Mar 2019
+\bf\centering
+%\fi
+}
 
 \def\frontmatter@title@below{\vskip8pt}%
 
@@ -945,6 +958,7 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
   \@ifx{\@empty\mini@notes}{}{\mini@notes\par}%
   \addvspace\frontmatter@postabstractspace
 \global\abstractfalse
+\vskip12pt
 }%
 
 \newif\ifbib
@@ -971,6 +985,8 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
    \frontmatter@keys@format%
    \@keys@name#1
 \vrule depth 12pt width 0pt
+\ifnobreakafterkeywords
+\vrule depth 24pt width0pt\fi
 \par
   \endgroup
  }{%
@@ -981,37 +997,6 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
 }%
 
 \let\subjectheadings=\keywords
-
-%  ****************************************
-%  *             FEATURES                 *
-%  ****************************************
-
-
-\def\@feats@name{\textit{Features:}\/~\mbox{}}%
-
-\newlength{\feats@width}
-\def\frontmatter@feats@format{\ifmodern\vskip0pt\else\vspace*{0.5mm}\fi%
-  \settowidth{\feats@width}{\normalsize\@feats@name}%
-\ifmodern\else
-\rightskip=0.5in
-\leftskip=34pt
-\fi
-\parindent=0pt%
-    \hangindent=\feats@width\hangafter=1\normalsize}%
-\def\@features@produce#1{%
- \showFEATS@sw{%
-  \begingroup%
-   \frontmatter@feats@format%
-   \@feats@name#1
-\vrule depth 12pt width 0pt
-\par
-  \endgroup
- }{%
- \@if@empty{#1}{}{%
- \class@warn{If you want your features to appear in your output, use document class option showfeats}%
-}%
- }%
-}%
 
 
 %  ****************************************
@@ -1077,7 +1062,7 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
 
 \let\footnoterule\relax
 
-\def\@makefntext#1{\mbox{}\hspace*{3mm}\@makefnmark~#1}
+\def\@makefntext#1{\hsize=\columnwidth\mbox{}\hspace*{3mm}\@makefnmark~#1}
 
 
 %  ****************************************
@@ -1086,17 +1071,28 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
 
 \setcounter{secnumdepth}{3}
 
+\newcount\tempsectnum
+
 \newif\if@firstsection \@firstsectiontrue
 
+
 \def\section{%
+\ifanonymous\nocollaboration{0}\fi
 \if@firstsection
+%% In case no collaboration is listed:
+\ifcollaborationon\else\let\doauthor\olddoauthor
+\ifanonymous \else
+\let\allauthors=\oldallauthors\fi
+\fi
+%\edef\currauthorlimit{\the\AuthorCollaborationLimit}
+%\collaboration{\currauthorlimit}{}
      \maketitle
 \global\@firstsectionfalse
      \setcounter{footnote}{\thefront@matter@foot@note}%
      \let\footnotetext=\old@foot@note@text
      \let\footnotemark=\old@foot@note@mark
 \ifnobreakafterkeywords
-\ifmodern\clearpage
+\ifmodern\vskip24pt
 \else
 \vskip12pt\fi%%
 \goodbreak
@@ -1108,14 +1104,17 @@ footnote\the\fncount\endcsname{\if@two@col\hsize=242pt\fi\relax#1}}
    \twocolumngrid
    \fi
 \fi
-    \@startsection{section}{1}{\z@}{18pt plus 2pt minus
-    2pt}{4pt}{\apjsecfont\center}}
+\tempsectnum=\the\c@section
+\advance\tempsectnum by 1
+\xdef\cref@currentlabel{section \the\tempsectnum}
+    \@startsection{section}{1}{\z@}{9pt plus 1pt minus
+    1pt}{4pt}{\apjsecfont\center}}
 
-\def\subsection{\@startsection{subsection}{2}{\z@}{18pt plus 2pt minus 2pt}{4pt}%
+\def\subsection{\@startsection{subsection}{2}{\z@}{9pt plus 1pt minus 1pt}{4pt}%
   {\normalsize\itshape \center}}
 
 \def\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-{18pt plus 2pt minus 2pt}{4pt}{\small\itshape \center}}
+  {2ex plus 1ex minus .2ex}{1ex plus .2ex}{\small\itshape \center}}
 
 \def\paragraph{\@startsection{paragraph}{4}{\z@}%
   {1.5ex plus 1ex minus .2ex}{0pt}{\small\itshape}}
@@ -1193,8 +1192,131 @@ the#1\endcsname}
 \penalty \ApjSectionpenalty}
 
 
-\def\acknowledgments{\vskip 5.8mm plus 1mm minus 1mm}
-\let\acknowledgements=\acknowledgments                  % second spelling
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% changed to begin...end form, May 20,2020, AH
+%% Acknowledgments, use \begin{acknowledgments}...\end{acknowledgments}
+%% or \begin{acknowledgements}...\end{acknowledgements}
+
+{\catcode`#=12
+\gdef\hashmark{#}}
+
+\def\xacknowledgments{acknowledgments}
+\def\xacknowledgements{acknowledgements}
+\newbox\ackbox
+
+\def\acknowledgments{%
+\ifx\@currenvir\xacknowledgments\let\go\relax\else
+\let\go\stop
+\typeout{x^^J^^J^^J^^J^^J^^J^^J^^J
+ ===================^^J
+In AASTeX v6.3.1 the \string\acknowledgments\space command has been deprecated.^^J^^J
+Instead, please use the begin/end form:^^J^^J
+"\string\begin\string{acknowledgments\string}...\string\end\string{acknowledgments\string}"^^J^^J
+when using acknowledgments.^^J^^J See here:
+\url{https://journals.aas.org/aastexguide/\hashmark acknowledgments}
+^^J^^J
+ for more
+details.^^J
+ ===================^^J
+}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Printed error
+\vskip12pt
+\hrule height 1pt
+\vskip12pt
+\noindent ERROR:
+In AASTeX v6.3.1 the {\tt\string\acknowledgments} command has been
+deprecated.\\
+Instead, please use the begin/end form:\\
+{\tt
+\string\begin\string{acknowledgments\string}...\string\end\string{acknowledgments\string}}\\
+when using acknowledgments. For more details, see:\\
+\url{https://journals.aas.org/aastexguide/\hashmark acknowledgments}
+%
+\fi\go
+%%
+\global\setbox\ackbox=\vbox\bgroup
+\expandafter\ifx\csname internallinenumbers\endcsname\relax\else
+\begin{internallinenumbers}
+\fi
+\vskip 5.8mm plus 1mm minus 1mm
+\vskip1sp
+%\section*{Acknowledgments}
+\noindent\ignorespaces}
+
+\def\endacknowledgments{
+\expandafter\ifx\csname internallinenumbers\endcsname\relax\else
+\end{internallinenumbers}
+\fi
+\egroup%% completes ackbox
+\ifanonymous
+\vskip 5.8mm plus 1mm minus 1mm
+\vskip1sp
+%\section*{Acknowledgments}
+\centerline{(Acknowledgments anonymized for review)}
+\else
+\vbox{\unvbox\ackbox}
+\fi\vskip6pt}
+
+%% alternate spelling
+\def\acknowledgements{%
+\ifx\@currenvir\xacknowledgements\let\go\relax\else
+\let\go\stop
+\typeout{x^^J^^J^^J^^J^^J^^J^^J^^J
+ ===================^^J
+In AASTeX v6.3.1 the \string\acknowledgements\space command has been deprecated.^^J^^J
+Please use the begin/end form:^^J^^J
+"\string\begin\string{acknowledgements\string}...\string\end\string{acknowledgements\string}"^^J^^J
+when using acknowledgements.^^J^^J See here:
+\href{https://journals.aas.org/aastexguide/\hashmark acknowledgments}
+{https://journals.aas.org/aastexguide/\hashmark acknowledgments}
+^^J^^J
+ for more
+details.^^J
+ ===================^^J
+}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Printed error
+\vskip12pt
+\hrule height 1pt
+\vskip12pt
+\noindent ERROR:
+In AASTeX v6.3.1 the {\tt\string\acknowledgements} command has been
+deprecated.\\
+Instead, please use the begin/end form:\\
+{\tt
+\string\begin\string{acknowledgements\string}...\string\end\string{acknowledgements\string}}\\
+For more details, see:\\
+\url{https://journals.aas.org/aastexguide/\hashmark acknowledgments}
+%
+\fi\go
+%%
+\global\setbox\ackbox=\vbox\bgroup
+\expandafter\ifx\csname internallinenumbers\endcsname\relax\else
+\begin{internallinenumbers}
+\fi
+\vskip 5.8mm plus 1mm minus 1mm
+\vskip1sp
+%\section*{Acknowledgments}
+\noindent\ignorespaces}
+
+\def\endacknowledgements{
+\expandafter\ifx\csname internallinenumbers\endcsname\relax\else
+\end{internallinenumbers}
+\fi
+\egroup%% completes ackbox
+\ifanonymous
+\vskip 5.8mm plus 1mm minus 1mm
+\vskip1sp
+%\section*{Acknowledgements}
+\centerline{(Acknowledgements anonymized for review)}
+\else
+\vbox{\unvbox\ackbox}
+\fi\vskip6pt}
+
+
+
+
 
 
 %  ****************************************
@@ -1204,7 +1326,6 @@ the#1\endcsname}
 \newcounter{remember@figure@num}
 \newcounter{remember@table@num}
 
-
 % this was an environment earlier, which doesn't make sense since we don't
 % do \begin{appendix}...\end{appendix}. Changed to \appendix which is how it is used.
 
@@ -1212,13 +1333,21 @@ the#1\endcsname}
 %   appendixfloats: Needed. ??
 
 \newif\ifappendixon
-\def\appendix{
-\global\appendixontrue
+\def\appendix{\global\appendixontrue
+\if@two@col
 \onecolumngrid
-%\clearpage
+\noindent\mbox{}\vrule height 24pt width0pt\hfill{\apjsecfont APPENDIX}\hfill\mbox{}\par
+\vskip18pt
+   \if@two@col@app\global\@two@coltrue\twocolumngrid \fi
+   % above, we want onecolumngrid to be default. Only twocolumn is asked for in documentclass option
+\else
+\noindent\mbox{}\vrule height 24pt width0pt\hfill{\apjsecfont
+APPENDIX}\hfill\mbox{}\par
+\vskip18pt
+    \if@two@col@app\global\@two@coltrue\twocolumngrid
+         \fi\fi
 % \vrule used for extra space; otherwise revtex4-1 sometimes eats
 % away the last line before appendix
-        \noindent\mbox{}\vrule height 24pt width0pt\hfill{\apjsecfont APPENDIX}\hfill\mbox{}\par
         \nopagebreak\medskip\@nobreaktrue\def\ApjSectionpenalty{\@M}
         \@firstsectionfalse
           \setcounter{section}{0}
@@ -1239,15 +1368,19 @@ the#1\endcsname}
 %\setcounter{equation}{0}
           \def\thesection{\Alph{section}}
           \def\theequation{\hbox{\Alph{section}\arabic{equation}}}
-          \def\section{
-\@startsection {section}{1}{\z@}
+          \def\section{\@startsection {section}{1}{\z@}
             {10pt}{5pt}{\centering\scshape\apjsecfont}}
 \else
 % Do not use appendix numbers in the titles
           \def\ApjSectionMarkInTitle{\AppendixApjSectionMarkInTitle}
 \fi
+\ifappletter
+\let\savesection\section
+\def\section{\resetapptablenumbers\savesection}
+\fi
 }
 %
+
 
 %%
 
@@ -1263,6 +1396,11 @@ the#1\endcsname}
   \par
   \vspace*{4pt plus 3pt}
   \set@column@hsize{2}\twocolumngrid
+%% Jan29, 2021, added \ifonecolstyle, \ifpreprinttwo
+\ifnumlines
+\ifonecolstyle
+\ifpreprinttwo\else
+\advance\linenumbersep-12pt\fi\fi\fi
   \parindent=0cm \parskip=0cm
   \def\baselinestretch{1.0}
   \footnotesize \baselineskip=\baselinestretch\bibbaselineskip plus 1pt
@@ -1285,13 +1423,18 @@ the#1\endcsname}
 \def\bibitem{\vskip\bibskip\savebibitem}
 \newdimen\bibindent
 \renewenvironment{thebibliography}[1]{\global\bibtrue
-\ifrnaas\newpage\fi%+++
+%%\ifrnaas\newpage\fi% Not wanted, March 2019
 \onecolumngrid
 \vspace{20pt}
 \goodbreak
     \hbox to\textwidth{\hss\normalsize REFERENCES\hss}
 \vspace{6pt}\parskip=0pt
 \twocolumngrid
+%% Jan29, 2021, added \ifonecolstyle
+\ifnumlines
+\ifonecolstyle
+\ifpreprinttwo\else
+\advance\linenumbersep-12pt\fi\fi\fi
 \par
  \raggedright
 \small
@@ -1452,7 +1595,8 @@ the#1\endcsname}
 \newcommand\figcaption{\@testopt{\@xfigcaption}{}}%
 %% suggested by Joern Wilms
 \def\@figcaption#1{{\def\@captype{figure}\caption{\footnotesize #1}}}
-\def\@xfigcaption[#1]#2{{\def\@captype{figure}\caption{\footnotesize #2}}}
+\def\@xfigcaption[#1]#2{{\def\@captype{figure}\caption{\footnotesize
+#2}}}
 
 \def\thefigure{\@arabic\c@figure}
 
@@ -1465,6 +1609,8 @@ the#1\endcsname}
 \def\tabcaption{\@ifnextchar[{\@xtabcaption}{\@tabcaption}}
 \def\@tabcaption#1{{\def\@captype{table}\caption{#1}}}
 \def\@xtabcaption[#1]#2{{\def\@captype{table}\caption{#2}}}
+
+%% redefined below
 \def\fnum@table{{\@eapj@cap@font \@eapj@tabname~\thetable}}
 
  \let\fnum@ptable=\fnum@table
@@ -1500,9 +1646,9 @@ the#1\endcsname}
 \else
 \font\foo=cmr10\fi
 %%
-\fontdimen2\foo=1.5pt
+\fontdimen2\foo=3pt %% Changed from 1.5pt to 3pt, March12, 2019
 %%
-{\textbf \it Software: }
+{\large \it Software: }
 #2
 %% returning to original fontdimen
 \iftwelvepoint
@@ -1511,6 +1657,10 @@ the#1\endcsname}
 \fontdimen2\foo=3.33333pt
 \fi
 }\egroup}
+
+
+
+
 
 \newcommand\object{\@testopt\@object{[}}%
 \def\@object[#1]#2{#2}%
@@ -1602,7 +1752,7 @@ the#1\endcsname}
 \newcommand\ubvr{\mbox{$U\!BV\!R$}}%% UBVR system
 \newcommand\ub{\mbox{$U\!-\!B$}}%   % U-B
 \newcommand\bv{\mbox{$B\!-\!V$}}%   % B-V
-\renewcommand\vr{\mbox{$V\!-\!R$}}%   % V-R ++
+\renewcommand\vr{\mbox{$V\!-\!R$}}%   % V-R
 \newcommand\ur{\mbox{$U\!-\!R$}}%   % U-R
 
 %% need this change so that it works correctly in tables:
@@ -1679,18 +1829,19 @@ the#1\endcsname}
  \vrule\@height\dimen@\@depth\dimen@i\@width\dimen@ii\nobreak
  }%
 
-\newcommand\anchor[2]{#2}%
-\renewcommand\url{\@dblarg\@url}%
-\def\@url[#1]{\anchor{#1}}%
+%\newcommand\anchor[2]{#2}%
+%\renewcommand\url{\@dblarg\@url}%
+%\def\@url[#1]{\anchor{#1}}%
 
 \let\jnl@style=\rmfamily
 \def\ref@jnl#1{{\jnl@style#1}}%
 \newcommand\aj{\ref@jnl{AJ}}%        % Astronomical Journal
+\newcommand\psj{\ref@jnl{PSJ}}%       % Planetary Science Journal
 \newcommand\araa{\ref@jnl{ARA\&A}}%  % Annual Review of Astron and Astrophys
-\renewcommand\apj{\ref@jnl{ApJ}}%    % Astrophysical Journal ++
+\renewcommand\apj{\ref@jnl{ApJ}}%    % Astrophysical Journal
 \newcommand\apjl{\ref@jnl{ApJL}}     % Astrophysical Journal, Letters
 \newcommand\apjs{\ref@jnl{ApJS}}%    % Astrophysical Journal, Supplement
-\renewcommand\ao{\ref@jnl{ApOpt}}%   % Applied Optics ++
+\renewcommand\ao{\ref@jnl{ApOpt}}%   % Applied Optics
 \newcommand\apss{\ref@jnl{Ap\&SS}}%  % Astrophysics and Space Science
 \newcommand\aap{\ref@jnl{A\&A}}%     % Astronomy and Astrophysics
 \newcommand\aapr{\ref@jnl{A\&A~Rv}}%  % Astronomy and Astrophysics Reviews
@@ -1698,14 +1849,15 @@ the#1\endcsname}
 \newcommand\azh{\ref@jnl{AZh}}%       % Astronomicheskii Zhurnal
 \newcommand\baas{\ref@jnl{BAAS}}%     % Bulletin of the AAS
 \newcommand\icarus{\ref@jnl{Icarus}}% % Icarus
+\newcommand\jaavso{\ref@jnl{JAAVSO}}  % The Journal of the American Association of Variable Star Observers
 \newcommand\jrasc{\ref@jnl{JRASC}}%   % Journal of the RAS of Canada
 \newcommand\memras{\ref@jnl{MmRAS}}%  % Memoirs of the RAS
 \newcommand\mnras{\ref@jnl{MNRAS}}%   % Monthly Notices of the RAS
-\renewcommand\pra{\ref@jnl{PhRvA}}% % Physical Review A: General Physics ++
-\renewcommand\prb{\ref@jnl{PhRvB}}% % Physical Review B: Solid State ++
-\renewcommand\prc{\ref@jnl{PhRvC}}% % Physical Review C ++
-\renewcommand\prd{\ref@jnl{PhRvD}}% % Physical Review D ++
-\renewcommand\pre{\ref@jnl{PhRvE}}% % Physical Review E ++
+\renewcommand\pra{\ref@jnl{PhRvA}}% % Physical Review A: General Physics
+\renewcommand\prb{\ref@jnl{PhRvB}}% % Physical Review B: Solid State
+\renewcommand\prc{\ref@jnl{PhRvC}}% % Physical Review C
+\renewcommand\prd{\ref@jnl{PhRvD}}% % Physical Review D
+\renewcommand\pre{\ref@jnl{PhRvE}}% % Physical Review E
 \renewcommand\prl{\ref@jnl{PhRvL}}% % Physical Review Letters
 \newcommand\pasp{\ref@jnl{PASP}}%     % Publications of the ASP
 \newcommand\pasj{\ref@jnl{PASJ}}%     % Publications of the ASJ
@@ -1760,14 +1912,16 @@ the#1\endcsname}
 
 \newcounter{table@save}
 
-\def\tablenum#1{%
-  \setcounter{table@save}{\the\c@table}
-  \gdef\use@tablenum{1}
-  \setcounter{table}{#1}\def\thetable{#1}\def\@currentlabel{#1}
-  %\def\label##1{\save@label{##1}}
+%% March 25, 2019
+%% Old v5.2 way, From Greg, This allows a number like 33N to be used
+%% for a table, and the cross-references will work correctly
+\newcommand\tablenum[1]{%
+ \def\thetable{#1}%
+ \xdef\@currentlabel{\thetable}
+\global\advance\c@table-1\relax
 }%
-\gdef\use@tablenum{0}
-\def\restore@tablenum{\if\use@tablenum0\else\setcounter{table}{\the\c@table@save}\addtocounter{table}{\m@ne}\gdef\use@tablenum{0}\fi}
+
+\let\savetablenum\tablenum
 
 \def\tabletypesize#1{\gdef\currtabletypesize{#1}
 \def\@table@type@size{#1}}%
@@ -1789,15 +1943,21 @@ the#1\endcsname}
 \def\LT@makecaption#1#2#3{%
   \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\LTcapwidth
 {%
-\def \@currentlabel{\thetable}
-     \sbox\@tempboxa{\small #2. #3}%
+\xdef \@currentlabel{\thetable}
+     \sbox\@tempboxa{\small #2.
+%% disable trackchanges commands here, so they aren't entered 2 times:
+\let\added\relax
+\let\deleted\relax
+\let\replaced\relax
+#3}%
      \ifdim\wd\@tempboxa>\hsize
-      \small #2. #3%
+      \small#2. #3%
      \else
        \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
      \fi
     \endgraf\vskip\baselineskip}%
-  \hss}}}
+  \hss}}
+}%%
 
 \let\LT@makecaption@rtx=\LT@makecaption % to fight redefinition in Revtex-4.1
 
@@ -1805,12 +1965,12 @@ the#1\endcsname}
 %% from book.cls/ used??
 \long\def\@makecaption#1#2{%
   \vskip\abovecaptionskip
-\ifx\@captype\xfigure
-\gdef \@currentlabel{\thefigure}
-\else
-\gdef \@currentlabel{\thetable}\fi
 %% \small added to keep currtabletypesize from determining size of caption
   \sbox\@tempboxa{\small
+%% disable trackchanges commands here, so they aren't entered 2 times:
+\let\added\relax
+\let\deleted\relax
+\let\replaced\relax
 {\bf #1.} #2}%
   \ifdim \wd\@tempboxa >\hsize
 \small
@@ -1819,7 +1979,8 @@ the#1\endcsname}
     \global \@minipagefalse
     \hb@xt@\hsize{\hfill\box\@tempboxa\hfill}%
   \fi
-  \vskip\belowcaptionskip}
+  \vskip\belowcaptionskip
+}
 
 \newdimen\@abovenoteskip
 \newcommand\tablerefs[1]{\ifdim\@abovenoteskip=0pt\global\@abovenoteskip=10pt\fi
@@ -1832,8 +1993,8 @@ the#1\endcsname}
  {\hskip1em\rm References. --- #1}\par}%
 }%
 
-
-\global\def\tablenotemark#1{{\normalfont\textsuperscript{#1}}}
+%% march 2019, added \it to tablenotemark
+\global\def\tablenotemark#1{{\normalfont\textsuperscript{\normalsize\it #1}}}
 \global\def\tablenotetext#1#2{\footnotetext[#1]{\currtabletypesize\relax#2}}
 
 %% redefined by AH below, since it wasn't working with tabular table
@@ -1844,7 +2005,7 @@ the#1\endcsname}
 \def\xyztablehead#1{\@table@not@headedfalse%
   \kill
   \caption{\\%
-    \@tablecaption}%
+   \@tablecaption\gdef\@currentlabel{\thetable}(0)}
     \\\hline\hline%
   #1\vrule height 12pt depth 10pt width 0pt\relax
 \hskip\tabcolsep\\[.7ex]
@@ -1907,6 +2068,7 @@ width0pt\relax#1$}\ignorespaces}
 
 \def\lt@expand@linewidth@one{\setlength\LTleft{0pt}\setlength\LTright{0pt}}
 \def\lt@expand@linewidth@two{@{\extracolsep{0pt plus 1filll}}}
+
 \def\find@table@width{%
 %%% set table width using aux file and command \tablewidth
     \setcounter{deluxe@table@num}{\c@LT@tables}
@@ -2014,8 +2176,17 @@ width0pt\relax#1$}\ignorespaces}
 \newcommand{\figsetplot}[1]{\noprint{#1}}
 \newcommand{\figsetgrpnote}[1]{\noprint{#1}}
 
-%% for url's in document, will allow them to break over lines.
 \usepackage{url}
+%% if we take away the xx before UrlBreaks we will get a url that breaks
+%% at any letter or number. It might be better to break only at / however...
+\expandafter\def\expandafter\xxUrlBreaks\expandafter{\UrlBreaks%  save the current one
+  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+  \do\Y\do\Z\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9}
+
 
 %% for tables continuing over pages
 \usepackage{longtable}
@@ -2026,17 +2197,20 @@ width0pt\relax#1$}\ignorespaces}
 \definecolor{xlinkcolor}{cmyk}{1,1,0,0}
 
 
+\PassOptionsToPackage{hyphens}{url}
 %% In response to request from AAS
  \usepackage[hidelinks,       % no green square around links
-     bookmarks=false,         % show bookmarks bar?
-     pdfnewwindow=true,      % links in new window
-     colorlinks=true,    % false: boxed links; true: colored links
-     linkcolor=xlinkcolor,     % color of internal links
-     citecolor=xlinkcolor,     % color of links to bibliography
-     filecolor=xlinkcolor,  % color of file links
-     urlcolor=xlinkcolor,      % color of external links
-final=true
+   bookmarks=true,         % show bookmarks bar?/ Changed March 22, 2019 for
+                                     % improved accessibility
+    pdfnewwindow=true,      % links in new window
+   colorlinks=true,    % false: boxed links; true: colored links
+  linkcolor=xlinkcolor,     % color of internal links
+ citecolor=xlinkcolor,     % color of links to bibliography
+filecolor=xlinkcolor,  % color of file links
+urlcolor=xlinkcolor,      % color of external links
+final=true,
  ]{hyperref}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2173,10 +2347,10 @@ final=true
 \catcode`\$=\active
 
 \let\savetabular\tabular
-\def\tabular{\catcode`\&=\active\relax\catcode`\$=\active\relax\savetabular}
+\def\tabular{\catcode`\&=\active\relax\catcode`\$=\active\relax\hskip\movetableright
+\savetabular}
 \long\gdef\eatone{\setbox0=\hbox\bgroup\savedollar\let$\relax}
 \gdef\endeatone{\savedollar\egroup\hskip-2\tabcolsep}
-
 
 %% Hide, important because it allows us to split tables horizontally
 \newcolumntype{h}{>\eatone c<\endeatone}
@@ -3920,7 +4094,7 @@ Thank you!^^J}\fi%
 %\ifbreaktab
 \\\hline% below, hline is wanted
 %\else
-\noalign{\vskip-13pt}
+\noalign{\vskip-8pt}
 %\vrule height 28pt width0pt %the \vrule is in the line below colnumbers;
                           % it causes all the vrules on that line to grow to 28pt.
                           % The -14pt will cause the lower line to overlap the upper line.
@@ -3928,6 +4102,7 @@ Thank you!^^J}\fi%
                           % have it also work for split tabular.
 %\fi
 }
+
 
 
 \let\savecolnumbers\colnumbers
@@ -4224,7 +4399,7 @@ Sorry, more than 30 columns cannot be numbered with^^J
 \string\colnumbers. Please number the columns manually.^^J
 Thank you!^^J}\fi%
 \\\hline% below, hline is wanted
-%\\\noalign{\vskip-30pt}
+\\\noalign{\vskip-30pt }%%%%%
 %\vrule height 28pt width0pt %the \vrule is in the line below colnumbers;
                           % it causes all the vrules on that line to grow to 28pt.
                           % The -14pt will cause the lower line to overlap the upper line.
@@ -4541,7 +4716,8 @@ Sorry, more than 30 columns cannot be numbered with^^J
 Thank you!^^J}\fi%
 \\\hline% below, hline is wanted
 \iffirsttime
-\\\noalign{\vskip-30pt}
+\\\noalign{\vskip-30pt}%%
+%\noalign{\vskip-8pt}
 \vrule height 28pt width0pt %the \vrule is in the line below colnumbers;
                           % it causes all the vrules on that line to grow to 28pt.
                           % The -14pt will cause the lower line to overlap the upper line.
@@ -4571,7 +4747,7 @@ Thank you!^^J}\fi%
 }\vrule height 28pt width0pt %!!!
 \global\let\splitdecimalcolnumbers\secondsplitdecimalcolnumbers}
 
-\def\secondsplitdecimalcolnumbers{\omit\\%[-15pt]
+\def\secondsplitdecimalcolnumbers{\omit\\
 \plaincolnumbers
 \global\colnumbersonfalse
 \\\noalign{\vskip-26pt %!!! was -28pt
@@ -4593,6 +4769,7 @@ deluxetable*\endcsname{\deluxestartrue\bgroup\floattrue
 
 \expandafter\def\csname enddeluxetable*\endcsname{\enddeluxetable
 \egroup
+\null% added june 2020
 \global\colnumbersonfalse
 \global\deluxedecimalsfalse
 \global\deluxestarfalse
@@ -4611,10 +4788,12 @@ deluxetable*\endcsname{\deluxestartrue\bgroup\floattrue
 \def\floatrotatetable{\global\deluxestartrue\global\floattrue}
 \let\endfloatrotatetable\relax
 
-\def\deluxetable{
-\global\deluxetrue
+\def\deluxetable{\global\deluxetrue
 \catcode`\&=\active
 \catcode`\$=\active
+%% Mar 30, 2019, to make label outside of \caption work correctly
+{\advance\c@table by 1
+\xdef\@currentlabel{\thetable}}
 \let\tablecaption\deluxetablecaption
 \deluxetablecaption{}
 %% july 2016
@@ -4623,13 +4802,16 @@ deluxetable*\endcsname{\deluxestartrue\bgroup\floattrue
 % \else\let\go\longdeluxetable\fi\go%}
 %% aug 2016
 \ifstartlongtable
+%% this works for both deluxetable and deluxetable*:
 %% nov 2017:
 \def\arraystretch{1.1}
-   \ifdeluxestar
+%% March 2019
+\if@two@col\global\returntotwocoltrue\vskip1pt
+\ifdeluxestar\onecolumngrid\fi\fi
+%%
+\ifdeluxestar
 \vskip12pt
-   \if@two@col\onecolumngrid
-   \vskip12pt
-   \fi\fi
+\fi
 \let\go\longdeluxetable
 \else
 \let\go\ydeluxetable
@@ -4639,8 +4821,10 @@ deluxetable*\endcsname{\deluxestartrue\bgroup\floattrue
 \def\ydeluxetable#1{%
 \@ifnextchar[{\xdeluxetable{#1}}{\zdeluxetable{#1}}}
 
+%%
 % x and z are the same, except that xdeluxetable allows optional square bracket arg, like [h].
 \def\xdeluxetable#1[#2]{\global\breaktabtrue
+%% not here
 \let\colnumbers\deluxecolnumbers
 \global\deluxedecimalsfalse
 \let\decimals\deluxedecimals
@@ -4673,10 +4857,12 @@ deluxetable*\endcsname{\deluxestartrue\bgroup\floattrue
 \pt@head
 ##1\end{tabular}}
 \expandafter\ifx\csname @tablecaption\endcsname\empty\else
-
+%%
 \noindent\hbox
 to\hsize{\hss\vtop{\hsize=\wd0
 \caption{\@tablecaption}}\hss}\vskip3pt\fi
+
+%% not here
 \global\setbox3\hbox{%
 \begin{tabular}{#1}%
 \hline\hline\noalign{\vskip-9pt}%
@@ -4717,10 +4903,9 @@ to\hsize{\hss\vtop{\hsize=\wd0
 \currtabletypesize
 \setbox0=\hbox{\colnumbersonfalse
 \begin{tabular}{#1}
-\pt@head
+\pt@head %%
 ##1\end{tabular}}% not here
 \expandafter\ifx\csname @tablecaption\endcsname\empty\else
-
 \noindent\hbox
 to\hsize{\hss\vtop{\hsize=\wd0
 \caption{\@tablecaption}}\hss}\vskip3pt\fi
@@ -4736,8 +4921,25 @@ to\hsize{\hss\vtop{\hsize=\wd0
 \leftskip6pt\parindent-6pt
 }}
 
+
 %% go to \end{deluxetable}, after longdeluxetable
 
+
+
+%%@@@@
+
+%% Variation on definition found in revtex4-1.cls
+\def\LT@start@new{%
+ \let\LT@start\endgraf
+ \endgraf
+ \markthr@@{}%
+ \LT@pre
+ \@ifvoid\LT@firsthead{\LT@top}{\hbox{\ifdim\movetableright>0pt\relax\hskip\movetableright\fi\box\LT@firsthead}
+\nobreak}%
+ \mark@envir{longtable}%
+}%
+
+%%%
 \newbox\longtablebox
 \def\longdeluxetable#1{
 \global\rotateonfalse
@@ -4769,16 +4971,43 @@ to\hsize{\hss\vtop{\hsize=\wd0
 \bgroup\centering
 \def\table@hook{\currtabletypesize}
       \LTcapwidth=\wd\longtablebox
-\begin{longtable}{#1}%%
+%% march 2019, added [c] and these terms:
+\ifcenterwidetable\global\centerwidetablefalse
+  \def\LT@LR@c{\LTleft=0pt minus1fill
+  \let\LTright\LTleft}%
+\else
+%% default, will center table that is narrower than text width
+  \def\LT@LR@c{\LTleft=0pt plus1fill
+  \LTright\LTleft}%
+\fi
+%%
+%
+\begin{longtable}[c]{#1}%%
+\ifdim\movetableright>0pt
+ \noalign{\ifdim\movetableright>0pt
+  \global\LTleft=\movetableright
+ \fi}
+%
+ \noalign{\hbox to \wd\longtablebox{
+ \vtop{\hsize=.8\wd\longtablebox
+  \advance\baselineskip4pt
+ \raggedright
+  {\bf \fnum@table}.\vrule depth 6pt width0pt\
+  \@tablecaption}\hss}\vskip-3pt }\\
+  \hline
+  \hline\noalign{\vskip-9pt}
+ \pt@head%
+\else
 \caption{\hsize=\wd\longtablebox
 \advance\baselineskip2pt
-\@tablecaption}\\
+\@tablecaption}\\ %
 \hline\hline\noalign{\vskip-9pt}% prob ok
 \pt@head%
+\fi
 \endfirsthead
 
 \noalign{\centerline{\small
-{\bf Table \thetable}\ \it(continued)}\vskip6pt}
+\hskip\movetableright{\bf \fnum@table}\ \it(continued)}\vskip6pt}
 \hline\hline
 \noalign{\vskip-12pt}
 \pt@head%
@@ -4786,7 +5015,7 @@ to\hsize{\hss\vtop{\hsize=\wd0
 
 \hline
 \multicolumn{\totalcolumns}{c}{\vrule height 24pt width0pt\small\it
-Table \thetable\
+\fnum@table\
 continued  \if@two@col\else on next page\fi}\\
 \endfoot
 
@@ -4806,11 +5035,13 @@ continued  \if@two@col\else on next page\fi}\\
 \parindent=-6pt
 \currtabletypesize
 \global\startlongtablefalse
+\global\movetableright=0pt
 }% end data, endlongtable
 }
 
-
-\def\endlongdeluxetable{\vrule depth 6pt width 0pt
+\def\endlongdeluxetable{
+%%
+\vrule depth 6pt width 0pt
 \vskip1sp
 \egroup
 \ifdim\dp4>6pt
@@ -4818,23 +5049,33 @@ continued  \if@two@col\else on next page\fi}\\
 \vbox{\hbox to \columnwidth{\hfill
 \vtop{\hsize\wd\longtablebox
 \leftskip=6pt\parindent-6pt
-\copy4}\hfill}
-}\fi
-\ifdeluxestar
- \if@two@col
+\copy4
+}\hfill}%%
+}
+\fi
 \vglue\ht4
- \twocolumngrid
- \hsize=\columnwidth
-\fi\fi%
 \global\colnumbersonfalse
 \global\deluxedecimalsfalse
 \global\rotateonfalse
-%\global\floatfalse
-\if@two@col\vskip12pt\twocolumngrid\fi
+%%
 \relax\null%% \null is an empty hbox.
 %% This keeps final page(s) of startlongtable/deluxetable
 %% from begin thrown away when at end of article.
-}
+% \global\advance\c@table-1\relax
+%%
+%
+%% march 2019
+\ifreturntotwocol\global\returntotwocolfalse
+\twocolumngrid\fi
+%% May 2020
+\ifappendixon
+\if@two@col@app
+\twocolumngrid
+\else
+\onecolumngrid\fi\fi
+\null
+}%%
+
 
 %% bbb
 %% \end{deluxetable}:
@@ -4857,7 +5098,10 @@ continued  \if@two@col\else on next page\fi}\\
 \ifdeluxestar\end{table*}\global\deluxestarfalse
 \if@two@col
 \twocolumngrid\hsize=\columnwidth\fi%% check this!!
-\else\end{table}\fi
+\else
+\end{table}\fi
+\null
+% added june 2020
 \gdef\colnumbers{\saveplaincolnumbers}
 \global\breaktabfalse
 \global\deluxefalse
@@ -4865,18 +5109,26 @@ continued  \if@two@col\else on next page\fi}\\
 \global\deluxedecimalsfalse
 \global\rotateonfalse
 \startlongtablefalse
+\global\movetableright=0pt
 %\global\floatfalse
-}%% check this!!
+%\global\advance\c@table by -1\relax
+%% check this!!
+}
 
-
+%%@@@ ???
 
 \newbox\splitbox
 \newif\ifdeluxe
-\def\splitdeluxetable{\global\deluxetrue\catcode`\&=\active
+\def\splitdeluxetable{
+%% Mar 30, 2019, to make label outside of \caption work correctly
+{\advance\c@table by 1
+\xdef\@currentlabel{\thetable}}
+\global\deluxetrue\catcode`\&=\active
 \catcode`\$=\active
 \xsplitdeluxetable}
 
-\def\xsplitdeluxetable#1{\global\breaktabtrue
+\def\xsplitdeluxetable#1{
+\global\breaktabtrue
 \let\colnumbers\deluxecolnumbers
 \let\decimals\deluxedecimals
 \global\deluxedecimalsfalse
@@ -4943,6 +5195,7 @@ continued  \if@two@col\else on next page\fi}\\
 \global\colnumbersonfalse
 \global\deluxedecimalsfalse
 }
+
 
 \newif\ifsplitstar
 \expandafter\def\csname splitdeluxetable*\endcsname{\global\splitstartrue\splitdeluxetable}
@@ -5019,7 +5272,7 @@ continued  \if@two@col\else on next page\fi}\\
 \setbox\secondtablebox=\hbox{%
 \begin{tabular}{fZE}%
 \ifx\csname pt@head\endcsname\relax\else%
-\pt@head\fi\\[-14pt]%
+\pt@head\fi\\ [-14pt]%
 #1\crcr%
 \end{tabular}}
 \fi
@@ -5105,14 +5358,13 @@ continued  \if@two@col\else on next page\fi}\\
 %% xstartdata, modified from \startdata in emulateapj, for splitdeluxetable
 \gdef\xstartdata#1\enddata{\def\tablecontents{%
 \ifcolnumberson%
-\\ \savecolnumbers\\[2pt]\fi%
+\\\savecolnumbers\\[2pt]\fi% this is for top level split
 \ifdeluxedecimals\savedecimals\fi%
 #1}%
 \currtabletypesize%
 \setbox2=\vtop{\dbreaktabular{\tablecontents}}%
 %
 \expandafter\ifx\csname @tablecaption\endcsname\empty\else
-
 \noindent\hbox
 to\hsize{\hss\vtop{\hsize=\maxtablewidth\caption{\@tablecaption}}\hss}\vskip3pt\fi
 \dbreaktabular{\tablecontents\noalign{\global\let\zdoit\relax
@@ -5200,12 +5452,12 @@ width 0pt\currtabletypesize{\bf References}---{#1}\vskip1sp}}
 \catcode`\$=\active%
 \xxtablehead}
 
-%% ++=
+%%
 \def\xxtablehead#1{%
 \let&\CheckNumberAndSwitch%
 \gdef\pt@head{%
 \hline\hline%
-\multicolumn1c{\tempcounter=0
+\multicolumn1c{\vrule height 12pt width0pt\relax\tempcounter=0
 \expandafter\getDs\tabfullpreamble\relax
 \global\colcount=0
 \global\colheadcount=0}%
@@ -5220,7 +5472,7 @@ width 0pt\currtabletypesize{\bf References}---{#1}\vskip1sp}}
          \ifmanu%
             \iflongrotateon\noalign{\vskip-8pt}\else\noalign{\vskip-17pt}\fi%
          \else%
-           \ifmodern  \iflongrotateon\else\noalign{\vskip-9pt}\fi%
+           \ifmodern\iflongrotateon\else\noalign{\vskip-9pt}\fi%
             \else%
            \fi%% end ifmodern
          \fi%% end ifmanu
@@ -5247,11 +5499,10 @@ width 0pt\currtabletypesize{\bf References}---{#1}\vskip1sp}}
 \catcode`\$=\active%
 \zztablehead}
 
-%% +++
 \def\zztablehead#1{\let&\CheckNumberAndSwitch%
 \gdef\pt@head{%
 %% this is needed:
-\multicolumn1c{\expandafter\getDs\tabfullpreamble\relax
+\multicolumn1c{\vrule height12pt width0pt\relax\expandafter\getDs\tabfullpreamble\relax
 \global\tempcounter=0
 \global\colcount=0
 \global\colheadcount=0}\\
@@ -5281,7 +5532,7 @@ width 0pt\currtabletypesize{\bf References}---{#1}\vskip1sp}}
               \fi% end ifonecol
    \fi%endiftwocolstyle
 \fi%end iftwelvepoint
-#1%
+#1\unskip%
 \ifcolnumberson\\[6pt]
 \savecolnumbers\vrule height 11pt depth 4pt width 0pt\relax%
 \\\ifmanu\noalign{\vskip-15pt}\fi%
@@ -5392,11 +5643,14 @@ by 1\relax}\ignorespaces}%
 \expandafter \let \csname endtable*\endcsname = \endtable
 %%
 
+
+%%% \movetabledown works
 \newbox\rotatetablebox
 \def\rotatetable{%
 \clearpage
 \global\startlongtabletrue\setbox\rotatetablebox=\vbox\bgroup
 }
+
 \def\endrotatetable{\egroup
 \vglue\movetabledown
 \hbox to
@@ -5405,12 +5659,11 @@ by 1\relax}\ignorespaces}%
 \global\startlongtablefalse
 }
 
-
+%%% \movetabledown works
 \expandafter\def\csname rotatetable*\endcsname{%
 \clearpage
 \global\startlongtabletrue\setbox\rotatetablebox=\vbox to
 \textwidth\bgroup\vfill}
-
 
 \expandafter\def\csname endrotatetable*\endcsname{\vfill\egroup
 \vbox to \textheight{\vfill
@@ -5424,7 +5677,8 @@ by 1\relax}\ignorespaces}%
 \global\startlongtablefalse
 }
 
-
+%
+%%% \movetabledown works
 \newif\iflongrotateon
 \def\longrotatetable{%
 \global\longrotateontrue
@@ -5452,6 +5706,7 @@ by 1\relax}\ignorespaces}%
   \@colht=\vsize
   \def\@makecol{\LS@makecol\LS@rot}%
   \def\@makefcolumn##1{\LS@makefcolumn{##1}\LS@rot}}
+
 \def\endlongrotatetable{%
 \onecolumngrid %% ??
 \clearpage
@@ -5467,7 +5722,6 @@ by 1\relax}\ignorespaces}%
   \global\@colht=\textheight
   \global\vsize=\textheight
   \global\@colroom=\textheight}
-
 
 \newif\ifGin@pdftex
 \Gin@pdftexfalse
@@ -5557,22 +5811,24 @@ by 1\relax}\ignorespaces}%
 %% standardized, so didn't make an user interface
 %% to change the colors easily.
 
-\expandafter\def\csname editcolor1\endcsname{magenta}
-\expandafter\def\csname editcolor2\endcsname{blue}
-\expandafter\def\csname editcolor3\endcsname{violet}
+\expandafter\def\csname editcolor1\endcsname{black}% was magenta
+\expandafter\def\csname editcolor2\endcsname{black}% was blue
+\expandafter\def\csname editcolor3\endcsname{black}% was violet
 
+\let\newgo\relax
 \newcount\colorcount
-\def\edit#1#2{{\colorcount=#1\relax%
-\ifturnoffedit\let\go\ignorespaces\else%
-\let\go\relax\fi%
-\ifturnoffedit
-\color{black}#2%
-\else
-\color{\csname editcolor\the\colorcount\endcsname}%
-\ifnum\colorcount=1{\ifturnoffone\color{black}#2\else\bf#2\fi}\else%
-\ifnum\colorcount=2{\ifturnofftwo\color{black}#2\else\it#2\fi}\else%
-\ifnum\colorcount=3{\ifturnoffthree\color{black}#2\else#2\fi}\fi\fi\fi\fi%
-}\go}
+
+\newcount\editnum
+\def\edit#1#2{\ifcase#1\or\ifturnoffone%
+\unskip%
+\else%
+\texorpdfstring{{\bf#2}}{#2}\fi\or%
+\ifturnofftwo%
+\unskip%
+\else\texorpdfstring{{\bfseries\itshape#2}}{#2}\fi%
+\or%
+\ifturnoffthree\unskip\else%
+\texorpdfstring{{\bfseries\underline{#2}}}{#2}\fi\fi}
 
 \def\collaborationcomment#1#2{{\colorcount=#1
 \ifturnoffedit\let\go\ignorespaces\else%
@@ -5587,9 +5843,9 @@ by 1\relax}\ignorespaces}%
 \ifturnoffedit\let\go\ignorespaces\else%
 \let\go\relax%
 \color{\csname editcolor\the\colorcount\endcsname}
-\ifnum\colorcount=1{\ifturnoffone\else\bf (Author~note: #2)\ \fi}\else
-\ifnum\colorcount=2{\ifturnofftwo\else\it (Author~note: #2)\ \fi}\else
-\ifnum\colorcount=3{\ifturnoffthree\else (Author~note: #2)\ \fi}\fi\fi\fi\fi%
+\ifnum\colorcount=1{\ifturnoffone\else\bf (Author~note 1: #2)\ \fi}\else
+\ifnum\colorcount=2{\ifturnofftwo\else\it (Author~note 2: #2)\ \fi}\else
+\ifnum\colorcount=3{\ifturnoffthree\else (Author~note 3: #2)\ \fi}\fi\fi\fi\fi%
 \go}}
 
 
@@ -5629,7 +5885,7 @@ by 1\relax}\ignorespaces}%
  \c@mpfootnote\z@
  \let\@makefnmark\frontmatter@makefnmark
   \frontmatter@setup
-  \thispagestyle{titlepage}%\label{FirstPage}%
+  \thispagestyle{titlepage}\label{FirstPage}%
 \ifmodern\leftskip=0pt\rightskip\leftskip\fi
   \frontmatter@title@produce
   \groupauthors@sw{%
@@ -5657,52 +5913,18 @@ to 20pt{\hfill}}\vskip12pt}%
   \@ifx@empty\@keywords{}{%
    \@keywords@produce\@keywords
   }%
-  \@ifx@empty\@features{}{%
-   \@features@produce\@features
-  }%
   \par
   \frontmatter@finalspace
 \endgroup%
 }%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Highlight Figure
-\definecolor{ltblue}{cmyk}{.5,.1,.1,0}
 
-\long\def\highlightfigure#1{\centerline{
-\fboxrule=4pt
-\fboxsep=12pt
-\fcolorbox{ltblue}{white}{\hbox to
-.93\textwidth{\hss$\vcenter{\advance\hsize -24pt #1}$\hss}}}\gdef\highlightfigure{\typeout{^^J^^JERROR!^^J^^J
-Only One Highlighted Figure per Article!^^J^^J}\stop}}
-
-
-%%%%%%%%%%%%%
-%% Line numbering
-
-\ifnumlines
-\usepackage{lineno}
-
-\linenumbers*[1]
-\if@two@col
-\advance\linenumbersep -4pt
-\else
-\advance\linenumbersep 12pt
-\fi\fi
-
-
+% needed??
 \gdef\specialbibitem#1[#2]#3#4{
 {\tt\string\bibitem}[#2]{\tt\string{\string}}
 #4}
 
-\let\savecite\cite
-\let\savecitep\citep
-\let\savecitet\citet
-\def\specialcite#1{\hbox{\savecite{#1}}}
-\def\specialcitep#1{\hbox{\savecitep{#1}}}
-\def\specialcitet#1{\hbox{\savecitet{#1}}}
-\let\saveref\ref
-\def\specialref#1{\hbox{\saveref{#1}}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% Track Changes
@@ -5712,8 +5934,8 @@ Only One Highlighted Figure per Article!^^J^^J}\stop}}
 %% Change Feb 2016, to allow optional argument for time/date, and/or editor initials, etc.
 
 
-\providecolor{trackchange}{rgb}{1,0,0}
-\providecolor{explain}{rgb}{.5,0,.5}
+\providecolor{trackchange}{cmyk}{0,0,0,1}
+\providecolor{explain}{cmyk}{0,0,0,1}
 
 \newif\ifsilent
 
@@ -5729,14 +5951,14 @@ Only One Highlighted Figure per Article!^^J^^J}\stop}}
 \ifabstract\else%
 \xdef\doit{\noexpand\linelabel{\the\refchangenumber}}\doit\fi\else%
 \xdef\doit{\noexpand\label{\the\refchangenumber}{}{}{}}\doit\fi}%
-{\color{trackchange}(Added: [#1] #2)}%%
+{\color{trackchange}\bf(Added: [#1] #2)}%%
 \ifabstract\label{\the\refchangenumber}%
 \expandafter\gdef\csname
-changenum\the\refchangenumber\endcsname{Added: [#1]
-\textcolor{trackchange}{#2}\global\silenttrue}%
+changenum\the\refchangenumber\endcsname{\bf Added: [#1]
+\textcolor{trackchange}\bf\relax{#2}\global\silenttrue}%
 \else\expandafter\gdef\csname
-changenum\the\refchangenumber\endcsname{Added: [#1]
-\textcolor{trackchange}{\let\bibitem\specialbibitem #2}\global\silentfalse}\fi%
+changenum\the\refchangenumber\endcsname{\bf\relax Added: [#1]
+\textcolor{trackchange}\bf\relax{\let\bibitem\specialbibitem #2}\global\silentfalse}\fi%
 \else#2\fi}
 
 
@@ -5750,16 +5972,16 @@ changenum\the\refchangenumber\endcsname{Added: [#1]
 \xdef\doit{\noexpand\linelabel{\the\refchangenumber}}\doit\fi\else%
 \xdef\doit{\noexpand\label{\the\refchangenumber}{}{}{}}\doit%
 \fi}%
-{\color{trackchange}(Added: #1)}%%
+{\color{trackchange}\bf(Added: #1)}%%
 \ifabstract%
 \label{\the\refchangenumber}%
 \expandafter\gdef\csname
-changenum\the\refchangenumber\endcsname{Added:
-\textcolor{trackchange}{#1},
+changenum\the\refchangenumber\endcsname{\bf Added:
+\textcolor{trackchange}\bf\relax{#1},
 \global\silenttrue}\else
 \expandafter\gdef\csname
-changenum\the\refchangenumber\endcsname{Added:
-\textcolor{trackchange}{\let\bibitem\specialbibitem #1},%
+changenum\the\refchangenumber\endcsname{\bf Added:
+\textcolor{trackchange}{\bf\relax\let\bibitem\specialbibitem #1},%
 \global\silentfalse}\fi%
 \else#1\fi}
 
@@ -5777,28 +5999,20 @@ changenum\the\refchangenumber\endcsname{Added:
 \else%
 \xdef\doit{\noexpand\label{\the\refchangenumber}}\doit\fi%
 }%
-{\color{trackchange}%
+{\color{trackchange}\bf%
 \ifbib\let\sout\relax\fi%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\ref\specialref\let\cite\specialcite (Deleted: [#1] \sout{#2})
+(Deleted: [#1] \sout{#2})
 }%
 \ifabstract\label{\the\refchangenumber}%
 \expandafter\gdef\csname
 changenum\the\refchangenumber\endcsname{Deleted: [#1]
-{\color{trackchange}%
-\let\citet\specialcitet%
-\let\citep\specialcitep%
-\let\cite\specialcite\sout{#2}}\global\silenttrue}%
+{\color{trackchange}\bf%
+\sout{#2}}\global\silenttrue}%
 \else
 \expandafter\gdef\csname
 changenum\the\refchangenumber\endcsname{Deleted: [#1]
 {\color{trackchange}%
 \let\bibitem\specialbibitem%
-\let\ref\specialref%
-\let\cite\specialcite%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
 \sout{#2}
 }\global\silentfalse}\fi%
 \fi}
@@ -5813,26 +6027,17 @@ changenum\the\refchangenumber\endcsname{Deleted: [#1]
 \xdef\doit{\noexpand\label{\the\refchangenumber}{}{}{}}\doit%
 \fi}%
 %%
-{\color{trackchange}%
+{\color{trackchange}\bf%
 \ifbib\let\sout\relax\fi%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\ref\specialref\let\cite\specialcite(Deleted: \sout{#1}
-)}%
+(Deleted: \sout{#1})}%
 \ifabstract\label{\the\refchangenumber}%
 \expandafter\gdef\csname changenum\the\refchangenumber\endcsname{Deleted:
-{\color{trackchange}\let\ref\specialref%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\sout{#1}}\global\silenttrue}%
+{\color{trackchange}\bf
+\sout{#1}}\global\silenttrue}%
 \else
 \expandafter\gdef\csname changenum\the\refchangenumber\endcsname{Deleted:
-{\color{trackchange}%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\bibitem\specialbibitem%
-\let\ref\specialref%
-\let\cite\specialcite\sout{#1}}\global\silentfalse}\fi%
+{\color{trackchange}\bf%
+\sout{#1}}\global\silentfalse}\fi%
 \fi}
 
 
@@ -5846,29 +6051,21 @@ changenum\the\refchangenumber\endcsname{Deleted: [#1]
 \ifnumlines\ifabstract\else\xdef\doit{\noexpand\linelabel{\the\refchangenumber}}\doit\fi\else%
 \xdef\doit{\noexpand\label{\the\refchangenumber}}\doit\fi%
 {\ifbib\let\sout\relax\fi
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\color{trackchange}(Replaced: [#1] \sout{#2}}%
-{\color{black}replaced with:} {\let\ref\specialref%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\color{trackchange} #3)}%
+\color{trackchange}\bf(Replaced: [#1] \sout{#2}}%
+{\color{black}replaced with:} {
+\color{trackchange}\bf\relax #3)}%
 \ifabstract\label{\the\refchangenumber}%
 \expandafter\gdef\csname
 changenum\the\refchangenumber\endcsname{Replaced: [#1]
-{\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\color{trackchange}\sout{#2}} {\color{black} replaced with:}
-{\color{trackchange}#3}, \global\silenttrue}%
+{\color{trackchange}\bf\relax\sout{#2}} {\color{black} replaced with:}
+{\color{trackchange}\bf\relax#3}, \global\silenttrue}%
 \else
 \expandafter\gdef\csname
 changenum\the\refchangenumber\endcsname{Replaced: [#1]
-{\ifbib\let\sout\relax\fi\let\bibitem\specialbibitem
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\color{trackchange}\sout{#2}
+{\ifbib\let\sout\relax\fi
+\color{trackchange}\bf\relax\sout{#2}
 } {\color{black} replaced with:}
-{\let\bibitem\specialbibitem\color{trackchange}#3}, \global\silentfalse}\fi%
+{\color{trackchange}\bf\relax#3}, \global\silentfalse}\fi%
 \else#3\fi}
 
 \long\def\yreplaced#1#2{%
@@ -5878,39 +6075,34 @@ changenum\the\refchangenumber\endcsname{Replaced: [#1]
 \vskip14pt}%
 \ifnumlines\ifabstract\else\xdef\doit{\noexpand\linelabel{\the\refchangenumber}}\doit\fi\else%
 \xdef\doit{\noexpand\label{\the\refchangenumber}}\doit\fi%
-{\ifbib\let\sout\relax\fi\let\ref\specialref%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\color{trackchange}(Replaced: %\sout
-{#1}
+{\ifbib\let\sout\relax\fi
+\color{trackchange}\bf\relax(Replaced:
+\sout{#1}
 }%
 {\color{black}replaced with:}
-{\color{trackchange} #2)}%
+{\color{trackchange}\bf\relax #2)}%
 \ifabstract\label{\the\refchangenumber}%
 \expandafter\gdef\csname changenum\the\refchangenumber\endcsname{Replaced:
-{\let\cite\specialcite%
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\color{trackchange}\sout{#1}} {\color{black} replaced with:}
-{\color{trackchange}#2},\global\silenttrue}%
+{\color{trackchange}\bf\relax
+\sout{#1}} {\color{black} replaced with:}
+{\color{trackchange}\bf\relax#2},\global\silenttrue}%
 \else
 \expandafter\gdef\csname
 changenum\the\refchangenumber\endcsname{Replaced:
-{\ifbib\let\sout\relax\fi\let\bibitem\specialbibitem
-\let\citep\specialcitep%
-\let\citet\specialcitet%
-\let\cite\specialcite\color{trackchange}\sout{#1}
+{\ifbib\let\sout\relax\fi
+\color{trackchange}\bf\relax\sout{#1}
 } {\color{black} replaced with:}
-{\let\bibitem\specialbibitem\color{trackchange}#2}, \global\silentfalse}\fi%
+{\let\bibitem\specialbibitem\color{trackchange}\bf\relax#2}, \global\silentfalse}\fi%
 \else#2\fi}
 
 \def\explain{\@ifnextchar[{\xexplain}{\yexplain}}
 
-\def\xexplain[#1]#2{\iftrack\ {\it\color{explain} [Explanation of change:
+\def\xexplain[#1]#2{\iftrack\ {\bfseries\itshape\color{explain} [Explanation of change:
 #2 (#1)]\ }\fi}
 
-\def\yexplain#1{\iftrack\ {\it\color{explain} [Explanation of change:
+\def\yexplain#1{\iftrack\ {\bfseries\itshape\color{explain} [Explanation of change:
 #1]\ }\fi}
+
 
 \newcount\listchangenum
 
@@ -5949,8 +6141,10 @@ on page
 \thispagestyle{empty}
 }
 
+
 \PassOptionsToPackage{normalem}{ulem}
 \usepackage{ulem}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -6039,7 +6233,7 @@ on page
 %% package. Making \caption[] be the default, to prevent sending caption
 %% text to listoftables or listoffigures, which we are not going to use
 %% anyway. This change enables track changes commands to work in captions.
-
+\def\xtable{table}
 \def\caption{\numlinesfalse
 \ifx\@captype\@undefined
 \@latex@error {\noexpand \caption outside float}\@ehd
@@ -6050,7 +6244,6 @@ on page
 \float@caption\let\Hy@tempa\Hy@float@caption\fi}
 \expandafter\@firstofone\fi
 {\@dblarg {\Hy@tempa \@captype}}[]}
-
 
 \def\@caption#1[#2]#3{{\small\rm\expandafter \ifx \csname if@capstart\expandafter \endcsname
 \csname iftrue\endcsname \global \let \@currentHref \hc@currentHref \else \hyper@makecurrent {\@captype }\fi
@@ -6064,9 +6257,11 @@ on page
 \else \@makecaption {\bf\csname fnum@#1\endcsname }{\ignorespaces \ifHy@nesting
 \expandafter \hyper@@anchor \expandafter {\@currentHref }{#3}\else
 \Hy@raisedlink {\expandafter \hyper@@anchor \expandafter
-{\@currentHref }{\relax }}{#3}\fi }\fi \par \endgroup}}
+{\@currentHref }{\relax }}{#3}\fi }\fi \par
+\endgroup}}
 
-\newcommand\tablebreak{\\[-11pt]\noalign{\break}\\ }
+%% changed, March 23, 2019, took out \\ at end of definition:
+\newcommand\tablebreak{\\[-11pt]\noalign{\break}}
 
 %% As suggested by Greg Schwarz, August Meunch, Feb 11
 
@@ -6083,47 +6278,54 @@ on page
 %%%%%%%%%%
 %% macros to give hyperref link to authors when orcid numbers
 %% are supplied with \author[0000-2345-3333-0023]{author name}
- \def\lookforbracket{\ifx\next[\let\go\xauthor
- \else\let\go\yauthor\fi\go}
+ \def\lookforbracket{\ifx\next[\let\go\xauthor\else\let\go\yauthor\fi\go}
 
-\def\author{\futurelet\next\lookforbracket}
+\newcount\entriesinthiscollab
+\newcount\allentries
+\newif\ifseesmessage
+\def\author{\global\advance\entriesinthiscollab by 1\relax%
+\global\advance\allentries by 1\relax\futurelet\next\lookforbracket}
 
 \def\new@author@def#1#2{%
  \move@AU\move@AF\move@AUAF
  \let\@AF@join\@author@join
- \def\@author{{\href{http://orcid.org/#1}{#2}}{}}%
+ \def\@author{{\href{http://orcid.org/#1}{#2%
+\openin1 Orcid-ID.png \ifeof1
+%% message for authors??
+%\typeout{^^J^^J  ! Missing File: Orcid-ID.png; needed for Orcid Author icon !
+%^^J}
+\else%
+\hskip2pt\includegraphics[width=9pt]{Orcid-ID.png}\fi}}{}}%
 }%
 
-\def\orciderrormessage{
+\def\orciderrormessage{%
 \typeout{^^J^^J [\firstarg]\space Invalid ORCID Identifier!^^J^^J The ID
-should consist of
-four sets of four digits,^^J separated with -, ie,
+should consist of four sets of four digits,^^J separated with -, ie,
 0000-0012-3245-1234 or ^^J
 0000-0012-3245-123X
 ^^J^^J
 Please fix, or don't use square bracket argument with
 \string\author[]\string{\string}
-^^J^^J}
+^^J^^J}%
 }
 
 %% Tests to see if author gave reasonable Orcid number;
 %% if not, stops processing and gives error message.
 \newif\ifbadOrcid
-\def\lookatOrcid #1-#2-#3-#4-{
-\def\one{#1}\def\two{#2}\def\three{#3}\def\four{#4}
-\ifx\one\empty
-\global\badOrcidtrue
-\else
-\ifx\two\empty
-\global\badOrcidtrue
-\else
-\ifx\three\empty
-\global\badOrcidtrue
-\else
-\ifx\four\empty
-\global\badOrcidtrue
-\fi\fi\fi\fi
-}
+\def\lookatOrcid #1-#2-#3-#4-{%
+\def\one{#1}\def\two{#2}\def\three{#3}\def\four{#4}%
+\ifx\one\empty%
+\global\badOrcidtrue%
+\else%
+\ifx\two\empty%
+\global\badOrcidtrue%
+\else%
+\ifx\three\empty%
+\global\badOrcidtrue%
+\else%
+\ifx\four\empty%
+\global\badOrcidtrue%
+\fi\fi\fi\fi}
 
 \def\lookforDigits #1#2#3#4{
 \def\xone{#1}\def\xtwo{#2}\def\xthree{#3}\def\xfour{#4}
@@ -6154,8 +6356,7 @@ Please fix, or don't use square bracket argument with
 \else
  \ifcat \xfour 1\else
   \global\badOrcidtrue\fi
-\fi
-}
+\fi}
 
 \def\FinallookforDigits #1#2#3#4{
 \def\xone{#1}\def\xtwo{#2}\def\xthree{#3}\def\xfour{#4}
@@ -6187,27 +6388,26 @@ Please fix, or don't use square bracket argument with
    \ifcat \xfour 1\else
       \if\xfour X
       \else
-      \global\badOrcidtrue\fi
-   \fi
-\fi
-}
+      \global\badOrcidtrue\fi%
+   \fi%
+\fi}
 
 
 
 
 
 %% Last digit might be X
-\def\xauthor[#1]#2{\edef\testone{#1-}\edef\firstarg{#1}
+\def\xauthor[#1]#2{\def\testone{#1-}\def\firstarg{#1}%
 \setbox0=\hbox{\expandafter\lookatOrcid\testone {}-{}-{}-{}-
-\expandafter\lookforDigits\one {}{}{}{}
-\expandafter\lookforDigits\two {}{}{}{}
-\expandafter\lookforDigits\three {}{}{}{}
-\expandafter\FinallookforDigits\four {}{}{}{}}
+\expandafter\lookforDigits\one {}{}{}{}%
+\expandafter\lookforDigits\two {}{}{}{}%
+\expandafter\lookforDigits\three {}{}{}{}%
+\expandafter\FinallookforDigits\four {}{}{}{}}%
 %%
 \ifbadOrcid\let\go\orciderrormessage
-\else\let\go\relax\fi\go
-\ifbadOrcid\let\go\stop\else\let\go\relax\fi\go
-\new@author@def{#1}{#2}}
+\else\let\go\relax\fi\go%
+\ifbadOrcid\let\go\stop\else\let\go\relax\fi\go%
+\new@author@def{#1}{#2}}%% oct 7, this doesn't seem to work
 
 \def\yauthor{\@author@def{}}
 
@@ -6275,14 +6475,21 @@ needed. It will not do anything.^^J Please use
 \ifnum\nine>\largestAffilNum
 \global\largestAffilNum=\nine\fi\fi
 }
-\newcount\countauthors
 
-
-\gdef\newcomma@space{\hskip-3pt\textsuperscript{,}}%
-
+%\gdef\newcomma@space{\hskip-3pt\textsuperscript{,}}%
 \def\doEtAl{\rm et al.\gdef\doEtAl{\relax}}
+%% =====================
+\newif\iffirsttime
+\firsttimetrue
+\newcount\totalentries
+\newcount\docollabnum
+\newcount\tempauthornumber
+\newcount\countauthors
+\newif\ifdothis
+\def\doAnd{}
+\newcount\testnum
 
-\def\doauthor#1#2#3{%
+\def\olddoauthor#1#2#3{%
 \iflongauthor\vskip6pt\fi
 \global\advance\countauthors by 1
 \ifnum\countauthors>\AuthorCollaborationLimit
@@ -6310,6 +6517,256 @@ needed. It will not do anything.^^J Please use
 \@listand\fi
 }%
 
+\newif\ifaddspace
+\def\doauthor#1#2#3{%
+\iflongauthor\vskip6pt\fi%%%
+\ifanonymous%
+    \iffirsttime%
+     \global\firsttimefalse%
+     Anonymous author(s)%
+    \fi%
+\else%% ends at end of this def
+%%%
+\ifnum\docollabnum< 1
+\global\AuthorCollaborationLimit\expandafter\csname
+currCollabLimit0\endcsname%
+%% this won't change until after collaboration name at end
+\fi %% end ifnum\docollabnum
+%%
+%%%%%%%%%%%%%%%%
+\global\advance\totalentries by 1\relax%
+\global\advance\countauthors by 1\relax%
+%%%
+\ifallauthors\global\AuthorCollaborationLimit=9999 \fi%
+%%%
+% for testing
+% [author number=\the\countauthors/ auth collab limit
+% =\the\AuthorCollaborationLimit]
+%
+\gdef\xone{#1}%
+\ifnum\countauthors < \AuthorCollaborationLimit
+\global\addspacetrue
+\gdef\docomma{,}\else\gdef\docomma{}\fi% ok
+%%%
+\ifnum\countauthors = \AuthorCollaborationLimit
+\ifnum\AuthorCollaborationLimit=1\else
+\gdef\doAnd{And }\fi%
+\ifnum\tempauthornumber= 1
+\gdef\doAnd{  } \fi\fi%
+%%
+{\tempauthorminusone=\AuthorCollaborationLimit
+\advance\tempauthorminusone by -1
+\ifnum\countauthors=\tempauthorminusone
+\gdef\doAnd{And }%
+\gdef\docomma{}\fi}%
+%%%
+\global\dothisfalse%
+%% if num countauthors is less than or equal to \AuthorCollaborationLimit, print name
+\ifnum\countauthors< \AuthorCollaborationLimit
+%%%
+\ifx\xone\empty\else%
+\global\dothistrue%
+%\expandafter\gdef\csname
+%dothisaffil-\the\countauthors\the\docollab\endcsname{dothisone}
+  \ignorespaces\leavevmode\hbox{#1\unskip\docomma}% nice, keeps name from breaking across lines
+\fi%
+\fi%
+%%
+\ifnum\countauthors= \AuthorCollaborationLimit
+%%%
+\ifx\xone\empty\else
+\global\dothistrue
+  \ignorespaces\leavevmode\hbox{\doAnd #1\unskip\docomma}%nice, keeps name from breaking across lines
+\fi%
+\fi%
+%% ++++
+%%
+\ifsuppressAffiliations\else%
+\ifx\xone\empty\else%
+\begingroup%
+\ifnum\countauthors>\AuthorCollaborationLimit\else
+  #3% all affil numbers
+\ifx\@affilID@temp\empty %% number following author
+\else%
+\setbox0=\hbox{\expandafter\lookfornumbers\@affilID@temp{}{}{}{}{}{}{}{}{}}%
+\fi\fi%
+%% #2= \altaffiliation{} or \email{} or
+%% possibly anything other than author, affiliation, or collaboration
+  \@if@empty{#2}{\endgroup{}{}}%
+{\ifnum\countauthors>\AuthorCollaborationLimit\endgroup{}{}%% <<< bug fix, added \endgroup{}{}
+\else
+\endgroup{\comma@space}{}\frontmatter@footnote{#2}\fi}%
+\fi%% end test of empty
+\fi%% end test of suppressAffiliations
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Collaboration name is always used if available:
+\expandafter\ifx\csname currCollabName\the\totalentries\endcsname\relax\else
+%%%
+%%%
+%%%
+%% changed locally:
+{\advance\docollabnum 1
+\advance\countauthors-1
+%%%
+%%% We need to test to see if more than one author in collaboration
+%%% and if the number of authors is greater than the \AuthorCollaborationLimit.
+%%% If both of these are true, than use `et al.' , otherwise do not:
+\expandafter\ifx\csname
+CollabTotalAuthors\the\docollabnum\endcsname\relax
+\else
+\expandafter\ifnum\csname
+CollabTotalAuthors\the\docollabnum\endcsname
+< 2 %%%%% Don't use et al if there is only one author
+\else
+\expandafter\ifnum\csname CollabTotalAuthors\the\docollabnum\endcsname
+>\AuthorCollaborationLimit\relax%
+\ifnum\AuthorCollaborationLimit=0\else
+\vskip3pt
+{\rm et al.} \vskip-3pt
+\fi\fi\fi\fi%
+}%% end local change to docollabnum
+%%%%
+\expandafter\ifx\csname
+currCollabName\the\totalentries\endcsname\empty
+\vskip-3pt
+\else
+\vskip6pt
+\expandafter\csname currCollabName\the\totalentries\endcsname\vskip8pt
+\affiliation{testing}
+\fi%
+%%%%%%%%
+\global\countauthors=0
+%%%
+%%%
+\global\advance\docollabnum  by 1
+%% Set up counters for next time through this loop:
+{\advance\docollabnum by1
+  \expandafter\ifx\csname
+  specificCollabLimit\the\docollabnum\endcsname\relax
+ \else
+   \global\AuthorCollaborationLimit=\csname
+   specificCollabLimit\the\docollabnum\endcsname
+  \fi%
+\expandafter\ifx\csname
+CollabTotalAuthors\the\docollabnum\endcsname\relax
+\else
+\global\tempauthornumber=\csname
+CollabTotalAuthors\the\docollabnum\endcsname
+\fi}%
+\fi %% ends test to see if it is time to use collaboration name
+\fi %% ends ifanonymous
+\ifaddspace\ \fi\global\addspacefalse}% oct 7, 2020, allows multiple names to break over lines,
+                                         %but no extra space if \collaboration{1}
+
+
+%%%% ++++====
+\newcount\tempauthorminusone
+%% +++
+\def\doAllauthors#1#2#3{%
+\global\suppressAffiliationsfalse
+\iflongauthor\vskip6pt\fi
+%%%
+\ifanonymous
+    \iffirsttime
+     \global\firsttimefalse
+     Anonymous author(s)
+    \fi
+\else %% ends at end of this def
+%%%
+\ifnum\docollabnum< 1
+%% these won't change until after collaboration name at end
+\global\AuthorCollaborationLimit\expandafter\csname currCollabLimit0\endcsname
+\global\tempauthornumber=\csname CollabTotalAuthors1\endcsname
+\fi%% end ifnum\docollabnum
+%%
+%%%%%%%%%%%%%%%%
+\global\advance\totalentries by 1
+\global\advance\countauthors by 1
+%%%
+\ifallauthors\global\AuthorCollaborationLimit=9999 \fi
+%%%
+% for testing
+%[author number=\the\countauthors/ temp author
+%=\the\tempauthornumber]
+\def\one{#1}
+{\tempauthorminusone=\tempauthornumber
+\advance\tempauthorminusone by -1
+\ifnum\countauthors < \tempauthornumber
+\gdef\xdocomma{,}%
+\else\gdef\xdocomma{}\fi%
+%%%
+\ifnum\countauthors = \tempauthornumber
+\gdef\xdoAnd{And}\gdef\xdocomma{}%
+\else\gdef\xdoAnd{}\fi%
+\ifnum\tempauthornumber= 1
+\gdef\xdoAnd{}\gdef\xdocomma{}\fi%
+\ifnum\countauthors=\tempauthorminusone
+\gdef\xdocomma{}\fi%
+}
+%%%
+%% if num countauthors is less than or equal to \AuthorCollaborationLimit, print name
+\ifnum\countauthors< \AuthorCollaborationLimit
+%%%
+\ifx\one\empty\else
+  \ignorespaces\leavevmode\hbox{\unskip\xdoAnd\ #1\unskip\xdocomma}% nice, keeps name from breaking across lines
+\fi\fi%
+%%
+\ifnum\countauthors= \AuthorCollaborationLimit
+%%%
+\ifx\one\empty\else
+\ignorespaces\leavevmode\hbox{\unskip\xdoAnd\ #1\unskip\xdocomma}% nice, keeps name from breaking across lines
+\fi%
+\fi%
+%%
+\ifx\one\empty\else
+ \begingroup
+\ifnum\countauthors>\AuthorCollaborationLimit\else
+  #3% all affil numbers
+\ifx\@affilID@temp\empty
+\else%
+\setbox0=\hbox{\expandafter\lookfornumbers\@affilID@temp{}{}{}{}{}{}{}{}{}}%
+\fi\fi
+%% #2= \altaffiliation{} or \email{} or
+%% possibly anything other than author, affiliation, or collaboration
+  \@if@empty{#2}{\endgroup{}{}}
+{\ifnum\countauthors>\AuthorCollaborationLimit\endgroup{}{}%% <<< bug fix, added \endgroup{}{}
+\else
+\endgroup{\comma@space}{}\frontmatter@footnote{#2}\fi}%
+\fi%% end test of empty
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Collaboration name is always used if available:
+\expandafter\ifx\csname currCollabName\the\totalentries\endcsname\relax\else
+%%%
+%% No et al in allauthors, because all authors are listed!
+%%
+\expandafter\ifx\csname
+currCollabName\the\totalentries\endcsname\empty
+\else
+\vskip6pt
+\expandafter\csname currCollabName\the\totalentries\endcsname\vskip6pt
+\fi
+\global\countauthors=0
+%%%
+%%%
+\global\advance\docollabnum  by 1
+%% Set up counters for next time through this loop:
+{\advance\docollabnum by1
+  \expandafter\ifx\csname
+  specificCollabLimit\the\docollabnum\endcsname\relax
+ \else
+   \global\AuthorCollaborationLimit=\csname
+   specificCollabLimit\the\docollabnum\endcsname
+  \fi
+%
+\expandafter\ifx\csname
+CollabTotalAuthors\the\docollabnum\endcsname\relax
+\else
+\global\tempauthornumber=\csname
+CollabTotalAuthors\the\docollabnum\endcsname
+\fi}
+\fi %% ends test to see if it is time to use collaboration name
+\fi %% ends ifanonymous
+}%
 
 %%%
 %% set \affil to match \affiliation found in revtex, since authors are accustomed to using \affil{}
@@ -6318,8 +6775,10 @@ needed. It will not do anything.^^J Please use
 \newif\iffirstaffil
 \firstaffiltrue
 
-%%
+\newcount\affilnum
+%% +++!
 \def\@affil@script#1#2#3#4{%
+\ifsuppressAffiliations\else
 \iffirstaffil
 % Oct 2017
 \vskip2pt
@@ -6330,13 +6789,14 @@ needed. It will not do anything.^^J Please use
    \frontmatter@affiliationfont
    \@ifnum{\c@affil<\affil@cutoff}{}{%
 \def\one{#1}
+%%
+%%
 \ifnum\one<\largestAffilNum
 %% this makes the numbers
    \def\@thefnmark{#1}\@makefnmark\fi
 \ifnum\one=\largestAffilNum
    \def\@thefnmark{#1}\@makefnmark\fi
    }%
-% this makes the text
 \ifnum\one<\largestAffilNum
    \ignorespaces#3%
 \fi
@@ -6347,14 +6807,18 @@ needed. It will not do anything.^^J Please use
    \par
   \endgroup
  }%
-}%
+\fi}%
+
+
 
 \newif\ifnobreakafterkeywords
 \def\NoNewPageAfterKeywords{\global\nobreakafterkeywordstrue}
 \NoNewPageAfterKeywords
 \def\NewPageAfterKeywords{\global\nobreakafterkeywordsfalse}
 
+%%%+++!!!
 \def\frontmatter@maketitle{%
+%% \@author@finish needs to be here:
 \@author@finish
 \if@firstsection% not appendix, in other words
   \title@column\titleblock@produce
@@ -6391,6 +6855,7 @@ needed. It will not do anything.^^J Please use
 \fi
 }%
 
+
 \let\maketitle\frontmatter@maketitle
 
 \def\secondtitleblock@produce{%
@@ -6410,20 +6875,6 @@ needed. It will not do anything.^^J Please use
   }%
   \endgroup
 }%
-
-
-\def\allauthors{%% this conditional keeps \allauthors from turning on
-%%                 unless \AuthorCollaborationLimit is used:
-\ifnumlines\nolinenumbers\fi
-\onecolumngrid
-\clearpage
-\AuthorCollaborationLimit=10000
-%\largestAffilNum=10000 <<== not needed
-{\vskip6pt\vskip1sp\centerline{\large\bf All Authors and
-Affiliations\vrule depth 18pt width0pt}\nobreak
-\maketitle
-}}
-\let\AllAuthors\allauthors
 
 %% no club or widow lines
 \widowpenalty=10000
@@ -6449,37 +6900,106 @@ Affiliations\vrule depth 18pt width0pt}\nobreak
 \def\figurename{Figure}
 \def\tablename{Table}
 \def\fnum@figure{{\bf\figurename~\thefigure}}
-\def\fnum@table{{\bf\tablename~\thetable}}
+\def\fnum@table{{\bf\tablename~\ifappletter\thesection\fi\thetable}}
+
 
 \def\tempfootmark#1{}
 
 \newcount\c@affilcount
-
- \renewcommand*\altaffiliation[2][]{%
- \@AF@join{#1#2\ifmodern\baselineskip=14pt\fi
+\renewcommand*\altaffiliation[2][]{%
+\@AF@join{\ifanonymous\else
+#1#2\ifmodern\baselineskip=14pt\fi
+\if@two@col\hsize=.5\textwidth
+\advance\hsize by -18pt
+\fi\fi}%
 }%
- }%
 
-\def\correspondingauthor#1{{
+
+\def\correspondingauthor#1{{\ifanonymous
+\else
 \renewcommand\thefootnote{\hskip-12pt}
 \footnote{Corresponding author: #1\ifmodern\vrule depth 5pt
-width 0pt\relax\fi}}}
+width 0pt\relax\fi}\fi}}
 
 \let\saveemail\email
-\def\email#1{{\let\ltx@footmark\tempfootmark
+\def\email#1{\ifanonymous
+\else{\let\ltx@footmark\tempfootmark
 \saveemail{}}
 {\renewcommand\thefootnote{\hskip-12.1pt}
 \footnote{\href{mailto: #1}{#1}\ifmodern\vrule depth 7pt width
-0pt\relax\else\ifmanu\vskip-4pt\else\vrule depth 7pt width 0pt\fi\fi}}}
+0pt\relax\else\ifmanu\vskip-4pt\else\vrule depth 7pt width
+0pt\fi\fi}}\fi}
 
-\def\nocollaboration{%
-\collaboration{\vbox to 0pt{\vss ---\vskip2pt}}
+\def\nocollaboration#1{%
+\collaboration{#1}{\vbox to
+0pt{\vss\centerline{---}\vskip2pt}}
 }
+
+%% May 19
+%% \AuthorsAndCollaboration changed to \FullCollaborationID
+%% June 6 \FullCollaborationID changed to \xcollaboration{}{}
+%% june 7 \collaboration changed to \xcollaboration; fullcollaborationid changed to \collaboration
+
+%% here just in case we need it in the future...
+\def\xcollaboration#1#2{
+\global\advance\allentries by 1
+\expandafter\def\csname
+currCollabLimit\the\allentries\endcsname{#1}
+\@author@def{\@booleantrue
+\collaboration@sw}{#2}
+}
+
+\let\savelistand\@listand
+\newcount\numauthors
+\newcount\collabnum
+\newbox\collabnamebox
+\newif\iffirstcollab
+\global\firstcollabtrue
+
+\newif\ifcollaborationon
+\def\collaboration#1#2{\global\collaborationontrue
+\global\advance\collabnum by 1
+\iffirstcollab\global\firstcollabfalse
+\expandafter\xdef\csname currCollabLimit0\endcsname{#1}
+\fi
+%% make this def so that we can use it when we want in doauthor:
+\expandafter\gdef\csname specificCollabLimit\the\collabnum\endcsname{#1}
+%% This allows us access the number of authors per collaboration:
+\expandafter\xdef\csname
+CollabTotalAuthors\the\collabnum\endcsname{\the\entriesinthiscollab}
+\global\entriesinthiscollab=0
+%%
+\global\advance\allentries by 1
+%%
+%% we should have only one of these with this number; this used to say when
+%% use specificCollabLimit:
+\expandafter\gdef\csname currCollabLimit\the\allentries\endcsname{#1}
+%% we should have only one of these with this number
+\expandafter\gdef\csname
+currCollabName\the\allentries\endcsname{%\ifnum#1>0
+%\sc And the\vskip4pt\fi
+#2}
+%%
+\let\doEtAl\relax
+%% not here
+\@author@def{\@booleanfalse
+\collaboration@sw}{}}
+
+
+\def\and{
+\centerline{\vbox {\vrule height 12pt width0pt and\vskip2pt}}
+}
+
+%\def\andthe{%
+%\collaboration{\vbox {\vrule height 12pt width0pt and
+%the\vskip2pt}}\vskip4pt
+%}
 
 %% gets rid of () around collaboration
 \def\@collaboration@present#1#2#3#4{%
 \par
  \begingroup
+\vskip3pt
 \iflongauthor\vskip-4pt\ifmodern\vskip-6pt\fi\fi
   \frontmatter@collaboration@above
   \@affilID@def{}%
@@ -6494,11 +7014,12 @@ width 0pt\relax\fi}}}
 \iflongauthor
 \else\vskip8pt\fi
  \set@listcomma@list#1%
+\vskip1pt %% was \vskip9pt
 }%
 
 
 %%% These lines were commented out until a fix could be applied that
-%%% addresses the underlying issues. The problme is that on Linux systems
+%%% addresses the underlying issues. The problem is that on Linux systems
 %%% you can not write a "hidden" .bib file. There is no issue with this
 %%% on Mac OS X nor Windows.
 %%% get rid of \jobname Notes being sent to .aux file:
@@ -6514,7 +7035,10 @@ width 0pt\relax\fi}}}
 
 \def\bibliography#1{\bibliography@latex{#1}}%
 
+
 %%%
+\newif\iffrontmatterfirsttime
+\global\frontmatterfirsttimetrue
 \let\savecentercr\@centercr
 \def\frontmatter@author@produce@script{%
   \begingroup
@@ -6538,6 +7062,7 @@ width 0pt\relax\fi}}}
 \,     \unskip\unskip
      \par
     \endgroup
+%% below
     \begingroup
      \frontmatter@above@affiliation@script
      \let\AFF@opr \@affil@script
@@ -6545,7 +7070,11 @@ width 0pt\relax\fi}}}
 \def\@centercr{\vrule depth 3pt width0pt\vskip1sp}
      \@AFF@list}
 \let\@centercr\savecentercr
-     \frontmatter@footnote@produce
+%% sept 14, 2020
+\iffrontmatterfirsttime
+\frontmatter@footnote@produce
+\global\frontmatterfirsttimefalse
+\fi
      \par
     \endgroup
   \endgroup
@@ -6555,6 +7084,7 @@ width 0pt\relax\fi}}}
 
 \newif\iffirstaffil
 \firstaffiltrue
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% These commands were in aastex earlier; I redefined.
 \def\tighten{\global\tightentrue\normalsize}
@@ -6609,10 +7139,357 @@ width 0pt\relax\fi}}}
 
 \def\mdash{---}
 
+\newif\ifcenterwidetable
+%% these two definitions are the same, but it might
+%% be convenient to have both
+\def\centerwidetable{\global\centerwidetabletrue}
+
+
+%% this doesn't seem to be documented, assume we don't need it:
+%\def\centernarrowtable{\global\centerwidetablefalse}
+
+%% default, center within width of text on both sides
+ \def\LT@LR@c{\LTleft=0pt plus1fill
+  \LTright\LTleft}%
+
+\def\widetable{\def\LT@LR@c{\LTleft=0pt minus1fill
+  \let\LTright\LTleft}}
+
+\newif\ifreturntotwocol
+
+
+%%%%%%%%%
+%% to help with graceful linebreaks in two column text:
+  \tolerance 9999%
+%% sloppy defines emergencystretch to be 3 em, this is a bit
+%% more conservative:
+  \emergencystretch 1em
+  \hfuzz .5\p@
+
+%%%%%%%%%
+%% Nominal Conversion Constants
+
+%%  \boldmath inside the \hbox ??
+\def\nomSolarEffTemp{\leavevmode\hbox{\boldmath$\mathcal{T}^{\rm N}_{\mathrm{eff}\odot}$}}
+\def\nomTerrEqRadius{\leavevmode\hbox{\boldmath$\mathcal{R}^{\rm N}_{E\mathrm e}$}}
+\def\nomTerrPolarRadius{\leavevmode\hbox{\boldmath$\mathcal{R}^{\rm N}_{E\mathrm p}$}}
+\def\nomJovianEqRadius{\leavevmode\hbox{\boldmath$\mathcal{R}^{\rm
+N}_{J\mathrm e}$}}
+ \def\nomJovianPolarRadius{\leavevmode\hbox{\boldmath$\mathcal{R}^{\rm
+ N}_{J\mathrm p}$}}
+ \def\nomTerrMass{\leavevmode\hbox{\boldmath$(\mathcal{GM})^{\rm N}_{\mathrm E}$}}
+ \def\nomJovianMass{\leavevmode\hbox{\boldmath$(\mathcal{GM})^{\rm N}_{\mathrm J}$}}
+ \def\Qnom{\leavevmode\hbox{\boldmath$\mathcal{Q}^{\rm N}_{\odot}$}}
+\let\Qn\Qnom
+
+%% Generic commands that can be given an argument:
+\def\nom#1{\leavevmode\hbox{\boldmath$\mathcal{#1}^{\rm N}_{\odot}$}}
+\def\Eenom#1{\leavevmode\hbox{\boldmath$\mathcal{#1}^{\rm N}_{Ee}$}}
+\def\Epnom#1{\leavevmode\hbox{\boldmath$\mathcal{#1}^{\rm N}_{Ep}$}}
+\def\Jenom#1{\leavevmode\hbox{\boldmath$\mathcal{#1}^{\rm N}_{Je}$}}
+\def\Jpnom#1{\leavevmode\hbox{\boldmath$\mathcal{#1}^{\rm N}_{Jp}$}}
+
+%%%%%%%%%%%%%%%%
+%% Ability to have tables, equations, figures in appendix start from 1, and use appendix section letter.
+
+\newif\ifappletter
+\def\apptablenumbers{\global\applettertrue
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\setcounter{equation}{0}
+\def\thetable{\thesection\the\c@table}%
+\def\fnum@table{{\bf\tablename~\thetable}}%
+\def\thefigure{\thesection\the\c@figure}%
+\def\fnum@figure{{\bf\figurename~\thefigure}}%
+}%
+
+%%% easier to remember than \apptablenumbers
+\let\restartappendixnumbering\apptablenumbers
+
+\def\resetapptablenumbers{\global\c@table=0
+\global\c@figure=0
+\global\c@equation=0
+\def\thetable{\thesection\the\c@table}
+\def\fnum@table{{\bf\tablename~\thetable}}%
+\def\thefigure{\thesection\the\c@figure}
+\def\fnum@figure{{\bf\figurename~\thefigure}}%
+}
+
+%% written for aastex63
+\newif\ifallauthors
+\def\allauthors{
+\global\allauthorstrue
+\let\doauthor\doAllauthors
+\ifanonymous
+\vskip6pt\vskip1sp\centerline{\large\bf All Authors and
+Affiliations\vrule depth 18pt width0pt}\nobreak
+\centerline{Anonymous author(s)}
+\else
+\ifnumlines\nolinenumbers\fi
+\onecolumngrid
+\clearpage
+{\vskip6pt\vskip1sp\centerline{\large\bf All Authors and
+Affiliations\vrule depth 18pt width0pt}\nobreak
+\global\docollabnum=0
+\global\totalentries=0
+\global\countauthors=0
+\maketitle
+}\fi}
+
+%% written for AASTeX62
+\def\oldallauthors{%% this conditional keeps \allauthors from turning on
+%%                 unless \AuthorCollaborationLimit is used:
+\ifnumlines\nolinenumbers\fi
+\onecolumngrid
+\clearpage
+\AuthorCollaborationLimit=10000
+%\largestAffilNum=10000 <<== not needed
+{\vskip6pt\vskip1sp\centerline{\large\bf All Authors and
+Affiliations\vrule depth 18pt width0pt}\nobreak
+\maketitle
+}}
+\let\AllAuthors\allauthors
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Highlight Figure
+\definecolor{ltblue}{cmyk}{.5,.1,.1,0}
+\newdimen\currwidth
+\long\def\highlightfigure#1{
+\bgroup
+\fboxrule=4pt
+\fboxsep=12pt
+\vskip6pt
+\global\currwidth=\hsize
+\global\advance\currwidth by -32pt
+\noindent\hbox to\currwidth{\fcolorbox{ltblue}{white}{%
+$\vcenter{\hbox to\currwidth{\hss#1\hss}}$}}
+\egroup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% New interactive command:
+
+\def\xlc{lc}
+\def\xjs{js}
+\def\xanimation{animation}
+\newbox\interactbox
+\newif\ifcorrectentries
+
+
+\def\interactive#1#2{
+\global\correctentriesfalse\def\checkone{#1}
+\ifx\checkone\xlc\correctentriestrue\fi
+\ifx\checkone\xjs\correctentriestrue\fi
+\ifx\checkone\xanimation \correctentriestrue\fi
+\def\checktwo{#2}
+\ifx\checktwo\empty\global\correctentriesfalse\fi
+\ifcorrectentries
+\else\hrule height1pt\vskip12pt\bf ERROR:
+The command
+{\tt\string\begin\string{interactive\string}\string{\string}\string{\string}}
+needs two arguments. The
+first describes the interactive type and the only allowed choices are
+lc, js, or animation.\\
+The second argument is the movie file or package
+containing the interactive figure components. See\\
+\url{https://journals.aas.org/aastexguide/\hashmark interactivefig} for more
+details.
+\vskip12pt\hrule height1pt
+\fi \global\currwidth\hsize
+\global\advance\currwidth by -32pt
+%% we need to set \currwidth here because interactbox expands
+%% before highlightfigure
+\global\setbox\interactbox=\vbox\bgroup\hsize=\currwidth\relax\centering
+}
+
+\def\endinteractive{\egroup
+\ifcorrectentries\highlightfigure{\copy\interactbox}\fi
+}
+
+%%%% For cases in which footnotes are called in full width environment
+%%   but are used in two cols. This keeps them from overwriting the
+%%   second column:
+
+\let\savefootnote\footnote
+\def\onecolfootnote#1{\savefootnote{\hsize=.5\textwidth\advance\hsize
+by-18pt\relax#1}}
+
+\def\onecolumnfootnotes{\let\footnote\onecolfootnote}
+
+\newdimen\movetableright
+
+%% for anonymous option
+\newif\ifsuppressAffiliations
+\def\suppressAffiliations{\global\suppressAffiliationstrue}
+
+%% new definition to be used in trackchanges:
+\def\sout#1{\raise5pt\hbox{\underline{\vbox to
+0pt{\vskip-4pt\hbox{#1\vrule height 8.5pt depth 3.5pt width0pt}\vss}}}}
+
+%% changes for affiliations when anonymous option is used:
+\ifanonymous
+\suppressAffiliationstrue
+\gdef\affiliation#1{}%% may 20, 2020
+\def\xauthor[#1]#2{}
+\let\yauthor\@gobble
+\def\lookforbracket{\ifx\next[
+\let\go\xauthor\else\let\go\yauthor\fi\go}
+\def\author{\futurelet\next\lookforbracket}
+\fi
+
+
+%%%%%%%%%%%%%
+%% Line numbering
+
+
+\ifnumlines
+\usepackage[mathlines]{lineno}%% dec 20
+%%
+\linenumbers*[1]
+%%\linenumbersep default=10pt
+\if@two@col
+\advance\linenumbersep -6pt
+\else
+\advance\linenumbersep 12pt
+\fi
+\fi
+
+%% Use when line numbers are on, and after \usepackage{amsmath}.
+%% Will make line numbering work on math as it would without amsmath.
+\def\fixmathlinenumbering{
+\let\saveopensqbracket\[
+\def\[{\linenomath\saveopensqbracket}
+\let\saveequation\equation
+\let\saveendequation\endequation
+%%
+ \let\savealign\align
+ \let\saveendalign\endalign
+%%
+ \let\savealigned\aligned
+ \let\saveendaligned\endaligned
+%%
+\def\align{\linenomath\savealign}
+ \def\endalign{\saveendalign}
+ \def\aligned{\linenomath\savealigned}
+ \def\endaligned{\linenomath\saveendaligned}
+%%
+\def\equation{\linenomath\saveequation}
+\def\endequation{\linenomath\saveendequation}
+\usepackage[mathlines]{lineno}
+}
+
+\AtBeginDocument{\expandafter\ifx\csname
+@amsmath@err\endcsname\relax\else\fixmathlinenumbering\fi}
 
 \endinput
+%% Change Log
+============================
+Jan 29, 2021
+added \ifonecolstyle to see if reference numberlines need to
+be closer to text
+
+Dec 20, 2020
+Line numbering solutions:
+
+Line numbering equations and \[ \] works fine.
+
+$$math $$ does not work, and should be replaced with \[ math \]
+
+If author has \usepackage{amsmath} the equations will not number;
+amsmath and lineno are incompatible.
+
+
+June 28
+For using \edit{}{} in section heads; new command,
+\simpleedit that will prevent errors in section heads
+and in bookmarks. \edit is set to be equal to \simpleedit{}{}
+in \section definition, so nothing needs to be done by user.
+\protect used in section head, as \protect\edit{}{}, is not
+necessary.
+
+June 27
+\null added to \end{deluxetable} and \csname enddeluxetable*\endcsname
+to force final page of multipage table to print.
+
+June 26
+Acknowledgments: remember to use
+\begin{acknowledgments}...\end{acknowledgments} form
+OR
+\begin{acknowledgements}...\end{acknowledgements}
+
+Now have an error message built in if someone uses
+just \acknowledgments or \acknowledgements
+
+
+June 4, 2020
+   Added \nocollaboration{0} to first
+   section head, if anonymous was true. This
+   allowed correct titlepage for anonymous
+   if any style option was used.
+
+Acknowledgments: remember to use
+\begin{acknowledgments}...\end{acknowledgments} form
+
+
+
 
 %% Change Log
+============================
+May 19, 2020
+Changed definition of \sout (strike out) so that
+it works with a variety of citations in
+argument of \deleted and \replaced without complaint.
+
+Made anonymous work with \longauthor, and without
+\collaboration or \nocollaboration.
+
+Changed \acknowledgements to
+\begin{acknowledgements}...\end{acknowledgements}
+(More error proof, and standard mark up)
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+June 8, 2019
+Changed \author and \collaboration macros.
+Collaboration now takes two arguments:
+#1= number of authors to be listed before the
+name of the collaboration; #2 = name of the collaboration
+
+\nocollaboration{} has one argument,
+#1= the number of authors above it that we want to print on the title page.
+
+June 6, 2019
+
+\acknowledgments does not use \begin{}...\end{} form,
+now just \acknowledgments command. Acknowledgments text
+ends with \par, so if author wants more than one paragraph
+in acknowledgment he/she should surround text with curly
+bracket:
+
+\acknowledgments
+text...
+
+or
+
+\acknowledgments
+{text...
+
+more text...}
+
+------
+
+
+============================
+June 3, 2019
+\let\footnote\onecolfootnote on page where references start, but
+before footnotes are entered,
+will allow footnotes to break in the right place (one column's width).
+
+============================
+May 15, 2019
+\centerwidetable is now \movetableover at Greg's suggestion.
+
 ============================
 Nov 27, 2017
 
@@ -6865,3 +7742,65 @@ Deleted recent definition of \appendix, returned to earlier version
 with additions.
 
 ================
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% New interactive command:
+
+\def\xlc{timeseries}
+\def\xjs{js}
+\def\xanimation{animation}
+\newbox\interactbox
+\newif\ifcorrectentries
+
+\def\interactive#1#2{
+\global\correctentriesfalse\def\checkone{#1}
+\ifx\checkone\xlc\correctentriestrue\fi
+\ifx\checkone\xjs\correctentriestrue\fi
+\ifx\checkone\xanimation \correctentriestrue\fi
+\ifcorrectentries
+\else\hrule height1pt\vskip12pt\bf ERROR: Your choices for the first argument for
+{\tt\string\interactive} are timeseries, js, or animation.\\[6pt] Please choose one
+of these terms.\vskip12pt \fi
+%%%
+\def\checktwo{#2}
+\ifx\checktwo\empty \vskip12pt \bf ERROR: The command {\tt\string\interactive} needs
+two arguments, with the second argument for the graphics file or files
+needed.\vskip12pt\hrule height1pt \else\global\correctentriestrue\fi
+\global\currwidth\hsize
+\global\advance\currwidth by -32pt
+%% we need to set \currwidth here because interactbox expands
+%% before highlightfigure
+\global\setbox\interactbox=\vbox\bgroup\hsize=\currwidth\centering}
+
+\def\xxinteractive#1#2{\global\correctentriesfalse\def\checkone{#1}
+\ifx\checkone\xlc\correctentriestrue\fi
+\ifx\checkone\xjs\correctentriestrue\fi
+\ifx\checkone\xanimation \correctentriestrue\fi
+\ifcorrectentries
+\else\hrule height1pt\vskip12pt\bf
+\noindent ERROR:\\[6pt] Your choices for the first argument for
+{\tt\string\begin\string{\string\interactive\string}} are timeseries, js, or animation.\\[6pt] Please choose one
+of these terms.\vskip12pt \fi
+%%%
+\def\checktwo{#2}
+\ifx\checktwo\empty \vskip12pt \bf
+\noindent ERROR:\\[6pt]
+The second argument of %{\tt\string\begin\string{interactive\string}} is the file containing the
+interactive component. Please check your LaTeX to be sure it conforms.
+See %\href{https://journals.aas.org/aastexguide/interactivefig}{stuff}
+%{https://journals.aas.org/aastexguide/\#interactivefig}
+for more details.
+\vskip12pt\hrule height1pt \else\global\correctentriestrue\fi
+\global\currwidth\hsize
+\global\advance\currwidth by -32pt
+%% we need to set \currwidth here because interactbox expands
+%% before highlightfigure
+\global\setbox\interactbox=\vbox\bgroup\hsize=\currwidth\centering}
+
+\def\endinteractive{\egroup
+\ifcorrectentries\highlightfigure{\copy\interactbox}\fi}
