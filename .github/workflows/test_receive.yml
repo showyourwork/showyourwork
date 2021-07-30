@@ -8,7 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILD_OUTCOME: ${{ github.event.client_payload.build_outcome }}"
+      TEST_REPO: ${{ github.event.client_payload.test_repo }}"
+      RUN_ID: ${{ github.event.client_payload.run_id }}"
     steps:
       - name: Receive test info
         run: |
+          echo "Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
           [[ ${BUILD_OUTCOME} == "success" ]] && exit 0 || exit 1
