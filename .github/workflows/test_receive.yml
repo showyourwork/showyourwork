@@ -4,7 +4,7 @@ on:
   repository_dispatch:
 
 jobs:
-  receive:
+  tests:
     runs-on: ubuntu-latest
     env:
       BUILD_OUTCOME: ${{ github.event.client_payload.build_outcome }}"
@@ -13,11 +13,8 @@ jobs:
     steps:
       - name: Test info
         run: |
-          echo "::echo::off"
           BUILD_OUTCOME="${BUILD_OUTCOME%\"}"
           TEST_REPO="${TEST_REPO%\"}"
           RUN_ID="${RUN_ID%\"}"
-          echo "Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
-          echo "::set-output name=test_url::https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
           echo "::warning::Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
           [[ ${BUILD_OUTCOME} == "success" ]] && exit 0 || exit 1
