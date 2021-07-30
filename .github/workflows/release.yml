@@ -9,7 +9,7 @@ on:
 jobs:
   generate_example:
     runs-on: ubuntu-latest
-      steps:
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
 
