@@ -21,6 +21,7 @@ def main():
     parser.add_argument("-C", "--Clean", action="store_true")
     parser.add_argument("-n", "--new", action="store_true")
     parser.add_argument("-d", "--dag", action="store_true")
+    parser.add_argument("--conda-frontend", default="conda")
 
     # Internal arguments
     parser.add_argument(
@@ -61,6 +62,7 @@ def main():
     if not conda_set:
         snakemake_args.append("--use-conda")
     snakemake_args.extend(["--snakefile", ".Snakefile"])
+    snakemake_args.extend(["--conda-frontend", args.conda_frontend])
 
     # Copy workflow to user directory
     files = list((ROOT / "workflow").glob("*"))  # NOTE: this includes dotfiles
