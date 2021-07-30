@@ -66,7 +66,7 @@ def restore_cache():
     input_scripts += [str(USER / "tex" / "ms.tex")]
     input_scripts += [str(USER / "environment.yml")]
     for script in input_scripts:
-        script_rel = str(Path("figures") / Path(script).name)
+        script_rel = script.relative_to(USER)
         if script_rel not in files:
             subprocess.check_output(
                 ["touch", "-a", "-m", "-t", ANCIENT, script]

@@ -1,4 +1,3 @@
-from . import settings
 from .constants import *
 from .utils import glob
 from .clean import clean, Clean
@@ -54,8 +53,10 @@ def main():
             raise ValueError(
                 "Arguments `-s` or `--snakefile` are not allowed."
             )
+
         if arg == "--verbose":
-            settings.verbose = True
+            # TODO: Implement me!
+            pass
 
     if not cores_set:
         snakemake_args.append("-c1")

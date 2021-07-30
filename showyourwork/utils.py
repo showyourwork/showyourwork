@@ -1,4 +1,3 @@
-from . import settings
 from .constants import *
 from pathlib import Path
 from glob import glob as _glob
@@ -60,8 +59,9 @@ def make_pdf(
     for file in glob(USER / "tex" / "*"):
         shutil.copy(file, tmpdir)
 
-    # Debug mode?
-    if settings.verbose:
+    # TODO: Implement me!
+    verbose = False
+    if verbose:
         tectonic_args += ["--print"]
 
     # Build
