@@ -24,6 +24,8 @@ jobs:
       - name: Generate rodluger/showyourwork-sandbox
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          TARGET_REPOSITORY: rodluger/showyourwork-sandbox
+          TARGET_USER: rodluger
+          TARGET_REPOSITORY: showyourwork-sandbox
+          AUTHOR_NAME: Rodrigo Luger
           ADD_CALLBACK: true
         run: bash .github/workflows/generate.sh
