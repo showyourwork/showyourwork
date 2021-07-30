@@ -23,4 +23,4 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           TARGET_REPOSITORY: rodluger/showyourwork-example
           ADD_CALLBACK: true
-        run: bash dispatch.sh
+        run: bash .github/workflows/generate.sh
