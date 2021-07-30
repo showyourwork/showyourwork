@@ -1,3 +1,4 @@
+from . import settings
 from .constants import *
 from pathlib import Path
 from glob import glob as _glob
@@ -21,14 +22,13 @@ def glob(pathname, **kwargs):
 def make_pdf(
     tmpdir=TEMP / "tex",
     publish=True,
-    tectonic_args=["--keep-logs", "--keep-intermediates", "--print"],
+    tectonic_args=["--keep-logs", "--keep-intermediates"],
     **jinja_kwargs,
 ):
     """
     Compile the PDF using tectonic.
 
     """
-
     # Custom Jinja environment for LaTeX
     env = jinja2.Environment(
         block_start_string="((*",
@@ -59,6 +59,10 @@ def make_pdf(
     # Copy user files to tmpdir
     for file in glob(USER / "tex" / "*"):
         shutil.copy(file, tmpdir)
+
+    # Debug mode?
+    if settings.verbose:
+        tectonic_args += ["--print"]
 
     # Build
     subprocess.check_output(
