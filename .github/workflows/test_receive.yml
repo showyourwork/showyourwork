@@ -18,6 +18,6 @@ jobs:
           TEST_REPO="${TEST_REPO%\"}"
           RUN_ID="${RUN_ID%\"}"
           echo "Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
-          echo "::set-output name=test_url::https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}
+          echo "::set-output name=test_url::https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
           echo "::warning::Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
           [[ ${BUILD_OUTCOME} == "success" ]] && exit 0 || exit 1
