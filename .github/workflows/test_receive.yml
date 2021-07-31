@@ -7,14 +7,16 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
-      BUILD_OUTCOME: ${{ github.event.client_payload.build_outcome }}"
-      TEST_REPO: ${{ github.event.client_payload.test_repo }}"
+      TEST_BUILD_OUTCOME: ${{ github.event.client_payload.test_build_outcome }}"
+      TEST_CACHE_OUTCOME: ${{ github.event.client_payload.test_cache_outcome }}"
+      REPO: ${{ github.event.client_payload.repo }}"
       RUN_ID: ${{ github.event.client_payload.run_id }}"
     steps:
       - name: Test info
         run: |
-          BUILD_OUTCOME="${BUILD_OUTCOME%\"}"
-          TEST_REPO="${TEST_REPO%\"}"
+          TEST_BUILD_OUTCOME="${TEST_BUILD_OUTCOME%\"}"
+          TEST_CACHE_OUTCOME="${TEST_CACHE_OUTCOME%\"}"
+          REPO="${REPO%\"}"
           RUN_ID="${RUN_ID%\"}"
-          echo "::warning::Test details here: https://github.com/${TEST_REPO}/actions/runs/${RUN_ID}"
-          [[ ${BUILD_OUTCOME} == "success" ]] && exit 0 || exit 1
+          echo "::warning::Test details here: https://github.com/${REPO}/actions/runs/${RUN_ID}"
+          [[ ${TEST_BUILD_OUTCOME} == "success" && ${TEST_CACHE_OUTCOME} == "success" ]] && exit 0 || exit 1
