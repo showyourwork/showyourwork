@@ -83,7 +83,7 @@ def get_figure_files(figure):
     return files
 
 
-def get_script_metadata(clobber=True):
+def get_script_metadata(clobber=True, verbose=False):
 
     if clobber or not (TEMP / "scripts.json").exists():
 
@@ -91,6 +91,7 @@ def get_script_metadata(clobber=True):
         make_pdf(
             tmpdir=TEMP / "tree",
             publish=False,
+            verbose=verbose,
             tectonic_args=["--keep-logs", "--keep-intermediates", "-r", "0"],
             gen_tree=True,
         )

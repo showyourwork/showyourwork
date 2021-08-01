@@ -21,6 +21,7 @@ def glob(pathname, **kwargs):
 def make_pdf(
     tmpdir=TEMP / "tex",
     publish=True,
+    verbose=False,
     tectonic_args=["--keep-logs", "--keep-intermediates"],
     **jinja_kwargs,
 ):
@@ -59,13 +60,14 @@ def make_pdf(
     for file in glob(USER / "tex" / "*"):
         shutil.copy(file, tmpdir)
 
-    # TODO: Implement me!
-    verbose = False
+    # Verbosity
     if verbose:
         tectonic_args += ["--print"]
+    else:
+        tectonic_args += ["--chatter", "minimal"]
 
     # Build
-    subprocess.check_output(
+    subprocess.check_call(
         ["tectonic"] + tectonic_args + ["ms.tex"], cwd=tmpdir
     )
 

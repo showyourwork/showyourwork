@@ -18,7 +18,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--clean", action="store_true")
     parser.add_argument("-C", "--Clean", action="store_true")
-    parser.add_argument("-n", "--new", action="store_true")
+    parser.add_argument(
+        "-n", "--new", default=False, const="latest", nargs="?", type=str
+    )
     parser.add_argument("-d", "--dag", action="store_true")
 
     # Internal arguments
@@ -33,11 +35,14 @@ def main():
     # Subprograms
     cmds = ["clean", "Clean", "new", "dag", "restore_cache", "update_cache"]
     assert (
-        sum([int(getattr(args, cmd, False)) for cmd in cmds]) < 2
+        sum([int(not getattr(args, cmd, False) is False) for cmd in cmds]) < 2
     ), "Options conflict!"  # Only one is allowed at a time!
     for cmd in cmds:
         if getattr(args, cmd, False):
-            exec(f"{cmd}()")
+            if cmd == "new":
+                new(args.new)
+            else:
+                exec(f"{cmd}()")
             return
 
     # Process Snakemake defaults
@@ -52,10 +57,8 @@ def main():
             raise ValueError(
                 "Arguments `-s` or `--snakefile` are not allowed."
             )
-
         if arg == "--verbose":
-            # TODO: Implement me!
-            pass
+            snakemake_args.extend(["--config", "verbose=true"])
 
     if not cores_set:
         snakemake_args.append("-c1")
