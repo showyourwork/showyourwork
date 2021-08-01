@@ -26,6 +26,16 @@
     {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}\hspace{0.2em}%
 }
 
+% Add version info to header. Works for most AASTeX versions by replacing
+% the \LaTeX macro within the frontmatter heading
+\let\oldmaketitle\maketitle
+\def\maketitle{%
+    \let\oldLaTeX\LaTeX
+    \def\LaTeX{\oldLaTeX/\showyourwork v((- base_version -))}
+    \oldmaketitle
+    \let\LaTeX\oldLaTeX
+}
+
 ((* if gen_tree *))
 
 % Logging
