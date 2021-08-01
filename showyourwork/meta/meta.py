@@ -5,6 +5,7 @@ from .repo import get_repo_metadata
 from .scripts import get_script_metadata, get_script_status
 import json
 from packaging import version
+import os
 
 
 def get_metadata(clobber=True):
@@ -21,6 +22,8 @@ def get_metadata(clobber=True):
         meta["base_version"] = version.parse(__version__).base_version
         meta["gen_tree"] = False
         meta["graphicspath"] = str(USER / "figures" / "@")[:-1]
+        meta["CI"] = os.getenv("CI", "false") == "true"
+        meta["run_id"] = os.getenv("GITHUB_RUN_ID", "")
 
         # Figure metadata
         meta["status"] = ScriptUpToDate

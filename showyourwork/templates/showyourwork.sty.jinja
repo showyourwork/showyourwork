@@ -168,6 +168,13 @@
       \color{((- status -))}%
       \faGithub%
     }%
+    ((* if CI *))
+    \hspace{3pt}%
+    \href{((- repo.url -))/actions/runs/((- run_id -))/}{%
+      \color{sywGreen}%
+      \faCheckCircle%
+    }%
+  ((* endif *))
   }
   \oldendabstract%
 }
