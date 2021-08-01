@@ -5,9 +5,10 @@ import shutil
 import subprocess
 import json
 import jinja2
+import sys
 
 
-__all__ = ["glob", "save_json", "make_pdf"]
+__all__ = ["glob", "save_json", "make_pdf", "check_repo"]
 
 
 def glob(pathname, **kwargs):
@@ -97,3 +98,15 @@ def save_json(contents, file):
         file.parents[0].mkdir(exist_ok=True, parents=True)
         with open(file, "w") as f:
             print(current, file=f)
+
+
+def check_repo():
+    if not Path("tex/ms.tex").exists():
+        print("ERROR: Missing manuscript file `tex/ms.tex`.")
+        sys.exit(1)
+    if not Path("figures").exists():
+        print("ERROR: Missing figure scripts directory `figures`.")
+        sys.exit(1)
+    if not Path("environment.yml").exists():
+        print("ERROR: Missing conda environment file `environment.yml`.")
+        sys.exit(1)

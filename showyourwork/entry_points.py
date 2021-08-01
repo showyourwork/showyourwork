@@ -1,5 +1,5 @@
 from .constants import *
-from .utils import glob
+from .utils import glob, check_repo
 from .clean import clean, Clean
 from .cache import restore_cache, update_cache
 from .new import new
@@ -15,13 +15,45 @@ import re
 
 def main():
     # Parse command line args
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--clean", action="store_true")
-    parser.add_argument("-C", "--Clean", action="store_true")
-    parser.add_argument(
-        "-n", "--new", default=False, const="latest", nargs="?", type=str
+    parser = argparse.ArgumentParser(
+        description="Run this command in the top level of a scientific "
+        "article repository "
+        "to execute the Snakemake workflow and build the article PDF. "
+        "See https://github.com/rodluger/showyourwork for more details. "
+        "In addition to the options below, users may provide any of the "
+        "arguments accepted by `Snakemake`, as well as a `-v, --verbose` "
+        "option to increase the verbosity of both `Snakemake` and `tectonic`. "
     )
-    parser.add_argument("-d", "--dag", action="store_true")
+    parser.add_argument(
+        "-c",
+        "--clean",
+        action="store_true",
+        help="remove all temporary files and workflow outputs",
+    )
+    parser.add_argument(
+        "-C",
+        "--Clean",
+        action="store_true",
+        help="runs `clean` and removes the Snakemake cache",
+    )
+    parser.add_argument(
+        "-n",
+        "--new",
+        default=False,
+        const="latest",
+        nargs="?",
+        type=str,
+        metavar="version",
+        help="create a new article repository, optionally from a specific "
+        "version of `gh:rodluger/cookiecutter-showyourwork`",
+    )
+    parser.add_argument(
+        "-d",
+        "--dag",
+        action="store_true",
+        help="generate a directed acyclic graph (DAG) of the workflow, "
+        "saved as `dag.pdf`",
+    )
 
     # Internal arguments
     parser.add_argument(
@@ -44,6 +76,9 @@ def main():
             else:
                 exec(f"{cmd}()")
             return
+
+    # Check that the `cwd` is a valid article repo
+    check_repo()
 
     # Process Snakemake defaults
     cores_set = False
