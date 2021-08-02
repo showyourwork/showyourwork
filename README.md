@@ -97,3 +97,7 @@ git push -u origin main
 ```
 
 Upon every commit pushed to GitHub, `showyourwork` will **automatically build your article on GitHub Actions**. Upon completion, the PDF will be available both as a [workflow artifact](https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts) and on a separate branch in your repo called `main-pdf` (or `[branch]-pdf` if you're on a different branch).
+
+## Under construction...
+
+This README is still under construction. Please stay tuned!
