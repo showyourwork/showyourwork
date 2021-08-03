@@ -2,16 +2,25 @@ from pathlib import Path
 import json
 import subprocess
 import warnings
-import showyourwork
 from packaging.version import parse as parse_version
+
+# Get the current version
+try:
+    import showyourwork
+
+    SHOWYOURWORK_VERSION = showyourwork.__version__
+except:
+
+    # Fallback to latest
+    SHOWYOURWORK_VERSION = "latest"
 
 
 # Read the YAML file
 with open(Path(".github") / "workflows" / "showyourwork.yml", "r") as f:
     contents = f.read()
 
-# Replace `latest` with the current version (package)
-version = parse_version(showyourwork.__version__).base_version
+# Replace `current` with the current version (package)
+version = parse_version(SHOWYOURWORK_VERSION).base_version
 try:
     meta = json.loads(
         subprocess.check_output(
@@ -34,7 +43,7 @@ except Exception as e:
     )
     version = "latest"
 contents = contents.replace(
-    "showyourwork-version: latest", f"showyourwork-version: {version}"
+    "showyourwork-version: current", f"showyourwork-version: {version}"
 )
 
 # Replace `latest` with the latest version (action)
@@ -64,4 +73,4 @@ with open(Path(".github") / "workflows" / "showyourwork.yml", "w") as f:
 
 # Add a VERSION file for the record
 with open(".showyourwork-version", "w") as f:
-    print(showyourwork.__version__, file=f)
+    print(SHOWYOURWORK_VERSION, file=f)
