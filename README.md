@@ -32,10 +32,10 @@ python -m pip install git+https://github.com/rodluger/showyourwork.git@main
 To create a fresh article repository, run
 
 ```bash
-showyourwork --new [version]
+showyourwork --new
 ```
 
-where `[version]` is optional and defaults to the latest version of this package. You will be prompted for some information about the repository, which will then be initialized in the current working directory.
+You will be prompted for some information about the repository, which will then be initialized in the current working directory.
 
 ## Repository structure
 
