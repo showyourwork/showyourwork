@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -28,4 +30,5 @@ jobs:
           TARGET_REPOSITORY: showyourwork-sandbox
           AUTHOR_NAME: Rodrigo Luger
           ADD_CALLBACK: true
+          SHOWYOURWORK_SHA: ${{ github.sha }}
         run: bash .github/workflows/generate.sh

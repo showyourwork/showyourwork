@@ -17,13 +17,13 @@ jobs:
         id: build
         uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
         with:
-          showyourwork-version: current
+          showyourwork-version: {{ cookiecutter._showyourwork_sha }}
       {% else -%}
       - name: Test fresh build
         id: test-build
         uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
         with:
-          showyourwork-version: current
+          showyourwork-version: {{ cookiecutter._showyourwork_sha }}
           verbose: true
 
       - name: Test cached build (setup)
@@ -40,7 +40,7 @@ jobs:
         id: test-cache
         uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
         with:
-          showyourwork-version: current
+          showyourwork-version: {{ cookiecutter._showyourwork_sha }}
           verbose: true
 
       - name: Callback
