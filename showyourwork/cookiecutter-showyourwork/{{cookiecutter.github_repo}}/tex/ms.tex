@@ -1,0 +1,42 @@
+\documentclass[modern]{aastex631}
+\usepackage{showyourwork}
+
+% Begin!
+\begin{document}
+
+\title{{ "{" }}{{ cookiecutter.project_short_description }}{{ "}" }}
+
+% Author list
+\author{{ "{" }}{{ cookiecutter.author_name }}{{ "}" }}
+
+% Abstract
+\begin{abstract}
+    This is a sample article generated automatically by the \showyourwork package, a workflow for easily producing open-source, reproducible scientific papers.
+    The workflow takes as input a \LaTeX\, manuscript file and a \texttt{conda} environment specifying the requirements to build all of the figures in the paper from scratch.
+    The output is the PDF you are reading right now, which is enhanced with clickable icons (\GitHubIcon) next to each of the figures that link to the exact version of the scripts that generated them.
+    The color of these icons indicate the open-source ``status'' of the paper, ranging from \GitHubIconRed (issues with version control) to \GitHubIconBlue (tip top shape).
+    The icon in the right margin of the abstract will take you to the \texttt{GitHub} repository containing the source code for this paper.
+\end{abstract}
+
+\section{Introduction}
+The \showyourwork package is part of an attempt to tackle the ongoing reproducibility crisis in the natural sciences \citep[see, e.g.,][]{Baker2016}.
+The idea behind this package is simple: to make it easy for authors to publish the code that generated the results (and in particular the figures) in a scientific article.
+In particular, this package ensures that the compiled article PDF is always in sync with the code that was used to generate its results.
+It does this automatically---and seamlessly---with the help of the \texttt{Snakemake} workflow management system \citep{Molder2021}, the \href{https://journals.aas.org/aastex-package-for-manuscript-preparation/}{AASTeX} markup package, the \href{https://github.com/tectonic-typesetting/tectonic}{tectonic} typesetting engine, and the \href{https://github.com/features/actions}{GitHub Actions} Continuous Integration/Deployment tool.
+
+
+\begin{figure}[h!]
+    \begin{centering}
+        \includegraphics[width=0.4\linewidth]{mandelbrot.pdf}
+        \includegraphics[width=0.4\linewidth]{koch.pdf}
+        \caption{
+            A sample plot with two subpanels showing fractals. \emph{Left}: The Mandelbrot set. \emph{Right}: A Koch snowflake. Both figures were generated from the \texttt{Python} file \texttt{figures/fractal.py}, which is linked to in the GitHub icon in the right margin.
+        }
+        \label{fig:fractals}
+    \end{centering}
+\end{figure}
+
+% Bibliography
+\bibliography{bib}
+
+\end{document}

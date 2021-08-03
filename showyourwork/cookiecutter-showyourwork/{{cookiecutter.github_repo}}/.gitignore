@@ -1,0 +1,5 @@
+**/.showyourwork
+**/.snakemake
+.Snakefile
+.helpers.smk
+*.pdf

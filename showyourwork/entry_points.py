@@ -39,13 +39,8 @@ def main():
     parser.add_argument(
         "-n",
         "--new",
-        default=False,
-        const="latest",
-        nargs="?",
-        type=str,
-        metavar="version",
-        help="create a new article repository, optionally from a specific "
-        "version of `gh:rodluger/cookiecutter-showyourwork`",
+        action="store_true",
+        help="create a new article repository",
     )
     parser.add_argument(
         "-d",
@@ -71,10 +66,7 @@ def main():
     ), "Options conflict!"  # Only one is allowed at a time!
     for cmd in cmds:
         if getattr(args, cmd, False):
-            if cmd == "new":
-                new(args.new)
-            else:
-                exec(f"{cmd}()")
+            exec(f"{cmd}()")
             return
 
     # Check that the `cwd` is a valid article repo

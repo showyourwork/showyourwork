@@ -9,7 +9,7 @@ echo "    author_name: \"${AUTHOR_NAME}\"" >> ~/.cookiecutterrc
 [[ ! -z "${ADD_CALLBACK}" ]] && echo "    _source_repo: \"${GITHUB_REPOSITORY}\"" >> ~/.cookiecutterrc
 
 # Create repo and force push to target
-cookiecutter --no-input gh:rodluger/cookiecutter-showyourwork
+cookiecutter --no-input ./showyourwork/cookiecutter-showyourwork
 cd ${TARGET_REPOSITORY}
 git init
 git checkout --orphan main

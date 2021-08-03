@@ -1,0 +1,8 @@
+recursive-include showyourwork/cookiecutter-showyourwork *
+recursive-include showyourwork/meta *
+recursive-include showyourwork/templates *
+recursive-include showyourwork/tex *
+recursive-include showyourwork/workflows *
+include README.md
+include LICENSE
+include showyourwork.png

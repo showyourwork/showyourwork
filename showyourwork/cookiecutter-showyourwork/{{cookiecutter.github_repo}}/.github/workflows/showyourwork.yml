@@ -1,0 +1,64 @@
+name: article
+
+on: push
+
+jobs:
+  showyourwork:
+    runs-on: ubuntu-latest
+    name: Build the article PDF
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      {% if cookiecutter._source_repo == None -%}
+      - name: Build the article PDF
+        id: build
+        uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
+        with:
+          showyourwork-version: latest
+      {% else -%}
+      - name: Test fresh build
+        id: test-build
+        uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
+        with:
+          showyourwork-version: latest
+          verbose: true
+
+      - name: Test cached build (setup)
+        shell: bash -l {0}
+        run: |
+          echo " " >> tex/ms.tex
+          echo "assert False" > figures/fractals.py
+          git add tex/ms.tex
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'test commit'
+
+      # Succeeds only if the figure PDFs cached properly;
+      # otherwise raises an assertion error!
+      - name: Test cached build
+        id: test-cache
+        uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
+        with:
+          showyourwork-version: latest
+          verbose: true
+
+      - name: Callback
+        env:
+          GITHUB_TOKEN: ${{ '{{' }} secrets.ACCESS_TOKEN {{ '}}' }}
+          TEST_BUILD_OUTCOME: ${{ '{{' }} steps.test-build.outcome {{ '}}' }}
+          TEST_CACHE_OUTCOME: ${{ '{{' }} steps.test-cache.outcome {{ '}}' }}
+          REPO: ${{ '{{' }} github.repository {{ '}}' }}
+          RUN_ID: ${{ '{{' }} github.run_id {{ '}}' }}
+        shell: bash -l {0}
+        if: always()
+        run: |
+          curl \
+            -X POST \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Content-Type: application/json" \
+            "https://api.github.com/repos/{{cookiecutter._source_repo}}/dispatches" \
+            -d "{\"event_type\": \"callback\", \"client_payload\": {\"repo\": \"${REPO}\", \"run_id\": \"${RUN_ID}\", \"test_build_outcome\": \"${TEST_BUILD_OUTCOME}\", \"test_cache_outcome\": \"${TEST_CACHE_OUTCOME}\" }}" \
+            &> /dev/null
+      {% endif -%}

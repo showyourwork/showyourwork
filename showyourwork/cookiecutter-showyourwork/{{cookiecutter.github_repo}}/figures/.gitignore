@@ -1,0 +1,9 @@
+# Don't track any output
+*.pdf
+*.png
+*.eps
+*.jpg
+*.jpeg
+*.gif
+*.svf
+*.tiff
