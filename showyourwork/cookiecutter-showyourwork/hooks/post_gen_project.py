@@ -24,7 +24,6 @@ with open(Path(".github") / "workflows" / "showyourwork.yml", "r") as f:
     contents = f.read()
 
 # Replace `current` with the current version (package)
-version = parse_version(SHOWYOURWORK_VERSION).base_version
 try:
     meta = json.loads(
         subprocess.check_output(
