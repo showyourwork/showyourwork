@@ -2,17 +2,21 @@ from pathlib import Path
 import json
 import subprocess
 import warnings
-from packaging.version import parse as parse_version
+
 
 # Get the current version
 try:
     import showyourwork
+    from packaging.version import parse as parse_version
 
     SHOWYOURWORK_VERSION = showyourwork.__version__
+    base_version = parse_version(SHOWYOURWORK_VERSION).base_version
+
 except:
 
     # Fallback to latest
     SHOWYOURWORK_VERSION = "latest"
+    base_version = "latest"
 
 
 # Read the YAML file
@@ -32,18 +36,18 @@ try:
         ).decode()
     )
     versions = [m["name"] for m in meta]
-    if version not in versions:
+    if base_version not in versions:
         raise Exception(
-            f"Version `{version}` of `showyourwork` not found on remote."
+            f"Version `{base_version}` of `showyourwork` not found on remote."
         )
 except Exception as e:
     # Fallback to latest
     warnings.warn(
-        f"Version `{version}` of `showyourwork` not found on remote. Falling back to `latest`."
+        f"Version `{base_version}` of `showyourwork` not found on remote. Falling back to `latest`."
     )
-    version = "latest"
+    base_version = "latest"
 contents = contents.replace(
-    "showyourwork-version: current", f"showyourwork-version: {version}"
+    "showyourwork-version: current", f"showyourwork-version: {base_version}"
 )
 
 # Replace `latest` with the latest version (action)
