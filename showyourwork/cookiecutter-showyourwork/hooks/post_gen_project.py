@@ -3,7 +3,8 @@ import json
 import subprocess
 import warnings
 import re
-
+import shutil
+import os
 
 # Read the YAML file
 with open(Path(".github") / "workflows" / "showyourwork.yml", "r") as f:
@@ -80,3 +81,10 @@ if "rodluger/showyourwork-action@latest" in contents:
 # Update the YAML file
 with open(Path(".github") / "workflows" / "showyourwork.yml", "w") as f:
     print(contents, file=f)
+
+
+# Apply minimal template if user requested it
+if "{{cookiecutter.template}}" == "Minimal":
+    shutil.move(Path("tex") / "ms_minimal.tex", Path("tex") / "ms.tex")
+else:
+    os.remove(Path("tex") / "ms_minimal.tex")

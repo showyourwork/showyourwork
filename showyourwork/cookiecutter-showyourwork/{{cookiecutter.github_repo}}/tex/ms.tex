@@ -1,5 +1,6 @@
-\documentclass[modern]{aastex631}
+\documentclass[twocolumn]{aastex631}
 \usepackage{showyourwork}
+\usepackage{dirtree}
 
 % Begin!
 \begin{document}
@@ -11,21 +12,38 @@
 
 % Abstract
 \begin{abstract}
-    This is a sample article generated automatically by the \showyourwork package, a workflow for easily producing open-source, reproducible scientific papers.
+    This is a sample article generated automatically by \texttt{showyourwork}, a workflow for easily producing open-source, reproducible scientific papers.
     The workflow takes as input a \LaTeX\, manuscript file and a \texttt{conda} environment specifying the requirements to build all of the figures in the paper from scratch.
-    The output is the PDF you are reading right now, which is enhanced with clickable icons (\GitHubIcon) next to each of the figures that link to the exact version of the scripts that generated them.
+    The output is the PDF you are reading right now, which is enhanced with clickable icons next to each of the figures that link to the exact version of the scripts that generated them.
     The color of these icons indicate the open-source ``status'' of the paper, ranging from \GitHubIconRed (issues with version control) to \GitHubIconBlue (tip top shape).
-    The icon in the right margin of the abstract will take you to the \texttt{GitHub} repository containing the source code for this paper.
+    The \texttt{GitHub} icon in the right margin of the abstract will take you to the  repository containing the source code for this paper. The icon next to it (if present) shows the status of the build on \texttt{GitHub Actions} and links to the log file for the workflow that generated this paper.
 \end{abstract}
 
+% Main body
 \section{Introduction}
-The \showyourwork package is part of an attempt to tackle the ongoing reproducibility crisis in the natural sciences \citep[see, e.g.,][]{Baker2016}.
-The idea behind this package is simple: to make it easy for authors to publish the code that generated the results (and in particular the figures) in a scientific article.
-In particular, this package ensures that the compiled article PDF is always in sync with the code that was used to generate its results.
-It does this automatically---and seamlessly---with the help of the \texttt{Snakemake} workflow management system \citep{Molder2021}, the \href{https://journals.aas.org/aastex-package-for-manuscript-preparation/}{AASTeX} markup package, the \href{https://github.com/tectonic-typesetting/tectonic}{tectonic} typesetting engine, and the \href{https://github.com/features/actions}{GitHub Actions} Continuous Integration/Deployment tool.
+The \texttt{showyourwork} workflow is an attempt to tackle the ongoing reproducibility crisis in the natural sciences \citep[see, e.g.,][]{Baker2016}.
+The idea behind \texttt{showyourwork} is simple: to make it easy for authors to publish the code that generated the results (and in particular the figures) in a scientific article.
+This workflow ensures that the compiled article PDF is always in sync with the code that was used to generate its results.
+It does this automatically---and seamlessly---with the help of the \texttt{Snakemake} workflow management system \citep{Molder2021}, the \href{https://github.com/tectonic-typesetting/tectonic}{tectonic} typesetting engine, and the \href{https://github.com/features/actions}{GitHub Actions} Continuous Integration/Deployment tool.
 
+The \texttt{showyourwork} workflow acts on \texttt{GitHub} repositories with the following basic structure:
+%
+\vspace{1em}
+%
+\dirtree{%
+.1 repo/.
+.2 figures/.
+.3 *.py.
+.2 tex/.
+.3 ms.tex.
+.3 bib.bib.
+.2 environment.yml.
+}
+\vspace{1em}\noindent
+%
+The files \texttt{ms.tex} and \texttt{bib.bib} are the usual \LaTeX\, manuscript and bibliography files, \texttt{*.py} are \texttt{Python} scripts that generate the figures in the paper, and \texttt{environment.yml} is a \texttt{conda} environment file, specifying all of the dependencies needed to build the paper from scratch.
 
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \begin{centering}
         \includegraphics[width=0.4\linewidth]{mandelbrot.pdf}
         \includegraphics[width=0.4\linewidth]{koch.pdf}
@@ -35,6 +53,33 @@ It does this automatically---and seamlessly---with the help of the \texttt{Snake
         \label{fig:fractals}
     \end{centering}
 \end{figure}
+
+The article you are reading was built from a repository with a single figure script, \texttt{fractals.py}, which generated the two plots shown in Figure~\ref{fig:fractals}. One of the main features of \texttt{showyourwork} is that it figures out all figure dependencies automatically, with intelligent caching that prevents re-running code that hasn't changed. As a user, you don't have to tell \texttt{showyourwork} anything about which script generates which figure(s). Here is the code snippet that created the figure:
+%
+\begin{verbatim}
+\begin{figure}[t!]
+    \begin{centering}
+        \includegraphics[...]{mandelbrot.pdf}
+        \includegraphics[...]{koch.pdf}
+        \caption{...}
+        \label{fig:fractals}
+    \end{centering}
+\end{figure}
+\end{verbatim}
+%
+\texttt{showyourwork} inspects the figure label and the \verb+\includegraphics+ calls to infer that a script named \texttt{fractals.py} generates two figure files: \texttt{mandelbrot.pdf} and \texttt{koch.pdf}. Thus, whenever you label a figure with \verb+{fig:xxx}+, \texttt{showyourwork} will try to run a file called \texttt{figures/xxx.py} to produce the required figures.
+
+In addition to automatically running the figure scripts, \texttt{showyourwork} adds a \GitHubIcon to the margin next to the figure caption. This is a clickable icon that links to the exact version of the script on \texttt{GitHub} used to generate the figure. The color of the icon indicates the version control status:
+%
+\begin{center}
+    \begin{tabular}{ r l }
+        \GitHubIconRed    & The \texttt{Python} figure script does not exist                 \\
+        \GitHubIconOrange & The \texttt{Python} figure script is not tracked by \texttt{git} \\
+        \GitHubIconYellow & The \texttt{Python} figure script has uncommitted changes        \\
+        \GitHubIconBlue   & The \texttt{Python} figure script is up to date
+    \end{tabular}
+\end{center}
+%
 
 % Bibliography
 \bibliography{bib}

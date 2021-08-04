@@ -163,6 +163,11 @@
 \renewenvironment{abstract}{%
   \oldabstract%
 }{%
+  % AASTex631 hack to reduce margin separation
+  % in the abstract of a two-column document
+  \ifcsname if@two@col\endcsname%
+    \if@two@col\setlength{\marginparsep}{-45pt}\fi%
+  \fi%
   \marginnote{%
     \href{((- repo.url -))/tree/((- repo.sha -))/}{%
       \color{((- status -))}%
