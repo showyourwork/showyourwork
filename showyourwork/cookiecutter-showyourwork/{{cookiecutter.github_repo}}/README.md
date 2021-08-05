@@ -1,5 +1,7 @@
 <p align="center">
-  <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/main/showyourwork.png"/>
+  <a href="https://github.com/rodluger/showyourwork">
+      <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/main/showyourwork.png" alt="showyourwork"/>
+  </a>
   <br>
   <br>
   {{cookiecutter.project_short_description}}
