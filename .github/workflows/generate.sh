@@ -9,9 +9,9 @@ echo "    github_user: \"${TARGET_USER}\"" >> ~/.cookiecutterrc
 echo "    author_name: \"${AUTHOR_NAME}\"" >> ~/.cookiecutterrc
 echo "    template: \"Complete example\"" >> ~/.cookiecutterrc
 [[ -z "${ADD_CALLBACK}" ]] && \
-    echo "    project_short_description: \"An open-source scientific article built with [showyourwork](https://github.com/rodluger/showyourwork). Click [here](https://github.com/rodluger/showyourwork-example/generate) to use this template in your research!\""  >> ~/.cookiecutterrc
+    echo "    project_short_description: \"An open-source scientific article built with <a href=\"https://github.com/rodluger/showyourwork\">showyourwork</a>. Click <a href=\"https://github.com/rodluger/showyourwork-example/generate\">here</a> to use this template in your research!\""  >> ~/.cookiecutterrc
 [[ ! -z "${ADD_CALLBACK}" ]] && \
-    echo "    project_short_description: \"This is a test repository for [showyourwork](https://github.com/rodluger/showyourwork). Not much to see here!\""  >> ~/.cookiecutterrc
+    echo "    project_short_description: \"This is a test repository for <a href=\"https://github.com/rodluger/showyourwork\">showyourwork</a>. Not much to see here!\""  >> ~/.cookiecutterrc
 echo "    _showyourwork_sha: \"${SHOWYOURWORK_SHA}\"" >> ~/.cookiecutterrc
 [[ ! -z "${ADD_CALLBACK}" ]] && echo "    _source_repo: \"${GITHUB_REPOSITORY}\"" >> ~/.cookiecutterrc
 
