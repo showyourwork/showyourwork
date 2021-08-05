@@ -86,5 +86,6 @@ with open(Path(".github") / "workflows" / "showyourwork.yml", "w") as f:
 # Apply minimal template if user requested it
 if "{{cookiecutter.template}}" == "Minimal":
     shutil.move(Path("tex") / "ms_minimal.tex", Path("tex") / "ms.tex")
+    os.remove(Path("figures") / "fractals.py")
 else:
     os.remove(Path("tex") / "ms_minimal.tex")

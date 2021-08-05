@@ -8,11 +8,17 @@
   <a href="https://github.com/rodluger/showyourwork/actions/workflows/test_receive.yml">
     <img src="https://github.com/rodluger/showyourwork/actions/workflows/test_receive.yml/badge.svg"/>
   </a>
+  <a href="https://github.com/rodluger/showyourwork-example">
+    <img src="https://img.shields.io/static/v1?label=example&message=repo&color=blue"/>
+  </a>
+  <a href="https://github.com/rodluger/showyourwork-example/raw/main-pdf/ms.pdf">
+    <img src="https://img.shields.io/static/v1?label=example&message=pdf&color=blue"/>
+  </a>
 </p>
 
 ## Overview
 
-This package is intended to help authors publish the code that generated the results (and in particular the figures) in a scientific article. It ensures that the compiled article PDF is always in sync with all of the code used to generate it. It does this automatically—and seamlessly—with the help of the [Snakemake](https://snakemake.readthedocs.io) workflow management system, the [AASTeX](https://journals.aas.org/aastexguide) markup package, the [tectonic](https://tectonic-typesetting.github.io) typesetting engine, and [Github Actions](https://github.com/features/actions) CI.
+This package is intended to help authors publish the code that generated the results (and in particular the figures) in a scientific article. It ensures that the compiled article PDF is always in sync with all of the code used to generate it. It does this automatically—and seamlessly—with the help of the [Snakemake](https://snakemake.readthedocs.io) workflow management system, the [tectonic](https://tectonic-typesetting.github.io) typesetting engine, and [Github Actions](https://github.com/features/actions) CI.
 
 The basic philosophy behind `showyourwork` is this: scientific papers should exist as GitHub repositories comprised of LaTeX files, figure scripts, optional experiment datasets, _and nothing else_. Anyone should be able to re-generate the article PDF from scratch at the click of a button.
 
