@@ -16,7 +16,8 @@
     The workflow takes as input a \LaTeX\, manuscript file and a \texttt{conda} environment specifying the requirements to build all of the figures in the paper from scratch.
     The output is the PDF you are reading right now, which is enhanced with clickable icons next to each of the figures that link to the exact version of the scripts that generated them.
     The color of these icons indicate the open-source ``status'' of the paper, ranging from \GitHubIconRed (issues with version control) to \GitHubIconBlue (tip top shape).
-    The \texttt{GitHub} icon in the right margin of the abstract will take you to the  repository containing the source code for this paper. The icon next to it (if present) shows the status of the build on \texttt{GitHub Actions} and links to the log file for the workflow that generated this paper.
+    The \texttt{GitHub} icon in the right margin of the abstract will take you to the  repository containing the source code for this paper.
+    The icon next to it (if present) shows the status of the build on \texttt{GitHub Actions} and links to the log file for the workflow that generated this paper.
 \end{abstract}
 
 % Main body
@@ -48,13 +49,18 @@ The files \texttt{ms.tex} and \texttt{bib.bib} are the usual \LaTeX\, manuscript
         \includegraphics[width=0.4\linewidth]{mandelbrot.pdf}
         \includegraphics[width=0.4\linewidth]{koch.pdf}
         \caption{
-            A sample plot with two subpanels showing fractals. \emph{Left}: The Mandelbrot set. \emph{Right}: A Koch snowflake. Both figures were generated from the \texttt{Python} file \texttt{figures/fractal.py}, which is linked to in the GitHub icon in the right margin.
+            A sample plot with two subpanels showing fractals.
+            \emph{Left}: The Mandelbrot set.
+            \emph{Right}: A Koch snowflake.
+            Both figures were generated from the \texttt{Python} file \texttt{figures/fractal.py}, which is linked to in the GitHub icon in the right margin.
         }
         \label{fig:fractals}
     \end{centering}
 \end{figure}
 
-The article you are reading was built from a repository with a single figure script, \texttt{fractals.py}, which generated the two plots shown in Figure~\ref{fig:fractals}. One of the main features of \texttt{showyourwork} is that it figures out all figure dependencies automatically, with intelligent caching that prevents re-running code that hasn't changed. Here is the code snippet that created the figure:
+The article you are reading was built from a repository with a single figure script, \texttt{fractals.py}, which generated the two plots shown in Figure~\ref{fig:fractals}.
+One of the main features of \texttt{showyourwork} is that it figures out all figure dependencies automatically, with intelligent caching that prevents re-running code that hasn't changed.
+Here is the code snippet that created the figure:
 %
 \begin{verbatim}
 \begin{figure}[t!]
@@ -67,10 +73,12 @@ The article you are reading was built from a repository with a single figure scr
 \end{figure}
 \end{verbatim}
 %
-Note that we didn't have to add any extra code;
-\texttt{showyourwork} was able to inspect the figure label and the \verb+\includegraphics+ calls to infer that a script named \texttt{fractals.py} generates two figure files: \texttt{mandelbrot.pdf} and \texttt{koch.pdf}. Whenever you label a figure with \verb+{fig:xxx}+, \texttt{showyourwork} will assumes there exists a file called \texttt{figures/xxx.py} that produces the required figures.
+Note that we didn't have to add any extra code; \texttt{showyourwork} was able to inspect the figure label and the \verb+\includegraphics+ calls to infer that a script named \texttt{fractals.py} generates two figure files: \texttt{mandelbrot.pdf} and \texttt{koch.pdf}.
+Whenever you label a figure with \verb+{fig:xxx}+, \texttt{showyourwork} assumes there's a file called \texttt{figures/xxx.py} that produces the required figures.
 
-In addition to automatically running the figure scripts, \texttt{showyourwork} adds a \GitHubIcon to the margin next to the figure caption. This is a clickable icon that links to the exact version of the script on \texttt{GitHub} used to generate the figure. The color of the icon indicates the version control status:
+In addition to automatically running the figure scripts, \texttt{showyourwork} adds a \GitHubIcon to the margin next to the figure caption.
+This is a clickable icon that links to the exact version of the script on \texttt{GitHub} used to generate the figure.
+The color of the icon indicates the version control status:
 %
 \begin{center}
     \begin{tabular}{ r l }
@@ -81,12 +89,64 @@ In addition to automatically running the figure scripts, \texttt{showyourwork} a
     \end{tabular}
 \end{center}
 %
-
-The \GitHubIcon at the very top, next to the abstract, summarizes the overall version control status of all the figures in the paper. If it's \GitHubIconBlue, everything is in order and your paper is fully reproducible. Just always remember to commit your changes and push to \texttt{GitHub}. This will automatically trigger the build on \texttt{GitHub Actions}, which builds your article from scratch every time (but with intelligent caching). When that is done, the compiled PDF will have an extra icon in the margin next to the abstract indicating the successful online build, with a link to the complete log file (more details below).
+The \GitHubIcon at the very top, next to the abstract, summarizes the overall version control status of all the figures in the paper.
+If it's \GitHubIconBlue, everything is in order and your paper is fully reproducible.
+Just always remember to commit your changes and push to \texttt{GitHub}.
+This will automatically trigger the build on \texttt{GitHub Actions}, which builds your article from scratch every time (but with intelligent caching).
+When that is done, the compiled PDF will have an extra icon in the margin next to the abstract indicating the successful online build, with a link to the complete log file (more details below).
 
 \section{Using \texttt{showyourwork}}
+%
+There are a few different ways to use \texttt{showyourwork} in your research.
 
-Coming soon!
+\subsection{Quick-and-dirty}
+%
+Create a new \texttt{GitHub} repository based on the template that generated this article by clicking \href{https://github.com/rodluger/showyourwork-example/generate}{here}.
+Edit the manuscript and the figure script(s) as needed and push your changes to your repo.
+\textbf{That's it!}
+Your paper will automatically be built on \texttt{GitHub Actions} and will be available as the article file \texttt{ms.pdf} in the \texttt{main-pdf} branch of your repo and as a workflow artifact in the \texttt{Actions} tab on your repository \texttt{GitHub} page.
+It will be updated every time you push new changes to your remote repo.
+
+\subsection{Custom setup and local builds}
+%
+For a bit more fine-grained control, and to enable local builds of your article, install the \texttt{showyourwork} package, which requires the \href{https://www.anaconda.com/products/individual}{conda} package manager:
+%
+\begin{verbatim}
+conda install -c conda-forge -c bioconda mamba pip snakemake tectonic
+python -m pip install git+https://github.com/rodluger/showyourwork.git@main
+\end{verbatim}
+%
+Please note that this is still the development version; soon you'll be able to install \texttt{showyourwork} directly from \texttt{conda}.
+Once installed, you can run
+%
+\begin{verbatim}
+showyourwork --new
+\end{verbatim}
+%
+to create a fresh article repository in the current working directory.
+You will be prompted for some information about the repo. Make changes to the files as needed, then run
+%
+\begin{verbatim}
+    showyourwork
+\end{verbatim}
+%
+in the top level of the repository to build your paper.
+This will generate the compiled PDF, \texttt{ms.pdf}, in the same directory.
+If this is the first time you're running it, \texttt{showyourwork} will build all your figure scripts before compiling the PDF.
+Once they are built, \texttt{showyourwork} caches the output to avoid re-running scripts that have not changed.
+
+To enable remote builds, just initialize \texttt{git} in the repo, commit your changes, and push to a remote repository on \texttt{GitHub}:
+%
+\begin{verbatim}
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/[user]/[repo].git
+git push -u origin main
+\end{verbatim}
+%
+As before, this will trigger a build on \texttt{GitHub Actions}; when that's done, your article will be aviable as the file \texttt{ms.pdf} in the \texttt{main-pdf} branch of your repo and as a workflow artifact in the \texttt{Actions} tab on your repository \texttt{GitHub} page.
 
 % Bibliography
 \bibliography{bib}
