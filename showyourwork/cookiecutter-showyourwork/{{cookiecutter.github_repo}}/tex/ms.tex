@@ -54,7 +54,7 @@ The files \texttt{ms.tex} and \texttt{bib.bib} are the usual \LaTeX\, manuscript
     \end{centering}
 \end{figure}
 
-The article you are reading was built from a repository with a single figure script, \texttt{fractals.py}, which generated the two plots shown in Figure~\ref{fig:fractals}. One of the main features of \texttt{showyourwork} is that it figures out all figure dependencies automatically, with intelligent caching that prevents re-running code that hasn't changed. As a user, you don't have to tell \texttt{showyourwork} anything about which script generates which figure(s). Here is the code snippet that created the figure:
+The article you are reading was built from a repository with a single figure script, \texttt{fractals.py}, which generated the two plots shown in Figure~\ref{fig:fractals}. One of the main features of \texttt{showyourwork} is that it figures out all figure dependencies automatically, with intelligent caching that prevents re-running code that hasn't changed. Here is the code snippet that created the figure:
 %
 \begin{verbatim}
 \begin{figure}[t!]
@@ -67,7 +67,8 @@ The article you are reading was built from a repository with a single figure scr
 \end{figure}
 \end{verbatim}
 %
-\texttt{showyourwork} inspects the figure label and the \verb+\includegraphics+ calls to infer that a script named \texttt{fractals.py} generates two figure files: \texttt{mandelbrot.pdf} and \texttt{koch.pdf}. Thus, whenever you label a figure with \verb+{fig:xxx}+, \texttt{showyourwork} will try to run a file called \texttt{figures/xxx.py} to produce the required figures.
+Note that we didn't have to add any extra code;
+\texttt{showyourwork} was able to inspect the figure label and the \verb+\includegraphics+ calls to infer that a script named \texttt{fractals.py} generates two figure files: \texttt{mandelbrot.pdf} and \texttt{koch.pdf}. Whenever you label a figure with \verb+{fig:xxx}+, \texttt{showyourwork} will assumes there exists a file called \texttt{figures/xxx.py} that produces the required figures.
 
 In addition to automatically running the figure scripts, \texttt{showyourwork} adds a \GitHubIcon to the margin next to the figure caption. This is a clickable icon that links to the exact version of the script on \texttt{GitHub} used to generate the figure. The color of the icon indicates the version control status:
 %
@@ -81,7 +82,7 @@ In addition to automatically running the figure scripts, \texttt{showyourwork} a
 \end{center}
 %
 
-The \GitHubIcon at the very top, next to the abstract, summarizes the overall version control status of all the figures in the paper. If it's \GitHubIconBlue, everything is in order and your paper is fully reproducible!
+The \GitHubIcon at the very top, next to the abstract, summarizes the overall version control status of all the figures in the paper. If it's \GitHubIconBlue, everything is in order and your paper is fully reproducible. Just always remember to commit your changes and push to \texttt{GitHub}. This will automatically trigger the build on \texttt{GitHub Actions}, which builds your article from scratch every time (but with intelligent caching). When that is done, the compiled PDF will have an extra icon in the margin next to the abstract indicating the successful online build, with a link to the complete log file (more details below).
 
 \section{Using \texttt{showyourwork}}
 
