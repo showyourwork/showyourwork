@@ -193,9 +193,11 @@ In the meantime, here are some frequently asked questions that may be helpful fo
     We'll also soon support \texttt{Jupyter Notebooks}.
     %
     \item[How do I specify custom workflow dependencies?]
-    The \texttt{showyourwork} workflow uses \texttt{Snakemake} to build a simple dependency graph for the article: the article PDF depends on the figure files, which in turn depend on the figure scripts. Sometimes it's useful to specify additional dependencies, such as when a script imports a function from a different script, or when a script depends on a dataset that can potentially change. In that case, the user must tell \texttt{Snakemake} about this dependency so that it knows to re-run the figure script (and re-compile the paper) when, e.g., a dataset changes. This feature is under development and will be implemented soon!
+    The \texttt{showyourwork} workflow uses \texttt{Snakemake} to build a simple dependency graph for the article: the article PDF depends on the figure files, which in turn depend on the figure scripts.
+    Sometimes it's useful to specify additional dependencies, such as when a script imports a function from a different script, or when a script depends on a dataset that can potentially change.
+    In that case, the user must tell \texttt{Snakemake} about this dependency so that it knows to re-run the figure script (and re-compile the paper) when, e.g., a dataset changes. This feature is under development and will be implemented soon!
     %
-    \item[What if I don't use \verb+\includegraphics+ to include my figures?]
+    \item[What if I don't use includegraphics to include my figures?]
     That's fine! Common alternatives like \verb+\plotone+ call \verb+\includegraphics+ under the hood, so everything should still work.
     You can also alias the \verb+\includegraphics+ command however you'd like --- \texttt{showyourwork} will still be able to determine all the figure dependencies, as long as you label your figures correctly.
 \end{description}
