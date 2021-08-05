@@ -5,6 +5,7 @@
   <br>
   <br>
   {{cookiecutter.project_short_description}}
+  {{cookiecutter._readme_message}}
   <p align="center">
     <a href="https://github.com/{{cookiecutter.github_user}}/{{cookiecutter.github_repo}}/actions/workflows/showyourwork.yml">
       <img src="https://github.com/{{cookiecutter.github_user}}/{{cookiecutter.github_repo}}/actions/workflows/showyourwork.yml/badge.svg" alt="Article status"/>
