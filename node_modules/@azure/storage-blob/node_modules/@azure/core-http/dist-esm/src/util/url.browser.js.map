@@ -1,0 +1,1 @@
+{"version":3,"file":"url.browser.js","sourceRoot":"","sources":["../../../src/util/url.browser.ts"],"names":[],"mappings":"AAAA,uCAAuC;AACvC,kCAAkC;AAElC,MAAM,GAAG,GAAG,GAAG,CAAC;AAEhB,OAAO,EAAE,GAAG,IAAI,GAAG,EAAE,CAAC","sourcesContent":["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT license.\n\nconst url = URL;\n\nexport { url as URL };\n"]}
