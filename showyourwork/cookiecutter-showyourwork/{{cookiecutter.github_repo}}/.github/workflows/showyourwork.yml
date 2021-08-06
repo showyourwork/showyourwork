@@ -15,15 +15,12 @@ jobs:
       {% if cookiecutter._source_repo == None -%}
       - name: Build the article PDF
         id: build
-        uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
-        with:
-          showyourwork-version: {{ cookiecutter._showyourwork_sha }}
+        uses: rodluger/showyourwork@{{ cookiecutter._showyourwork_sha }}
       {% else -%}
       - name: Test fresh build
         id: test-build
-        uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
+        uses: rodluger/showyourwork@{{ cookiecutter._showyourwork_sha }}
         with:
-          showyourwork-version: {{ cookiecutter._showyourwork_sha }}
           verbose: true
 
       - name: Test cached build (setup)
@@ -38,9 +35,8 @@ jobs:
       # otherwise raises an assertion error!
       - name: Test cached build
         id: test-cache
-        uses: rodluger/showyourwork-action@{{ cookiecutter.showyourwork_action_version }}
+        uses: rodluger/showyourwork@{{ cookiecutter._showyourwork_sha }}
         with:
-          showyourwork-version: {{ cookiecutter._showyourwork_sha }}
           verbose: true
 
       - name: Callback

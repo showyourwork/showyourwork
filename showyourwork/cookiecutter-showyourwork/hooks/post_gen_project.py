@@ -55,37 +55,13 @@ else:
     with open(".showyourwork-version", "w") as f:
         print(version, file=f)
 
-# Replace `latest` with the latest version (action)
-if "rodluger/showyourwork-action@latest" in contents:
-
-    try:
-        action_version = json.loads(
-            subprocess.check_output(
-                [
-                    "curl",
-                    "-s",
-                    "https://api.github.com/repos/rodluger/showyourwork-action/releases/latest",
-                ]
-            ).decode()
-        )["name"]
-    except Exception as e:
-        warnings.warn(
-            "Unable to determine latest version of `showyourwork-action`."
-        )
-        action_version = "latest"
-    contents = contents.replace(
-        "rodluger/showyourwork-action@latest",
-        f"rodluger/showyourwork-action@{action_version}",
-    )
-
 # Update the YAML file
 with open(Path(".github") / "workflows" / "showyourwork.yml", "w") as f:
     print(contents, file=f)
 
 
 # Apply minimal template if user requested it
-if "{{cookiecutter.template}}" == "Minimal":
+if "{{ cookiecutter._template }}" == "Minimal":
     shutil.move(Path("tex") / "ms_minimal.tex", Path("tex") / "ms.tex")
-    os.remove(Path("figures") / "fractals.py")
 else:
     os.remove(Path("tex") / "ms_minimal.tex")

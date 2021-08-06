@@ -7,7 +7,7 @@ echo "default_context:" >> ~/.cookiecutterrc
 echo "    github_repo: \"${TARGET_REPOSITORY}\"" >> ~/.cookiecutterrc
 echo "    github_user: \"${TARGET_USER}\"" >> ~/.cookiecutterrc
 echo "    author_name: \"${AUTHOR_NAME}\"" >> ~/.cookiecutterrc
-echo "    template: \"Complete example\"" >> ~/.cookiecutterrc
+echo "    _template: \"Complete example\"" >> ~/.cookiecutterrc
 [[ -z "${ADD_CALLBACK}" ]] && \
     echo "    _readme_message: \"Click <a href=\"https://github.com/rodluger/showyourwork-example/generate\">here</a> to use this template!\""  >> ~/.cookiecutterrc
 [[ ! -z "${ADD_CALLBACK}" ]] && \

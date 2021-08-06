@@ -3,9 +3,8 @@
     "github_user": null,
     "author_name": null,
     "project_short_description": "An open-source scientific article built with showyourwork",
-    "template": ["Minimal", "Complete example"],
     "open_source_license": ["MIT license", "BSD license", "ISC license", "Apache Software License 2.0", "GNU General Public License v3", "Not open source"],
-    "showyourwork_action_version": "latest",
+    "_template": ["Minimal", "Complete example"],
     "_showyourwork_sha": "current",
     "_readme_message": "",
     "_source_repo": null

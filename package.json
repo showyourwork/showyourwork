@@ -1,0 +1,27 @@
+{
+  "name": "showyourwork",
+  "version": "0.0.0",
+  "description": "A workflow for reproducible science articles",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodluger/showyourwork.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rodluger/showyourwork/issues"
+  },
+  "homepage": "https://github.com/rodluger/showyourwork#readme",
+  "dependencies": {
+    "@actions/artifact": "^0.5.2",
+    "@actions/cache": "^1.0.7",
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^5.0.0",
+    "shelljs": "^0.8.4"
+  }
+}

@@ -1,0 +1,19 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+import { MapperType } from "./serializer";
+/**
+ * Gets the list of status codes for streaming responses.
+ * @internal
+ */
+export function getStreamResponseStatusCodes(operationSpec) {
+    var result = new Set();
+    for (var statusCode in operationSpec.responses) {
+        var operationResponse = operationSpec.responses[statusCode];
+        if (operationResponse.bodyMapper &&
+            operationResponse.bodyMapper.type.name === MapperType.Stream) {
+            result.add(Number(statusCode));
+        }
+    }
+    return result;
+}
+//# sourceMappingURL=operationSpec.js.map
