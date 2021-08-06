@@ -1,0 +1,5 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+var url = URL;
+export { url as URL };
+//# sourceMappingURL=url.browser.js.map

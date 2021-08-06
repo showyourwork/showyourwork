@@ -1,0 +1,94 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+import { __assign, __awaiter, __extends, __generator } from "tslib";
+import { getTraceParentHeader, createSpanFunction, SpanKind, SpanStatusCode } from "@azure/core-tracing";
+import { BaseRequestPolicy } from "./requestPolicy";
+import { URLBuilder } from "../url";
+var createSpan = createSpanFunction({
+    packagePrefix: "",
+    namespace: ""
+});
+export function tracingPolicy(tracingOptions) {
+    if (tracingOptions === void 0) { tracingOptions = {}; }
+    return {
+        create: function (nextPolicy, options) {
+            return new TracingPolicy(nextPolicy, options, tracingOptions);
+        }
+    };
+}
+var TracingPolicy = /** @class */ (function (_super) {
+    __extends(TracingPolicy, _super);
+    function TracingPolicy(nextPolicy, options, tracingOptions) {
+        var _this = _super.call(this, nextPolicy, options) || this;
+        _this.userAgent = tracingOptions.userAgent;
+        return _this;
+    }
+    TracingPolicy.prototype.sendRequest = function (request) {
+        return __awaiter(this, void 0, void 0, function () {
+            var path, span, spanContext, traceParentHeader, traceState, response, serviceRequestId, err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!request.tracingContext) {
+                            return [2 /*return*/, this._nextPolicy.sendRequest(request)];
+                        }
+                        path = URLBuilder.parse(request.url).getPath() || "/";
+                        span = createSpan(path, {
+                            tracingOptions: {
+                                spanOptions: __assign(__assign({}, request.spanOptions), { kind: SpanKind.CLIENT }),
+                                tracingContext: request.tracingContext
+                            }
+                        }).span;
+                        span.setAttributes({
+                            "http.method": request.method,
+                            "http.url": request.url,
+                            requestId: request.requestId
+                        });
+                        if (this.userAgent) {
+                            span.setAttribute("http.user_agent", this.userAgent);
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, 4, 5]);
+                        spanContext = span.context();
+                        traceParentHeader = getTraceParentHeader(spanContext);
+                        if (traceParentHeader) {
+                            request.headers.set("traceparent", traceParentHeader);
+                            traceState = spanContext.traceState && spanContext.traceState.serialize();
+                            // if tracestate is set, traceparent MUST be set, so only set tracestate after traceparent
+                            if (traceState) {
+                                request.headers.set("tracestate", traceState);
+                            }
+                        }
+                        return [4 /*yield*/, this._nextPolicy.sendRequest(request)];
+                    case 2:
+                        response = _a.sent();
+                        span.setAttribute("http.status_code", response.status);
+                        serviceRequestId = response.headers.get("x-ms-request-id");
+                        if (serviceRequestId) {
+                            span.setAttribute("serviceRequestId", serviceRequestId);
+                        }
+                        span.setStatus({
+                            code: SpanStatusCode.OK
+                        });
+                        return [2 /*return*/, response];
+                    case 3:
+                        err_1 = _a.sent();
+                        span.setStatus({
+                            code: SpanStatusCode.ERROR,
+                            message: err_1.message
+                        });
+                        span.setAttribute("http.status_code", err_1.statusCode);
+                        throw err_1;
+                    case 4:
+                        span.end();
+                        return [7 /*endfinally*/];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return TracingPolicy;
+}(BaseRequestPolicy));
+export { TracingPolicy };
+//# sourceMappingURL=tracingPolicy.js.map

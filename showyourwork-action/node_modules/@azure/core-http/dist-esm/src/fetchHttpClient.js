@@ -1,0 +1,225 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+import { __assign, __awaiter, __extends, __generator } from "tslib";
+import { AbortController, AbortError } from "@azure/abort-controller";
+import FormData from "form-data";
+import { HttpHeaders } from "./httpHeaders";
+import { RestError } from "./restError";
+import { Transform } from "stream";
+import { logger } from "./log";
+var ReportTransform = /** @class */ (function (_super) {
+    __extends(ReportTransform, _super);
+    function ReportTransform(progressCallback) {
+        var _this = _super.call(this) || this;
+        _this.progressCallback = progressCallback;
+        _this.loadedBytes = 0;
+        return _this;
+    }
+    ReportTransform.prototype._transform = function (chunk, _encoding, callback) {
+        this.push(chunk);
+        this.loadedBytes += chunk.length;
+        this.progressCallback({ loadedBytes: this.loadedBytes });
+        callback(undefined);
+    };
+    return ReportTransform;
+}(Transform));
+export { ReportTransform };
+var FetchHttpClient = /** @class */ (function () {
+    function FetchHttpClient() {
+    }
+    FetchHttpClient.prototype.sendRequest = function (httpRequest) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var abortController, abortListener, formData, requestForm_1, appendFormValue, _i, _b, formKey, formValue, j, contentType, body, onUploadProgress, uploadReportStream, platformSpecificRequestInit, requestInit, operationResponse, response, headers, streaming, _c, onDownloadProgress, responseBody, downloadReportStream, length_1, error_1, fetchError, uploadStreamDone, downloadStreamDone;
+            var _d;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0:
+                        if (!httpRequest && typeof httpRequest !== "object") {
+                            throw new Error("'httpRequest' (WebResourceLike) cannot be null or undefined and must be of type object.");
+                        }
+                        abortController = new AbortController();
+                        if (httpRequest.abortSignal) {
+                            if (httpRequest.abortSignal.aborted) {
+                                throw new AbortError("The operation was aborted.");
+                            }
+                            abortListener = function (event) {
+                                if (event.type === "abort") {
+                                    abortController.abort();
+                                }
+                            };
+                            httpRequest.abortSignal.addEventListener("abort", abortListener);
+                        }
+                        if (httpRequest.timeout) {
+                            setTimeout(function () {
+                                abortController.abort();
+                            }, httpRequest.timeout);
+                        }
+                        if (httpRequest.formData) {
+                            formData = httpRequest.formData;
+                            requestForm_1 = new FormData();
+                            appendFormValue = function (key, value) {
+                                // value function probably returns a stream so we can provide a fresh stream on each retry
+                                if (typeof value === "function") {
+                                    value = value();
+                                }
+                                if (value &&
+                                    Object.prototype.hasOwnProperty.call(value, "value") &&
+                                    Object.prototype.hasOwnProperty.call(value, "options")) {
+                                    requestForm_1.append(key, value.value, value.options);
+                                }
+                                else {
+                                    requestForm_1.append(key, value);
+                                }
+                            };
+                            for (_i = 0, _b = Object.keys(formData); _i < _b.length; _i++) {
+                                formKey = _b[_i];
+                                formValue = formData[formKey];
+                                if (Array.isArray(formValue)) {
+                                    for (j = 0; j < formValue.length; j++) {
+                                        appendFormValue(formKey, formValue[j]);
+                                    }
+                                }
+                                else {
+                                    appendFormValue(formKey, formValue);
+                                }
+                            }
+                            httpRequest.body = requestForm_1;
+                            httpRequest.formData = undefined;
+                            contentType = httpRequest.headers.get("Content-Type");
+                            if (contentType && contentType.indexOf("multipart/form-data") !== -1) {
+                                if (typeof requestForm_1.getBoundary === "function") {
+                                    httpRequest.headers.set("Content-Type", "multipart/form-data; boundary=" + requestForm_1.getBoundary());
+                                }
+                                else {
+                                    // browser will automatically apply a suitable content-type header
+                                    httpRequest.headers.remove("Content-Type");
+                                }
+                            }
+                        }
+                        body = httpRequest.body
+                            ? typeof httpRequest.body === "function"
+                                ? httpRequest.body()
+                                : httpRequest.body
+                            : undefined;
+                        if (httpRequest.onUploadProgress && httpRequest.body) {
+                            onUploadProgress = httpRequest.onUploadProgress;
+                            uploadReportStream = new ReportTransform(onUploadProgress);
+                            if (isReadableStream(body)) {
+                                body.pipe(uploadReportStream);
+                            }
+                            else {
+                                uploadReportStream.end(body);
+                            }
+                            body = uploadReportStream;
+                        }
+                        return [4 /*yield*/, this.prepareRequest(httpRequest)];
+                    case 1:
+                        platformSpecificRequestInit = _e.sent();
+                        requestInit = __assign({ body: body, headers: httpRequest.headers.rawHeaders(), method: httpRequest.method, signal: abortController.signal, redirect: "manual" }, platformSpecificRequestInit);
+                        _e.label = 2;
+                    case 2:
+                        _e.trys.push([2, 8, 9, 10]);
+                        return [4 /*yield*/, this.fetch(httpRequest.url, requestInit)];
+                    case 3:
+                        response = _e.sent();
+                        headers = parseHeaders(response.headers);
+                        streaming = ((_a = httpRequest.streamResponseStatusCodes) === null || _a === void 0 ? void 0 : _a.has(response.status)) ||
+                            httpRequest.streamResponseBody;
+                        _d = {
+                            headers: headers,
+                            request: httpRequest,
+                            status: response.status,
+                            readableStreamBody: streaming
+                                ? response.body
+                                : undefined
+                        };
+                        if (!!streaming) return [3 /*break*/, 5];
+                        return [4 /*yield*/, response.text()];
+                    case 4:
+                        _c = _e.sent();
+                        return [3 /*break*/, 6];
+                    case 5:
+                        _c = undefined;
+                        _e.label = 6;
+                    case 6:
+                        operationResponse = (_d.bodyAsText = _c,
+                            _d);
+                        onDownloadProgress = httpRequest.onDownloadProgress;
+                        if (onDownloadProgress) {
+                            responseBody = response.body || undefined;
+                            if (isReadableStream(responseBody)) {
+                                downloadReportStream = new ReportTransform(onDownloadProgress);
+                                responseBody.pipe(downloadReportStream);
+                                operationResponse.readableStreamBody = downloadReportStream;
+                            }
+                            else {
+                                length_1 = parseInt(headers.get("Content-Length")) || undefined;
+                                if (length_1) {
+                                    // Calling callback for non-stream response for consistency with browser
+                                    onDownloadProgress({ loadedBytes: length_1 });
+                                }
+                            }
+                        }
+                        return [4 /*yield*/, this.processRequest(operationResponse)];
+                    case 7:
+                        _e.sent();
+                        return [2 /*return*/, operationResponse];
+                    case 8:
+                        error_1 = _e.sent();
+                        fetchError = error_1;
+                        if (fetchError.code === "ENOTFOUND") {
+                            throw new RestError(fetchError.message, RestError.REQUEST_SEND_ERROR, undefined, httpRequest);
+                        }
+                        else if (fetchError.type === "aborted") {
+                            throw new AbortError("The operation was aborted.");
+                        }
+                        throw fetchError;
+                    case 9:
+                        // clean up event listener
+                        if (httpRequest.abortSignal && abortListener) {
+                            uploadStreamDone = Promise.resolve();
+                            if (isReadableStream(body)) {
+                                uploadStreamDone = isStreamComplete(body);
+                            }
+                            downloadStreamDone = Promise.resolve();
+                            if (isReadableStream(operationResponse === null || operationResponse === void 0 ? void 0 : operationResponse.readableStreamBody)) {
+                                downloadStreamDone = isStreamComplete(operationResponse.readableStreamBody);
+                            }
+                            Promise.all([uploadStreamDone, downloadStreamDone])
+                                .then(function () {
+                                var _a;
+                                (_a = httpRequest.abortSignal) === null || _a === void 0 ? void 0 : _a.removeEventListener("abort", abortListener);
+                                return;
+                            })
+                                .catch(function (e) {
+                                logger.warning("Error when cleaning up abortListener on httpRequest", e);
+                            });
+                        }
+                        return [7 /*endfinally*/];
+                    case 10: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return FetchHttpClient;
+}());
+export { FetchHttpClient };
+function isReadableStream(body) {
+    return body && typeof body.pipe === "function";
+}
+function isStreamComplete(stream) {
+    return new Promise(function (resolve) {
+        stream.on("close", resolve);
+        stream.on("end", resolve);
+        stream.on("error", resolve);
+    });
+}
+export function parseHeaders(headers) {
+    var httpHeaders = new HttpHeaders();
+    headers.forEach(function (value, key) {
+        httpHeaders.set(key, value);
+    });
+    return httpHeaders;
+}
+//# sourceMappingURL=fetchHttpClient.js.map

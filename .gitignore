@@ -2,9 +2,6 @@
 showyourwork/showyourwork_version.py
 **/.snakemake
 
-# Action
-node_modules
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -23,6 +20,7 @@ eggs/
 lib/
 lib64/
 parts/
+dist/
 sdist/
 var/
 wheels/

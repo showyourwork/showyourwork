@@ -15,11 +15,11 @@ jobs:
       {% if cookiecutter._source_repo == None -%}
       - name: Build the article PDF
         id: build
-        uses: rodluger/showyourwork@{{ cookiecutter._showyourwork_sha }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter._showyourwork_sha }}
       {% else -%}
       - name: Test fresh build
         id: test-build
-        uses: rodluger/showyourwork@{{ cookiecutter._showyourwork_sha }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter._showyourwork_sha }}
         with:
           verbose: true
 
@@ -35,7 +35,7 @@ jobs:
       # otherwise raises an assertion error!
       - name: Test cached build
         id: test-cache
-        uses: rodluger/showyourwork@{{ cookiecutter._showyourwork_sha }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter._showyourwork_sha }}
         with:
           verbose: true
 
