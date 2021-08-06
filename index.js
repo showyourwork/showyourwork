@@ -1,7 +1,6 @@
 // Imports
 const core = require("@actions/core");
 const artifact = require("@actions/artifact");
-const github = require("@actions/github");
 const cache = require("@actions/cache");
 const shell = require("shelljs");
 
