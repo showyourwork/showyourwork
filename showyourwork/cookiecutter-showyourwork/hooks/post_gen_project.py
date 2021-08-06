@@ -11,7 +11,7 @@ with open(Path(".github") / "workflows" / "showyourwork.yml", "r") as f:
     contents = f.read()
 
 # Replace `current` with the current version (package)
-if "rodluger/showyourwork@current" in contents:
+if "rodluger/showyourwork/showyourwork-action@current" in contents:
 
     import showyourwork
 
@@ -43,13 +43,16 @@ if "rodluger/showyourwork@current" in contents:
         )
         version = "latest"
     contents = contents.replace(
-        "rodluger/showyourwork@current", f"rodluger/showyourwork@{version}"
+        "rodluger/showyourwork/showyourwork-action@current",
+        f"rodluger/showyourwork/showyourwork-action@{version}",
     )
 
 
 else:
 
-    version = re.findall("rodluger/showyourwork@(.*?)\n", contents)[0]
+    version = re.findall(
+        "rodluger/showyourwork/showyourwork-action@(.*?)\n", contents
+    )[0]
 
     # Add a version file to the repo for the record
     with open(".showyourwork-version", "w") as f:
