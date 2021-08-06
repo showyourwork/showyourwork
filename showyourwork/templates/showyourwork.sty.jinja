@@ -22,7 +22,7 @@
 \RequirePackage{xspace} % better spacing after icons
 
 \newcommand{\showyourwork}{%
-    \href{https://github.com/rodluger/showyourwork}%
+    \href{https://github.com/rodluger/showyourwork/tree/((- version -))}%
     {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}\hspace{0.2em}%
 }
 
@@ -31,7 +31,7 @@
 \let\oldmaketitle\maketitle
 \def\maketitle{%
     \let\oldLaTeX\LaTeX
-    \def\LaTeX{\oldLaTeX/\showyourwork v((- base_version -))}
+    \def\LaTeX{\oldLaTeX/\showyourwork}
     \oldmaketitle
     \let\LaTeX\oldLaTeX
 }
@@ -120,7 +120,7 @@
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
 }
-\sywLogMessage{This is ShowYourWork v((- version -)).}
+\sywLogMessage{This is showyourwork ((- version -)).}
 
 % Define custom colors
 \definecolor{sywRed}{rgb}{0.80,0.14,0.19}

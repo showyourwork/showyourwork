@@ -1,4 +1,4 @@
-from ..showyourwork_version import __version__
+from ..showyourwork_version import __version__ as showyourwork_version
 from ..constants import *
 from ..utils import save_json
 from .repo import get_repo_metadata
@@ -6,6 +6,7 @@ from .scripts import get_script_metadata, get_script_status
 import json
 from packaging import version
 import os
+import subprocess
 
 
 def get_metadata(clobber=True):
@@ -17,9 +18,27 @@ def get_metadata(clobber=True):
         scripts = get_script_metadata(clobber=False)
         meta = dict(repo=repo)
 
+        # Get the showyourwork version
+        if (
+            version.parse(showyourwork_version).is_devrelease
+            or version.parse(showyourwork_version).is_prerelease
+        ):
+            # Use the SHA instead
+            try:
+                showyourwork_version = (
+                    subprocess.check_output(
+                        ["git", "rev-parse", "HEAD"],
+                        stderr=subprocess.DEVNULL,
+                        cwd=ROOT,
+                    )
+                    .decode()
+                    .replace("\n", "")
+                )
+            except Exception as e:
+                showyourwork_version = "main"
+
         # Miscellaneous
-        meta["version"] = __version__
-        meta["base_version"] = version.parse(__version__).base_version
+        meta["version"] = showyourwork_version
         meta["gen_tree"] = False
         meta["graphicspath"] = str(USER / "figures" / "@")[:-1]
         meta["CI"] = os.getenv("CI", "false") == "true"
