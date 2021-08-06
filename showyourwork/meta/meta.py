@@ -1,4 +1,4 @@
-from ..showyourwork_version import __version__ as showyourwork_version
+from ..showyourwork_version import __version__
 from ..constants import *
 from ..utils import save_json
 from .repo import get_repo_metadata
@@ -19,6 +19,7 @@ def get_metadata(clobber=True):
         meta = dict(repo=repo)
 
         # Get the showyourwork version
+        showyourwork_version = __version__
         if (
             version.parse(showyourwork_version).is_devrelease
             or version.parse(showyourwork_version).is_prerelease
