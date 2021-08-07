@@ -34,7 +34,6 @@
 ## Overview
 
 `showyourwork` is intended to help authors publish the code that generated the results (and in particular the figures) in a scientific article. It ensures that the compiled article PDF is always in sync with all of the code used to generate it. It does this automatically—and seamlessly—with the help of the [Snakemake](https://snakemake.readthedocs.io) workflow management system, the [tectonic](https://tectonic-typesetting.github.io) typesetting engine, and [Github Actions](https://github.com/features/actions) CI.
-
 The basic philosophy behind `showyourwork` is this: scientific papers should exist as GitHub repositories comprised of LaTeX files, figure scripts, optional experiment datasets, _and nothing else_. Anyone should be able to re-generate the article PDF from scratch at the click of a button.
 
 ## Using showyourwork
