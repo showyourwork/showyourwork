@@ -65,10 +65,13 @@ function exec_envs(cmd, group) {
 
 (async () => {
   try {
-    shell.set("-e");
+    // DEBUG shell.set("-e");
 
     shell.echo(shell.grep("<!--", "README.md"));
     shell.echo(shell.grep("<!--", "README.md").length);
+
+    shell.echo(shell.grep("showyourwork.png", "README.md"));
+    shell.echo(shell.grep("showyourwork.png", "README.md").length);
 
     //
     if (shell.grep("<!--", "README.md").length > 0) {
