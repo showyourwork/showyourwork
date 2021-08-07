@@ -19,13 +19,6 @@
   <a href="https://github.com/rodluger/showyourwork-template/generate">
     <img src="https://img.shields.io/badge/-get%20started%20with%20showyourwork-brightgreen?&style=for-the-badge"/>
   </a>
-  <br>
-  <br>
-  <i>
-    This repo is still under active development, so everything is subject to change in the next few weeks. 
-    <br>
-    Please check back periodically for better documentation and more features.
-  </i>
 </p>
 
 
