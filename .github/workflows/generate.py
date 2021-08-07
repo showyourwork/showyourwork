@@ -6,14 +6,14 @@ from pathlib import Path
 from datetime import date
 
 # Enviornment variables (set in .yml files)
-TARGET_REPOSITORY = os.env["TARGET_REPOSITORY"]
-REPO_ACTIVE = os.env["REPO_ACTIVE"] == "true"
-MANUSCRIPT_TYPE = os.env["MANUSCRIPT_TYPE"]
-RUN_TESTS = os.env["RUN_TESTS"] == "true"
-AUTHOR = os.env["AUTHOR"]
-SLUG = os.env["SLUG"]
-README_MESSAGE = os.env["README_MESSAGE"]
-SHA = os.env["SHA"]
+TARGET_REPOSITORY = os.environ["TARGET_REPOSITORY"]
+REPO_ACTIVE = os.environ["REPO_ACTIVE"] == "true"
+MANUSCRIPT_TYPE = os.environ["MANUSCRIPT_TYPE"]
+RUN_TESTS = os.environ["RUN_TESTS"] == "true"
+AUTHOR = os.environ["AUTHOR"]
+SLUG = os.environ["SLUG"]
+README_MESSAGE = os.environ["README_MESSAGE"]
+SHA = os.environ["SHA"]
 
 # Showyourwork version. If there are any commits on top of the latest tag,
 # use the exact SHA for the current commit on rodluger/showyourwork.
