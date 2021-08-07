@@ -16,7 +16,6 @@ def get_metadata(clobber=True):
         meta = dict(repo=repo)
 
         # Get the showyourwork version
-        showyourwork_version = __version__
         if (USER / ".showyourwork-version").exists():
             with open(USER / ".showyourwork-version", "r") as f:
                 showyourwork_version = f.read().replace("\n", "")
