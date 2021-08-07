@@ -61,7 +61,8 @@ function exec_envs(cmd, group) {
     shell.set("-e");
 
     //
-    if (shell.exec(`grep '<!--' README.md`).code == 0) {
+    if (shell.exec(`grep '<!--' README.md`, { shell: "/bin/bash" }).code == 0) {
+      shell.echo("DEBUG!");
       core.startGroup(`Formatting README.md`);
       exec(`sed -i '' 's/<!--//' README.md`);
       exec(
