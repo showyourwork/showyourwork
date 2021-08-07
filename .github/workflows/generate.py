@@ -27,7 +27,7 @@ try:
     )
 except Exception as e:
     print(e)
-    tag_and_commits = ""
+    tag_and_commits = "tag_and_commits"
 try:
     tag = (
         subprocess.check_output(
@@ -38,7 +38,7 @@ try:
     )
 except Exception as e:
     print(e)
-    tag = ""
+    tag = "tag"
 if tag_and_commits == tag:
     version = tag
 else:
