@@ -60,24 +60,22 @@ function exec_envs(cmd, group) {
   try {
     shell.set("-e");
 
-    shell.echo("DEBUG!");
-    shell.exec("ls");
-    shell.grep("<!--", "README.md");
-
     //
-    if (shell.exec("grep '<!--' README.md", { shell: "/bin/bash" }).code == 0) {
-      shell.echo("DEBUG!");
+    if (shell.grep("<!--", "README.md").length > 0) {
       core.startGroup(`Formatting README.md`);
-      exec(`sed -i '' 's/<!--//' README.md`);
-      exec(
-        `sed -i '' 's/rodluger/showyourwork-template/${GITHUB_REPOSITORY}/' README.md`
+      shell.sed("-i", "<!--", "", "README.md");
+      shell.sed("-i", "-->", "", "README.md");
+      shell.sed(
+        "-i",
+        "rodluger/showyourwork-template",
+        GITHUB_REPOSITORY,
+        "README.md"
       );
-      exec(`sed -i '' 's/-->//' README.md`);
-      exec(`git add README.md`);
-      exec(
+      shell.exec(`git add README.md`);
+      shell.exec(
         "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
       );
-      exec(`git push`);
+      shell.exec(`git push`);
       core.endGroup();
     }
 
