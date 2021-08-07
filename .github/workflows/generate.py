@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import date
 
 # Enviornment variables (set in .yml files)
-TARGET_REPOSITORY = os.environ["TARGET_REPOSITORY"]
+TARGET_REPOSITORY = os.environ["SLUG"].split("/")[-1]
 REPO_ACTIVE = os.environ["REPO_ACTIVE"] == "true"
 MANUSCRIPT_TYPE = os.environ["MANUSCRIPT_TYPE"]
 RUN_TESTS = os.environ["RUN_TESTS"] == "true"
