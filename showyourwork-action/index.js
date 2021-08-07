@@ -34,6 +34,9 @@ const article_restoreKeys = [
 ];
 const article_paths = [".showyourwork/cache", ".snakemake"];
 
+// Repo we're running the action on
+const GITHUB_REPOSITORY = shell.env["GITHUB_REPOSITORY"];
+
 // Exec, exit on failure
 function exec(cmd, group) {
   if (typeof group !== "undefined") {
@@ -199,7 +202,6 @@ function exec_envs(cmd, group) {
         .replace(/(\r\n|\n|\r)/gm, "");
       const TARGET_BRANCH = `${CURRENT_BRANCH}-pdf`;
       const GITHUB_TOKEN = core.getInput("github-token");
-      const GITHUB_REPOSITORY = shell.env["GITHUB_REPOSITORY"];
       const TARGET_DIRECTORY = shell
         .exec("mktemp -d")
         .replace(/(\r\n|\n|\r)/gm, "");
