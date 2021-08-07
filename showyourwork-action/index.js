@@ -65,16 +65,10 @@ function exec_envs(cmd, group) {
 
 (async () => {
   try {
-    // DEBUG shell.set("-e");
+    shell.set("-e");
 
-    shell.echo(shell.grep("<!--", "README.md"));
-    shell.echo(shell.grep("<!--", "README.md").length);
-
-    shell.echo(shell.grep("showyourwork.png", "README.md"));
-    shell.echo(shell.grep("showyourwork.png", "README.md").length);
-
-    //
-    if (shell.grep("<!--", "README.md").length > 0) {
+    // Format the README if this is a fresh repo based on the template
+    if (shell.grep("<!--", "README.md").length > 1) {
       core.startGroup(`Formatting README.md`);
       shell.sed("-i", "<!--", "", "README.md");
       shell.sed("-i", "-->", "", "README.md");
