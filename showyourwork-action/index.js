@@ -62,6 +62,7 @@ function exec_envs(cmd, group) {
 
     shell.echo("DEBUG!");
     shell.exec("ls");
+    shell.grep("<!--", "README.md");
 
     //
     if (shell.exec("grep '<!--' README.md", { shell: "/bin/bash" }).code == 0) {
