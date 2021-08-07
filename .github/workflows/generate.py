@@ -80,6 +80,7 @@ subprocess.check_call(
         "git",
         "-c",
         "user.name='showyourwork'",
+        "-c",
         "user.email='showyourwork",
         "commit",
         "-m",
