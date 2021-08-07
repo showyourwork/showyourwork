@@ -60,6 +60,22 @@ function exec_envs(cmd, group) {
   try {
     shell.set("-e");
 
+    //
+    if (exec(`grep '<!--' README.md`).code == 0) {
+      core.startGroup(`Formatting README.md`);
+      shell.exec(`sed -i '' 's/<!--//' README.md`);
+      shell.exec(
+        `sed -i '' 's/rodluger/showyourwork-template/${GITHUB_REPOSITORY}/' README.md`
+      );
+      shell.exec(`sed -i '' 's/-->//' README.md`);
+      shell.exec(`git add README.md`);
+      shell.exec(
+        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
+      );
+      shell.exec(`git push`);
+      core.endGroup();
+    }
+
     // Restore conda cache
     core.startGroup(`Restore conda cache`);
     const conda_cacheKey = await cache.restoreCache(

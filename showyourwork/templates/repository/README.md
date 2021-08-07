@@ -5,8 +5,10 @@
   <br>
   <br>
   {{ readme_message }}
+  {% if not repo_active %}
+  <!--
+  {% endif %}
   <p align="center">
-    {% if repo_active %}
     <a href="https://github.com/{{ slug }}/actions/workflows/showyourwork.yml">
       <img src="https://github.com/{{ slug }}/actions/workflows/showyourwork.yml/badge.svg" alt="Article status"/>
     </a>
@@ -16,5 +18,8 @@
     <a href="https://github.com/{{ slug }}/raw/main-pdf/ms.pdf">
       <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
-    {% endif %}
+  </p>
+  {% if not repo_active %}
+  -->
+  {% endif %}
 </p>
