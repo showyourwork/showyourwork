@@ -7,6 +7,7 @@ from datetime import date
 
 # Enviornment variables (set in .yml files)
 TARGET_REPOSITORY = os.environ["SLUG"].split("/")[-1]
+ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
 REPO_ACTIVE = os.environ["REPO_ACTIVE"] == "true"
 MANUSCRIPT_TYPE = os.environ["MANUSCRIPT_TYPE"]
 RUN_TESTS = os.environ["RUN_TESTS"] == "true"
@@ -93,8 +94,10 @@ subprocess.check_call(
         "git",
         "push",
         "--force",
-        "https://x-access-token:${ACCESS_TOKEN}@github.com/${SLUG}",
+        f"https://x-access-token:{ACCESS_TOKEN}@github.com/{SLUG}",
         "main",
     ],
     cwd=TARGET_REPOSITORY,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.STDOUT,
 )
