@@ -63,9 +63,11 @@ shutil.copytree(
 # Render the templates
 env = jinja2.Environment(trim_blocks=True, loader=jinja2.FileSystemLoader("."))
 for file in Path(TARGET_REPOSITORY).glob("**/*"):
-    sty = env.get_template(str(file)).render(**kwargs)
-    with open(file, "w") as f:
-        print(sty, file=f)
+    file = str(file)
+    if os.path.isfile(file):
+        sty = env.get_template(file).render(**kwargs)
+        with open(file, "w") as f:
+            print(sty, file=f)
 
 # Create repo and force push to target
 subprocess.check_call(["git", "init"], cwd=TARGET_REPOSITORY)
