@@ -1,4 +1,3 @@
-recursive-include showyourwork/cookiecutter-showyourwork *
 recursive-include showyourwork/meta *
 recursive-include showyourwork/templates *
 recursive-include showyourwork/tex *

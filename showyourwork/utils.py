@@ -50,7 +50,7 @@ def make_pdf(
     shutil.rmtree(tmpdir, ignore_errors=True)
     tmpdir.mkdir(parents=True)
     with open(tmpdir / f"{style}", "w") as f:
-        sty = env.get_template(f"{style}.jinja").render(**jinja_kwargs)
+        sty = env.get_template(style).render(**jinja_kwargs)
         print(sty, file=f)
 
     # Copy LaTeX stylesheets & helper files to tmpdir

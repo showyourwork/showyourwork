@@ -23,13 +23,29 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install cookiecutter
+          pip install Jinja2
 
       - name: Generate rodluger/showyourwork-example
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          TARGET_USER: rodluger
-          TARGET_REPOSITORY: showyourwork-example
-          AUTHOR_NAME: Rodrigo Luger
-          SHOWYOURWORK_SHA: ${{ github.sha }}
-        run: bash .github/workflows/generate.sh
+          SHA: ${{ github.sha }}
+          SLUG: rodluger/showyourwork-example
+          REPO_ACTIVE: true
+          MANUSCRIPT_TYPE: example
+          RUN_TESTS: false
+          AUTHOR: "Rodrigo Luger"
+          README_MESSAGE: "An open source scientific article generated with <a href='https://github.com/rodluger/showyourwork'>showyourwork</a>"
+
+        run: python .github/workflows/generate.py
+
+      - name: Generate rodluger/showyourwork-template
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          SHA: ${{ github.sha }}
+          SLUG: rodluger/showyourwork-template
+          REPO_ACTIVE: false
+          MANUSCRIPT_TYPE: minimal
+          RUN_TESTS: false
+          AUTHOR: "Author Name"
+          README_MESSAGE: ""
+        run: python .github/workflows/generate.py

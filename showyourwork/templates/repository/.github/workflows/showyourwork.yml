@@ -1,25 +1,23 @@
-name: article
+{% if run_tests %}
+name: tests
 
-on: push
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
-  showyourwork:
+  tests:
     runs-on: ubuntu-latest
-    name: Build the article PDF
+    name: Run the CI tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      {% if cookiecutter._source_repo == None -%}
-      - name: Build the article PDF
-        id: build
-        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter._showyourwork_sha }}
-      {% else -%}
       - name: Test fresh build
         id: test-build
-        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter._showyourwork_sha }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ version }}
         with:
           verbose: true
 
@@ -35,7 +33,7 @@ jobs:
       # otherwise raises an assertion error!
       - name: Test cached build
         id: test-cache
-        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter._showyourwork_sha }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ version }}
         with:
           verbose: true
 
@@ -54,7 +52,25 @@ jobs:
             -H "Authorization: token ${GITHUB_TOKEN}" \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Content-Type: application/json" \
-            "https://api.github.com/repos/{{cookiecutter._source_repo}}/dispatches" \
+            "https://api.github.com/repos/rodluger/showyourwork/dispatches" \
             -d "{\"event_type\": \"callback\", \"client_payload\": {\"repo\": \"${REPO}\", \"run_id\": \"${RUN_ID}\", \"test_build_outcome\": \"${TEST_BUILD_OUTCOME}\", \"test_cache_outcome\": \"${TEST_CACHE_OUTCOME}\" }}" \
             &> /dev/null
-      {% endif -%}
+{% else %}
+name: article
+
+on: push
+
+jobs:
+  showyourwork:
+    runs-on: ubuntu-latest
+    name: Build the article PDF
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build the article PDF
+        id: build
+        uses: rodluger/showyourwork/showyourwork-action@{{ version }}
+{% endif %}
