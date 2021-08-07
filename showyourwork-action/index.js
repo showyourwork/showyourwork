@@ -36,6 +36,10 @@ const article_paths = [".showyourwork/cache", ".snakemake"];
 
 // Repo we're running the action on
 const GITHUB_REPOSITORY = shell.env["GITHUB_REPOSITORY"];
+const CURRENT_BRANCH = shell
+  .exec("git rev-parse --abbrev-ref HEAD")
+  .replace(/(\r\n|\n|\r)/gm, "");
+const GITHUB_TOKEN = core.getInput("github-token");
 
 // Exec, exit on failure
 function exec(cmd, group) {
@@ -63,6 +67,9 @@ function exec_envs(cmd, group) {
   try {
     shell.set("-e");
 
+    shell.echo(shell.grep("<!--", "README.md"));
+    shell.echo(shell.grep("<!--", "README.md").length);
+
     //
     if (shell.grep("<!--", "README.md").length > 0) {
       core.startGroup(`Formatting README.md`);
@@ -78,7 +85,9 @@ function exec_envs(cmd, group) {
       shell.exec(
         "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
       );
-      shell.exec(`git push`);
+      shell.exec(
+        `git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${CURRENT_BRANCH}`
+      );
       core.endGroup();
     }
 
@@ -197,11 +206,7 @@ function exec_envs(cmd, group) {
     // Force-push to `-pdf` branch
     if (core.getInput("force-push") == "true") {
       core.startGroup(`Uploading output`);
-      const CURRENT_BRANCH = shell
-        .exec("git rev-parse --abbrev-ref HEAD")
-        .replace(/(\r\n|\n|\r)/gm, "");
       const TARGET_BRANCH = `${CURRENT_BRANCH}-pdf`;
-      const GITHUB_TOKEN = core.getInput("github-token");
       const TARGET_DIRECTORY = shell
         .exec("mktemp -d")
         .replace(/(\r\n|\n|\r)/gm, "");
