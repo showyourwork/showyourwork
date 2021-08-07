@@ -1,12 +1,9 @@
-from ..showyourwork_version import __version__
 from ..constants import *
 from ..utils import save_json
 from .repo import get_repo_metadata
 from .scripts import get_script_metadata, get_script_status
 import json
-from packaging import version
 import os
-import subprocess
 
 
 def get_metadata(clobber=True):
@@ -20,23 +17,11 @@ def get_metadata(clobber=True):
 
         # Get the showyourwork version
         showyourwork_version = __version__
-        if (
-            version.parse(showyourwork_version).is_devrelease
-            or version.parse(showyourwork_version).is_prerelease
-        ):
-            # Use the SHA instead
-            try:
-                showyourwork_version = (
-                    subprocess.check_output(
-                        ["git", "rev-parse", "HEAD"],
-                        stderr=subprocess.DEVNULL,
-                        cwd=ROOT,
-                    )
-                    .decode()
-                    .replace("\n", "")
-                )
-            except Exception as e:
-                showyourwork_version = "main"
+        if (USER / ".showyourwork-version").exists():
+            with open(USER / ".showyourwork-version", "r") as f:
+                showyourwork_version = f.read().replace("\n", "")
+        else:
+            showyourwork_version = "main"
 
         # Miscellaneous
         meta["version"] = showyourwork_version
