@@ -15,6 +15,10 @@ AUTHOR = os.environ["AUTHOR"]
 SLUG = os.environ["SLUG"]
 README_MESSAGE = os.environ["README_MESSAGE"]
 SHA = os.environ["SHA"]
+if REPO_ACTIVE:
+    COMMIT_TAG = ""
+else:
+    COMMIT_TAG = "[skip ci]"
 
 # Showyourwork version. If there are any commits on top of the latest tag,
 # use the exact SHA for the current commit on rodluger/showyourwork.
@@ -80,12 +84,12 @@ subprocess.check_call(
     [
         "git",
         "-c",
-        "user.name='showyourwork'",
+        'user.name="rodluger/showyourwork"',
         "-c",
-        "user.email='showyourwork",
+        'user.email="rodluger/showyourwork"',
         "commit",
         "-m",
-        "'auto commit from showyourwork'",
+        f'"{COMMIT_TAG} auto commit from rodluger/showyourwork"',
     ],
     cwd=TARGET_REPOSITORY,
 )

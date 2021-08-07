@@ -16,9 +16,5 @@
     <a href="https://github.com/{{ slug }}/raw/main-pdf/ms.pdf">
       <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
-    {% else %}
-    <a href="#">
-      <img src="https://img.shields.io/badge/build-in%20progress-yellow.svg?style=flat" alt="Article status"/>
-    </a>
     {% endif %}
 </p>
