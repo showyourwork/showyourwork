@@ -16,7 +16,6 @@
   </a>
 </p>
 
-
 ## Under active development
 
 `showyourwork` is still under active development, so everything is subject to change (a lot!) in the next few weeks. Please check back periodically for better documentation and more features. Also check out the [issues](https://github.com/rodluger/showyourwork/issues) tab for things we're currently working on, and feel free to suggest your own ideas!
@@ -27,30 +26,13 @@
 
 The basic philosophy behind `showyourwork` is this: scientific papers should exist as GitHub repositories comprised of LaTeX files, figure scripts, optional experiment datasets, _and nothing else_. Anyone should be able to re-generate the article PDF from scratch at the click of a button.
 
-## Installation
+## Using showyourwork
 
-`showyourwork` requires the [conda](https://www.anaconda.com/products/individual) package manager.
-
-_NOTE: Currently only the development version is available._
-
-```
-conda install -c conda-forge -c bioconda mamba pip snakemake tectonic
-python -m pip install git+https://github.com/rodluger/showyourwork.git@main
-```
-
-## Setup
-
-To create a fresh article repository, run
-
-```bash
-showyourwork --new
-```
-
-You will be prompted for some information about the repository, which will then be initialized in the current working directory.
+Click [here](https://github.com/rodluger/showyourwork-template/generate) to create a fresh open source article repository. This will automatically set up the workflow to build your paper on GitHub Actions. Every time you commit and push changes, the article PDF will be regenerated and made available both as a [workflow artifact](https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts) and on a separate branch in your repo called `main-pdf` (or `[branch]-pdf` if you're on a different branch).
 
 ## Repository structure
 
-Your new repository should have the following structure:
+Your new repository has the following basic structure:
 
 ```
 my_repo
@@ -79,7 +61,17 @@ Let's discuss each file/directory one at a time:
 
 - `environment.yml`: This contains the `conda` environment specs for building your article. All dependencies needed to build your article from scratch should be included here. For more details, see [the conda docs](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#create-env-file-manually).
 
-## Building locally
+## Local builds
+
+In order to build your article locally, you'll need to install `showyourwork`,
+which requires the [conda](https://www.anaconda.com/products/individual) package manager:
+
+_NOTE: Currently only the development version is available._
+
+```
+conda install -c conda-forge -c bioconda mamba pip snakemake tectonic
+python -m pip install git+https://github.com/rodluger/showyourwork.git@main
+```
 
 To build your article locally, simply run
 
@@ -88,23 +80,3 @@ showyourwork
 ```
 
 in the top level of your repository. This will generate the compiled PDF, `ms.pdf`, in the same directory. If this is the first time you're running it, `showyourwork` will build all your figure scripts before compiling the PDF. Once they are built, `showyourwork` caches the output to avoid re-running scripts that have not changed.
-
-## Building remotely
-
-The main point of `showyourwork` is to make your article open source, so the final step is to push it to GitHub. If you haven't already done so, run
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-```
-
-from the top level to start tracking it with `git`. Create a [new repository](https://github.com/new) on GitHub, then push your changes:
-
-```bash
-git branch -M main
-git remote add origin https://github.com/[user]/[repo].git
-git push -u origin main
-```
-
-Upon every commit pushed to GitHub, `showyourwork` will **automatically build your article on GitHub Actions**. Upon completion, the PDF will be available both as a [workflow artifact](https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts) and on a separate branch in your repo called `main-pdf` (or `[branch]-pdf` if you're on a different branch)

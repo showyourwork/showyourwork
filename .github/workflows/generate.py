@@ -18,7 +18,7 @@ SHA = os.environ["SHA"]
 if REPO_ACTIVE:
     COMMIT_TAG = ""
 else:
-    COMMIT_TAG = "[skip ci]"
+    COMMIT_TAG = "[skip ci] "
 
 # Showyourwork version. If there are any commits on top of the latest tag,
 # use the exact SHA for the current commit on rodluger/showyourwork.
@@ -84,12 +84,12 @@ subprocess.check_call(
     [
         "git",
         "-c",
-        'user.name="rodluger/showyourwork"',
+        "user.name=rodluger/showyourwork",
         "-c",
-        'user.email="rodluger/showyourwork"',
+        "user.email=rodluger/showyourwork",
         "commit",
         "-m",
-        f'"{COMMIT_TAG} auto commit from rodluger/showyourwork"',
+        f"{COMMIT_TAG}auto commit from rodluger/showyourwork",
     ],
     cwd=TARGET_REPOSITORY,
 )

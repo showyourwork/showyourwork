@@ -35,7 +35,6 @@ jobs:
           RUN_TESTS: false
           AUTHOR: "Rodrigo Luger"
           README_MESSAGE: "An open source scientific article generated with <a href='https://github.com/rodluger/showyourwork'>showyourwork</a>"
-
         run: python .github/workflows/generate.py
 
       - name: Generate rodluger/showyourwork-template
