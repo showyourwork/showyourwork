@@ -46,5 +46,5 @@ jobs:
           MANUSCRIPT_TYPE: minimal
           RUN_TESTS: false
           AUTHOR: "Author Name"
-          README_MESSAGE: "Click <a href='https://github.com/rodluger/showyourwork-template/generate'>here</a> to create a new open source article repository!"
+          README_MESSAGE: "Sit tight while your article builds!"
         run: python .github/workflows/generate.py
