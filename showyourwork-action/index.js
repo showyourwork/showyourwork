@@ -70,8 +70,10 @@ function exec_envs(cmd, group) {
     // Format the README if this is a fresh repo based on the template
     if (shell.grep("<!--", "README.md").length > 1) {
       core.startGroup(`Formatting README.md`);
-      shell.sed("-i", "<!--", "", "README.md");
-      shell.sed("-i", "-->", "", "README.md");
+      shell.sed("-i", "<!--<message>-->", "<!--", "README.md");
+      shell.sed("-i", "<!--</message>-->", "-->", "README.md");
+      shell.sed("-i", "<!--<badges>", "", "README.md");
+      shell.sed("-i", "</badges>-->", "", "README.md");
       shell.sed(
         "-i",
         "rodluger/showyourwork-template",

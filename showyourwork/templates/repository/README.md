@@ -4,9 +4,11 @@
   </a>
   <br>
   <br>
+  <!--<message>-->
   {{ readme_message }}
+  <!--</message>-->
   {% if not repo_active %}
-  <!--
+  <!--<badges>
   {% endif %}
   <p align="center">
     <a href="https://github.com/{{ slug }}/actions/workflows/showyourwork.yml">
@@ -20,6 +22,6 @@
     </a>
   </p>
   {% if not repo_active %}
-  -->
+  </badges>-->
   {% endif %}
 </p>
