@@ -14,11 +14,15 @@
   <a href="https://github.com/rodluger/showyourwork-example/raw/main-pdf/ms.pdf">
     <img src="https://img.shields.io/static/v1?label=example&message=pdf&color=blue"/>
   </a>
+  <br>
+  <br>
+  <i>
+    This repo is still under active development, so everything is subject to change in the next few weeks. 
+    <br>
+    Please check back periodically for better documentation and more features.
+  </i>
 </p>
 
-## Under active development
-
-`showyourwork` is still under active development, so everything is subject to change (a lot!) in the next few weeks. Please check back periodically for better documentation and more features. Also check out the [issues](https://github.com/rodluger/showyourwork/issues) tab for things we're currently working on, and feel free to suggest your own ideas!
 
 ## Overview
 
