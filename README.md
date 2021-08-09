@@ -19,13 +19,6 @@
   <a href="https://github.com/rodluger/showyourwork-template/generate">
     <img src="https://img.shields.io/badge/-get%20started%20with%20showyourwork-brightgreen?&style=for-the-badge"/>
   </a>
-  <br>
-  <br>
-  <i>
-    This repo is still under active development, so everything is subject to change in the next few weeks. 
-    <br>
-    Please check back periodically for better documentation and more features.
-  </i>
 </p>
 
 
@@ -34,7 +27,6 @@
 ## Overview
 
 `showyourwork` is intended to help authors publish the code that generated the results (and in particular the figures) in a scientific article. It ensures that the compiled article PDF is always in sync with all of the code used to generate it. It does this automatically—and seamlessly—with the help of the [Snakemake](https://snakemake.readthedocs.io) workflow management system, the [tectonic](https://tectonic-typesetting.github.io) typesetting engine, and [Github Actions](https://github.com/features/actions) CI.
-
 The basic philosophy behind `showyourwork` is this: scientific papers should exist as GitHub repositories comprised of LaTeX files, figure scripts, optional experiment datasets, _and nothing else_. Anyone should be able to re-generate the article PDF from scratch at the click of a button.
 
 ## Using showyourwork
