@@ -17,7 +17,9 @@
   <br>
   <br>
   <a href="https://github.com/rodluger/showyourwork-template/generate">
+    <img src="https://img.shields.io/badge/-▶▶▶▶▶-white?&style=for-the-badge"/>
     <img src="https://img.shields.io/badge/-get%20started%20with%20showyourwork-brightgreen?&style=for-the-badge"/>
+    <img src="https://img.shields.io/badge/-◀◀◀◀◀-white?&style=for-the-badge"/>
   </a>
 </p>
 
