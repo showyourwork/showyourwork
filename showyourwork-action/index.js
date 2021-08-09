@@ -35,6 +35,7 @@ const article_restoreKeys = [
 const article_paths = [".showyourwork/cache", ".snakemake"];
 
 // Repo we're running the action on
+const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
 const GITHUB_REPOSITORY = shell.env["GITHUB_REPOSITORY"];
 const CURRENT_BRANCH = shell
   .exec("git rev-parse --abbrev-ref HEAD")
@@ -66,29 +67,6 @@ function exec_envs(cmd, group) {
 (async () => {
   try {
     shell.set("-e");
-
-    // Format the README if this is a fresh repo based on the template
-    if (shell.grep("<!--", "README.md").length > 1) {
-      core.startGroup(`Formatting README.md`);
-      shell.exec(`git pull origin ${CURRENT_BRANCH}`);
-      shell.sed("-i", "Sit tight while your article builds!", "", "README.md");
-      shell.sed("-i", "<!--", "", "README.md");
-      shell.sed("-i", "-->", "", "README.md");
-      shell.sed(
-        "-i",
-        "rodluger/showyourwork-template",
-        GITHUB_REPOSITORY,
-        "README.md"
-      );
-      shell.exec(`git add README.md`);
-      shell.exec(
-        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
-      );
-      shell.exec(
-        `git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${CURRENT_BRANCH}`
-      );
-      core.endGroup();
-    }
 
     // Restore conda cache
     core.startGroup(`Restore conda cache`);
@@ -221,6 +199,31 @@ function exec_envs(cmd, group) {
       );
       shell.exec(
         `git push --force https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${TARGET_BRANCH}`
+      );
+      core.endGroup();
+    }
+
+    // Format the README if this is a fresh repo based on the template
+    if (shell.grep("<!--", "README.md").length > 1) {
+      core.startGroup(`Formatting README.md`);
+      shell.cd(GITHUB_WORKSPACE);
+      shell.exec(`git reset --hard HEAD`); // undo any current changes
+      shell.exec(`git pull origin ${CURRENT_BRANCH}`); // in case things changed since the action started
+      shell.sed("-i", "Sit tight while your article builds!", "", "README.md");
+      shell.sed("-i", "<!--", "", "README.md");
+      shell.sed("-i", "-->", "", "README.md");
+      shell.sed(
+        "-i",
+        "rodluger/showyourwork-template",
+        GITHUB_REPOSITORY,
+        "README.md"
+      );
+      shell.exec(`git add README.md`);
+      shell.exec(
+        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
+      );
+      shell.exec(
+        `git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${CURRENT_BRANCH}`
       );
       core.endGroup();
     }
