@@ -70,6 +70,7 @@ function exec_envs(cmd, group) {
     // Format the README if this is a fresh repo based on the template
     if (shell.grep("<!--", "README.md").length > 1) {
       core.startGroup(`Formatting README.md`);
+      shell.exec(`git pull origin ${CURRENT_BRANCH}`);
       shell.sed("-i", "Sit tight while your article builds!", "", "README.md");
       shell.sed("-i", "<!--", "", "README.md");
       shell.sed("-i", "-->", "", "README.md");
