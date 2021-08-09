@@ -4,7 +4,13 @@
 </a>
 <br>
 <br>
-{{ readme_message }}
+{% if readme_message == "example" %}
+An open source scientific article generated with <a href='https://github.com/rodluger/showyourwork'>showyourwork</a>.
+{% elif readme_message == "test" %}
+This is a test repository for <a href='https://github.com/rodluger/showyourwork'>showyourwork</a>. Not much to see here!
+{% elif readme_message == "new" %}
+Sit tight while your article builds. This may take up to five minutes, at which point you can refresh this page. You can also check the build progress by clicking on the Actions tab at the top. If there are any issues, please refer to the <a href='https://github.com/rodluger/showyourwork'>showyourwork documentation</a>.
+{% endif %}
 {% if not repo_active %}
 <!--
 {% endif %}

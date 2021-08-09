@@ -32,5 +32,5 @@ jobs:
           MANUSCRIPT_TYPE: minimal
           RUN_TESTS: true
           AUTHOR: "Rodrigo Luger"
-          README_MESSAGE: "This is a test repository for <a href='https://github.com/rodluger/showyourwork'>showyourwork</a>"
+          README_MESSAGE: test
         run: python .github/workflows/generate.py

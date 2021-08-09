@@ -142,19 +142,15 @@ When that is done, the compiled PDF will have an extra icon in the margin next t
 
 \section{Using \texttt{showyourwork}}
 %
-There are a few different ways to use \texttt{showyourwork} in your research.
-
-\subsection{Quick-and-dirty}
-%
-Create a new \texttt{GitHub} repository based on the template that generated this article by clicking \href{https://github.com/rodluger/showyourwork-example/generate}{here}.
+To get started with \texttt{showyourwork}, create a new \texttt{GitHub} repository based on the template that generated this article by clicking \href{https://github.com/rodluger/showyourwork-template/generate}{here}.
 Edit the manuscript and the figure script(s) as needed and push your changes to your repo.
 \textbf{That's it!}
 Your paper will automatically be built on \texttt{GitHub Actions} and will be available as the article file \texttt{ms.pdf} in the \texttt{main-pdf} branch of your repo and as a workflow artifact in the \texttt{Actions} tab on your repository \texttt{GitHub} page.
 It will be updated every time you push new changes to your remote repo.
 
-\subsection{Custom setup and local builds}
+\subsection{Local builds}
 %
-For a bit more fine-grained control, and to enable local builds of your article, install the \texttt{showyourwork} package, which requires the \href{https://www.anaconda.com/products/individual}{conda} package manager:
+To enable local builds of your article, install the \texttt{showyourwork} package, which requires the \href{https://www.anaconda.com/products/individual}{conda} package manager:
 %
 \begin{verbatim}
 conda install -c conda-forge -c bioconda \
@@ -167,33 +163,11 @@ Please note that this is still the development version; soon you'll be able to i
 Once installed, you can run
 %
 \begin{verbatim}
-showyourwork --new
-\end{verbatim}
-%
-to create a fresh article repository in the current working directory.
-You will be prompted for some information about the repo. Make changes to the files as needed, then run
-%
-\begin{verbatim}
 showyourwork
 \end{verbatim}
 %
-in the top level of the repository to build your paper.
+in the top level of your repository to build your paper.
 This will generate the compiled PDF, \texttt{ms.pdf}, in the same directory.
-If this is the first time you're running it, \texttt{showyourwork} will build all your figure scripts before compiling the PDF.
-Once they are built, \texttt{showyourwork} caches the output to avoid re-running scripts that have not changed.
-
-To enable remote builds, just initialize \texttt{git} in the repo, commit your changes, and push to a remote repository on \texttt{GitHub}:
-%
-\begin{verbatim}
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/[user]/[repo].git
-git push -u origin main
-\end{verbatim}
-%
-As before, this will trigger a build on \texttt{GitHub Actions}; when that's done, your article will be aviable as the file \texttt{ms.pdf} in the \texttt{main-pdf} branch of your repo and as a workflow artifact in the \texttt{Actions} tab on your repository \texttt{GitHub} page.
 
 \section{FAQs}
 %

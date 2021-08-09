@@ -37,10 +37,36 @@ const article_paths = [".showyourwork/cache", ".snakemake"];
 // Repo we're running the action on
 const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
 const GITHUB_REPOSITORY = shell.env["GITHUB_REPOSITORY"];
+const GITHUB_USER = GITHUB_REPOSITORY.split("/")[0];
 const CURRENT_BRANCH = shell
   .exec("git rev-parse --abbrev-ref HEAD")
   .replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
+
+// README text for a new repo
+const NEW_REPO_README = `
+
+## You're all set!
+
+Your new repository is set up and ready to go. The badges at the top will take you to the workflow logs,
+the article graph, and the compiled article PDF. The PDF is automatically updated every time you push
+changes to this repo; note that builds usually take a few minutes (or more, depending on what you're doing).
+
+The first thing you might want to do is customize the \`tex/ms.tex\` file, which is currently just filled
+with placeholder text. You should also delete the current placeholder figure script in the \`figures\`
+directory, and add the scripts needed to build your own figures. If your workflow has external dependencies
+(which it most likely will), you must add them to the \`environment.yml\` file so \`showyourwork\` can build
+the paper from scratch. See
+[here](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#managing-environments)
+for details.
+
+Finally, change or edit the \`LICENSE\` as needed and replace the text in this \`README.md\` with some useful
+informatin for the reader!
+
+If you run into any trouble, please check out the [showyourwork documentation](https://github.com/rodluger/showyourwork).
+If you think you've encountered a bug, please check out the [issues page](https://github.com/rodluger/showyourwork/issues)
+and raise a new one if needed.
+`;
 
 // Exec, exit on failure
 function exec(cmd, group) {
@@ -203,22 +229,26 @@ function exec_envs(cmd, group) {
       core.endGroup();
     }
 
-    // Format the README if this is a fresh repo based on the template
+    // Format some files if this is a fresh repo based on the template
     if (shell.grep("<!--", "README.md").length > 1) {
-      core.startGroup(`Formatting README.md`);
+      core.startGroup(`Format LICENSE, README.md, and tex/ms.tex`);
       shell.cd(GITHUB_WORKSPACE);
       shell.exec(`git reset --hard HEAD`); // undo any current changes
       shell.exec(`git pull origin ${CURRENT_BRANCH}`); // in case things changed since the action started
-      shell.sed("-i", "Sit tight while your article builds!", "", "README.md");
+      shell.sed("-i", "Sit tight.*", "", "README.md");
       shell.sed("-i", "<!--", "", "README.md");
-      shell.sed("-i", "-->", "", "README.md");
+      shell.sed("-i", "-->", NEW_REPO_README, "README.md");
       shell.sed(
         "-i",
         "rodluger/showyourwork-template",
         GITHUB_REPOSITORY,
         "README.md"
       );
+      shell.sed("-i", "Author Name", GITHUB_USER, "LICENSE");
+      shell.sed("-i", "Author Name", GITHUB_USER, "tex/ms.tex");
       shell.exec(`git add README.md`);
+      shell.exec(`git add LICENSE`);
+      shell.exec(`git add tex/ms.tex`);
       shell.exec(
         "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
       );
