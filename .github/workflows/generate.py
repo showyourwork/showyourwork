@@ -61,9 +61,7 @@ kwargs = dict(
 )
 
 # Create the new repo
-shutil.copytree(
-    Path("showyourwork") / "templates" / "repository", TARGET_REPOSITORY
-)
+shutil.copytree("showyourwork-template", TARGET_REPOSITORY)
 
 # Render the templates
 env = jinja2.Environment(trim_blocks=True, loader=jinja2.FileSystemLoader("."))
