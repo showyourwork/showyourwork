@@ -61,17 +61,17 @@ def main():
     args, snakemake_args = parser.parse_known_args(sys.argv[1:])
 
     # Subprograms
-    cmds = ["clean", "Clean", "new", "dag", "restore_cache", "update_cache"]
+    cmds = ["clean", "Clean", "dag", "restore_cache", "update_cache"]
     assert (
         sum([int(not getattr(args, cmd, False) is False) for cmd in cmds]) < 2
     ), "Options conflict!"  # Only one is allowed at a time!
     for cmd in cmds:
         if getattr(args, cmd, False):
-            if cmd == "new":
-                new(args.new[0])
-            else:
-                exec(f"{cmd}()")
+            exec(f"{cmd}()")
             return
+    if args.new:
+        new(args.new[0])
+        return
 
     # Check that the `cwd` is a valid article repo
     check_repo()
