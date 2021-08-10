@@ -39,7 +39,8 @@ def main():
     parser.add_argument(
         "-n",
         "--new",
-        action="store_true",
+        nargs=1,
+        metavar="slug",
         help="create a new article repository",
     )
     parser.add_argument(
@@ -66,7 +67,10 @@ def main():
     ), "Options conflict!"  # Only one is allowed at a time!
     for cmd in cmds:
         if getattr(args, cmd, False):
-            exec(f"{cmd}()")
+            if cmd == "new":
+                new(args.new[0])
+            else:
+                exec(f"{cmd}()")
             return
 
     # Check that the `cwd` is a valid article repo

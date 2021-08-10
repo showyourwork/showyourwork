@@ -231,7 +231,7 @@ function exec_envs(cmd, group) {
 
     // Format some files if this is a fresh repo based on the template
     if (shell.grep("<!--", "README.md").length > 1) {
-      core.startGroup(`Format LICENSE, README.md, and tex/ms.tex`);
+      core.startGroup(`Format LICENSE and README.md`);
       shell.cd(GITHUB_WORKSPACE);
       shell.exec(`git reset --hard HEAD`); // undo any current changes
       shell.exec(`git pull origin ${CURRENT_BRANCH}`); // in case things changed since the action started
@@ -245,10 +245,8 @@ function exec_envs(cmd, group) {
         "README.md"
       );
       shell.sed("-i", "Author Name", GITHUB_USER, "LICENSE");
-      shell.sed("-i", "Author Name", GITHUB_USER, "tex/ms.tex");
       shell.exec(`git add README.md`);
       shell.exec(`git add LICENSE`);
-      shell.exec(`git add tex/ms.tex`);
       shell.exec(
         "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
       );
