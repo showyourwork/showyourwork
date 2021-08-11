@@ -28,7 +28,7 @@ jobs:
       - name: Generate rodluger/showyourwork-example
         env:
           SLUG: rodluger/showyourwork-example
-          REPO_ACTIVE: y
+          REPO_ACTIVE: n
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           SKIP_CI: n
           RUN_TESTS: n

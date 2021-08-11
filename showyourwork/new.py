@@ -55,7 +55,7 @@ def new(slug, repo_active="y", access_token="", skip_ci="n", run_tests="n"):
 
     # Render
     cookiecutter(
-        str(ROOT / "showyourwork-template"),
+        str(ROOT / "cookiecutter-showyourwork"),
         extra_context=extra_context,
         no_input=True,
     )
