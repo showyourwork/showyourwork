@@ -69,14 +69,14 @@ def make_pdf(
         if line.startswith(r"\documentclass"):
             lines = (
                 lines[: idx + 1]
-                + [r"\usepackage{showyourwork}"]
+                + [r"\usepackage{showyourwork}" + "\n"]
                 + lines[idx + 1 :]
             )
             break
     else:
         raise ValueError(r"Missing `\documentclass` in file `tex/ms.tex`.")
     with open(tmpdir / "ms.tex", "w") as f:
-        print(lines, file=f)
+        f.writelines(lines)
 
     # Verbosity
     if verbose:

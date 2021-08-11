@@ -19,14 +19,14 @@ function makeId(length) {
 }
 
 // Cache settings
-const CONDA_CACHE_NUMBER_DEV = 13;
-const ARTICLE_CACHE_NUMBER_DEV = 11;
+const CONDA_CACHE_NUMBER_DEV = 14;
+const ARTICLE_CACHE_NUMBER_DEV = 12;
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
 const conda_key = `conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER_DEV}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
-const conda_paths = ["~/conda_pkgs_dir"];
+const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir"];
 const randomId = makeId(8);
 const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER_DEV}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [
@@ -78,7 +78,7 @@ function exec_envs(cmd, group) {
     );
     core.endGroup();
 
-    // Setup conda
+    // Download and setup conda
     if (!shell.test("-d", "~/.conda")) {
       const CONDA_URL = core.getInput("conda-url");
       exec(`wget --no-verbose ${CONDA_URL} -O ./conda.sh`, "Download conda");
@@ -86,28 +86,32 @@ function exec_envs(cmd, group) {
         "bash ./conda.sh -b -p ~/.conda && rm -f ./conda.sh",
         "Install conda"
       );
+      exec(
+        ". ~/.conda/etc/profile.d/conda.sh && " + 
+        "conda config --add pkgs_dirs ~/conda_pkgs_dir"
+      );
     }
-    core.startGroup("Conda info");
-    exec(
-      ". ~/.conda/etc/profile.d/conda.sh && conda config --add pkgs_dirs ~/conda_pkgs_dir"
-    );
-    exec(". ~/.conda/etc/profile.d/conda.sh && conda info");
-    core.endGroup();
+    exec(". ~/.conda/etc/profile.d/conda.sh && conda info", "Conda info");
+    
+    // Create environment & install dependencies
     if (!shell.test("-d", "./envs")) {
       exec(
         ". ~/.conda/etc/profile.d/conda.sh && conda create -y -p ./envs",
         "Create environment"
       );
+      exec_envs(
+        "conda install -y -c defaults -c conda-forge -c bioconda " + 
+        "mamba pip snakemake tectonic",
+        "Install dependencies"
+      );
     }
+
     // Install showyourwork from source
     var VERSION = core.getInput("showyourwork-version");
     if (VERSION == "latest") VERSION = "main";
     exec_envs(
-      "conda install -y -c defaults -c conda-forge -c bioconda mamba pip snakemake tectonic",
-      "Install dependencies"
-    );
-    exec_envs(
-      `python -m pip install git+https://github.com/rodluger/showyourwork.git@${VERSION}`,
+      "python -m pip install " +
+      `git+https://github.com/rodluger/showyourwork.git@${VERSION}`,
       "Install showyourwork"
     );
     core.endGroup();
@@ -195,10 +199,13 @@ function exec_envs(cmd, group) {
         shell.exec(`git add -f ${output}`);
       }
       shell.exec(
-        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'force-push article output'"
+        "git -c user.name='gh-actions' -c user.email='gh-actions' " + 
+        "commit -m 'force-push article output'"
       );
       shell.exec(
-        `git push --force https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${TARGET_BRANCH}`
+        "git push --force " + 
+        `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}` + 
+        `${TARGET_BRANCH}`
       );
       core.endGroup();
     }
@@ -224,10 +231,13 @@ function exec_envs(cmd, group) {
       shell.exec("git add README.md");
       shell.exec("git add LICENSE");
       shell.exec(
-        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m '[skip ci] format README.md'"
+        "git -c user.name='gh-actions' -c user.email='gh-actions' " + 
+        "commit -m '[skip ci] format README.md'"
       );
       shell.exec(
-        `git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${CURRENT_BRANCH}`
+        "git push " + 
+        `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ` + 
+        `${CURRENT_BRANCH}`
       );
       core.endGroup();
     }
