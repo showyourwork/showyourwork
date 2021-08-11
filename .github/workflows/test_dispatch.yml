@@ -26,7 +26,7 @@ jobs:
       - name: Generate rodluger/showyourwork-sandbox
         env:
           SLUG: rodluger/showyourwork-sandbox
-          REPO_ACTIVE: n
+          REPO_ACTIVE: y
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           SKIP_CI: n
           RUN_TESTS: y
