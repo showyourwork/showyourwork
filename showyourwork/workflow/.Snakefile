@@ -1,6 +1,6 @@
 
 include: ".helpers.smk"
-include "Snakefile"
+include: "Snakefile"
 
 rule pdf:
     input:
