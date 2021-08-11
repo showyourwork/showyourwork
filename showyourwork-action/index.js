@@ -186,7 +186,7 @@ function exec_envs(cmd, group) {
 
     // Force-push to `-pdf` branch
     if (core.getInput("force-push") == "true") {
-      core.startGroup(`Uploading output`);
+      core.startGroup("Uploading output");
       const TARGET_BRANCH = `${CURRENT_BRANCH}-pdf`;
       const TARGET_DIRECTORY = shell
         .exec("mktemp -d")
@@ -204,7 +204,7 @@ function exec_envs(cmd, group) {
       );
       shell.exec(
         "git push --force " + 
-        `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}` + 
+        `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ` + 
         `${TARGET_BRANCH}`
       );
       core.endGroup();
