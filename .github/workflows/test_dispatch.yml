@@ -21,16 +21,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install Jinja2
+          pip install cookiecutter
 
       - name: Generate rodluger/showyourwork-sandbox
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          SHA: ${{ github.sha }}
           SLUG: rodluger/showyourwork-sandbox
-          REPO_ACTIVE: true
-          MANUSCRIPT_TYPE: minimal
-          RUN_TESTS: true
-          AUTHOR: "Rodrigo Luger"
-          README_MESSAGE: test
-        run: python .github/workflows/generate.py
+          REPO_ACTIVE: n
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          SKIP_CI: n
+          RUN_TESTS: y
+        run: python showyourwork/new.py

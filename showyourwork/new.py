@@ -1,38 +1,35 @@
-from .showyourwork_version import __version__
-import subprocess
-import jinja2
-import shutil
-import os
 from pathlib import Path
+from cookiecutter.main import cookiecutter
 from datetime import date
+import subprocess
 from packaging.version import parse as parse_version
+import os
 
 
 ROOT = Path(__file__).absolute().parents[1]
 
 
-def new(slug):
-    # Arg check
+def new(slug, repo_active="y", access_token="", skip_ci="n", run_tests="n"):
+
+    # Parse user args
     assert (
         len(slug.split("/")) == 2
     ), "Argument `slug` must have the form `user/repo`."
+    user, repo = slug.split("/")
 
     # Infer showyourwork version
-    if parse_version(__version__).is_prerelease:
+    try:
+        # Use the package version, if available and if release
+        from showyourwork import __version__
+
+        assert not parse_version(__version__).is_prerelease
+        version = __version__
+    except:
         try:
-            tag_and_commits = (
+            # Use the latest commit SHA, if available
+            version = (
                 subprocess.check_output(
-                    ["git", "describe"], stderr=subprocess.DEVNULL, cwd=ROOT
-                )
-                .decode()
-                .replace("\n", "")
-            )
-        except Exception as e:
-            tag_and_commits = "tag_and_commits"
-        try:
-            tag = (
-                subprocess.check_output(
-                    ["git", "describe", "--abbrev=0"],
+                    ["git", "rev-parse", "HEAD"],
                     stderr=subprocess.DEVNULL,
                     cwd=ROOT,
                 )
@@ -40,41 +37,42 @@ def new(slug):
                 .replace("\n", "")
             )
         except Exception as e:
-            tag = "tag"
-        if tag_and_commits == tag:
-            version = tag
-        else:
-            version = "main"  # fallback!
-    else:
-        version = __version__
+            # Fallback
+            version = "main"
 
-    # Jinja keywords
-    author = slug.split("/")[0]
-    kwargs = dict(
-        version=version,
-        manuscript_type="minimal",
-        year=date.today().year,
-        author=author,
-        readme_message="",
-        slug=slug,
-        repo_active=True,
-        run_tests=False,
+    # Coookiecutter config
+    extra_context = {
+        "slug": slug,
+        "user": user,
+        "repo": repo,
+        "year": date.today().year,
+        "version": version,
+        "repo_active": repo_active,
+        "access_token": access_token,
+        "skip_ci": skip_ci,
+        "run_tests": run_tests,
+    }
+
+    # Render
+    cookiecutter(
+        str(ROOT / "showyourwork-template"),
+        extra_context=extra_context,
+        no_input=True,
     )
 
-    # Create the new repo
-    repo = slug.split("/")[-1]
-    shutil.copytree(ROOT / "showyourwork-template", repo)
 
-    # Render the templates
-    env = jinja2.Environment(
-        trim_blocks=True, loader=jinja2.FileSystemLoader(".")
+if __name__ == "__main__":
+    # To be run as a script from GitHub Actions *only*
+    assert os.environ.get("CI", "false") == "true"
+    slug = os.environ["SLUG"]
+    repo_active = os.environ["REPO_ACTIVE"]
+    access_token = os.environ["ACCESS_TOKEN"]
+    skip_ci = os.environ["SKIP_CI"]
+    run_tests = os.environ["RUN_TESTS"]
+    new(
+        slug,
+        repo_active=repo_active,
+        access_token=access_token,
+        run_tests=run_tests,
     )
-    for file in Path(repo).glob("**/*"):
-        file = str(file)
-        if os.path.isfile(file):
-            sty = env.get_template(file).render(**kwargs)
-            with open(file, "w") as f:
-                print(sty, file=f)
 
-    #
-    print(f"Created article directory `{repo}`.")

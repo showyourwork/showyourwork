@@ -14,12 +14,19 @@
   <a href="https://github.com/rodluger/showyourwork-example/raw/main-pdf/ms.pdf">
     <img src="https://img.shields.io/static/v1?label=example&message=pdf&color=blue"/>
   </a>
+  <!--
   <br>
   <br>
   <a href="https://github.com/rodluger/showyourwork-template/generate">
     <img src="https://img.shields.io/badge/-▶▶▶▶▶-white?&style=for-the-badge"/>
     <img src="https://img.shields.io/badge/-get%20started%20with%20showyourwork-brightgreen?&style=for-the-badge"/>
     <img src="https://img.shields.io/badge/-◀◀◀◀◀-white?&style=for-the-badge"/>
+  </a>
+  -->
+  <br>
+  <br>
+  <a href="#">
+    <img src="https://img.shields.io/badge/-under%20active%20development-red?&style=for-the-badge"/>
   </a>
 </p>
 

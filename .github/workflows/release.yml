@@ -23,28 +23,22 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install Jinja2
+          pip install cookiecutter
 
       - name: Generate rodluger/showyourwork-example
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          SHA: ${{ github.sha }}
           SLUG: rodluger/showyourwork-example
-          REPO_ACTIVE: true
-          MANUSCRIPT_TYPE: example
-          RUN_TESTS: false
-          AUTHOR: "Rodrigo Luger"
-          README_MESSAGE: example
-        run: python .github/workflows/generate.py
+          REPO_ACTIVE: y
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          SKIP_CI: n
+          RUN_TESTS: n
+        run: python showyourwork/new.py
 
       - name: Generate rodluger/showyourwork-template
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          SHA: ${{ github.sha }}
           SLUG: rodluger/showyourwork-template
-          REPO_ACTIVE: false
-          MANUSCRIPT_TYPE: minimal
-          RUN_TESTS: false
-          AUTHOR: "Author Name"
-          README_MESSAGE: new
-        run: python .github/workflows/generate.py
+          REPO_ACTIVE: n
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          SKIP_CI: y
+          RUN_TESTS: n
+        run: python showyourwork/new.py

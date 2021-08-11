@@ -1,4 +1,4 @@
-{% if run_tests %}
+{% if cookiecutter.run_tests == "y" %}
 name: tests
 
 on:
@@ -17,7 +17,7 @@ jobs:
 
       - name: Test fresh build
         id: test-build
-        uses: rodluger/showyourwork/showyourwork-action@{{ version }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter.version }}
         with:
           verbose: true
 
@@ -33,7 +33,7 @@ jobs:
       # otherwise raises an assertion error!
       - name: Test cached build
         id: test-cache
-        uses: rodluger/showyourwork/showyourwork-action@{{ version }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter.version }}
         with:
           verbose: true
 
@@ -72,5 +72,5 @@ jobs:
 
       - name: Build the article PDF
         id: build
-        uses: rodluger/showyourwork/showyourwork-action@{{ version }}
+        uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter.version }}
 {% endif %}

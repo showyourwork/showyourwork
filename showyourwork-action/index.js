@@ -43,31 +43,6 @@ const CURRENT_BRANCH = shell
   .replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
 
-// README text for a new repo
-const NEW_REPO_README = `
-
-## You're all set!
-
-Your new repository is set up and ready to go. The badges at the top will take you to the workflow logs,
-the article graph, and the compiled article PDF. The PDF is automatically updated every time you push
-changes to this repo; note that builds usually take a few minutes (or more, depending on what you're doing).
-
-The first thing you might want to do is customize the \`tex/ms.tex\` file, which is currently just filled
-with placeholder text. You should also delete the current placeholder figure script in the \`figures\`
-directory, and add the scripts needed to build your own figures. If your workflow has external dependencies
-(which it most likely will), you must add them to the \`environment.yml\` file so \`showyourwork\` can build
-the paper from scratch. See
-[here](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#managing-environments)
-for details.
-
-Finally, change or edit the \`LICENSE\` as needed and replace the text in this \`README.md\` with some useful
-informatin for the reader!
-
-If you run into any trouble, please check out the [showyourwork documentation](https://github.com/rodluger/showyourwork).
-If you think you've encountered a bug, please check out the [issues page](https://github.com/rodluger/showyourwork/issues)
-and raise a new one if needed.
-`;
-
 // Exec, exit on failure
 function exec(cmd, group) {
   if (typeof group !== "undefined") {
@@ -95,7 +70,7 @@ function exec_envs(cmd, group) {
     shell.set("-e");
 
     // Restore conda cache
-    core.startGroup(`Restore conda cache`);
+    core.startGroup("Restore conda cache");
     const conda_cacheKey = await cache.restoreCache(
       conda_paths,
       conda_key,
@@ -112,7 +87,7 @@ function exec_envs(cmd, group) {
         "Install conda"
       );
     }
-    core.startGroup(`Conda info`);
+    core.startGroup("Conda info");
     exec(
       ". ~/.conda/etc/profile.d/conda.sh && conda config --add pkgs_dirs ~/conda_pkgs_dir"
     );
@@ -124,8 +99,7 @@ function exec_envs(cmd, group) {
         "Create environment"
       );
     }
-    // Install showyourwork
-    // TODO: If `showyourwork-version` is not a branch name or a SHA, install directly from conda-forge!
+    // Install showyourwork from source
     var VERSION = core.getInput("showyourwork-version");
     if (VERSION == "latest") VERSION = "main";
     exec_envs(
@@ -140,7 +114,7 @@ function exec_envs(cmd, group) {
 
     // Save conda cache
     try {
-      core.startGroup(`Update conda cache`);
+      core.startGroup("Update conda cache");
       const conda_cacheId = await cache.saveCache(conda_paths, conda_key);
       core.endGroup();
     } catch (error) {
@@ -148,7 +122,7 @@ function exec_envs(cmd, group) {
     }
 
     // Restore article cache
-    core.startGroup(`Restore article cache`);
+    core.startGroup("Restore article cache");
     const article_cacheKey = await cache.restoreCache(
       article_paths,
       article_key,
@@ -161,7 +135,7 @@ function exec_envs(cmd, group) {
     var outputs = [];
 
     // Build the article
-    core.startGroup(`Build article`);
+    core.startGroup("Build article");
     if (core.getInput("verbose") == "true") {
       exec_envs("showyourwork --verbose");
     } else {
@@ -172,7 +146,7 @@ function exec_envs(cmd, group) {
 
     // Generate DAG?
     if (core.getInput("generate-dag") == "true") {
-      core.startGroup(`Generate article DAG`);
+      core.startGroup("Generate article DAG");
       exec_envs("showyourwork --dag");
       outputs.push("dag.pdf");
       core.endGroup();
@@ -180,7 +154,7 @@ function exec_envs(cmd, group) {
 
     // Save article cache
     try {
-      core.startGroup(`Update article cache`);
+      core.startGroup("Update article cache");
       exec_envs("showyourwork --update-cache");
       const article_cacheId = await cache.saveCache(article_paths, article_key);
       core.endGroup();
@@ -190,7 +164,7 @@ function exec_envs(cmd, group) {
 
     // Upload artifact
     if (core.getInput("upload-artifact") == "true") {
-      core.startGroup(`Upload article artifact`);
+      core.startGroup("Upload article artifact");
       const artifactClient = artifact.create();
       const artifactName = "article-pdf";
       const rootDirectory = ".";
@@ -233,11 +207,13 @@ function exec_envs(cmd, group) {
     if (shell.grep("<!--", "README.md").length > 1) {
       core.startGroup(`Format LICENSE and README.md`);
       shell.cd(GITHUB_WORKSPACE);
-      shell.exec(`git reset --hard HEAD`); // undo any current changes
-      shell.exec(`git pull origin ${CURRENT_BRANCH}`); // in case things changed since the action started
+      // undo any current changes
+      shell.exec("git reset --hard HEAD"); 
+      // update in case things changed since the action started
+      shell.exec(`git pull origin ${CURRENT_BRANCH}`); 
       shell.sed("-i", "Sit tight.*", "", "README.md");
       shell.sed("-i", "<!--", "", "README.md");
-      shell.sed("-i", "-->", NEW_REPO_README, "README.md");
+      shell.sed("-i", "-->", "", "README.md");
       shell.sed(
         "-i",
         "rodluger/showyourwork-template",
@@ -245,8 +221,8 @@ function exec_envs(cmd, group) {
         "README.md"
       );
       shell.sed("-i", "Author Name", GITHUB_USER, "LICENSE");
-      shell.exec(`git add README.md`);
-      shell.exec(`git add LICENSE`);
+      shell.exec("git add README.md");
+      shell.exec("git add LICENSE");
       shell.exec(
         "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
       );
