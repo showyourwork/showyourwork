@@ -1,5 +1,5 @@
 <p align="center">
-  <img width = "450" src="./showyourwork.png" alt="showyourwork"/>
+  <a href="#"><img width = "450" src="./showyourwork.png" alt="showyourwork"/></a>
   <br>
   <br>
   <a href="https://github.com/rodluger/showyourwork/actions/workflows/test_dispatch.yml">
@@ -26,7 +26,7 @@
   <br>
   <br>
   <a href="#">
-    <img src="https://img.shields.io/badge/-under%20active%20development-red?&style=for-the-badge"/>
+    <img src="https://img.shields.io/badge/under%20active%20development-no%20stable%20releases%20yet-red?&style=for-the-badge"/>
   </a>
 </p>
 
