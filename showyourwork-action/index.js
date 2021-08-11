@@ -19,14 +19,14 @@ function makeId(length) {
 }
 
 // Cache settings
-const CONDA_CACHE_NUMBER_DEV = 14;
+const CONDA_CACHE_NUMBER_DEV = 15;
 const ARTICLE_CACHE_NUMBER_DEV = 12;
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
 const conda_key = `conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER_DEV}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
-const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir"];
+const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
 const randomId = makeId(8);
 const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER_DEV}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [
