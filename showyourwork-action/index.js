@@ -224,7 +224,7 @@ function exec_envs(cmd, group) {
       shell.exec("git add README.md");
       shell.exec("git add LICENSE");
       shell.exec(
-        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m 'format README.md'"
+        "git -c user.name='gh-actions' -c user.email='gh-actions' commit -m '[skip ci] format README.md'"
       );
       shell.exec(
         `git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${CURRENT_BRANCH}`

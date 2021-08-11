@@ -6,6 +6,7 @@ import subprocess
 import json
 import jinja2
 import sys
+import re
 
 
 __all__ = ["glob", "save_json", "make_pdf", "check_repo"]
@@ -60,6 +61,22 @@ def make_pdf(
     # Copy user files to tmpdir
     for file in glob(USER / "tex" / "*"):
         shutil.copy(file, tmpdir)
+
+    # Include the showyourwork package right after `\documentclass` call
+    with open(tmpdir / "ms.tex", "r") as f:
+        lines = f.readlines()
+    for idx, line in enumerate(lines):
+        if line.startswith(r"\documentclass"):
+            lines = (
+                lines[: idx + 1]
+                + [r"\usepackage{showyourwork}"]
+                + lines[idx + 1 :]
+            )
+            break
+    else:
+        raise ValueError(r"Missing `\documentclass` in file `tex/ms.tex`.")
+    with open(tmpdir / "ms.tex", "w") as f:
+        print(lines, file=f)
 
     # Verbosity
     if verbose:

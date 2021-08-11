@@ -73,6 +73,7 @@ if __name__ == "__main__":
         slug,
         repo_active=repo_active,
         access_token=access_token,
+        skip_ci=skip_ci,
         run_tests=run_tests,
     )
 
