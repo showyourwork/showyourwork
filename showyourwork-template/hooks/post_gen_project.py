@@ -6,7 +6,7 @@ if "{{ cookiecutter.access_token }}" != "":
     subprocess.check_call(["git", "init"])
     subprocess.check_call(["git", "checkout", "--orphan", "main"])
     subprocess.check_call(["git", "add", "."])
-    if "{{ cookiecutter.skip_ci }}" == "y":
+    if "{{ cookiecutter.skip_ci }}" == "n":
         message = "auto commit from rodluger/showyourwork"
     else:
         message = "[skip ci] auto commit from rodluger/showyourwork"
