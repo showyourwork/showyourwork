@@ -2,10 +2,13 @@
 <a href="https://github.com/rodluger/showyourwork">
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/main/showyourwork.png" alt="showyourwork"/>
 </a>
+</p>
 <br>
 <br>
 {% if cookiecutter.repo_active == "y" %}
+<p align="center">
 An open source scientific article generated with <a href='https://github.com/rodluger/showyourwork'>showyourwork</a>.
+</p>
 {% else %}
 Sit tight while your article builds. This may take up to five minutes, at which point you can refresh this page. You can also check the build progress by clicking on the Actions tab at the top. If there are any issues, please refer to the <a href='https://github.com/rodluger/showyourwork'>showyourwork documentation</a>.
 <!--
@@ -34,4 +37,3 @@ Finally, change or edit the `LICENSE` as needed and replace the text in this `RE
 If you run into any trouble, please check out the [showyourwork documentation](https://github.com/rodluger/showyourwork). If you think you've encountered a bug, please check out the [issues page](https://github.com/rodluger/showyourwork/issues) and raise a new one if needed.
 -->
 {% endif %}
-</p>
