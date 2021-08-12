@@ -5,7 +5,7 @@ if "{{ cookiecutter.access_token }}" != "":
     # Create repo and force push to target
     subprocess.check_call(["git", "init"])
     subprocess.check_call(["git", "checkout", "--orphan", "main"])
-    subprocess.check_call(["git", "add", "."])
+    subprocess.check_call(["git", "add", "-f", "."])
     if "{{ cookiecutter.skip_ci }}" == "n":
         message = "auto commit from rodluger/showyourwork"
     else:
