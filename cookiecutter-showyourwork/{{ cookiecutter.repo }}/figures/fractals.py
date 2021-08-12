@@ -1,3 +1,15 @@
+"""Plot some pretty fractals.
+
+This script plots the Mandelbrot set (mandelbrot.pdf) and the Koch
+snowflake (koch.pdf). The code below was adapted from
+
+https://scipy-lectures.org/intro/numpy/auto_examples/plot_mandelbrot.html
+
+and
+
+https://programmer.group/use-matplotlib-to-draw-snowflakes-and-snow-scenes.html
+
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import newaxis

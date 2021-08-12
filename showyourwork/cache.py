@@ -43,6 +43,11 @@ def restore_cache():
                 "Restored file figures/{} from cache.".format(Path(file).name)
             )
 
+    # Copy the cached datasets
+    for file in glob(str(TEMP / "cache" / "data" / "*")):
+        shutil.copy2(file, USER / "data")
+        print("Restored file data/{} from cache.".format(Path(file).name))
+
     # Get the commit when the files were cached
     try:
         with open(TEMP / "cache" / "commit", "r") as f:
@@ -89,6 +94,11 @@ def update_cache():
         for file in glob(USER / "figures" / "*.{}".format(ext)):
             shutil.copy2(file, TEMP / "cache" / "figures")
             print("Cached file figures/{}.".format(Path(file).name))
+
+    # Cache datasets
+    for file in glob(USER / "data" / "*"):
+        shutil.copy2(file, TEMP / "cache" / "data")
+        print("Cached file data/{}.".format(Path(file).name))
 
     # Store the current commit
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()

@@ -17,6 +17,7 @@ rule pdf:
 rule figure:
     input:
         figure_script,
+        figure_data,
         "environment.yml"
     output:
         "{figure}"
@@ -38,7 +39,8 @@ rule figure:
 rule repo_info:
     output:
         TEMP / "repo.json"
-    priority: 99
+    priority: 
+        99
     run:
         run_repo_info()
 

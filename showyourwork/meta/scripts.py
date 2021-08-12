@@ -17,11 +17,11 @@ def check_figure_format(figure):
     # Get all figure elements
     elements = list(figure)
     captions = figure.findall("CAPTION")
-    labels = figure.findall("LABEL")
+    labels = figure.findall("LABEL") + figure.findall("LABEL_")
 
     # Check that figure labels aren't nested inside captions
     for caption in captions:
-        caption_labels = caption.findall("LABEL")
+        caption_labels = caption.findall("LABEL") + caption.findall("LABEL_")
         if len(caption_labels):
             raise ValueError(
                 "Label `{}` should not be nested within the figure caption".format(
@@ -45,20 +45,25 @@ def check_figure_format(figure):
 
             # Index of first label
             label_idx = np.argmax(
-                [element.tag == "LABEL" for element in elements]
+                [
+                    element.tag == "LABEL" or element.tag == "LABEL_"
+                    for element in elements
+                ]
             )
 
             if label_idx < caption_idx:
                 raise ValueError(
                     "Figure label `{}` must come after the caption.".format(
-                        labels[0].text
+                        (labels)[0].text
                     )
                 )
 
     # Check that there is exactly one label
     if len(labels) >= 2:
         raise ValueError(
-            "A figure has multiple labels: `{}`".format(", ".join(labels))
+            "A figure has multiple labels: `{}`".format(
+                ", ".join(label.text for label in labels)
+            )
         )
     elif len(labels) == 0:
         # Unable to infer script
@@ -66,7 +71,11 @@ def check_figure_format(figure):
 
 
 def get_figure_label(figure):
-    return figure.findall("LABEL")[0].text
+    labels = figure.findall("LABEL")
+    if len(labels):
+        return labels[0].text
+    else:
+        return None
 
 
 def get_figure_script(label):
@@ -102,9 +111,10 @@ def get_script_metadata(clobber=True, verbose=False):
         for figure in root.findall("FIGURE"):
             check_figure_format(figure)
             label = get_figure_label(figure)
-            script = get_figure_script(label)
-            files = get_figure_files(figure)
-            figures[label] = {"script": script, "files": files}
+            if label is not None:
+                script = get_figure_script(label)
+                files = get_figure_files(figure)
+                figures[label] = {"script": script, "files": files}
 
         # Store as JSON
         scripts = {"figures": figures}

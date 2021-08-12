@@ -27,6 +27,7 @@ FIGURE_EXTENSIONS = ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]
 # Make temporary paths if needed
 (TEMP / "tex").mkdir(exist_ok=True, parents=True)
 (TEMP / "figures").mkdir(exist_ok=True, parents=True)
+(TEMP / "data").mkdir(exist_ok=True, parents=True)
 (TEMP / "tree").mkdir(exist_ok=True, parents=True)
 
 
