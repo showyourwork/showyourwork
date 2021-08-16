@@ -17,7 +17,7 @@ rule pdf:
 rule figure:
     input:
         figure_script,
-        figure_data,
+        "{figure}.extras",
         "environment.yml"
     output:
         "{figure}"
@@ -34,6 +34,13 @@ rule figure:
         "[ -f {params.cached_figure} ] && "
         "{{ mv {params.cached_figure} . ; }} || "
         "{{ python {params.script_name} && {params.cache_cmd} ; }}")
+
+
+rule figure_extras:
+    output:
+        temp(touch("{figure}.extras"))
+    wildcard_constraints:
+        figure="figures/(.*?)\.{}".format("|".join(FIGURE_EXTENSIONS))
 
 
 rule repo_info:

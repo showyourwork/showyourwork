@@ -32,19 +32,9 @@ def figure_script(wildcards):
     )
 
 
-def figure_data(wildcards):
-    script = figure_script(wildcards)
-    for prop_name in dir(rules):
-        if not prop_name.startswith("__"):
-            prop = getattr(rules, prop_name) #.rule
-            if hasattr(prop, "rule"):
-                syw_rule = prop.rule
-                if Path(syw_rule.snakefile).name == "Snakefile":
-                    data_files = syw_rule.output
-                    if script in syw_rule.params.get("scripts", []):
-                        return data_files
-    return []
-
+def figure_extras(figure):
+    figure = Path(figure).name
+    return temp(touch(f"figures/{figure}.extras"))
 
 def cache_cmd(wildcards, input, output):
     other = []

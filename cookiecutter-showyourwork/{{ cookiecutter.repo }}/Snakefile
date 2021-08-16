@@ -1,7 +1,6 @@
 rule fibonacci_data:
     output:
-        "data/fibonacci.dat"
-    params:
-        scripts=["figures/fibonacci.py"]
+        "data/fibonacci.dat",
+        figure_extras("fibonacci.pdf")
     shell:
         "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"

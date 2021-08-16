@@ -199,7 +199,7 @@ function exec_envs(cmd, group) {
         shell.exec(`git add -f ${output}`);
       }
       shell.exec(
-        "git -c user.name='gh-actions' -c user.email='gh-actions' " + 
+        "git -c user.name='showyourwork' -c user.email='showyourwork' " + 
         "commit -m 'force-push article output'"
       );
       shell.exec(
@@ -212,7 +212,7 @@ function exec_envs(cmd, group) {
 
     // Format some files if this is a fresh repo based on the template
     if (shell.grep("<!--", "README.md").length > 1) {
-      core.startGroup(`Format LICENSE and README.md`);
+      core.startGroup(`Format LICENSE, README.md, and tex/ms.tex`);
       shell.cd(GITHUB_WORKSPACE);
       // undo any current changes
       shell.exec("git reset --hard HEAD"); 
@@ -227,12 +227,14 @@ function exec_envs(cmd, group) {
         GITHUB_REPOSITORY,
         "README.md"
       );
-      shell.sed("-i", "Author Name", GITHUB_USER, "LICENSE");
+      shell.sed("-i", "rodluger", GITHUB_USER, "LICENSE");
+      shell.sed("-i", "rodluger", GITHUB_USER, "tex/ms.tex");
       shell.exec("git add README.md");
       shell.exec("git add LICENSE");
+      shell.exec("git add tex/ms.tex");
       shell.exec(
-        "git -c user.name='gh-actions' -c user.email='gh-actions' " + 
-        "commit -m '[skip ci] format README.md'"
+        "git -c user.name='showyourwork' -c user.email='showyourwork' " + 
+        "commit -m '[skip ci] One-time autocommit to finish repo setup'"
       );
       shell.exec(
         "git push " + 
