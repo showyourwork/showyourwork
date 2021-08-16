@@ -41,7 +41,7 @@ def figure_data(wildcards):
                 syw_rule = prop.rule
                 if Path(syw_rule.snakefile).name == "Snakefile":
                     data_files = syw_rule.output
-                    if script in syw_rule.params.get("scripts"):
+                    if script in syw_rule.params.get("scripts", []):
                         return data_files
     return []
 
