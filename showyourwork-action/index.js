@@ -19,8 +19,8 @@ function makeId(length) {
 }
 
 // Cache settings
-const CONDA_CACHE_NUMBER_DEV = 17;
-const ARTICLE_CACHE_NUMBER_DEV = 16;
+const CONDA_CACHE_NUMBER_DEV = 18;
+const ARTICLE_CACHE_NUMBER_DEV = 17;
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
