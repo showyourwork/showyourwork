@@ -43,6 +43,16 @@ def figure_dependencies(wildcards):
     return deps
 
 
+def ms_dependencies(wildcards):
+    deps = []
+    for rule_name in dir(rules):
+        if rule_name.startswith("ms_"):
+            rule_output = getattr(rules, rule_name).output
+            if rule_output is not None:
+                deps += rule_output
+    return deps
+
+
 def cache_cmd(wildcards, input, output):
     other = []
     for entry in figure_scripts():

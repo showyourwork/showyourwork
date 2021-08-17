@@ -10,12 +10,13 @@ rule pdf:
         "tex/ms.tex",
         glob("tex/*.bib"),
         TEMP / "meta.json",
+        ms_dependencies,
         figures
     output:
         "ms.pdf"
     run:
         run_pdf()
-    
+
 
 rule figure:
     message:
@@ -55,7 +56,7 @@ rule repo_info:
         "Generating repo metadata..."
     output:
         TEMP / "repo.json"
-    priority: 
+    priority:
         99
     run:
         run_repo_info()
