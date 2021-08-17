@@ -2,7 +2,10 @@
 include: ".helpers.smk"
 include: "Snakefile"
 
+
 rule pdf:
+    message:
+        "Building pdf..."
     input:
         "tex/ms.tex",
         glob("tex/*.bib"),
@@ -12,12 +15,14 @@ rule pdf:
         "ms.pdf"
     run:
         run_pdf()
-
+    
 
 rule figure:
+    message:
+        "Generating figure `{output}`..."
     input:
         figure_script,
-        "{figure}.extras",
+        figure_dependencies,
         "environment.yml"
     output:
         "{figure}"
@@ -37,6 +42,8 @@ rule figure:
 
 
 rule figure_extras:
+    message:
+        "Generating metadata for figure `{output}`..."
     output:
         temp(touch("{figure}.extras"))
     wildcard_constraints:
@@ -44,6 +51,8 @@ rule figure_extras:
 
 
 rule repo_info:
+    message:
+        "Generating repo metadata..."
     output:
         TEMP / "repo.json"
     priority: 
@@ -53,6 +62,8 @@ rule repo_info:
 
 
 checkpoint script_info:
+    message:
+        "Building figure dependency graph..."
     input:
         "tex/ms.tex"
     output:
@@ -62,6 +73,8 @@ checkpoint script_info:
 
 
 rule metadata:
+    message:
+        "Generating article metadata..."
     input:
         TEMP / "repo.json",
         TEMP / "scripts.json"

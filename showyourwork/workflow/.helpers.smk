@@ -32,9 +32,14 @@ def figure_script(wildcards):
     )
 
 
-def figure_extras(figure):
-    figure = Path(figure).name
-    return temp(touch(f"figures/{figure}.extras"))
+def figure_dependencies(wildcards):
+    script = Path(figure_script(wildcards)).stem
+    deps = []
+    for rule_name in dir(rules):
+        if rule_name.startswith(f"{script}_"):
+            deps += getattr(rules, rule_name).output
+    return deps
+
 
 def cache_cmd(wildcards, input, output):
     other = []

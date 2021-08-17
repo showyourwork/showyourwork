@@ -1,6 +1,5 @@
 rule fibonacci_data:
     output:
-        "data/fibonacci.dat",
-        figure_extras("fibonacci.pdf")
+        "data/fibonacci.dat"
     shell:
         "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
