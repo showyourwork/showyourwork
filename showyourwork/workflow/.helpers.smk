@@ -37,7 +37,9 @@ def figure_dependencies(wildcards):
     deps = []
     for rule_name in dir(rules):
         if rule_name.startswith(f"{script}_"):
-            deps += getattr(rules, rule_name).output
+            rule_output = getattr(rules, rule_name).output
+            if type(rule_output) is list:
+                deps += rule_output
     return deps
 
 
