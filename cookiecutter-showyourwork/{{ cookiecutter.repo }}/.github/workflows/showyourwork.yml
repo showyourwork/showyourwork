@@ -19,6 +19,7 @@ jobs:
         id: test-build
         uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter.version }}
         with:
+          showyourwork-version: {{ cookiecutter.version }}
           verbose: true
 
       - name: Test cached build (setup)
@@ -35,6 +36,7 @@ jobs:
         id: test-cache
         uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter.version }}
         with:
+          showyourwork-version: {{ cookiecutter.version }}
           verbose: true
 
       - name: Callback
@@ -73,4 +75,6 @@ jobs:
       - name: Build the article PDF
         id: build
         uses: rodluger/showyourwork/showyourwork-action@{{ cookiecutter.version }}
+        with:
+          showyourwork-version: {{ cookiecutter.version }}
 {% endif %}
