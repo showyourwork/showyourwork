@@ -16,3 +16,6 @@ rule fibonacci_figure:
         "environment.yml"
     shell:
         "cd figures && python fibonacci.py"
+
+
+pdf_extras = []

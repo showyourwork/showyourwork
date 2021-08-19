@@ -1,5 +1,8 @@
 
 include: ".helpers.smk"
+
+
+pdf_extras = []
 include: "Snakefile"
 
 
@@ -10,6 +13,7 @@ rule pdf:
         "tex/ms.tex",
         glob("tex/*.bib"),
         TEMP / "meta.json",
+        pdf_extras,
         figures
     output:
         "ms.pdf"
