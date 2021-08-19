@@ -10,7 +10,6 @@ rule pdf:
         "tex/ms.tex",
         glob("tex/*.bib"),
         TEMP / "meta.json",
-        ms_dependencies,
         figures
     output:
         "ms.pdf"
@@ -23,7 +22,6 @@ rule figure:
         "Generating figure `{output}`..."
     input:
         figure_script,
-        figure_dependencies,
         "environment.yml"
     output:
         "{figure}"
@@ -40,15 +38,6 @@ rule figure:
         "[ -f {params.cached_figure} ] && "
         "{{ mv {params.cached_figure} . ; }} || "
         "{{ python {params.script_name} && {params.cache_cmd} ; }}")
-
-
-rule figure_extras:
-    message:
-        "Generating metadata for figure `{output}`..."
-    output:
-        temp(touch("{figure}.extras"))
-    wildcard_constraints:
-        figure="figures/(.*?)\.{}".format("|".join(FIGURE_EXTENSIONS))
 
 
 rule repo_info:

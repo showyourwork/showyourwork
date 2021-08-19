@@ -3,3 +3,16 @@ rule fibonacci_data:
         "data/fibonacci.dat"
     shell:
         "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
+
+
+rule fibonacci_figure:
+    input:
+        "figures/fibonacci.py",
+        "data/fibonacci.dat",
+        "environment.yml"
+    output:
+        "figures/fibonacci.pdf"
+    conda:
+        "environment.yml"
+    shell:
+        "cd figures && python fibonacci.py"
