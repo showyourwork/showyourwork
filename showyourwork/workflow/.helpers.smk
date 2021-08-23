@@ -26,7 +26,10 @@ def figure_script(wildcards):
     figure = wildcards.figure
     for entry in figure_scripts():
         if figure in entry["files"]:
-            return entry["script"]
+            if entry["script"] == []:
+                return "dgdfsgdsfg"
+            else:
+                return entry["script"]
     raise ValueError(
         "Input script not found for output figure `{}`.".format(figure)
     )

@@ -8,6 +8,7 @@ __all__ = [
     "ROOT",
     "USER",
     "FIGURE_EXTENSIONS",
+    "UNKNOWN_SCRIPT",
     "ScriptDoesNotExist",
     "ScriptNotVersionControlled",
     "ScriptHasUncommittedChanges",
@@ -22,6 +23,9 @@ TEMP = USER / ".showyourwork"
 
 # Recognized figure extensions
 FIGURE_EXTENSIONS = ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]
+
+#
+UNKNOWN_SCRIPT = "unknown-script"
 
 
 # Make temporary paths if needed

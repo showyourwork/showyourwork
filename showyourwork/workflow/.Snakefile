@@ -21,6 +21,12 @@ rule pdf:
         run_pdf()
 
 
+rule logo:
+    # TODO
+    output:
+        touch("figures/showyourwork.pdf")
+
+
 rule figure:
     message:
         "Generating figure `{output}`..."

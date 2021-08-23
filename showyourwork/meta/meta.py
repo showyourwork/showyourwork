@@ -34,10 +34,11 @@ def get_metadata(clobber=True):
         meta["labels"] = {}
         for label, value in scripts["figures"].items():
             script = value["script"]
-            status = get_script_status(USER / script)
-            meta["labels"]["{}_script".format(label)] = script
-            meta["labels"]["{}_status".format(label)] = str(status)
-            meta["status"] = max(meta["status"], status)
+            if script != UNKNOWN_SCRIPT:
+                status = get_script_status(USER / script)
+                meta["labels"]["{}_script".format(label)] = script
+                meta["labels"]["{}_status".format(label)] = str(status)
+                meta["status"] = max(meta["status"], status)
         meta["status"] = str(meta["status"])
 
         # Store as JSON

@@ -106,7 +106,7 @@ def get_script_metadata(clobber=True, verbose=False):
         )
         root = ParseXMLTree(TEMP / "tree" / "showyourwork.xml").getroot()
 
-        # Parse figures
+        # Parse graphics inside `figure` environments
         figures = {}
         for figure in root.findall("FIGURE"):
             check_figure_format(figure)
@@ -115,6 +115,12 @@ def get_script_metadata(clobber=True, verbose=False):
                 script = get_figure_script(label)
                 files = get_figure_files(figure)
                 figures[label] = {"script": script, "files": files}
+
+        # Parse free-floating graphics
+        figures["unknown"] = {
+            "script": UNKNOWN_SCRIPT,
+            "files": get_figure_files(root),
+        }
 
         # Store as JSON
         scripts = {"figures": figures}
