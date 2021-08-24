@@ -47,10 +47,8 @@ def make_pdf(
     # The style sheet template
     style = "showyourwork.sty"
 
-    # Set up a temp directory and generate the stylesheet
-    shutil.rmtree(tmpdir, ignore_errors=True)
-    tmpdir.mkdir(parents=True)
-    with open(tmpdir / f"{style}", "w") as f:
+    # Generate the stylesheet
+    with open(USER / "tex" / f"{style}", "w") as f:
         sty = env.get_template(style).render(**jinja_kwargs)
         print(sty, file=f)
 
@@ -118,7 +116,7 @@ def save_json(contents, file):
 
 
 def check_repo():
-    if not Path("tex/ms.tex").exists():
+    if not (Path("tex") / "ms.tex").exists():
         print("ERROR: Missing manuscript file `tex/ms.tex`.")
         sys.exit(1)
     if not Path("figures").exists():

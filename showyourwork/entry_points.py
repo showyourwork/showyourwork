@@ -84,10 +84,6 @@ def main():
             cores_set = True
         if arg == "--use-conda":
             conda_set = True
-        if (arg == "-s") or (arg == "--snakefile"):
-            raise ValueError(
-                "Arguments `-s` or `--snakefile` are not allowed."
-            )
         if arg == "--verbose":
             snakemake_args.extend(["--config", "verbose=true"])
 
@@ -95,18 +91,10 @@ def main():
         snakemake_args.append("-c1")
     if not conda_set:
         snakemake_args.append("--use-conda")
-    snakemake_args.extend(["--snakefile", ".Snakefile"])
-
-    # Copy workflow to user directory
-    files = list((ROOT / "workflow").glob("*"))  # NOTE: this includes dotfiles
-    for file in files:
-        shutil.copy(file, USER)
 
     # Run Snakemake
     subprocess.check_call(["snakemake"] + snakemake_args, cwd=USER)
 
     # Remove tempfiles
-    for file in files:
-        os.remove(USER / Path(file).name)
     for file in glob(USER / "tex" / "*latexindent*.tex"):
         os.remove(file)

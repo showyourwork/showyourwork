@@ -1,5 +1,8 @@
-module syw:
-    snakefile: "/Users/rluger/src/showyourwork/showyourwork-workflow/Snakefile"
+module showyourwork:
+    # TODO
+    snakefile: "/Users/rluger/src/showyourwork/showyourwork-workflow/workflow/Snakefile"
+    config: config
+use rule * from showyourwork
 
 
 rule fibonacci_data:
@@ -9,7 +12,7 @@ rule fibonacci_data:
         "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
 
 
-use rule figure from syw as fibonacci_figure with:
+use rule figure from showyourwork as fibonacci_figure with:
     input:
         "figures/fibonacci.py",
         "data/fibonacci.dat",
@@ -18,7 +21,7 @@ use rule figure from syw as fibonacci_figure with:
         "figures/fibonacci.pdf"
 
 
-use rule figure from syw as inline_figure with:
+use rule figure from showyourwork as inline_figure with:
     input:
         "figures/inline.py",
         "environment.yml"

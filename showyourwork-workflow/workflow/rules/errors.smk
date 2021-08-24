@@ -1,33 +1,3 @@
-from pathlib import Path
-import subprocess
-import os
-
-
-__all__ = [
-    "TEMP",
-    "ROOT",
-    "USER",
-    "FIGURE_EXTENSIONS",
-    "UNKNOWN_SCRIPT",
-    "ScriptDoesNotExist",
-    "ScriptNotVersionControlled",
-    "ScriptHasUncommittedChanges",
-    "ScriptUpToDate",
-]
-
-
-# Useful paths
-ROOT = Path(__file__).parents[0].absolute()
-USER = Path(os.getcwd()).absolute()
-TEMP = USER / ".showyourwork"
-
-# Recognized figure extensions
-FIGURE_EXTENSIONS = ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]
-
-#
-UNKNOWN_SCRIPT = "unknown-script"
-
-
 # Error codes
 class _ShowYourWorkError:
     def __str__(self):

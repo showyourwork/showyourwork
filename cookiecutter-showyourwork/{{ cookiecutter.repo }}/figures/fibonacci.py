@@ -1,7 +1,7 @@
 """Visualize the Fibonacci sequence in binary.
 
 This script plots the Fibonacci sequence in binary form; the idea comes from
-https://mathworld.wolfram.com/FibonacciNumber.html 
+https://mathworld.wolfram.com/FibonacciNumber.html
 
 and
 
@@ -21,7 +21,7 @@ import matplotlib
 from pathlib import Path
 
 # Path to the "data" directory
-DATA = Path(__file__).parents[1].absolute() / "data"
+DATA = Path(__file__).absolute().parents[1] / "data"
 
 # Read the Fibonacci numbers
 with open(DATA / "fibonacci.dat", "r") as f:
