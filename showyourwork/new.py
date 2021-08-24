@@ -7,7 +7,7 @@ import os
 
 
 # Root of the `showyourwork` repository
-ROOT = Path(__file__).absolute().parents[3]
+ROOT = Path(__file__).absolute().parents[1]
 
 
 def new(slug, repo_active="y", access_token="", skip_ci="n", run_tests="n"):

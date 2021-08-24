@@ -1,4 +1,4 @@
-rule sywtexfile:
+rule texfile:
     message:
         "Writing temporary tex file..."
     input:

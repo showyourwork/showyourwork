@@ -32,7 +32,7 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           SKIP_CI: n
           RUN_TESTS: n
-        run: python showyourwork-workflow/workflow/scripts/new.py
+        run: python showyourwork/new.py
 
       - name: Generate rodluger/showyourwork-template
         env:
@@ -41,4 +41,4 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           SKIP_CI: y
           RUN_TESTS: n
-        run: python showyourwork-workflow/workflow/scripts/new.py
+        run: python showyourwork/new.py

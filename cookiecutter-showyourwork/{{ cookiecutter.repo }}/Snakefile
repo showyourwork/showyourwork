@@ -1,6 +1,5 @@
 module showyourwork:
-    # TODO
-    snakefile: "/Users/rluger/src/showyourwork/showyourwork-workflow/workflow/Snakefile"
+    snakefile: "workflow/Snakefile"
     config: config
 use rule * from showyourwork
 

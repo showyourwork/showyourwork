@@ -7,5 +7,8 @@
     "repo_active": "y",
     "access_token": null,
     "skip_ci": "n",
-    "run_tests": "n"
+    "run_tests": "n",
+    "_copy_without_render": [
+        "workflow"
+    ]
 }
