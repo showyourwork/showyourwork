@@ -1,0 +1,1 @@
+{"version":3,"file":"noopLogger.js","sourceRoot":"","sources":["../../../../src/diag/internal/noopLogger.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;GAcG;AAIH,SAAS,eAAe,KAAI,CAAC;AAE7B;;;;GAIG;AACH,MAAM,UAAU,oBAAoB;IAClC,OAAO;QACL,OAAO,EAAE,eAAe;QACxB,KAAK,EAAE,eAAe;QACtB,IAAI,EAAE,eAAe;QACrB,IAAI,EAAE,eAAe;QACrB,KAAK,EAAE,eAAe;KACvB,CAAC;AACJ,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"NoopTracerProvider.js","sourceRoot":"","sources":["../../../src/trace/NoopTracerProvider.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;GAcG;AAEH,OAAO,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC;AAI1C;;;;;GAKG;AACH;IAAA;IAIA,CAAC;IAHC,sCAAS,GAAT,UAAU,KAAc,EAAE,QAAiB;QACzC,OAAO,IAAI,UAAU,EAAE,CAAC;IAC1B,CAAC;IACH,yBAAC;AAAD,CAAC,AAJD,IAIC"}

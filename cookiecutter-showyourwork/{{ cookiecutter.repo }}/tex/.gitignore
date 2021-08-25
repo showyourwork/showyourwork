@@ -1,7 +1,0 @@
-# Don't track any output
-*.pdf
-*.blg
-*latexindent*
-*.aux
-*.bbl
-*.log

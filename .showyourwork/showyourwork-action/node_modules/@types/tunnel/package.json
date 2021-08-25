@@ -1,0 +1,26 @@
+{
+    "name": "@types/tunnel",
+    "version": "0.0.1",
+    "description": "TypeScript definitions for tunnel",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "BendingBender",
+            "url": "https://github.com/BendingBender",
+            "githubUsername": "BendingBender"
+        }
+    ],
+    "main": "",
+    "types": "index",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/tunnel"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/node": "*"
+    },
+    "typesPublisherContentHash": "4e4e986c9a2912a1a62a77408f4d955f05c87bee95736b8b2c62d81b0a01e995",
+    "typeScriptVersion": "2.0"
+}

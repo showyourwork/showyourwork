@@ -1,0 +1,1 @@
+{"version":3,"file":"delay.d.ts","sourceRoot":"","sources":["../../../../src/util/delay.ts"],"names":[],"mappings":"AAIA,OAAO,EAAc,eAAe,EAAE,MAAM,yBAAyB,CAAC;AAGtE;;;;;;;;GAQG;AACH,wBAAgB,KAAK,CAAC,CAAC,EACrB,SAAS,EAAE,MAAM,EACjB,KAAK,CAAC,EAAE,CAAC,EACT,OAAO,CAAC,EAAE;IACR,WAAW,CAAC,EAAE,eAAe,CAAC;IAC9B,aAAa,CAAC,EAAE,MAAM,CAAC;CACxB,GACA,OAAO,CAAC,CAAC,GAAG,IAAI,CAAC,CAsCnB"}
