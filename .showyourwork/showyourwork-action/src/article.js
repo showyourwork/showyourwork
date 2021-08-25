@@ -1,6 +1,7 @@
 // Imports
 const core = require("@actions/core");
 const cache = require("@actions/cache");
+const shell = require("shelljs");
 const {makeId, exec} = require("./utils");
 
 
