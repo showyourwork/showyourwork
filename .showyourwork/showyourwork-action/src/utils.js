@@ -4,7 +4,7 @@ const shell = require("shelljs");
 
 
 // Exports
-module.exports = {makeId, exec};
+module.exports = {makeId, exec, getInputAsArray};
 
 
 /**
@@ -60,4 +60,17 @@ function exec(cmd, group) {
     } else {
         return exec_wrapper(cmd, group);
     }
+}
+
+
+/**
+ * Get a YAML input as an array.
+ *
+ */
+function getInputAsArray(name) {
+  return core
+      .getInput(name)
+      .split("\n")
+      .map(s => s.trim())
+      .filter(x => x !== "");
 }

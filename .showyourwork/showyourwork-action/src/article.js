@@ -2,7 +2,7 @@
 const core = require("@actions/core");
 const cache = require("@actions/cache");
 const shell = require("shelljs");
-const {makeId, exec} = require("./utils");
+const {makeId, exec, getInputAsArray} = require("./utils");
 
 
 // Exports
@@ -18,7 +18,7 @@ const RUNNER_OS = shell.env["RUNNER_OS"];
 const randomId = makeId(8);
 const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
-const article_paths = core.getInput("cache-paths").concat([".snakemake", ".showyourwork/tmp"]);
+const article_paths = getInputAsArray("cache-paths").concat([".snakemake", ".showyourwork/tmp"]);
 
 
 /**

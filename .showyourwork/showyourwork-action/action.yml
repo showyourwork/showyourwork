@@ -44,7 +44,9 @@ inputs:
   cache-paths:
     description:
     required: false
-    default: ["figures", "data"]
+    default: |
+      figures
+      data
 branding:
   icon: "book-open"
   color: "red"
