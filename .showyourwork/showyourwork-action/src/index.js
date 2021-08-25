@@ -18,7 +18,7 @@ const {publishOutput} = require("./publish");
     formatRepo();
 
     // Setup conda or restore from cache
-    setupConda();
+    await setupConda();
 
     // Build the article
     output = buildArticle();

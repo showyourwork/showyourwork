@@ -22,7 +22,7 @@ const randomId = makeId(8);
  * Setup a conda distribution or restore it from cache.
  *
  */
- function setupConda() {
+ async function setupConda() {
 
     // Restore conda cache
     core.startGroup("Restore conda cache");
