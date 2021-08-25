@@ -1,5 +1,0 @@
-recursive-include showyourwork-workflow *
-recursive-include cookiecutter-showyourwork *
-include README.md
-include LICENSE
-include showyourwork.png

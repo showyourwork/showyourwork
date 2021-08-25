@@ -1,7 +1,3 @@
-# This repository
-showyourwork/showyourwork_version.py
-**/.snakemake
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
