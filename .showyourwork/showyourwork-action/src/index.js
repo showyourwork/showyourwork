@@ -24,7 +24,7 @@ const {publishOutput} = require("./publish");
     output = buildArticle();
 
     // Publish the article output
-    publishOutput(output);
+    await publishOutput(output);
 
   } catch (error) {
 

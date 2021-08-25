@@ -1,5 +1,6 @@
 // Imports
 const core = require("@actions/core");
+const artifact = require("@actions/artifact");
 const shell = require("shelljs");
 
 
@@ -17,7 +18,7 @@ const GITHUB_TOKEN = core.getInput("github-token");
  * Publish the article output.
  *
  */
- function publishOutput(output) {
+ async function publishOutput(output) {
 
     // Upload artifact
     if (core.getInput("upload-artifact") == "true") {
