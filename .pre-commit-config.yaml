@@ -15,3 +15,9 @@ repos:
     hooks:
       - id: black
         language_version: python3
+
+  - repo: https://github.com/snakemake/snakefmt
+    rev: 0.4.2
+    hooks:
+      - id: snakefmt
+        language_version: python3
