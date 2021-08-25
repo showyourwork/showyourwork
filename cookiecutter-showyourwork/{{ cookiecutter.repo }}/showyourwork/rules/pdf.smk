@@ -1,13 +1,15 @@
-localrules: texfile, stylesheet
+localrules:
+    texfile,
+    stylesheet,
 
 
 rule texfile:
     message:
         "Writing temporary tex file..."
     input:
-        POSIX(TEX / "ms.tex")
+        POSIX(TEX / "ms.tex"),
     output:
-        temp(POSIX(TEX / "{}.tex".format(SYWTEXFILE)))
+        temp(POSIX(TEX / "{}.tex".format(SYWTEXFILE))),
     run:
         with open(TEX / "ms.tex", "r") as f:
             lines = f.readlines()
@@ -29,13 +31,13 @@ rule stylesheet:
     message:
         "Generating stylesheet..."
     input:
-        POSIX(TEMP / "meta.json")
+        POSIX(TEMP / "meta.json"),
     output:
-        temp(POSIX(TEX / "showyourwork.sty"))
+        temp(POSIX(TEX / "showyourwork.sty")),
     params:
         WORKFLOW=WORKFLOW,
         TEMP=TEMP,
-        TEX=TEX
+        TEX=TEX,
     conda:
         "../envs/environment.yml"
     script:
@@ -52,14 +54,14 @@ rule pdf:
         POSIX(TEX / "showyourwork.sty"),
         AUXFILES,
         class_files,
-        figures
+        figures,
     output:
-        "ms.pdf"
+        "ms.pdf",
     params:
         verbose=verbose,
         TEMP=TEMP,
         TEX=TEX,
-        SYWTEXFILE=SYWTEXFILE
+        SYWTEXFILE=SYWTEXFILE,
     conda:
         "../envs/environment.yml"
     script:

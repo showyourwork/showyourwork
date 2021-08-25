@@ -59,16 +59,19 @@ def check_figure_format(figure):
         warnings.warn("There is a figure without a label.")
 
 
-localrules: tmptexfile, xml, script_info
+localrules:
+    tmptexfile,
+    xml,
+    script_info,
 
 
 rule tmptexfile:
     message:
         "Writing temporary tex file..."
     input:
-        POSIX(TEX / "ms.tex")
+        POSIX(TEX / "ms.tex"),
     output:
-        temp(POSIX(TEX / "{}.tex".format(TMPTEXFILE)))
+        temp(POSIX(TEX / "{}.tex".format(TMPTEXFILE))),
     run:
         with open(TEX / "ms.tex", "r") as f:
             lines = f.readlines()
@@ -93,15 +96,15 @@ rule xml:
         class_files,
         AUXFILES,
         POSIX(TEX / "sywxml.sty"),
-        POSIX(TEX / "{}.tex".format(TMPTEXFILE))
+        POSIX(TEX / "{}.tex".format(TMPTEXFILE)),
     output:
         POSIX(TEMP / "showyourwork.xml"),
-        temp(POSIX(TEMP / "{}.pdf".format(TMPTEXFILE)))
+        temp(POSIX(TEMP / "{}.pdf".format(TMPTEXFILE))),
     params:
         verbose=verbose,
         TEMP=TEMP,
         TEX=TEX,
-        TMPTEXFILE=TMPTEXFILE
+        TMPTEXFILE=TMPTEXFILE,
     conda:
         "../envs/environment.yml"
     script:
@@ -112,9 +115,9 @@ checkpoint script_info:
     message:
         "Building figure dependency tree..."
     input:
-        POSIX(TEMP / "showyourwork.xml")
+        POSIX(TEMP / "showyourwork.xml"),
     output:
-        POSIX(TEMP / "scripts.json")
+        POSIX(TEMP / "scripts.json"),
     run:
         # Load the XML tree
         root = ParseXMLTree(TEMP / "showyourwork.xml").getroot()

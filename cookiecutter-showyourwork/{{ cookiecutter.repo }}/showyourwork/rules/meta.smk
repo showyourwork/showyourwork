@@ -60,7 +60,9 @@ def get_showyourwork_version():
     try:
         with open(GITHUB / "workflows" / "showyourwork.yml", "r") as f:
             for line in f.readlines():
-                match = re.match("[ \t]*showyourwork-version: ([a-f0-9]*)", line)
+                match = re.match(
+                    "[ \t]*showyourwork-version: ([a-f0-9]*)", line
+                )
                 if hasattr(match, "groups"):
                     return match.groups()[0]
             else:
@@ -70,18 +72,22 @@ def get_showyourwork_version():
         return "main"
 
 
-localrules: metadata
+localrules:
+    metadata,
 
 
 rule metadata:
     message:
         "Generating article metadata..."
     input:
-        [POSIX(file) for file in (GITHUB / "workflows").glob("showyourwork.yml")],
+        [
+            POSIX(file)
+            for file in (GITHUB / "workflows").glob("showyourwork.yml")
+        ],
         POSIX(TEMP / "repo.json"),
         POSIX(TEMP / "scripts.json"),
     output:
-        POSIX(TEMP / "meta.json")
+        POSIX(TEMP / "meta.json"),
     run:
         # Load the metadata
         with open(TEMP / "repo.json", "r") as f:

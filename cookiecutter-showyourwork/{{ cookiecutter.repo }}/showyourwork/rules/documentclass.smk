@@ -3,9 +3,7 @@ import re
 
 
 def input_class_file(wildcards):
-    """
-
-    """
+    """"""
     checkpoints.class_name.get(**wildcards)
     with open(TEMP / "class_name", "r") as f:
         folder = f.read().replace("\n", "")
@@ -13,35 +11,38 @@ def input_class_file(wildcards):
 
 
 def class_files(wildcards):
-    """
-
-    """
+    """"""
     checkpoints.class_name.get(**wildcards)
     with open(TEMP / "class_name", "r") as f:
         folder = f.read().replace("\n", "")
     return [POSIX(TEX / file) for file in CLASSFILES.get(folder, [])]
 
 
-localrules: class_name, class_file
+localrules:
+    class_name,
+    class_file,
 
 
 checkpoint class_name:
     message:
         "Inferring document class..."
     output:
-        POSIX(TEMP / "class_name")
-    priority:
-        100
+        POSIX(TEMP / "class_name"),
+    priority: 100
     run:
         with open(TEX / "ms.tex", "r") as f:
             lines = f.readlines()
             for line in lines:
-                match = re.match("[ \t]*\\\documentclass\[?.*?\]?\{(.*?)\}", line)
+                match = re.match(
+                    "[ \t]*\\\documentclass\[?.*?\]?\{(.*?)\}", line
+                )
                 if hasattr(match, "groups"):
                     name = match.groups()[0]
                     break
             else:
-                raise ValueError("Unable to determine document class in `tex/ms.tex`.")
+                raise ValueError(
+                    "Unable to determine document class in `tex/ms.tex`."
+                )
             if not TEMP.exists():
                 os.mkdir(TEMP)
             with open(TEMP / "class_name", "w") as f:
@@ -52,10 +53,12 @@ rule class_file:
     message:
         "Generating auxiliary class file `{output}`..."
     input:
-        input_class_file
+        input_class_file,
     output:
-        temp(POSIX(TEX / "{file}"))
+        temp(POSIX(TEX / "{file}")),
     wildcard_constraints:
-        file="|".join([file for files in CLASSFILES.values() for file in files])
+        file="|".join(
+            [file for files in CLASSFILES.values() for file in files]
+        ),
     shell:
         "cp {input[0]} {output}"

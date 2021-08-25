@@ -7,7 +7,7 @@ def get_repo_url():
         url = (
             subprocess.check_output(
                 ["git", "config", "--get", "remote.origin.url"],
-                stderr=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL,
             )
             .decode()
             .replace("\n", "")
@@ -23,8 +23,7 @@ def get_repo_branch():
     try:
         branch = (
             subprocess.check_output(
-                ["git", "branch", "--show-current"],
-                stderr=subprocess.DEVNULL
+                ["git", "branch", "--show-current"], stderr=subprocess.DEVNULL
             )
             .decode()
             .replace("\n", "")
@@ -38,8 +37,7 @@ def get_repo_sha():
     try:
         sha = (
             subprocess.check_output(
-                ["git", "rev-parse", "HEAD"],
-                stderr=subprocess.DEVNULL
+                ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
             )
             .decode()
             .replace("\n", "")
@@ -49,16 +47,16 @@ def get_repo_sha():
     return sha
 
 
-localrules: repo
+localrules:
+    repo,
 
 
 rule repo:
     message:
         "Generating repo metadata..."
     output:
-        POSIX(TEMP / "repo.json")
-    priority:
-        99
+        POSIX(TEMP / "repo.json"),
+    priority: 99
     run:
         repo = {}
         repo["url"] = get_repo_url()

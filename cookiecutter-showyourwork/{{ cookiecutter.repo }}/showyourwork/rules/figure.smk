@@ -50,13 +50,13 @@ rule figure:
         "Generating figure `{output}`..."
     input:
         figure_script,
-        "environment.yml"
+        "environment.yml",
     output:
-        "{figure}"
+        "{figure}",
     wildcard_constraints:
-        figure="figures/(.*?)\.{}".format("|".join(figexts))
+        figure="figures/(.*?)\.{}".format("|".join(figexts)),
     params:
-        script_name=script_name
+        script_name=script_name,
     conda:
         POSIX(USER / "environment.yml")
     shell:

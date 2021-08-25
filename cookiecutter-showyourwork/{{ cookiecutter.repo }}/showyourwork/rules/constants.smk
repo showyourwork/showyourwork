@@ -6,7 +6,9 @@ POSIX = lambda path: str(PurePosixPath(path))
 
 
 # TODO: Better way of getting abs paths?
-WORKFLOW = Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
+WORKFLOW = (
+    Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
+)
 USER = Path(workflow.basedir)
 
 
@@ -27,9 +29,15 @@ SYWTEXFILE = ".showyourwork-ms"
 
 
 # Auxiliary files we copy over to the user's `tex/` directory
-AUXFILES = [POSIX(TEX / file.name) for file in (WORKFLOW / "resources" / "tex").glob("*.*")]
+AUXFILES = [
+    POSIX(TEX / file.name)
+    for file in (WORKFLOW / "resources" / "tex").glob("*.*")
+]
 
 # Class-specific auxiliary files
 CLASSFILES = {}
 for folder in (WORKFLOW / "resources" / "classes").glob("*"):
-    CLASSFILES[folder.name] = [file.name for file in (WORKFLOW / "resources" / "classes" / folder).glob("*.*")]
+    CLASSFILES[folder.name] = [
+        file.name
+        for file in (WORKFLOW / "resources" / "classes" / folder).glob("*.*")
+    ]

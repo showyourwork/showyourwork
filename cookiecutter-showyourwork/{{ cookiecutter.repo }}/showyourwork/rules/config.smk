@@ -8,4 +8,6 @@ except NameError:
 verbose = config.get("verbose", "false").lower() == "true"
 
 # Recognized figure extensions
-figexts = config.get("figexts", ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"])
+figexts = config.get(
+    "figexts", ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]
+)
