@@ -1,3 +1,7 @@
+import json
+from pathlib import Path
+
+
 def script_name(wildcards, input):
     """
     Returns the name of the figure script for the `figure` rule.
@@ -50,10 +54,10 @@ rule figure:
     output:
         "{figure}"
     wildcard_constraints:
-        figure="figures/(.*?)\.{}".format("|".join(FIGURE_EXTENSIONS))
+        figure="figures/(.*?)\.{}".format("|".join(figexts))
     params:
         script_name=script_name
     conda:
-        posix(USER / "environment.yml")
+        POSIX(USER / "environment.yml")
     shell:
         "cd figures && python {params.script_name}"

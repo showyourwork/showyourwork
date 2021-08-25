@@ -1,3 +1,10 @@
+import subprocess
+import os
+import re
+import json
+from pathlib import Path
+
+
 def get_script_status(script):
     """
     Return an error code corresponding to the git status of a given script.
@@ -67,11 +74,11 @@ rule metadata:
     message:
         "Generating article metadata..."
     input:
-        [posix(file) for file in (GITHUB/ "workflows").glob("showyourwork.yml")],
-        posix(TEMP / "repo.json"),
-        posix(TEMP / "scripts.json"),
+        [POSIX(file) for file in (GITHUB / "workflows").glob("showyourwork.yml")],
+        POSIX(TEMP / "repo.json"),
+        POSIX(TEMP / "scripts.json"),
     output:
-        temp(posix(TEMP / "meta.json"))
+        temp(POSIX(TEMP / "meta.json"))
     run:
         # Load the metadata
         with open(TEMP / "repo.json", "r") as f:

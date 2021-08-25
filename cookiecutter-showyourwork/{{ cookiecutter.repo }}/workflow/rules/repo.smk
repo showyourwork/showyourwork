@@ -1,3 +1,7 @@
+import subprocess
+import json
+
+
 def get_repo_url():
     try:
         url = (
@@ -49,7 +53,7 @@ rule repo:
     message:
         "Generating repo metadata..."
     output:
-        temp(posix(TEMP / "repo.json"))
+        temp(POSIX(TEMP / "repo.json"))
     priority:
         99
     run:

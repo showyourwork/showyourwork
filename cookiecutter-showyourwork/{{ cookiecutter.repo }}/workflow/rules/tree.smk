@@ -1,3 +1,8 @@
+import json
+import os
+from xml.etree.ElementTree import parse as ParseXMLTree
+
+
 def check_figure_format(figure):
     """
     Check that all figures are declared correctly in `tex/ms.tex`
@@ -23,23 +28,17 @@ def check_figure_format(figure):
     if len(captions):
 
         # Index of last caption
-        caption_idx = (
-            len(elements)
-            - 1
-            - np.argmax(
-                [element.tag == "CAPTION" for element in elements[::-1]]
-            )
-        )
+        for caption_idx, element in enumerate(elements[::-1]):
+            if element.tag == "CAPTION":
+                break
+        caption_idx = len(elements) - 1 - caption_idx
 
         if len(labels):
 
             # Index of first label
-            label_idx = np.argmax(
-                [
-                    element.tag == "LABEL" or element.tag == "LABEL_"
-                    for element in elements
-                ]
-            )
+            for label_idx, element in enumerate(elements):
+                if element.tag == "LABEL" or element.tag == "LABEL_":
+                    break
 
             if label_idx < caption_idx:
                 raise ValueError(
@@ -64,9 +63,9 @@ rule tmptexfile:
     message:
         "Writing temporary tex file..."
     input:
-        posix(TEX / "ms.tex")
+        POSIX(TEX / "ms.tex")
     output:
-        temp(posix(TEX / "{}.tex".format(TMPTEXFILE)))
+        temp(POSIX(TEX / "{}.tex".format(TMPTEXFILE)))
     run:
         with open(TEX / "ms.tex", "r") as f:
             lines = f.readlines()
@@ -89,30 +88,30 @@ rule xml:
         "Generating XML tree..."
     input:
         class_files,
-        aux_files,
-        posix(TEX / "sywxml.sty"),
-        posix(TEX / "{}.tex".format(TMPTEXFILE))
+        AUXFILES,
+        POSIX(TEX / "sywxml.sty"),
+        POSIX(TEX / "{}.tex".format(TMPTEXFILE))
     output:
-        temp(posix(TEMP / "showyourwork.xml")),
-        temp(posix(TEMP / "{}.pdf".format(TMPTEXFILE)))
-    run:
-        tectonic_args = ["-r", "0", "-o", TEMP]
-        if verbose:
-            tectonic_args += ["--print"]
-        else:
-            tectonic_args += ["--chatter", "minimal"]
-        subprocess.check_call(
-            ["tectonic"] + tectonic_args + [TEX / "{}.tex".format(TMPTEXFILE)]
-        )
+        temp(POSIX(TEMP / "showyourwork.xml")),
+        temp(POSIX(TEMP / "{}.pdf".format(TMPTEXFILE)))
+    params:
+        verbose=verbose,
+        TEMP=TEMP,
+        TEX=TEX,
+        TMPTEXFILE=TMPTEXFILE
+    conda:
+        "../envs/environment.yml"
+    script:
+        "../scripts/xml.py"
 
 
 checkpoint script_info:
     message:
         "Building figure dependency tree..."
     input:
-        posix(TEMP / "showyourwork.xml")
+        POSIX(TEMP / "showyourwork.xml")
     output:
-        temp(posix(TEMP / "scripts.json"))
+        temp(POSIX(TEMP / "scripts.json"))
     run:
         # Load the XML tree
         root = ParseXMLTree(TEMP / "showyourwork.xml").getroot()
@@ -125,13 +124,13 @@ checkpoint script_info:
             if len(labels):
                 label = labels[0].text
                 if label is not None:
-                    script = posix(FIGURES / "{}.py".format(label))
+                    script = POSIX(FIGURES / "{}.py".format(label))
                     files = []
                     for graphic in figure.findall("GRAPHICS"):
                         if graphic.text.startswith("figures/"):
                             files.append(graphic.text.replace("/", os.sep))
                         else:
-                            files.append(posix(FIGURES / graphic.text))
+                            files.append(POSIX(FIGURES / graphic.text))
                     figures[label] = {"script": script, "files": files}
 
         # Parse free-floating graphics
@@ -140,7 +139,7 @@ checkpoint script_info:
             if graphic.text.startswith("figures/"):
                 files.append(graphic.text.replace("/", os.sep))
             else:
-                files.append(posix(FIGURES / graphic.text))
+                files.append(POSIX(FIGURES / graphic.text))
         figures["unknown"] = {
             "script": UNKNOWN_SCRIPT,
             "files": files,

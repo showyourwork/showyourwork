@@ -2,15 +2,8 @@ from snakemake.utils import min_version
 min_version("6.7.0")
 
 
-# Parse user config
-try:
-    config
-except NameError:
-    config = {}
-verbose = (config.get("verbose", "false").lower() == "true")
-
-
-include: "rules/common.smk"
+include: "rules/config.smk"
+include: "rules/constants.smk"
 include: "rules/errors.smk"
 include: "rules/repo.smk"
 include: "rules/auxfiles.smk"

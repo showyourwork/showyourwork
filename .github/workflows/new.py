@@ -4,10 +4,11 @@ from datetime import date
 import subprocess
 from packaging.version import parse as parse_version
 import os
+import sys
 
 
 # Root of the `showyourwork` repository
-ROOT = Path(__file__).absolute().parents[1]
+ROOT = Path(__file__).absolute().parents[2]
 
 
 def new(slug, repo_active="y", access_token="", skip_ci="n", run_tests="n"):
@@ -63,17 +64,27 @@ def new(slug, repo_active="y", access_token="", skip_ci="n", run_tests="n"):
 
 
 if __name__ == "__main__":
-    # To be run as a script from GitHub Actions *only*
-    assert os.environ.get("CI", "false") == "true"
-    slug = os.environ["SLUG"]
-    repo_active = os.environ["REPO_ACTIVE"]
-    access_token = os.environ["ACCESS_TOKEN"]
-    skip_ci = os.environ["SKIP_CI"]
-    run_tests = os.environ["RUN_TESTS"]
-    new(
-        slug,
-        repo_active=repo_active,
-        access_token=access_token,
-        skip_ci=skip_ci,
-        run_tests=run_tests,
-    )
+
+    if os.environ.get("CI", "false") == "true":
+
+        # Running on GitHub Actions
+        slug = os.environ["SLUG"]
+        repo_active = os.environ["REPO_ACTIVE"]
+        access_token = os.environ["ACCESS_TOKEN"]
+        skip_ci = os.environ["SKIP_CI"]
+        run_tests = os.environ["RUN_TESTS"]
+        new(
+            slug,
+            repo_active=repo_active,
+            access_token=access_token,
+            skip_ci=skip_ci,
+            run_tests=run_tests,
+        )
+
+    else:
+
+        # Running locally from the command line
+        assert (
+            len(sys.argv) == 2
+        ), "Please provide a single argument corresponding to the repo slug."
+        new(sys.argv[1])

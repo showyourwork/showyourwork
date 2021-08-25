@@ -30,4 +30,4 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           SKIP_CI: n
           RUN_TESTS: y
-        run: python showyourwork/new.py
+        run: python .github/workflows/new.py

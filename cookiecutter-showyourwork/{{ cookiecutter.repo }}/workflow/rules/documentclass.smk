@@ -1,3 +1,7 @@
+import os
+import re
+
+
 def input_class_file(wildcards):
     """
 
@@ -5,7 +9,7 @@ def input_class_file(wildcards):
     checkpoints.class_name.get(**wildcards)
     with open(TEMP / "class_name", "r") as f:
         folder = f.read().replace("\n", "")
-    return posix(WORKFLOW / "resources" / "classes" / folder / wildcards.file)
+    return POSIX(WORKFLOW / "resources" / "classes" / folder / wildcards.file)
 
 
 def class_files(wildcards):
@@ -15,14 +19,14 @@ def class_files(wildcards):
     checkpoints.class_name.get(**wildcards)
     with open(TEMP / "class_name", "r") as f:
         folder = f.read().replace("\n", "")
-    return [posix(TEX / file.name) for file in (WORKFLOW / "resources" / "classes" / folder).glob("*.*")]
+    return [POSIX(TEX / file) for file in CLASSFILES.get(folder, [])]
 
 
 checkpoint class_name:
     message:
         "Inferring document class..."
     output:
-        temp(posix(TEMP / "class_name"))
+        temp(POSIX(TEMP / "class_name"))
     priority:
         100
     run:
@@ -47,8 +51,8 @@ rule class_file:
     input:
         input_class_file
     output:
-        temp(posix(TEX / "{file}"))
+        temp(POSIX(TEX / "{file}"))
     wildcard_constraints:
-        file="|".join([file.name for file in (WORKFLOW / "resources" / "classes").glob("*/*")])
+        file="|".join([file for files in CLASSFILES.values() for file in files])
     shell:
         "cp {input[0]} {output}"
