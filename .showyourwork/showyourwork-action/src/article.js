@@ -8,13 +8,33 @@ const {makeId, exec} = require("./utils");
 module.exports = {buildArticle};
 
 
+// Article cache settings. We're caching pretty much everything
+// in the repo, but overriding it with any files that changed since
+// the commit at which we cached everything
+const ACTION_PATH = core.getInput("action-path");
+const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
+const RUNNER_OS = shell.env["RUNNER_OS"];
+const randomId = makeId(8);
+const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
+const article_paths = ["**", "!.git", "!.github", "!envs"];
+
+
 /**
  * Build the article.
  *
  */
  function buildArticle() {
 
-    // TODO: Restore article cache
+    // Restore the article cache
+    core.startGroup("Restore article cache");
+    const article_cacheKey = await cache.restoreCache(
+      article_paths,
+      article_key,
+      article_restoreKeys
+    );
+    exec(`python ${ACTION_PATH}/src/cache.py --restore`);
+    core.endGroup();
 
     // Outputs
     var output = [];
@@ -37,7 +57,15 @@ module.exports = {buildArticle};
       core.endGroup();
     }
 
-    // TODO: Save article cache
+    // Save article cache (failure OK)
+    try {
+      core.startGroup("Update article cache");
+      exec(`python ${ACTION_PATH}/src/cache.py --update`);
+      const article_cacheId = await cache.saveCache(article_paths, article_key);
+      core.endGroup();
+    } catch (error) {
+        core.warning(error.message);
+    }
 
     return output;
 

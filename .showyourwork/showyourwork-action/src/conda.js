@@ -15,7 +15,6 @@ const RUNNER_OS = shell.env["RUNNER_OS"];
 const conda_key = `conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
 const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
-const randomId = makeId(8);
 
 
 /**

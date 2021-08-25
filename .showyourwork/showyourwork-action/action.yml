@@ -37,6 +37,10 @@ inputs:
     description: "Enable verbose output and debug messages?"
     required: false
     default: false
+  action-path:
+    description: "Path to this action relative to the top level of the repo"
+    required: false
+    default: .showyourwork/showyourwork-action
 branding:
   icon: "book-open"
   color: "red"
