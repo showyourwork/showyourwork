@@ -14,8 +14,10 @@ const GITHUB_USER = GITHUB_SLUG.split("/")[0];
 const GITHUB_BRANCH = shell.exec("git rev-parse --abbrev-ref HEAD").replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
 
-//
+
+// Year for the license
 const YEAR = new Date().getFullYear();
+
 
 /**
  * Format files if this is a fresh repo based on the template.

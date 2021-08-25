@@ -2,6 +2,10 @@
 const core = require("@actions/core");
 const shell = require("shelljs");
 const {formatRepo} = require("./format_repo");
+const {setupConda} = require("./conda");
+const {buildArticle} = require("./article");
+const {publishOutput} = require("./publish");
+
 
 (async () => {
 
@@ -12,6 +16,15 @@ const {formatRepo} = require("./format_repo");
 
     // Format repository if it's a fresh fork
     formatRepo();
+
+    // Setup conda or restore from cache
+    setupConda();
+
+    // Build the article
+    output = buildArticle();
+
+    // Publish the article output
+    publishOutput(output);
 
   } catch (error) {
 

@@ -4,7 +4,7 @@
 
 The **showyourwork-action** makes it easy to build open-source, reproducible scientific articles from a LaTeX manuscript and Python figure scripts. This action is intended to be run on repositories generated using the [showyourwork](https://github.com/rodluger/showyourwork) package.
 
-This action generates all required figures from Python scripts in the `figures/` directory of your repo and compiles the LaTeX manuscript `tex/ms.tex` into the file `ms.pdf`, which is uploaded as an artifact upon completion of the workflow. This file is also automatically force-pushed to a branch on your repository with the same name as the current branch plus the suffix `-pdf`. For a complete example of an article generated automatically using this action, check out [showyourwork-example](https://github.com/rodluger/showyourwork-example).
+This action generates all required figures from Python scripts in the `figures/` directory of your repo and compiles the LaTeX manuscript `tex/ms.tex` into the file `ms.pdf`, which is uploaded as an artifact upon completion of the workflow. This file is also automatically force-pushed to a branch on your repository with the same name as the current branch plus the suffix `-pdf`.
 
 This action automatically caches all builds, so it won't re-run figure scripts that have not changed.
 
@@ -55,5 +55,5 @@ jobs:
           fetch-depth: 0
       - name: Build the article PDF
         id: build
-        uses: ./showyourwork/showyourwork-action
+        uses: ./.showyourwork/showyourwork-action
 ```
