@@ -6,7 +6,7 @@ POSIX = lambda path: str(PurePosixPath(path))
 
 
 # TODO: Better way of getting abs paths?
-WORKFLOW = Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
+WORKFLOW = Path("https:/github.com/rodluger/showyourwork/raw/restructure/cookiecutter-showyourwork/%7B%7B%20cookiecutter.repo%20%7D%7D/workflow") # DEBUG Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
 USER = Path(workflow.basedir)
 
 
