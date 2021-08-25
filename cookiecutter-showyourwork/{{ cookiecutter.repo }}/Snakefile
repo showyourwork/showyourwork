@@ -1,5 +1,5 @@
 module showyourwork:
-    snakefile: "workflow/Snakefile"
+    snakefile: "showyourwork/Snakefile"
     config: config
 use rule * from showyourwork
 

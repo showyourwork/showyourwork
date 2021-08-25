@@ -70,6 +70,9 @@ def get_showyourwork_version():
         return "main"
 
 
+localrules: metadata
+
+
 rule metadata:
     message:
         "Generating article metadata..."
@@ -78,7 +81,7 @@ rule metadata:
         POSIX(TEMP / "repo.json"),
         POSIX(TEMP / "scripts.json"),
     output:
-        temp(POSIX(TEMP / "meta.json"))
+        POSIX(TEMP / "meta.json")
     run:
         # Load the metadata
         with open(TEMP / "repo.json", "r") as f:

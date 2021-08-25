@@ -1,3 +1,6 @@
+localrules: texfile, stylesheet
+
+
 rule texfile:
     message:
         "Writing temporary tex file..."
@@ -23,6 +26,8 @@ rule texfile:
 
 
 rule stylesheet:
+    message:
+        "Generating stylesheet..."
     input:
         POSIX(TEMP / "meta.json")
     output:
@@ -43,13 +48,12 @@ rule pdf:
     input:
         POSIX(TEX / "{}.tex".format(SYWTEXFILE)),
         [POSIX(file) for file in TEX.glob("*.bib")],
-        TEMP / "meta.json",
+        POSIX(TEMP / "meta.json"),
         POSIX(TEX / "showyourwork.sty"),
-        class_files,
         AUXFILES,
+        class_files,
         figures
     output:
-        temp(POSIX(TEMP / "{}.pdf".format(SYWTEXFILE))),
         "ms.pdf"
     params:
         verbose=verbose,

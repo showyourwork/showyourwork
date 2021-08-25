@@ -59,6 +59,9 @@ def check_figure_format(figure):
         warnings.warn("There is a figure without a label.")
 
 
+localrules: tmptexfile, xml, script_info
+
+
 rule tmptexfile:
     message:
         "Writing temporary tex file..."
@@ -92,7 +95,7 @@ rule xml:
         POSIX(TEX / "sywxml.sty"),
         POSIX(TEX / "{}.tex".format(TMPTEXFILE))
     output:
-        temp(POSIX(TEMP / "showyourwork.xml")),
+        POSIX(TEMP / "showyourwork.xml"),
         temp(POSIX(TEMP / "{}.pdf".format(TMPTEXFILE)))
     params:
         verbose=verbose,
@@ -111,7 +114,7 @@ checkpoint script_info:
     input:
         POSIX(TEMP / "showyourwork.xml")
     output:
-        temp(POSIX(TEMP / "scripts.json"))
+        POSIX(TEMP / "scripts.json")
     run:
         # Load the XML tree
         root = ParseXMLTree(TEMP / "showyourwork.xml").getroot()

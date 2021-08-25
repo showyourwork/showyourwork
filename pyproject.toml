@@ -2,8 +2,13 @@
 requires = ["setuptools>=40.6.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.snakefmt]
+line_length = 79
+include = '\.smk$|^Snakefile|\.py$'
+
 [tool.black]
 line-length = 79
+skip_string_normalization = true
 exclude = '''
 /(
     \.eggs

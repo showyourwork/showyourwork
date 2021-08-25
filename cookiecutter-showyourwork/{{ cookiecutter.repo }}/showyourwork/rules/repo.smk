@@ -49,11 +49,14 @@ def get_repo_sha():
     return sha
 
 
+localrules: repo
+
+
 rule repo:
     message:
         "Generating repo metadata..."
     output:
-        temp(POSIX(TEMP / "repo.json"))
+        POSIX(TEMP / "repo.json")
     priority:
         99
     run:

@@ -18,4 +18,4 @@ else:
 subprocess.check_call(
     ["tectonic"] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)]
 )
-shutil.copy(TEMP / "{}.pdf".format(SYWTEXFILE), "ms.pdf")
+shutil.move(TEMP / "{}.pdf".format(SYWTEXFILE), "ms.pdf")

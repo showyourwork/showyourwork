@@ -9,7 +9,7 @@ def input_class_file(wildcards):
     checkpoints.class_name.get(**wildcards)
     with open(TEMP / "class_name", "r") as f:
         folder = f.read().replace("\n", "")
-    return WORKFLOW + "resources/classes/" + folder + "/" + wildcards.file # DEBUG POSIX(WORKFLOW / "resources" / "classes" / folder / wildcards.file)
+    return POSIX(WORKFLOW / "resources" / "classes" / folder / wildcards.file)
 
 
 def class_files(wildcards):
@@ -22,11 +22,14 @@ def class_files(wildcards):
     return [POSIX(TEX / file) for file in CLASSFILES.get(folder, [])]
 
 
+localrules: class_name, class_file
+
+
 checkpoint class_name:
     message:
         "Inferring document class..."
     output:
-        temp(POSIX(TEMP / "class_name"))
+        POSIX(TEMP / "class_name")
     priority:
         100
     run:
