@@ -24,7 +24,7 @@ const article_paths = ["**", "!.git", "!.github", "!envs"];
  * Build the article.
  *
  */
- function buildArticle() {
+ async function buildArticle() {
 
     // Restore the article cache
     core.startGroup("Restore article cache");

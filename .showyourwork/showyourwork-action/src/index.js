@@ -21,7 +21,7 @@ const {publishOutput} = require("./publish");
     await setupConda();
 
     // Build the article
-    output = buildArticle();
+    output = await buildArticle();
 
     // Publish the article output
     await publishOutput(output);
