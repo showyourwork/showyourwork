@@ -1,0 +1,19 @@
+name: article
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  showyourwork:
+    runs-on: ubuntu-latest
+    name: Build the article PDF
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build the article PDF
+        id: build
+        uses: ./showyourwork/showyourwork-action

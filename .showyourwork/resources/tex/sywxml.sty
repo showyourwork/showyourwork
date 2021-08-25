@@ -1,0 +1,104 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sywxml}[2021/07/07 Open source science articles]
+
+
+% Imports
+\RequirePackage{mathtools} % equation tags
+\RequirePackage{xcolor} % custom colors
+\RequirePackage[hidelinks]{hyperref} % url links
+\RequirePackage{suffix} % allows definition of starred commmands
+\RequirePackage{ifxetex}
+\ifxetex
+  \RequirePackage{fontspec}
+  \defaultfontfeatures{Extension = .otf}
+\fi
+\RequirePackage{fontawesome} % FontAwesome symbols
+\RequirePackage{letltxmacro} % command redefinitions
+\RequirePackage{xstring} % string manipulation
+\RequirePackage{catchfile} % read file into macro
+\RequirePackage{totcount} % count total number of errors
+\RequirePackage[notref, notcite]{showkeys} % get label refs
+\RequirePackage{marginnote} % margin notes
+\RequirePackage{xspace} % better spacing after icons
+
+% Logging
+\newwrite\sywLogFile
+\immediate\openout\sywLogFile=showyourwork.xml
+\newcommand\sywLogMessage[1]{%
+  \protected@write
+  \sywLogFile
+  {\let\tmp\write\def\write{\immediate\tmp}}%
+  {#1}%
+}
+\sywLogMessage{<HTML>}
+\AtEndDocument{\sywLogMessage{</HTML>}}
+
+% Log all figure and equation labels
+\renewcommand\showkeyslabelformat[1]{%
+  \IfBeginWith*{#1}{eq:}{%
+    % Equation label
+    \StrBehind*{#1}{eq:}[\sywCurrentLabelName]
+    \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
+  }{}
+  \IfBeginWith*{#1}{eq*:}{%
+    % Equation label (no script)
+    \StrBehind*{#1}{eq*:}[\sywCurrentLabelName]
+    \sywLogMessage{<LABEL_>\sywCurrentLabelName</LABEL_>}%
+  }{}
+  \IfBeginWith*{#1}{fig:}{%
+    % Figure label
+    \StrBehind*{#1}{fig:}[\sywCurrentLabelName]
+    \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
+  }{}
+  \IfBeginWith*{#1}{fig*:}{%
+    % Figure label (no script)
+    \StrBehind*{#1}{fig*:}[\sywCurrentLabelName]
+    \sywLogMessage{<LABEL_>\sywCurrentLabelName</LABEL_>}%
+  }{}
+}
+
+% Log figures
+\let\oldfigure\figure
+\let\oldendfigure\endfigure
+\renewenvironment{figure}{%
+  \sywLogMessage{<FIGURE>}%
+  \oldfigure%
+}{%
+  \oldendfigure%
+  \sywLogMessage{</FIGURE>}%
+}
+
+% Log equations
+\let\oldalign\align
+\let\oldendalign\endalign
+\renewenvironment{align}{%
+  \sywLogMessage{<ALIGN>}%
+  \oldalign%
+}{%
+  \oldendalign%
+  \sywLogMessage{</ALIGN>}%
+}
+
+% Log figure captions
+\renewcommand{\caption}{%
+  \sywLogMessage{<CAPTION />}%
+}
+
+% Log graphics
+\renewcommand{\includegraphics}[2][]{%
+  \sywLogMessage{<GRAPHICS>#2</GRAPHICS>}%
+}
+
+% Disable bibliography
+\renewcommand{\bibliography}[1]{}
+
+% Disable user-facing commands
+\newcommand\GitHubSHA{}
+\newcommand\GitHubIcon{}
+\newcommand\GitHubIconRed{}
+\newcommand\GitHubIconOrange{}
+\newcommand\GitHubIconYellow{}
+\newcommand\GitHubIconBlue{}
+\newcommand\TestPassIcon{}
+\newcommand\TestFailIcon{}
+\newcommand\showyourwork{}
