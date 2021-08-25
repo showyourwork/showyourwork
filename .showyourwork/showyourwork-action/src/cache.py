@@ -33,6 +33,7 @@ def restore_cache():
         with open(".showyourwork/tmp/commit", "r") as f:
             commit = f.readlines()[0].replace("\n", "")
     except FileNotFoundError:
+        print("Cache info not found.")
         return
 
     # Get all files modified since that commit
@@ -43,12 +44,15 @@ def restore_cache():
         print(e)
         return
 
+    # DEBUG
+    print(modified_files)
+
     # If a tracked file changed since the last commit, reset it
     # and override the cached version. This will give it a newer
     # timestamp, which will force Snakemake to re-evaluate the
     # corresponding rule.
     for file in modified_files:
-        subprocess.check_output(["git", "checkout", "HEAD", "--", file])
+        subprocess.check_call(["git", "checkout", "HEAD", "--", file])
         print("Ignoring cache for modified file {}.".format(file))
 
 

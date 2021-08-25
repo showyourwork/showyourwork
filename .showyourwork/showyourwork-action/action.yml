@@ -41,6 +41,10 @@ inputs:
     description: "Path to this action relative to the top level of the repo"
     required: false
     default: .showyourwork/showyourwork-action
+  cache-paths:
+    description:
+    required: false
+    default: ["figures", "data"]
 branding:
   icon: "book-open"
   color: "red"
