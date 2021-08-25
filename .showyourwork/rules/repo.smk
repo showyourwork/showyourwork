@@ -59,6 +59,7 @@ rule repo:
     priority: 99
     run:
         repo = {}
+        repo["sha"] = get_repo_sha()
         repo["url"] = get_repo_url()
         repo["branch"] = get_repo_branch()
         with open(TEMP / "repo.json", "w") as f:

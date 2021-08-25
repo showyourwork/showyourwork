@@ -8,7 +8,6 @@ module.exports = {formatRepo};
 
 
 // Get repo info
-const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
 const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
 const GITHUB_USER = GITHUB_SLUG.split("/")[0];
 const GITHUB_BRANCH = shell.exec("git rev-parse --abbrev-ref HEAD").replace(/(\r\n|\n|\r)/gm, "");
@@ -31,9 +30,6 @@ function formatRepo() {
 
             //
             core.startGroup(`Format the repository`);
-
-            //
-            shell.cd(GITHUB_WORKSPACE);
 
             // Undo any changes caused by this action so far and
             // update the repo in case things changed since the action started

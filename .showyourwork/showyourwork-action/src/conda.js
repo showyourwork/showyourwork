@@ -10,10 +10,9 @@ module.exports = {setupConda};
 
 
 // Cache settings
-const CONDA_CACHE_NUMBER_DEV = 100;
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
-const conda_key = `conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER_DEV}-${CONDA_CACHE_NUMBER}`;
+const conda_key = `conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
 const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
 const randomId = makeId(8);
@@ -58,7 +57,7 @@ const randomId = makeId(8);
             "Create environment"
         );
         exec(
-            "conda install -y -c defaults -c conda-forge -c bioconda snakemake",
+            "conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake",
             "Install snakemake"
         );
     }

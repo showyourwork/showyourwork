@@ -12,6 +12,7 @@ module.exports = {publishOutput};
 const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
 const GITHUB_BRANCH = shell.exec("git rev-parse --abbrev-ref HEAD").replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
+const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
 
 
 /**
@@ -61,6 +62,7 @@ const GITHUB_TOKEN = core.getInput("github-token");
           `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
           `${TARGET_BRANCH}`
         );
+        shell.cd(GITHUB_WORKSPACE);
         core.endGroup();
       }
 

@@ -1,4 +1,5 @@
 // Imports
+const core = require("@actions/core");
 const shell = require("shelljs");
 
 
@@ -51,7 +52,7 @@ function exec_wrapper(cmd, group) {
  *
  */
 function exec(cmd, group) {
-    if (test('-f', "~/.conda/etc/profile.d/conda.sh") && test('-d', "~./envs")) {
+    if (shell.test('-f', "~/.conda/etc/profile.d/conda.sh") && shell.test('-d', "./envs")) {
         return exec_wrapper(
             `. ~/.conda/etc/profile.d/conda.sh && conda activate ./envs && ${cmd}`,
             group
