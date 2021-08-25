@@ -9,7 +9,7 @@ def input_class_file(wildcards):
     checkpoints.class_name.get(**wildcards)
     with open(TEMP / "class_name", "r") as f:
         folder = f.read().replace("\n", "")
-    return POSIX(WORKFLOW / "resources" / "classes" / folder / wildcards.file)
+    return WORKFLOW + "resources/classes/" + folder + "/" + wildcards.file # DEBUG POSIX(WORKFLOW / "resources" / "classes" / folder / wildcards.file)
 
 
 def class_files(wildcards):

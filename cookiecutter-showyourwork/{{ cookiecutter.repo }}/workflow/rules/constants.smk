@@ -6,7 +6,7 @@ POSIX = lambda path: str(PurePosixPath(path))
 
 
 # TODO: Better way of getting abs paths?
-WORKFLOW = Path("https:/github.com/rodluger/showyourwork/raw/restructure/cookiecutter-showyourwork/%7B%7B%20cookiecutter.repo%20%7D%7D/workflow") # DEBUG Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
+WORKFLOW = "https://github.com/rodluger/showyourwork/raw/restructure/cookiecutter-showyourwork/%7B%7B%20cookiecutter.repo%20%7D%7D/workflow/" # DEBUG Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
 USER = Path(workflow.basedir)
 
 
@@ -33,6 +33,8 @@ CLASSFILES = {'aastex631': ['orcid-ID.png', 'aasjournal.bst', 'revtex4-1.cls', '
 
 
 '''
+DEBUG
+
 # Auxiliary files we copy over to the user's `tex/` directory
 AUXFILES = [POSIX(TEX / file.name) for file in (WORKFLOW / "resources" / "tex").glob("*.*")]
 
