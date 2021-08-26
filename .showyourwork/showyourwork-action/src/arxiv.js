@@ -13,9 +13,9 @@ module.exports = { buildArxiv };
 async function buildArxiv() {
   if (core.getInput("upload-arxiv-artifact") == "true") {
     core.startGroup("Generate ArXiV folder");
-    exec("snakemake -c1 --use-conda arxiv");
+    exec("snakemake -c1 --use-conda --reason arxiv");
     core.endGroup();
-    return ["arxiv"];
+    return shell.ls("arxiv");
   } else {
     return [];
   }
