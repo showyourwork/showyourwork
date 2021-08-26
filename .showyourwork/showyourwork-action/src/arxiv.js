@@ -15,6 +15,7 @@ async function buildArxiv() {
     core.startGroup("Generate ArXiV folder");
     exec("snakemake -c1 --use-conda --reason arxiv");
     var files = [];
+    console.log("Publishing the following files:");
     shell.ls("arxiv").forEach(function (file) {
       var path = `arxiv/${file}`;
       console.log(path);
