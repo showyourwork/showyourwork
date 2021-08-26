@@ -70,15 +70,20 @@ async function publishOutput(output, report) {
   // Upload the report to GitHub Pages
   if (report.length > 0) {
     core.startGroup("Uploading report");
-    const TARGET_BRANCH = `gh-pages`; // TODO: Customize
+    const TARGET_BRANCH = core.getInput("gh-pages-branch");
+    if (TARGET_BRANCH == GITHUB_BRANCH) {
+      core.setFailed("GitHub Pages branch can't be the current branch!");
+    }
     const TARGET_DIRECTORY = shell
       .exec("mktemp -d")
       .replace(/(\r\n|\n|\r)/gm, "");
     shell.cd(`${TARGET_DIRECTORY}`);
     // Attempt to pull from the remote, if the GitHub Pages branch exists
+    shell.set("+e");
     const result = shell.exec(
       `git clone https://github.com/${GITHUB_SLUG} --branch ${TARGET_BRANCH} --single-branch .`
     );
+    shell.set("-e");
     if (result.code == 0) {
       // Branch exists
       for (const out of report) {
@@ -99,7 +104,8 @@ async function publishOutput(output, report) {
       shell.exec("git init");
       shell.exec(`git checkout --orphan ${TARGET_BRANCH}`);
       for (const out of report) {
-        shell.exec(`cp -r ${out} .`);
+        shell.echo(`cp -r ${GITHUB_WORKSPACE}/${out} .`); // DEBUG
+        shell.exec(`cp -r ${GITHUB_WORKSPACE}/${out} .`);
         shell.exec(`git add -f ${out}`);
       }
       shell.exec(
@@ -107,7 +113,7 @@ async function publishOutput(output, report) {
           "commit -m 'create gh-pages branch and upload article report'"
       );
       shell.exec(
-        "git push --force" +
+        "git push --force " +
           `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
           `${TARGET_BRANCH}`
       );

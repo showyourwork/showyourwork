@@ -36,6 +36,10 @@ _Optional_. Force-push output to branch `<xxx>-pdf`, where `<xxx>` is the curren
 
 _Optional_. Generate a directed acyclic graph (DAG) of the build process? Default: `true`
 
+### `gh-pages-branch`
+
+_Optional_. The branch serving GitHub Pages. Default: `gh-pages`
+
 ### `github-token`
 
 _Optional_. A token for access to GitHub (e.g. `secrets.GITHUB_TOKEN`). Do not set this value explicitly -- always use a secret! Default: `${{ github.token }}` (usually set automatically)

@@ -50,7 +50,7 @@ async function buildArticle() {
   if (core.getInput("verbose") == "true") {
     exec("snakemake -c1 --use-conda ms.pdf --verbose --reason");
   } else {
-    exec("snakemake -c1 --use-conda ms.pdf");
+    exec("snakemake -c1 --use-conda ms.pdf --reason");
   }
   output.push("ms.pdf");
   core.endGroup();

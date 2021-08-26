@@ -44,6 +44,10 @@ inputs:
   article-cache-paths:
     description: "Additional files or paths to cache between runs, one entry per line"
     required: false
+  gh-pages-branch:
+    description: "Branch serving GitHub Pages"
+    required: false
+    default: gh-pages
 branding:
   icon: "book-open"
   color: "red"
