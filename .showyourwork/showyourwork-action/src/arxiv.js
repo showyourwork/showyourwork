@@ -21,6 +21,7 @@ async function buildArxiv() {
       files.push(path);
     });
     core.endGroup();
+    return files;
   } else {
     return [];
   }
