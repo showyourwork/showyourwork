@@ -55,11 +55,11 @@ async function buildArticle() {
   output.push("ms.pdf");
   core.endGroup();
 
-  // Generate DAG?
-  if (core.getInput("generate-dag") == "true") {
-    core.startGroup("Generate article DAG");
-    exec("snakemake ms.pdf --dag | dot -Tpdf > dag.pdf");
-    output.push("dag.pdf");
+  // Generate report?
+  if (core.getInput("generate-report") == "true") {
+    core.startGroup("Generate article report");
+    exec("snakemake ms.pdf --report report.html");
+    output.push("report.html");
     core.endGroup();
   }
 

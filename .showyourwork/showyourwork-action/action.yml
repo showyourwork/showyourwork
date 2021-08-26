@@ -17,8 +17,8 @@ inputs:
     description: "Exact url pointing to the conda install script"
     required: false
     default: "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-  generate-dag:
-    description: "Generate a directed acyclic graph (DAG) of the build process?"
+  generate-report:
+    description: "Generate a full HTML report of the build process?"
     required: false
     default: true
   upload-artifact:

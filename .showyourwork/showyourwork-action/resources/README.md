@@ -7,8 +7,8 @@
 <a href="https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml">
 <img src="https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml/badge.svg" alt="Article status"/>
 </a>
-<a href="https://github.com/{{ GITHUB_SLUG }}/raw/main-pdf/dag.pdf">
-<img src="https://img.shields.io/badge/workflow-graph-blue.svg?style=flat" alt="View the workflow DAG"/>
+<a href="https://github.com/{{ GITHUB_SLUG }}/raw/main-pdf/report.html">
+<img src="https://img.shields.io/badge/workflow-report-blue.svg?style=flat" alt="View the workflow report"/>
 </a>
 <a href="https://github.com/{{ GITHUB_SLUG }}/raw/main-pdf/ms.pdf">
 <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>

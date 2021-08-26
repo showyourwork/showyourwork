@@ -21,3 +21,6 @@
 **/*.gif
 **/*.svf
 **/*.tiff
+
+# HTML remport
+report.html

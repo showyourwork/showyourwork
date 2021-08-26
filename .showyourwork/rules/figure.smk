@@ -52,7 +52,7 @@ rule figure:
         figure_script,
         "environment.yml",
     output:
-        "{figure}",
+        report("{figure}", category="Figure"),
     wildcard_constraints:
         figure="figures/(.*?)\.{}".format("|".join(figexts)),
     params:
