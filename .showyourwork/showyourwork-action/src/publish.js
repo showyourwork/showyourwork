@@ -87,7 +87,7 @@ async function publishOutput(output, report) {
     if (result.code == 0) {
       // Branch exists
       for (const out of report) {
-        shell.exec(`cp -r ${out} .`);
+        shell.exec(`cp -r ${GITHUB_WORKSPACE}/${out} .`);
         shell.exec(`git add -f ${out}`);
       }
       shell.exec(
@@ -104,7 +104,6 @@ async function publishOutput(output, report) {
       shell.exec("git init");
       shell.exec(`git checkout --orphan ${TARGET_BRANCH}`);
       for (const out of report) {
-        shell.echo(`cp -r ${GITHUB_WORKSPACE}/${out} .`); // DEBUG
         shell.exec(`cp -r ${GITHUB_WORKSPACE}/${out} .`);
         shell.exec(`git add -f ${out}`);
       }
