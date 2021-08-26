@@ -19,7 +19,9 @@ const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
 const article_paths = getInputAsArray("article-cache-paths").concat([
   ".snakemake",
   ".showyourwork/tmp",
+  ".showyourwork/resources",
   "environment.yml",
+  "ms.pdf",
   "figures",
   "data",
   "tex",
