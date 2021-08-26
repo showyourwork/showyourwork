@@ -4,6 +4,7 @@ const shell = require("shelljs");
 const { formatRepo } = require("./format_repo");
 const { setupConda } = require("./conda");
 const { buildArticle } = require("./article");
+const { buildArxiv } = require("./arxiv");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
 
@@ -21,11 +22,14 @@ const { publishOutput } = require("./publish");
     // Build the article
     output = await buildArticle();
 
+    // Build the arxiv folder
+    arxiv = await buildArxiv();
+
     // Generate the report
     report = await generateReport();
 
     // Publish the article output
-    await publishOutput(output, report);
+    await publishOutput(output, arxiv, report);
   } catch (error) {
     // Exit gracefully
     core.setFailed(error.message);

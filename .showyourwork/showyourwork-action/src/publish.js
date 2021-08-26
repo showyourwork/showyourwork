@@ -18,19 +18,19 @@ const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
  * Publish the article output.
  *
  */
-async function publishOutput(output, report) {
+async function publishOutput(output, arxiv, report) {
   // Upload artifact
-  if (core.getInput("upload-artifact") == "true") {
-    core.startGroup("Upload article artifact");
+  if (core.getInput("upload-arxiv-artifact") == "true") {
+    core.startGroup("Upload arxiv artifact");
     const artifactClient = artifact.create();
-    const artifactName = "article-pdf";
+    const artifactName = "arxiv";
     const rootDirectory = ".";
     const options = {
       continueOnError: false,
     };
     const uploadResponse = await artifactClient.uploadArtifact(
       artifactName,
-      output,
+      arxiv,
       rootDirectory,
       options
     );

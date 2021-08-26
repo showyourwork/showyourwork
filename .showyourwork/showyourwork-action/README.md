@@ -32,9 +32,9 @@ _Optional_. Exact url pointing to the `conda` install script. Default: `https://
 
 _Optional_. Force-push output to branch `<xxx>-pdf`, where `<xxx>` is the current branch name? Default: `true`
 
-### `generate-dag`
+### `generate-report`
 
-_Optional_. Generate a directed acyclic graph (DAG) of the build process? Default: `true`
+_Optional_. Generate an HTML report of the build process and push it to GitHub Pages? Default: `true`
 
 ### `gh-pages-branch`
 
@@ -44,9 +44,9 @@ _Optional_. The branch serving GitHub Pages. Default: `gh-pages`
 
 _Optional_. A token for access to GitHub (e.g. `secrets.GITHUB_TOKEN`). Do not set this value explicitly -- always use a secret! Default: `${{ github.token }}` (usually set automatically)
 
-### `upload-artifact`
+### `upload-arxiv-artifact`
 
-_Optional_. Upload output as an artifact? Default: `true`
+_Optional_. Upload an ArXiV-friendly tarball as an artifact? Default: `true`
 
 ### `verbose`
 

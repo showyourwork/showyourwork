@@ -21,8 +21,8 @@ inputs:
     description: "Generate a full HTML report of the build process?"
     required: false
     default: true
-  upload-artifact:
-    description: "Upload output as an artifact?"
+  upload-arxiv-artifact:
+    description: "Upload arxiv tarball as an artifact?"
     required: false
     default: true
   force-push:
