@@ -22,11 +22,11 @@ const { publishOutput } = require("./publish");
     // Build the article
     output = await buildArticle();
 
-    // Build the arxiv folder
-    arxiv = await buildArxiv();
-
     // Generate the report
     report = await generateReport();
+
+    // Build the arxiv folder
+    arxiv = await buildArxiv();
 
     // Publish the article output
     await publishOutput(output, arxiv, report);
