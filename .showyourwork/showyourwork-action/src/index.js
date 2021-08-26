@@ -4,6 +4,7 @@ const shell = require("shelljs");
 const { formatRepo } = require("./format_repo");
 const { setupConda } = require("./conda");
 const { buildArticle } = require("./article");
+const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
 
 (async () => {
@@ -20,8 +21,11 @@ const { publishOutput } = require("./publish");
     // Build the article
     output = await buildArticle();
 
+    // Generate the report
+    report = await generateReport();
+
     // Publish the article output
-    await publishOutput(output);
+    await publishOutput(output, report);
   } catch (error) {
     // Exit gracefully
     core.setFailed(error.message);

@@ -8,6 +8,7 @@ module.exports = { formatRepo };
 // Get repo info
 const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
 const GITHUB_USER = GITHUB_SLUG.split("/")[0];
+const GITHUB_USER = GITHUB_REPO.split("/")[1];
 const GITHUB_BRANCH = shell
   .exec("git rev-parse --abbrev-ref HEAD")
   .replace(/(\r\n|\n|\r)/gm, "");
@@ -42,6 +43,8 @@ function formatRepo() {
         "LICENSE"
       );
       shell.sed("-i", "{{ GITHUB_SLUG }}", GITHUB_SLUG, "README.md");
+      shell.sed("-i", "{{ GITHUB_USER }}", GITHUB_USER, "README.md");
+      shell.sed("-i", "{{ GITHUB_REPO }}", GITHUB_REPO, "README.md");
       shell.sed("-i", "{{ GITHUB_USER }}", GITHUB_USER, "LICENSE");
       shell.sed("-i", "{{ YEAR }}", YEAR, "LICENSE");
       shell.sed("-i", "Rodrigo Luger", `@${GITHUB_USER}`, "tex/ms.tex");

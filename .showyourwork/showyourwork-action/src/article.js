@@ -55,14 +55,6 @@ async function buildArticle() {
   output.push("ms.pdf");
   core.endGroup();
 
-  // Generate report?
-  if (core.getInput("generate-report") == "true") {
-    core.startGroup("Generate article report");
-    exec("snakemake ms.pdf --report report.html");
-    output.push("report.html");
-    core.endGroup();
-  }
-
   // Save article cache (failure OK)
   try {
     core.startGroup("Update article cache");

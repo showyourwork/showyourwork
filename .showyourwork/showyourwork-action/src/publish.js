@@ -18,7 +18,7 @@ const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
  * Publish the article output.
  *
  */
-async function publishOutput(output) {
+async function publishOutput(output, report) {
   // Upload artifact
   if (core.getInput("upload-artifact") == "true") {
     core.startGroup("Upload article artifact");
@@ -63,6 +63,55 @@ async function publishOutput(output) {
         `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
         `${TARGET_BRANCH}`
     );
+    shell.cd(GITHUB_WORKSPACE);
+    core.endGroup();
+  }
+
+  // Upload the report to GitHub Pages
+  if (report.length > 0) {
+    core.startGroup("Uploading report");
+    const TARGET_BRANCH = `gh-pages`; // TODO: Customize
+    const TARGET_DIRECTORY = shell
+      .exec("mktemp -d")
+      .replace(/(\r\n|\n|\r)/gm, "");
+    shell.cd(`${TARGET_DIRECTORY}`);
+    // Attempt to pull from the remote, if the GitHub Pages branch exists
+    const result = shell.exec(
+      `git clone https://github.com/${GITHUB_SLUG} --branch ${TARGET_BRANCH} --single-branch .`
+    );
+    if (result.code == 0) {
+      // Branch exists
+      for (const out of report) {
+        shell.exec(`cp -r ${out} .`);
+        shell.exec(`git add -f ${out}`);
+      }
+      shell.exec(
+        "git -c user.name='showyourwork' -c user.email='showyourwork' " +
+          "commit -m 'update article report'"
+      );
+      shell.exec(
+        "git push " +
+          `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
+          `${TARGET_BRANCH}`
+      );
+    } else {
+      // Branch doesn't exist (create it & force push)
+      shell.exec("git init");
+      shell.exec(`git checkout --orphan ${TARGET_BRANCH}`);
+      for (const out of report) {
+        shell.exec(`cp -r ${out} .`);
+        shell.exec(`git add -f ${out}`);
+      }
+      shell.exec(
+        "git -c user.name='showyourwork' -c user.email='showyourwork' " +
+          "commit -m 'create gh-pages branch and upload article report'"
+      );
+      shell.exec(
+        "git push --force" +
+          `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
+          `${TARGET_BRANCH}`
+      );
+    }
     shell.cd(GITHUB_WORKSPACE);
     core.endGroup();
   }
