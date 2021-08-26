@@ -8,7 +8,7 @@ module.exports = { formatRepo };
 // Get repo info
 const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
 const GITHUB_USER = GITHUB_SLUG.split("/")[0];
-const GITHUB_USER = GITHUB_REPO.split("/")[1];
+const GITHUB_REPO = GITHUB_SLUG.split("/")[1];
 const GITHUB_BRANCH = shell
   .exec("git rev-parse --abbrev-ref HEAD")
   .replace(/(\r\n|\n|\r)/gm, "");
