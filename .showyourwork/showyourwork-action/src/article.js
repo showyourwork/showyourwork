@@ -2,12 +2,10 @@
 const core = require("@actions/core");
 const cache = require("@actions/cache");
 const shell = require("shelljs");
-const {makeId, exec, getInputAsArray} = require("./utils");
-
+const { makeId, exec, getInputAsArray } = require("./utils");
 
 // Exports
-module.exports = {buildArticle};
-
+module.exports = { buildArticle };
 
 // Article cache settings. We're caching pretty much everything
 // in the repo, but overriding it with any files that changed since
@@ -18,56 +16,60 @@ const RUNNER_OS = shell.env["RUNNER_OS"];
 const randomId = makeId(8);
 const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
-const article_paths = getInputAsArray("article-cache-paths").concat([".snakemake", ".showyourwork/tmp", "environment.yml", "figures", "data", "tex"]);
-
+const article_paths = getInputAsArray("article-cache-paths").concat([
+  ".snakemake",
+  ".showyourwork/tmp",
+  "environment.yml",
+  "figures",
+  "data",
+  "tex",
+]);
 
 /**
  * Build the article.
  *
  */
- async function buildArticle() {
+async function buildArticle() {
+  // Restore the article cache
+  core.startGroup("Restore article cache");
+  const article_cacheKey = await cache.restoreCache(
+    article_paths,
+    article_key,
+    article_restoreKeys
+  );
+  exec(`python ${ACTION_PATH}/src/cache.py --restore`);
+  core.endGroup();
 
-    // Restore the article cache
-    core.startGroup("Restore article cache");
-    const article_cacheKey = await cache.restoreCache(
-      article_paths,
-      article_key,
-      article_restoreKeys
-    );
-    exec(`python ${ACTION_PATH}/src/cache.py --restore`);
+  // Outputs
+  var output = [];
+
+  // Build the article
+  core.startGroup("Build article");
+  if (core.getInput("verbose") == "true") {
+    exec("snakemake -c1 --use-conda ms.pdf --verbose --reason");
+  } else {
+    exec("snakemake -c1 --use-conda ms.pdf");
+  }
+  output.push("ms.pdf");
+  core.endGroup();
+
+  // Generate DAG?
+  if (core.getInput("generate-dag") == "true") {
+    core.startGroup("Generate article DAG");
+    exec("snakemake ms.pdf --dag | dot -Tpdf > dag.pdf");
+    output.push("dag.pdf");
     core.endGroup();
+  }
 
-    // Outputs
-    var output = [];
-
-    // Build the article
-    core.startGroup("Build article");
-    if (core.getInput("verbose") == "true") {
-        exec("snakemake -c1 --use-conda ms.pdf --verbose --reason");
-    } else {
-        exec("snakemake -c1 --use-conda ms.pdf");
-    }
-    output.push("ms.pdf");
+  // Save article cache (failure OK)
+  try {
+    core.startGroup("Update article cache");
+    exec(`python ${ACTION_PATH}/src/cache.py --update`);
+    const article_cacheId = await cache.saveCache(article_paths, article_key);
     core.endGroup();
+  } catch (error) {
+    core.warning(error.message);
+  }
 
-    // Generate DAG?
-    if (core.getInput("generate-dag") == "true") {
-      core.startGroup("Generate article DAG");
-      exec("snakemake ms.pdf --dag | dot -Tpdf > dag.pdf");
-      output.push("dag.pdf");
-      core.endGroup();
-    }
-
-    // Save article cache (failure OK)
-    try {
-      core.startGroup("Update article cache");
-      exec(`python ${ACTION_PATH}/src/cache.py --update`);
-      const article_cacheId = await cache.saveCache(article_paths, article_key);
-      core.endGroup();
-    } catch (error) {
-        core.warning(error.message);
-    }
-
-    return output;
-
- }
+  return output;
+}

@@ -1,16 +1,13 @@
 // Imports
 const core = require("@actions/core");
 const shell = require("shelljs");
-const {formatRepo} = require("./format_repo");
-const {setupConda} = require("./conda");
-const {buildArticle} = require("./article");
-const {publishOutput} = require("./publish");
-
+const { formatRepo } = require("./format_repo");
+const { setupConda } = require("./conda");
+const { buildArticle } = require("./article");
+const { publishOutput } = require("./publish");
 
 (async () => {
-
   try {
-
     // Exit on failure
     shell.set("-e");
 
@@ -25,12 +22,8 @@ const {publishOutput} = require("./publish");
 
     // Publish the article output
     await publishOutput(output);
-
   } catch (error) {
-
     // Exit gracefully
     core.setFailed(error.message);
-
   }
-
 })();
