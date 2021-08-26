@@ -24,7 +24,7 @@ async function publishOutput(output, arxiv, report) {
     core.startGroup("Upload arxiv artifact");
     const artifactClient = artifact.create();
     const artifactName = "arxiv";
-    const rootDirectory = ".";
+    const rootDirectory = "arxiv";
     const options = {
       continueOnError: false,
     };
