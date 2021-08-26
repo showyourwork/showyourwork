@@ -14,8 +14,9 @@ async function generateReport() {
   if (core.getInput("generate-report") == "true") {
     core.startGroup("Generate article report");
     exec("snakemake ms.pdf --report report.html");
+    exec("touch .nojekyll");
     core.endGroup();
-    return ["report.html"];
+    return ["report.html", ".nojekyll"];
   } else {
     return [];
   }
