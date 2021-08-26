@@ -1,6 +1,4 @@
-<p align="center">
-  <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/main/showyourwork.png"/>
-</p>
+# showyourwork-action
 
 The **showyourwork-action** makes it easy to build open-source, reproducible scientific articles from a LaTeX manuscript and Python figure scripts. This action is intended to be run on repositories generated using the [showyourwork](https://github.com/rodluger/showyourwork) package.
 
@@ -10,9 +8,17 @@ This action automatically caches all builds, so it won't re-run figure scripts t
 
 ## Inputs:
 
+### `action-path`
+
+_Optional_. Path to this action relative to the top level of the repo. Default: `.showyourwork/showyourwork-action`
+
 ### `article-cache-number`
 
 _Optional_. Bump this number to reset the article cache. Default: `0`
+
+### `article-cache-paths`
+
+_Optional_. Additional files or paths whose timestamps should be preserved across CI runs. Provide one entry per line (use `|` on first line to enable multi-line input). Default is `environment.yml`, as well as the `figures`, `data`, and `tex` directories.
 
 ### `conda-cache-number`
 
@@ -37,6 +43,10 @@ _Optional_. A token for access to GitHub (e.g. `secrets.GITHUB_TOKEN`). Do not s
 ### `upload-artifact`
 
 _Optional_. Upload output as an artifact? Default: `true`
+
+### `verbose`
+
+_Optional_. Enable verbose output and debug messages? Default: `false`
 
 ## Example usage
 

@@ -49,7 +49,7 @@ const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
         shell.cp("-R", ".", `${TARGET_DIRECTORY}`);
         shell.cd(`${TARGET_DIRECTORY}`);
         shell.exec(`git checkout --orphan ${TARGET_BRANCH}`);
-        shell.exec("git rm --cached -rf .");
+        shell.exec("git rm --cached -rf . &> /dev/null");
         for (const out of output) {
           shell.exec(`git add -f ${out}`);
         }

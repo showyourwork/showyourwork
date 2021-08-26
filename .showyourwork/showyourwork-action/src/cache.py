@@ -44,9 +44,6 @@ def restore_cache():
         print(e)
         return
 
-    # DEBUG
-    print(modified_files)
-
     # If a tracked file changed since the last commit, reset it
     # and override the cached version. This will give it a newer
     # timestamp, which will force Snakemake to re-evaluate the

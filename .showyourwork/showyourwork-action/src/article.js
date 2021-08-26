@@ -18,7 +18,7 @@ const RUNNER_OS = shell.env["RUNNER_OS"];
 const randomId = makeId(8);
 const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
-const article_paths = getInputAsArray("cache-paths").concat([".snakemake", ".showyourwork/tmp"]);
+const article_paths = getInputAsArray("article-cache-paths").concat([".snakemake", ".showyourwork/tmp", "environment.yml", "figures", "data", "tex"]);
 
 
 /**
@@ -43,7 +43,7 @@ const article_paths = getInputAsArray("cache-paths").concat([".snakemake", ".sho
     // Build the article
     core.startGroup("Build article");
     if (core.getInput("verbose") == "true") {
-        exec("snakemake -c1 --use-conda ms.pdf --verbose");
+        exec("snakemake -c1 --use-conda ms.pdf --verbose --reason");
     } else {
         exec("snakemake -c1 --use-conda ms.pdf");
     }

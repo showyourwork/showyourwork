@@ -41,12 +41,9 @@ inputs:
     description: "Path to this action relative to the top level of the repo"
     required: false
     default: .showyourwork/showyourwork-action
-  cache-paths:
-    description:
+  article-cache-paths:
+    description: "Additional files or paths to cache between runs, one entry per line"
     required: false
-    default: |
-      figures
-      data
 branding:
   icon: "book-open"
   color: "red"
