@@ -51,8 +51,7 @@ function formatRepo() {
 
       // Record the latest version of `showyourwork`
       shell.exec(
-        "curl --silent https://api.github.com/repos/rodluger/showyourwork/releases/latest " +
-          '| grep \'"tag_name":\' | sed -E \'s/.*"([^"]+)".*/\1/\' > .showyourwork/VERSION'
+        String.raw`curl --silent https://api.github.com/repos/rodluger/showyourwork/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > .showyourwork/VERSION`
       );
       const version = shell
         .head({ "-n": 1 }, ".showyourwork/VERSION")
