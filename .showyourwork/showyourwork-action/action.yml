@@ -21,10 +21,6 @@ inputs:
     description: "Generate a full HTML report of the build process?"
     required: false
     default: true
-  upload-arxiv-artifact:
-    description: "Upload arxiv tarball as an artifact?"
-    required: false
-    default: true
   force-push:
     description: "Force-push output to branch with suffix `-pdf`?"
     required: false
@@ -41,13 +37,14 @@ inputs:
     description: "Path to this action relative to the top level of the repo"
     required: false
     default: .showyourwork/showyourwork-action
-  article-cache-paths:
-    description: "Additional files or paths to cache between runs, one entry per line"
-    required: false
   gh-pages-branch:
     description: "Branch serving GitHub Pages"
     required: false
     default: gh-pages
+  arxiv-tarball:
+    description: "Build a tarball for easy ArXiV submission?"
+    required: false
+    default: true
 branding:
   icon: "book-open"
   color: "red"

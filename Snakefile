@@ -13,7 +13,7 @@ use rule * from showyourwork
 # Custom rule to download a dataset
 rule fibonacci_data:
     output:
-        report("data/fibonacci.dat", category="Dataset")
+        report("src/figures/fibonacci.dat", category="Dataset")
     shell:
         "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
 
@@ -22,18 +22,18 @@ rule fibonacci_data:
 # is a dependency of `figures/fibonacci.pdf`
 use rule figure from showyourwork as fibonacci_figure with:
     input:
-        "figures/fibonacci.py",
-        "data/fibonacci.dat",
+        "src/figures/fibonacci.py",
+        "src/figures/fibonacci.dat",
         "environment.yml"
     output:
-        report("figures/fibonacci.pdf", category="Figure")
+        report("src/figures/fibonacci.pdf", category="Figure")
 
 
 # Subclass the `figure` rule to specify that the inline figure
 # `figures/inline.pdf` is generated from the script `figures/inline.py`
 use rule figure from showyourwork as inline_figure with:
     input:
-        "figures/inline.py",
+        "src/figures/inline.py",
         "environment.yml"
     output:
-        report("figures/inline.pdf", category="Figure")
+        report("src/figures/inline.pdf", category="Figure")

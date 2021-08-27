@@ -13,8 +13,8 @@ USER = Path(workflow.basedir)
 
 
 # Relative paths (to top level of user's repo)
-TEX = Path("tex")
-FIGURES = Path("figures")
+TEX = Path("src")
+FIGURES = Path("src") / "figures"
 TEMP = Path(".showyourwork") / "tmp"
 GITHUB = Path(".github")
 
@@ -28,7 +28,7 @@ TMPTEXFILE = ".showyourwork-xml-ms"
 SYWTEXFILE = ".showyourwork-ms"
 
 
-# Auxiliary files we copy over to the user's `tex/` directory
+# Auxiliary files we copy over to the user's `src/` directory
 AUXFILES = [
     POSIX(TEX / file.name)
     for file in (WORKFLOW / "resources" / "tex").glob("*.*")

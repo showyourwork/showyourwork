@@ -7,7 +7,6 @@ import tarfile
 
 # Params defined in `../rules/pdf.smk`
 verbose = snakemake.params["verbose"]
-tar = snakemake.params["tar"]
 figexts = snakemake.params["figexts"]
 TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
@@ -25,29 +24,34 @@ subprocess.check_call(
     ["tectonic"] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)]
 )
 
+# Remove all output except the .bbl and .tex files
+for file in ["__latexindent_temp.tex", ".showyourwork-ms.*"]:
+    for file in TEX.glob(file):
+        if file.name not in [".showyourwork-ms.bbl", ".showyourwork-ms.tex"]:
+            os.remove(file)
+
 # Copy the `tex` folder over to a temporary location
 if (TEMP / "arxiv").exists():
     shutil.rmtree(TEMP / "arxiv")
 shutil.copytree(TEX, TEMP / "arxiv")
 
-# Rename temporary files to `ms.*`
+# Rename our temporary files to `ms.*`
 for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
     os.rename(file, str(file).replace(".showyourwork-ms", "ms"))
 
-# Remove garbage / unnecessary files
-for file in ["ms.pdf", "__latexindent_temp.tex"]:
-    if (TEMP / "arxiv" / file).exists():
-        os.remove(TEMP / "arxiv" / file)
+# Remove additional unnecessary files
+for file in [
+    "ms.pdf",
+    "*.bib",
+    "sywxml.sty",
+    "**/*.py",
+    "**/*matplotlibrc",
+    "**/*.gitignore",
+]:
+    for file in (TEMP / "arxiv").glob(file):
+        os.remove(file)
 
-# Copy over all figures
-for ext in figexts:
-    for file in FIGURES.glob("*.{}".format(ext)):
-        shutil.copy(file, TEMP / "arxiv")
-
-# Tar it up or keep it as a folder?
-if tar:
-    with tarfile.open("arxiv.tar.gz", "w:gz") as tar:
-        tar.add(TEMP / "arxiv", arcname=os.path.sep)
-    shutil.rmtree(TEMP / "arxiv")
-else:
-    shutil.move(TEMP / "arxiv", "arxiv")
+# Tar it up
+with tarfile.open("arxiv.tar.gz", "w:gz") as tar:
+    tar.add(TEMP / "arxiv", arcname=os.path.sep)
+shutil.rmtree(TEMP / "arxiv")

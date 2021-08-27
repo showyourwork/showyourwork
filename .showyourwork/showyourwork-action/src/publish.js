@@ -1,6 +1,5 @@
 // Imports
 const core = require("@actions/core");
-const artifact = require("@actions/artifact");
 const shell = require("shelljs");
 
 // Exports
@@ -18,25 +17,7 @@ const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
  * Publish the article output.
  *
  */
-async function publishOutput(output, arxiv, report) {
-  // Upload artifact
-  if (core.getInput("upload-arxiv-artifact") == "true") {
-    core.startGroup("Upload arxiv artifact");
-    const artifactClient = artifact.create();
-    const artifactName = "arxiv";
-    const rootDirectory = "arxiv";
-    const options = {
-      continueOnError: false,
-    };
-    const uploadResponse = await artifactClient.uploadArtifact(
-      artifactName,
-      arxiv,
-      rootDirectory,
-      options
-    );
-    core.endGroup();
-  }
-
+async function publishOutput(output, report) {
   // Force-push to `-pdf` branch
   if (core.getInput("force-push") == "true") {
     core.startGroup("Uploading output");

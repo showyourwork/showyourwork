@@ -12,11 +12,11 @@ def check_figure_format(figure):
     # Get all figure elements
     elements = list(figure)
     captions = figure.findall("CAPTION")
-    labels = figure.findall("LABEL") + figure.findall("LABEL_")
+    labels = figure.findall("LABEL")
 
     # Check that figure labels aren't nested inside captions
     for caption in captions:
-        caption_labels = caption.findall("LABEL") + caption.findall("LABEL_")
+        caption_labels = caption.findall("LABEL")
         if len(caption_labels):
             raise ValueError(
                 "Label `{}` should not be nested within the figure caption".format(
@@ -37,7 +37,7 @@ def check_figure_format(figure):
 
             # Index of first label
             for label_idx, element in enumerate(elements):
-                if element.tag == "LABEL" or element.tag == "LABEL_":
+                if element.tag == "LABEL":
                     break
 
             if label_idx < caption_idx:
@@ -134,22 +134,28 @@ checkpoint script_info:
                     files = []
                     for graphic in figure.findall("GRAPHICS"):
                         if graphic.text.startswith("figures/"):
-                            files.append(graphic.text.replace("/", os.sep))
+                            files.append(f"src/{graphic.text}")
+                        elif graphic.text.startswith("static/"):
+                            continue
                         else:
-                            files.append(POSIX(FIGURES / graphic.text))
-                    figures[label] = {"script": script, "files": files}
+                            raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
+                    if len(files):
+                        figures[label] = {"script": script, "files": files}
 
         # Parse free-floating graphics
         files = []
         for graphic in root.findall("GRAPHICS"):
             if graphic.text.startswith("figures/"):
-                files.append(graphic.text.replace("/", os.sep))
+                files.append(f"src/{graphic.text}")
+            elif graphic.text.startswith("static/"):
+                continue
             else:
-                files.append(POSIX(FIGURES / graphic.text))
-        figures["unknown"] = {
-            "script": UNKNOWN_SCRIPT,
-            "files": files,
-        }
+                raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
+        if len(files):
+            figures["unknown"] = {
+                "script": UNKNOWN_SCRIPT,
+                "files": files,
+            }
 
         # Store as JSON
         scripts = {"figures": figures}

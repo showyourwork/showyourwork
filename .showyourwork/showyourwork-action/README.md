@@ -16,9 +16,9 @@ _Optional_. Path to this action relative to the top level of the repo. Default: 
 
 _Optional_. Bump this number to reset the article cache. Default: `0`
 
-### `article-cache-paths`
+### `arxiv-tarball`
 
-_Optional_. Additional files or paths whose timestamps should be preserved across CI runs. Provide one entry per line (use `|` on first line to enable multi-line input). Default is `environment.yml`, as well as the `figures`, `data`, and `tex` directories.
+_Optional_. Build a tarball for easy ArXiV submission? This will be pushed to the same branch as the article output. Default `true`
 
 ### `conda-cache-number`
 
@@ -43,10 +43,6 @@ _Optional_. The branch serving GitHub Pages. Default: `gh-pages`
 ### `github-token`
 
 _Optional_. A token for access to GitHub (e.g. `secrets.GITHUB_TOKEN`). Do not set this value explicitly -- always use a secret! Default: `${{ github.token }}` (usually set automatically)
-
-### `upload-arxiv-artifact`
-
-_Optional_. Upload an ArXiV-friendly tarball as an artifact? Default: `true`
 
 ### `verbose`
 

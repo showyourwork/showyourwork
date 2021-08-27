@@ -40,20 +40,10 @@
     \StrBehind*{#1}{eq:}[\sywCurrentLabelName]
     \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
   }{}
-  \IfBeginWith*{#1}{eq*:}{%
-    % Equation label (no script)
-    \StrBehind*{#1}{eq*:}[\sywCurrentLabelName]
-    \sywLogMessage{<LABEL_>\sywCurrentLabelName</LABEL_>}%
-  }{}
   \IfBeginWith*{#1}{fig:}{%
     % Figure label
     \StrBehind*{#1}{fig:}[\sywCurrentLabelName]
     \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
-  }{}
-  \IfBeginWith*{#1}{fig*:}{%
-    % Figure label (no script)
-    \StrBehind*{#1}{fig*:}[\sywCurrentLabelName]
-    \sywLogMessage{<LABEL_>\sywCurrentLabelName</LABEL_>}%
   }{}
 }
 

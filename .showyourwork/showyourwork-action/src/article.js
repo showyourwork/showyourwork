@@ -16,16 +16,14 @@ const RUNNER_OS = shell.env["RUNNER_OS"];
 const randomId = makeId(8);
 const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
-const article_paths = getInputAsArray("article-cache-paths").concat([
+const article_paths = [
   ".snakemake",
   ".showyourwork/tmp",
   ".showyourwork/resources",
   "environment.yml",
   "ms.pdf",
-  "figures",
-  "data",
-  "tex",
-]);
+  "src",
+];
 
 /**
  * Build the article.
@@ -54,6 +52,18 @@ async function buildArticle() {
   }
   output.push("ms.pdf");
   core.endGroup();
+
+  // Build arxiv tarball
+  if (core.getInput("arxiv-tarball") == "true") {
+    core.startGroup("Build ArXiV tarball");
+    if (core.getInput("verbose") == "true") {
+      exec("snakemake -c1 --use-conda arxiv.tar.gz --verbose --reason");
+    } else {
+      exec("snakemake -c1 --use-conda arxiv.tar.gz --reason");
+    }
+    output.push("arxiv.tar.gz");
+    core.endGroup();
+  }
 
   // Save article cache (failure OK)
   try {

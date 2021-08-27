@@ -1,0 +1,14 @@
+# LaTeX output
+*.pdf
+*.blg
+*latexindent*
+*.aux
+*.bbl
+*.log
+*.out
+
+# Showyourwork temporaries
+.showyourwork-*
+sywxml.sty
+xstring.sty
+xstring.tex

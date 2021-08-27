@@ -54,7 +54,7 @@ rule figure:
     output:
         report("{figure}", category="Figure"),
     wildcard_constraints:
-        figure="figures/(.*?)\.{}".format("|".join(figexts)),
+        figure="src/figures/(.*?)\.{}".format("|".join(figexts)),
     params:
         script_name=script_name,
         FIGURES=FIGURES,

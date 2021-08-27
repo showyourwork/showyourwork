@@ -75,7 +75,7 @@
 \ifcsname syw@data@#1\endcsname%
   \csname syw@data@#1\expandafter\endcsname%
 \else%
-  \expandafter\ERROR
+  KEYNOTFOUND%
 \fi%
 }
 ((* for key, value in labels.items() *))
@@ -114,11 +114,13 @@
 \renewcommand\showkeyslabelformat[1]{%
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \normalfont%
+    \IfEq*{\usevalue{\sywCurrentLabelName_status}}{KEYNOTFOUND}{}{%
     \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
       \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
     }%
+    }
   }{}%
 }
 
 % Set the graphics path for all figures
-\graphicspath{{./}{../figures/}}
+\graphicspath{{./}{./figures/}}

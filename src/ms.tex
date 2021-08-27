@@ -1,4 +1,4 @@
-% Define document class & import showyourwork
+% Define document class
 \documentclass[twocolumn]{aastex631}
 
 % Begin!
@@ -20,12 +20,12 @@
 \section{Introduction}
 This article was automatically generated from a repository containing a TeX file,
 a \texttt{conda} environment file, some \texttt{Python} figure scripts, and a \texttt{Snakefile} with custom user-defined instructions.
-Edit the TeX file, figure scripts, and \texttt{Snakefile} as needed, and whenever you commit and push your changes to \texttt{GitHub}, this PDF will automatically regenerate on \texttt{GitHub Actions}. Please check out the \texttt{showyourwork} \href{https://github.com/rodluger/showyourwork}{repository} for more information.
+Edit the TeX file, figure scripts, and \texttt{Snakefile} as needed, and whenever you commit and push your changes to \texttt{GitHub}, this PDF will automatically regenerate on \texttt{GitHub Actions}. Please check out the \texttt{showyourwork} \href{https://github.com/rodluger/showyourwork}{repository} for more information \citep{Luger2021}.
 
 % A sample figure
 \begin{figure}[ht!]
     \begin{centering}
-        \includegraphics[width=0.5\linewidth]{mandelbrot.pdf}
+        \includegraphics[width=0.4\linewidth]{figures/mandelbrot.pdf}
         \caption{
             A sample plot generated from a \texttt{Python} script in the \texttt{figures} directory.
             The name of the script is automatically inferred from the figure label in the TeX file.
@@ -39,13 +39,10 @@ Edit the TeX file, figure scripts, and \texttt{Snakefile} as needed, and wheneve
 % A sample two-panel figure
 \begin{figure}[ht!]
     \begin{centering}
-        \includegraphics[width=0.4\linewidth]{koch1.pdf}
-        \includegraphics[width=0.4\linewidth]{koch2.pdf}
+        \includegraphics[width=0.4\linewidth]{figures/koch1.pdf}
+        \includegraphics[width=0.4\linewidth]{figures/koch2.pdf}
         \caption{
-            A sample plot with two subpanels.
-            Both figures were generated from the same \texttt{Python} script in the \texttt{figures} directory.
-            In order to prevent the script from being run twice (once per figure), a custom rule can be
-            specified in the \texttt{Snakefile}.
+            A sample plot with two subpanels, both generated from the same figure script.
         }
         % This label tells showyourwork that the script `figures/koch.py'
         % generates the two PDF files included above
@@ -53,10 +50,12 @@ Edit the TeX file, figure scripts, and \texttt{Snakefile} as needed, and wheneve
     \end{centering}
 \end{figure}
 
+\pagebreak
+
 % A sample figure generated from an external dataset
 \begin{figure}[ht!]
     \begin{centering}
-        \includegraphics[width=0.5\linewidth]{fibonacci.pdf}
+        \includegraphics[width=0.4\linewidth]{figures/fibonacci.pdf}
         \caption{
             Another sample plot.
             This one was generated from a dataset hosted on Zenodo; the instructions for downloading this dataset are specified in the \texttt{Snakefile}.
@@ -73,17 +72,21 @@ Edit the TeX file, figure scripts, and \texttt{Snakefile} as needed, and wheneve
 % https://creativecommons.org/licenses/by-sa/4.0/deed.en
 \begin{figure}[ht!]
     \begin{centering}
-        \includegraphics[width=0.5\linewidth]{broccoli.pdf}
+        \includegraphics[width=0.4\linewidth]{static/broccoli.pdf}
         \caption{
             A sample figure that was directly committed to the repository.
             Committing output isn't generally recommended, but for certain figure types (like photographs or flowcharts), it makes sense.
         }
-        % The asterisk below tells showyourwork not to look for a script
-        % that generates this figure, and that the PDF already exists
-        \label{fig*:broccoli}
+        % The fact that the figure is in the static directory tells
+        % showyourwork not to look for a script that generates this figure
+        \label{fig:broccoli}
     \end{centering}
 \end{figure}
 
-Finally, here is an inline figure that's not part of a \verb+figure+ environment: \includegraphics[width=1em]{inline.pdf}. Since \texttt{showyourwork} can't automatically infer the script that generated it, a custom rule must be included in the \texttt{Snakefile} to produce it.
+Here is an inline figure that's not part of a \verb+figure+ environment: \includegraphics[width=1em]{figures/inline.pdf}. Since \texttt{showyourwork} can't automatically infer the script that generated it, a custom rule must be included in the \texttt{Snakefile} to produce it.
+
+\vfill
+\pagebreak
+\bibliography{bib.bib}
 
 \end{document}

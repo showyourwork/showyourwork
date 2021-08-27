@@ -20,11 +20,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 from pathlib import Path
 
-# Path to the "data" directory
-DATA = Path(__file__).absolute().parents[1] / "data"
 
 # Read the Fibonacci numbers
-with open(DATA / "fibonacci.dat", "r") as f:
+with open("fibonacci.dat", "r") as f:
     n = [int(l) for l in f.readlines()]
 
 # The dimensions of the image we'll plot

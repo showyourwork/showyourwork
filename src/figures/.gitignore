@@ -1,0 +1,7 @@
+# Don't track anything...
+*
+
+# ... except the following:
+!.gitignore
+!*.py
+!matplotlibrc
