@@ -7,6 +7,9 @@
 <a href="https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml">
 <img src="https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml/badge.svg" alt="Article status"/>
 </a>
+<a href="https://showyourwork.readthedocs.io/en/{{ SHOWYOURWORK_VERSION }}">
+<img src="https://img.shields.io/badge/read-the%20docs-brightgreen.svg?style=flat" alt="Read the docs"/>
+</a>
 <a href="https://{{ GITHUB_USER }}.github.io/{{ GITHUB_REPO }}/report.html">
 <img src="https://img.shields.io/badge/workflow-report-blue.svg?style=flat" alt="View the workflow report"/>
 </a>

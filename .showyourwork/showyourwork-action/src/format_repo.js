@@ -49,10 +49,21 @@ function formatRepo() {
       shell.sed("-i", "{{ YEAR }}", YEAR, "LICENSE");
       shell.sed("-i", "Rodrigo Luger", `@${GITHUB_USER}`, "src/ms.tex");
 
+      // Record the latest version of `showyourwork`
+      shell.exec(
+        "curl --silent https://api.github.com/repos/rodluger/showyourwork/releases/latest " +
+          `| grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > .showyourwork/VERSION`
+      );
+      const version = shell
+        .head({ "-n": 1 }, ".showyourwork/VERSION")
+        .replace(/(\r\n|\n|\r)/gm, "");
+      shell.sed("-i", "{{ SHOWYOURWORK_VERSION }}", `${version}`, "README.md");
+
       // Commit and push
       shell.exec("git add README.md");
       shell.exec("git add LICENSE");
       shell.exec("git add src/ms.tex");
+      shell.exec("git add .showyourwork/VERSION");
       shell.exec(
         "git -c user.name='showyourwork' -c user.email='showyourwork' " +
           "commit -m '[skip ci] One-time autocommit to finish repo setup'"
