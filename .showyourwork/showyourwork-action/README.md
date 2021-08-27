@@ -20,6 +20,10 @@ _Optional_. Bump this number to reset the article cache. Default: `0`
 
 _Optional_. Build a tarball for easy ArXiV submission? This will be pushed to the same branch as the article output. Default `true`
 
+### `arxiv-exclude`
+
+_Optional_. Files/paths to be excluded from the ArXiV tarball, one entry per line. Default `**/*.py`, `**/matplotlibrc`, `**/.gitignore`
+
 ### `conda-cache-number`
 
 _Optional_. Bump this number to reset the `conda` cache. Default: `0`

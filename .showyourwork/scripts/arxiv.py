@@ -12,6 +12,12 @@ TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
 FIGURES = snakemake.params["FIGURES"]
 SYWTEXFILE = snakemake.params["SYWTEXFILE"]
+arxiv_tarball_exclude = [
+    file
+    for file in snakemake.params["arxiv_tarball_exclude"].split(",")
+    if len(file) > 0
+]
+arxiv_tarball_exclude += ["sywxml.sty"]
 
 
 # Run tectonic to get the .bbl file
@@ -24,10 +30,14 @@ subprocess.check_call(
     ["tectonic"] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)]
 )
 
-# Remove all output except the .bbl and .tex files
+# Remove all output except the .bbl, .tex, and .pdf files
 for file in ["__latexindent_temp.tex", ".showyourwork-ms.*"]:
     for file in TEX.glob(file):
-        if file.name not in [".showyourwork-ms.bbl", ".showyourwork-ms.tex"]:
+        if file.name not in [
+            ".showyourwork-ms.bbl",
+            ".showyourwork-ms.tex",
+            ".showyourwork-ms.pdf",
+        ]:
             os.remove(file)
 
 # Copy the `tex` folder over to a temporary location
@@ -40,14 +50,7 @@ for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
     os.rename(file, str(file).replace(".showyourwork-ms", "ms"))
 
 # Remove additional unnecessary files
-for file in [
-    "ms.pdf",
-    "*.bib",
-    "sywxml.sty",
-    "**/*.py",
-    "**/*matplotlibrc",
-    "**/*.gitignore",
-]:
+for file in arxiv_tarball_exclude:
     for file in (TEMP / "arxiv").glob(file):
         os.remove(file)
 

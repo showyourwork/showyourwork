@@ -46,20 +46,27 @@ async function buildArticle() {
   // Build the article
   core.startGroup("Build article");
   if (core.getInput("verbose") == "true") {
-    exec("snakemake -c1 --use-conda ms.pdf --verbose --reason");
+    exec("snakemake -c1 --use-conda --verbose --reason --notemp ms.pdf");
   } else {
-    exec("snakemake -c1 --use-conda ms.pdf --reason");
+    exec("snakemake -c1 --use-conda --reason --notemp ms.pdf");
   }
   output.push("ms.pdf");
   core.endGroup();
 
   // Build arxiv tarball
   if (core.getInput("arxiv-tarball") == "true") {
+    const arxiv_tarball_exclude = getInputAsArray("arxiv-tarball-exclude").join(
+      ","
+    );
     core.startGroup("Build ArXiV tarball");
     if (core.getInput("verbose") == "true") {
-      exec("snakemake -c1 --use-conda arxiv.tar.gz --verbose --reason");
+      exec(
+        `snakemake -c1 --use-conda --verbose --reason --notemp --config arxiv_tarball_exclude=${arxiv_tarball_exclude} arxiv.tar.gz`
+      );
     } else {
-      exec("snakemake -c1 --use-conda arxiv.tar.gz --reason");
+      exec(
+        `snakemake -c1 --use-conda --reason --notemp --config arxiv_tarball_exclude=${arxiv_tarball_exclude} arxiv.tar.gz`
+      );
     }
     output.push("arxiv.tar.gz");
     core.endGroup();

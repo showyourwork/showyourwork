@@ -45,6 +45,13 @@ inputs:
     description: "Build a tarball for easy ArXiV submission?"
     required: false
     default: true
+  arxiv-tarball-exclude:
+    description: "Files/paths to be excluded from the tarball"
+    required: false
+    default: |
+      **/*.py
+      **/matplotlibrc
+      **/.gitignore
 branding:
   icon: "book-open"
   color: "red"

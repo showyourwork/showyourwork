@@ -11,3 +11,13 @@ verbose = config.get("verbose", "false").lower() == "true"
 figexts = config.get(
     "figexts", ["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]
 )
+
+# Paths to be excluded from the tarball
+arxiv_tarball_exclude = config.get(
+    "arxiv_tarball_exclude",
+    ",".join([
+        "**/*.py",
+        "**/matplotlibrc",
+        "**/.gitignore",
+    ]),
+)

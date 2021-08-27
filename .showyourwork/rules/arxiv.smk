@@ -14,6 +14,7 @@ rule arxiv:
     params:
         verbose=verbose,
         figexts=figexts,
+        arxiv_tarball_exclude=arxiv_tarball_exclude,
         TEMP=TEMP,
         FIGURES=FIGURES,
         TEX=TEX,
