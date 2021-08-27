@@ -61,11 +61,11 @@ async function buildArticle() {
     core.startGroup("Build ArXiV tarball");
     if (core.getInput("verbose") == "true") {
       exec(
-        `snakemake -c1 --use-conda --verbose --reason --notemp --config arxiv_tarball_exclude=${arxiv_tarball_exclude} arxiv.tar.gz`
+        `snakemake -c1 --use-conda --verbose --reason --notemp arxiv.tar.gz --config arxiv_tarball_exclude=${arxiv_tarball_exclude}`
       );
     } else {
       exec(
-        `snakemake -c1 --use-conda --reason --notemp --config arxiv_tarball_exclude=${arxiv_tarball_exclude} arxiv.tar.gz`
+        `snakemake -c1 --use-conda --reason --notemp arxiv.tar.gz --config arxiv_tarball_exclude=${arxiv_tarball_exclude}`
       );
     }
     output.push("arxiv.tar.gz");
