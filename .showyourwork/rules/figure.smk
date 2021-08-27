@@ -57,7 +57,9 @@ rule figure:
         figure="figures/(.*?)\.{}".format("|".join(figexts)),
     params:
         script_name=script_name,
+        FIGURES=FIGURES,
+        TEMP=TEMP
     conda:
         POSIX(USER / "environment.yml")
-    shell:
-        "cd figures && python {params.script_name}"
+    script:
+        "../scripts/figure.py"

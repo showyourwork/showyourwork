@@ -10,17 +10,6 @@ module showyourwork:
 use rule * from showyourwork
 
 
-# Subclass the `figure` rule to specify that `figures/koch.py`
-# generates *two* figures
-use rule figure from showyourwork as koch_figure with:
-    input:
-        "figures/koch.py",
-        "environment.yml"
-    output:
-        report("figures/koch1.pdf", category="Figure"),
-        report("figures/koch2.pdf", category="Figure")
-
-
 # Custom rule to download a dataset
 rule fibonacci_data:
     output:
