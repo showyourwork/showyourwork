@@ -36,7 +36,7 @@ inputs:
   action-path:
     description: "Path to this action relative to the top level of the repo"
     required: false
-    default: .showyourwork/showyourwork-action
+    default: showyourwork/showyourwork-action
   gh-pages-branch:
     description: "Branch serving GitHub Pages"
     required: false

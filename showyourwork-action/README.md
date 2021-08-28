@@ -10,7 +10,7 @@ This action automatically caches all builds, so it won't re-run figure scripts t
 
 ### `action-path`
 
-_Optional_. Path to this action relative to the top level of the repo. Default: `.showyourwork/showyourwork-action`
+_Optional_. Path to this action relative to the top level of the repo. Default: `showyourwork/showyourwork-action`
 
 ### `article-cache-number`
 
