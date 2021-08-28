@@ -69,5 +69,5 @@ jobs:
           fetch-depth: 0
       - name: Build the article PDF
         id: build
-        uses: ./.showyourwork/showyourwork-action
+        uses: ./showyourwork/showyourwork-action
 ```
