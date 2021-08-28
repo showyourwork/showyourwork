@@ -12,9 +12,6 @@ const { publishOutput } = require("./publish");
     // Exit on failure
     shell.set("-e");
 
-    // Format repository if it's a fresh fork
-    formatRepo();
-
     // Setup conda or restore from cache
     await setupConda();
 
@@ -26,6 +23,9 @@ const { publishOutput } = require("./publish");
 
     // Publish the article output
     await publishOutput(output, report);
+
+    // Format repository if it's a fresh fork
+    formatRepo();
   } catch (error) {
     // Exit gracefully
     core.setFailed(error.message);

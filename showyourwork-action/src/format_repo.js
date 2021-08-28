@@ -13,6 +13,7 @@ const GITHUB_BRANCH = shell
   .exec("git rev-parse --abbrev-ref HEAD")
   .replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
+const ACTION_PATH = core.getInput("action-path");
 
 // Year for the license
 const YEAR = new Date().getFullYear();
@@ -34,14 +35,8 @@ function formatRepo() {
       shell.exec(`git pull origin ${GITHUB_BRANCH}`);
 
       // Customize the README.md, LICENSE, and src/ms.tex files
-      shell.cp(
-        ".showyourwork/showyourwork-action/resources/README.md",
-        "README.md"
-      );
-      shell.cp(
-        ".showyourwork/showyourwork-action/resources/LICENSE",
-        "LICENSE"
-      );
+      shell.cp(`${ACTION_PATH}/resources/README.md`, "README.md");
+      shell.cp(`${ACTION_PATH}/resources/LICENSE`, "LICENSE");
       shell.sed("-i", "{{ GITHUB_SLUG }}", GITHUB_SLUG, "README.md");
       shell.sed("-i", "{{ GITHUB_USER }}", GITHUB_USER, "README.md");
       shell.sed("-i", "{{ GITHUB_REPO }}", GITHUB_REPO, "README.md");
@@ -49,20 +44,10 @@ function formatRepo() {
       shell.sed("-i", "{{ YEAR }}", YEAR, "LICENSE");
       shell.sed("-i", "Rodrigo Luger", `@${GITHUB_USER}`, "src/ms.tex");
 
-      // Record the latest version of `showyourwork`
-      shell.exec(
-        String.raw`curl --silent https://api.github.com/repos/rodluger/showyourwork/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > .showyourwork/VERSION`
-      );
-      const version = shell
-        .head({ "-n": 1 }, ".showyourwork/VERSION")
-        .replace(/(\r\n|\n|\r)/gm, "");
-      shell.sed("-i", "{{ SHOWYOURWORK_VERSION }}", `${version}`, "README.md");
-
       // Commit and push
       shell.exec("git add README.md");
       shell.exec("git add LICENSE");
       shell.exec("git add src/ms.tex");
-      shell.exec("git add .showyourwork/VERSION");
       shell.exec(
         "git -c user.name='showyourwork' -c user.email='showyourwork' " +
           "commit -m '[skip ci] One-time autocommit to finish repo setup'"
