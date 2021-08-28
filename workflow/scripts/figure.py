@@ -20,7 +20,9 @@ try:
     for entry in scripts["figures"].values():
         if Path(entry["script"]).name == script_name:
             other_figures = [
-                Path(file).name for file in entry["files"] if file != this_figure
+                Path(file).name
+                for file in entry["files"]
+                if file != this_figure
             ]
             break
     else:
@@ -36,7 +38,9 @@ if len(other_figures):
     if (TEMP / this_figure_name).exists():
 
         # The figure exists in the cache; copy it over
-        shutil.move(str(TEMP / this_figure_name), str(FIGURES / this_figure_name))
+        shutil.move(
+            str(TEMP / this_figure_name), str(FIGURES / this_figure_name)
+        )
 
     else:
 

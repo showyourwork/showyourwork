@@ -1,0 +1,13 @@
+version: 2
+
+submodules:
+  include: all
+
+python:
+  version: 3.7
+  install:
+    - requirements: requirements.txt
+
+sphinx:
+  configuration: conf.py
+  builder: dirhtml

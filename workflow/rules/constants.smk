@@ -5,7 +5,7 @@ from pathlib import Path, PurePosixPath
 POSIX = lambda path: str(PurePosixPath(path))
 
 
-# TODO: Better way of getting abs paths?
+# TODO: Is there a better way of getting abs paths?
 WORKFLOW = (
     Path(workflow.modules["showyourwork"].snakefile).absolute().parents[0]
 )
@@ -15,8 +15,10 @@ USER = Path(workflow.basedir)
 # Relative paths (to top level of user's repo)
 TEX = Path("src")
 FIGURES = Path("src") / "figures"
-TEMP = Path(".showyourwork") / "tmp"
 GITHUB = Path(".github")
+TEMP = WORKFLOW / "tmp"
+if not TEMP.exists():
+    os.mkdir(str(TEMP))
 
 
 # Dummy file dependency for figures w/ unknown parent scripts
