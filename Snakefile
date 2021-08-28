@@ -1,39 +1,20 @@
-# Import the showyourwork module
-module showyourwork:
-    snakefile:
-        ".showyourwork/Snakefile"
-    config:
-        config
+from snakemake.utils import min_version
 
 
-# Use all default rules
-use rule * from showyourwork
+min_version("6.7.0")
 
 
-# Custom rule to download a dataset
-rule fibonacci_data:
-    output:
-        report("src/figures/fibonacci.dat", category="Dataset")
-    shell:
-        "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
+report: "report/workflow.rst"
 
 
-# Subclass the `figure` rule to specify that `data/fibonacci.dat`
-# is a dependency of `figures/fibonacci.pdf`
-use rule figure from showyourwork as fibonacci_figure with:
-    input:
-        "src/figures/fibonacci.py",
-        "src/figures/fibonacci.dat",
-        "environment.yml"
-    output:
-        report("src/figures/fibonacci.pdf", category="Figure")
-
-
-# Subclass the `figure` rule to specify that the inline figure
-# `figures/inline.pdf` is generated from the script `figures/inline.py`
-use rule figure from showyourwork as inline_figure with:
-    input:
-        "src/figures/inline.py",
-        "environment.yml"
-    output:
-        report("src/figures/inline.pdf", category="Figure")
+include: "rules/config.smk"
+include: "rules/constants.smk"
+include: "rules/errors.smk"
+include: "rules/repo.smk"
+include: "rules/auxfiles.smk"
+include: "rules/documentclass.smk"
+include: "rules/tree.smk"
+include: "rules/meta.smk"
+include: "rules/figure.smk"
+include: "rules/pdf.smk"
+include: "rules/arxiv.smk"
