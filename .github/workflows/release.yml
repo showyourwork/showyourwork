@@ -72,7 +72,7 @@ jobs:
             }
 
             // Push new docs link
-            await exec.exec("sed", ["-i", "-E", `'s|https://showyourwork.readthedocs.io/en/(v[0-9]+\.[0-9]+\.[0-9]+)|https://showyourwork.readthedocs.io/en/v${major}.${minor}.${patch}|g'`], "README.md");
+            await exec.exec("sed", ["-i", "-E", `"s|https://showyourwork.readthedocs.io/en/(v[0-9]+\.[0-9]+\.[0-9]+)|https://showyourwork.readthedocs.io/en/v${major}.${minor}.${patch}|g"`], "README.md");
             await exec.exec("git", ["add", "README.md"]);
             await exec.exec("git", ["-c", "user.name='gh-actions", "-c", "user.email='gh-actions'", "commit", "-m", "update docs link"]);
             await exec.exec("git", ["push", "origin", "main"]);
