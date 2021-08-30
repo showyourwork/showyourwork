@@ -28,7 +28,7 @@ jobs:
             });
 
             // DEBUG
-            core.info(tags.data);
+            core.info(tags);
 
             // Get latest version
             var latest = [0, 0, 0];
