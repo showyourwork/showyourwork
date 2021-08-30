@@ -63,5 +63,5 @@ jobs:
             github.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `v${latest}`,
+              tag_name: `v${latest}`
             });
