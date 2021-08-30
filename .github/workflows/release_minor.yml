@@ -1,0 +1,21 @@
+name: release_minor
+
+on:
+  workflow_dispatch:
+
+jobs:
+  showyourwork:
+    runs-on: ubuntu-latest
+    name: Build the article PDF
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: main
+          default_bump: minor
