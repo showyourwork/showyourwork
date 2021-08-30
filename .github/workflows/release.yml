@@ -123,8 +123,8 @@ jobs:
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template-full-test main
 
       - name: Wait for builds to finish
-          id: wait-for-builds
-          if: ((steps.template-minimal.outcome == 'success') && (steps.template-full.outcome == 'success'))
-          shell: bash -l {0}
-          run: |
-            sleep 1s
+        id: wait
+        if: ((steps.template-minimal.outcome == 'success') && (steps.template-full.outcome == 'success'))
+        shell: bash -l {0}
+        run: |
+          sleep 1s
