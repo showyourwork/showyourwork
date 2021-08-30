@@ -82,6 +82,8 @@ Below is a complete example that will automatically compile the article PDF on a
             uses: actions/checkout@v2
             with:
               fetch-depth: 0
+              submodules: recursive
+
           - name: Build the article PDF
             id: build
             uses: ./showyourwork/showyourwork-action
