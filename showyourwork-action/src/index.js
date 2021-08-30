@@ -6,7 +6,6 @@ const { setupConda } = require("./conda");
 const { buildArticle } = require("./article");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
-const { runTests } = require("./tests");
 
 (async () => {
   try {
@@ -15,8 +14,7 @@ const { runTests } = require("./tests");
 
     const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
     if (GITHUB_SLUG.startsWith("rodluger/showyourwork-template")) {
-      // This is a template repository; let's run the tests
-      runTests();
+      // This is a template repository -- don't do anything!
     } else {
       // This is a clone of the template; let's build the paper
 
