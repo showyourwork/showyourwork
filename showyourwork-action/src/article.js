@@ -24,15 +24,6 @@ const article_paths = [
   "src",
 ];
 
-// If this is one of the test repos, don't restore the cache!
-const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
-if (
-  GITHUB_SLUG == "rodluger/showyourwork-template-minimal-test" ||
-  GITHUB_SLUG == "rodluger/showyourwork-template-full-test"
-) {
-  article_key = `${randomId}`;
-}
-
 /**
  * Build the article.
  *

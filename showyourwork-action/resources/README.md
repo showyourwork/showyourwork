@@ -18,7 +18,7 @@
 </a>
 </p>
 
-## Your article is building
+## You're all set!
 
 Your new repository is set up and ready to go. A GitHub Action is currently running that will generate your article PDF; you can check on the progress of the build [here](https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml). Once it's done, you can click on the badge at the top to take you to the article PDF. The PDF is automatically updated every time you push changes to this repo; note that builds usually take a few minutes (or more, depending on what you're doing).
 
