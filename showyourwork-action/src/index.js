@@ -13,7 +13,10 @@ const { publishOutput } = require("./publish");
     shell.set("-e");
 
     const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
-    if (GITHUB_SLUG.startsWith("rodluger/showyourwork-template")) {
+    if (
+      GITHUB_SLUG == "rodluger/showyourwork-template-minimal" ||
+      GITHUB_SLUG == "rodluger/showyourwork-template-full"
+    ) {
       // This is a template repository -- don't do anything!
     } else {
       // This is a clone of the template; let's build the paper
