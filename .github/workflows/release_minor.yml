@@ -32,7 +32,7 @@ jobs:
             for (let i = 0; i < tags.data.length; i++) {
               const tag = tags.data[i].name;
               if (tag[0] == "v") {
-                const version = tag.slice(1).split(".");
+                const version = tag.slice(1).split(".").map(x=>+x);
                 if (version.length == 3) {
                   if (version[0] > latest[0]) {
                     latest = version;
