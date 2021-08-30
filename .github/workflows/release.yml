@@ -88,18 +88,34 @@ jobs:
             // Return new version
             return `v${major}.${minor}.${patch}`;
 
-      - name: Update template
-        id: template
+      - name: Update template-minimal
+        id: template-minimal
         if: steps.bump.outcome == 'success'
         shell: bash -l {0}
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
-          git clone --recurse-submodules https://github.com/rodluger/showyourwork-template
-          cd showyourwork-template/showyourwork
+          git clone --recurse-submodules https://github.com/rodluger/showyourwork-template-minimal
+          cd showyourwork-template-minimal/showyourwork
           git fetch --all --tags
           git checkout tags/"${{steps.bump.outputs.result}}"
           cd ..
           git add showyourwork
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${{steps.bump.outputs.result}}"
-          git push https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template main
+          git push https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template-minimal main
+
+      - name: Update template-full
+        id: template-full
+        if: steps.bump.outcome == 'success'
+        shell: bash -l {0}
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          git clone --recurse-submodules https://github.com/rodluger/showyourwork-template-full
+          cd showyourwork-template-full/showyourwork
+          git fetch --all --tags
+          git checkout tags/"${{steps.bump.outputs.result}}"
+          cd ..
+          git add showyourwork
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${{steps.bump.outputs.result}}"
+          git push https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template-full main

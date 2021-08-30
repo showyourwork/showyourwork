@@ -7,7 +7,7 @@
 <a href="https://showyourwork.readthedocs.io/en/v0.2.1">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
-<a href="https://github.com/rodluger/showyourwork-template/generate">
+<a href="https://github.com/rodluger/showyourwork-template-minimal/generate">
     <img src="https://img.shields.io/static/v1?label=create&message=new%20repo&color=brightgreen"/>
 </a>
 </a>
@@ -19,5 +19,5 @@ This repository is intended to help authors publish the code that generated the 
 </p>
 
 <p align="justify">
-Click <a href="https://github.com/rodluger/showyourwork-template/generate">here</a> to get started with a fresh article repository based on <code>showyourwork</code>. Once your repo is created, a GitHub Action will automatically run to finish setting it up. Refresh the page after a few minutes to view the new <code>README.md</code> with instructions on how to get started.
+Click <a href="https://github.com/rodluger/showyourwork-template-minimal/generate">here</a> to get started with a fresh article repository based on <code>showyourwork</code>. Once your repo is created, a GitHub Action will automatically run to finish setting it up. Refresh the page after a few minutes to view the new <code>README.md</code> with instructions on how to get started.
 </p>
