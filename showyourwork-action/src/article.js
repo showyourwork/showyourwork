@@ -18,8 +18,7 @@ var article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
 const article_paths = [
   ".snakemake",
-  ".showyourwork/tmp",
-  ".showyourwork/resources",
+  ".showyourwork",
   "environment.yml",
   "ms.pdf",
   "src",

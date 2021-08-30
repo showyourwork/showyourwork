@@ -16,7 +16,7 @@ USER = Path(workflow.basedir)
 TEX = Path("src")
 FIGURES = Path("src") / "figures"
 GITHUB = Path(".github")
-TEMP = WORKFLOW / "tmp"
+TEMP = ".showyourwork"
 if not TEMP.exists():
     os.mkdir(str(TEMP))
 

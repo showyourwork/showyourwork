@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 import shutil
 import sys
+import os
 
 
 def get_modified_files(commit="HEAD^"):
@@ -30,7 +31,7 @@ def restore_cache():
     """
     # Get the commit when the files were cached
     try:
-        with open(".showyourwork/tmp/commit", "r") as f:
+        with open(".showyourwork/commit", "r") as f:
             commit = f.readlines()[0].replace("\n", "")
     except FileNotFoundError:
         print("Cache info not found.")
@@ -60,7 +61,7 @@ def update_cache():
     """
     # Store the current commit
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
-    with open(".showyourwork/tmp/commit", "w") as f:
+    with open(".showyourwork/commit", "w") as f:
         print(commit, file=f)
 
 
