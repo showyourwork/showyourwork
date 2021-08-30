@@ -39,7 +39,7 @@ jobs:
                   } else if (version[0] == latest[0]) {
                     if (version[1] > latest[1]) {
                       latest = version;
-                    else if (version[1] == latest[1]) {
+                    } else if (version[1] == latest[1]) {
                       if (version[2] > latest[2]) {
                         latest = version;
                     }
