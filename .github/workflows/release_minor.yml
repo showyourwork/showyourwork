@@ -27,19 +27,12 @@ jobs:
               repo: context.repo.repo
             });
 
-            // DEBUG
-            core.info(tags);
-
             // Get latest version
             var latest = [0, 0, 0];
             for (let i = 0; i < tags.data.length; i++) {
-              const tag = tags.data[i];
+              const tag = tags.data[i].name;
               if (tag[0] == "v") {
                 const version = tag.slice(1).split(".");
-
-                // DEBUG
-                core.info(version.data);
-
                 if (version.length == 3) {
                   if (version[0] > latest[0]) {
                     latest = version;
@@ -58,18 +51,25 @@ jobs:
 
             // Bump the version
             const {RELEASE_TYPE} = process.env;
-            if (RELEASE_TYPE == 'patch')
-              latest[2] += 1;
-            else if (RELEASE_TYPE == 'minor')
-              latest[1] += 1;
-            else if (RELEASE_TYPE == 'major')
-              latest[0] += 1;
-            else
+            var major = latest[0];
+            var minor = latest[1];
+            var patch = latest[2];
+            if (RELEASE_TYPE == 'patch') {
+              patch += 1;
+            } else if (RELEASE_TYPE == 'minor') {
+              patch = 0;
+              minor += 1;
+            } else if (RELEASE_TYPE == 'major') {
+              patch = 0;
+              minor = 0;
+              major += 1;
+            } else {
               core.setFailed('Invalid release type.');
+            }
 
             // Create release w/ new version
             await github.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `v${latest}`
+              tag_name: `v${major}.${minor}.${patch}`
             });
