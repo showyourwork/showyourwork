@@ -2,14 +2,16 @@ name: release_minor
 
 on:
   workflow_dispatch:
-
-env:
-  RELEASE_TYPE: minor
+    inputs:
+      release_type:
+        description: "Release type"
+        required: true
+        default: "minor"
 
 jobs:
   showyourwork:
     runs-on: ubuntu-latest
-    name: Minor release
+    name: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -50,22 +52,27 @@ jobs:
             }
 
             // Bump the version
-            const {RELEASE_TYPE} = process.env;
             var major = latest[0];
             var minor = latest[1];
             var patch = latest[2];
-            if (RELEASE_TYPE == 'patch') {
+            if (github.event.inputs.release_type == 'patch') {
               patch += 1;
-            } else if (RELEASE_TYPE == 'minor') {
+            } else if (github.event.inputs.release_type == 'minor') {
               patch = 0;
               minor += 1;
-            } else if (RELEASE_TYPE == 'major') {
+            } else if (github.event.inputs.release_type == 'major') {
               patch = 0;
               minor = 0;
               major += 1;
             } else {
               core.setFailed('Invalid release type.');
             }
+
+            // Push new docs link
+            exec("sed", ["-i", "-E", `'s|https://showyourwork.readthedocs.io/en/(v[0-9]+\.[0-9]+\.[0-9]+)|https://showyourwork.readthedocs.io/en/v${major}.${minor}.${patch}|g'`], "README.md");
+            exec("git", ["add", "README.md"]);
+            exec("git", ["-c", "user.name='gh-actions", "-c", "user.email='gh-actions'", "commit", "-m", "update docs link"]);
+            exec("git", ["push", "origin", "main"]);
 
             // Create release w/ new version
             await github.repos.createRelease({
