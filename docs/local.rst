@@ -1,6 +1,21 @@
 Local builds
 ============
 
+Clone the repo:
+
+.. code-block:: bash
+
+    git clone --recurse-submodules https://github.com/<user>/<repo>
+
+or
+
+.. code-block:: bash
+
+    git clone https://github.com/<user>/<repo>
+    git submodule init
+    git submodule update
+
+
 Install ``snakemake``:
 
 .. code-block:: bash
@@ -45,9 +60,9 @@ Update ``showyourwork``:
 
 Switch to specific version of ``showyourwork``:
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        pushd showyourwork
-        git fetch --all --tags
-        git checkout tags/v0.1.0
-        popd
+    pushd showyourwork
+    git fetch --all --tags
+    git checkout tags/v0.1.0
+    popd

@@ -24,6 +24,7 @@ jobs:
         env:
           RELEASE_TYPE: ${{ github.event.inputs.release_type }}
         with:
+          result-encoding: string
           script: |
             // Get all tags
             const tags = await github.repos.listTags({
@@ -83,3 +84,18 @@ jobs:
               repo: context.repo.repo,
               tag_name: `v${major}.${minor}.${patch}`
             });
+
+            // Return new version
+            return `v${major}.${minor}.${patch}`;
+
+      - name: Update template
+        id: template
+        bash: |
+          git clone --recurse-submodules https://github.com/rodluger/showyourwork-template
+          cd showyourwork-template/showyourwork
+          git fetch --all --tags
+          git checkout tags/"${{steps.bump.outputs.result}}"
+          cd ..
+          git add showyourwork
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${{steps.bump.outputs.result}}"
+          git push origin main
