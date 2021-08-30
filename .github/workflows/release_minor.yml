@@ -27,12 +27,19 @@ jobs:
               repo: context.repo.repo
             });
 
+            // DEBUG
+            core.info(tags.data);
+
             // Get latest version
             var latest = [0, 0, 0];
             for (let i = 0; i < tags.data.length; i++) {
               const tag = tags.data[i];
               if (tag[0] == "v") {
                 const version = tag.slice(1).split(".");
+
+                // DEBUG
+                core.info(version.data);
+
                 if (version.length == 3) {
                   if (version[0] > latest[0]) {
                     latest = version;
