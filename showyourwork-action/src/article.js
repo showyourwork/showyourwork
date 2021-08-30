@@ -14,7 +14,7 @@ const ACTION_PATH = core.getInput("action-path");
 const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
 const randomId = makeId(8);
-const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+var article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
 const article_paths = [
   ".snakemake",
@@ -24,6 +24,15 @@ const article_paths = [
   "ms.pdf",
   "src",
 ];
+
+// If this is one of the test repos, don't restore the cache!
+const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
+if (
+  GITHUB_SLUG == "rodluger/showyourwork-template-minimal-test" ||
+  GITHUB_SLUG == "rodluger/showyourwork-template-full-test"
+) {
+  article_key = `${randomId}`;
+}
 
 /**
  * Build the article.
