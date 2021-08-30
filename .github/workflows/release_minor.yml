@@ -22,7 +22,7 @@ jobs:
         with:
           script: |
             // Get all tags
-            const tags = github.repos.listTags({
+            const tags = await github.repos.listTags({
               owner: context.repo.owner,
               repo: context.repo.repo
             });
@@ -68,7 +68,7 @@ jobs:
               core.setFailed('Invalid release type.');
 
             // Create release w/ new version
-            github.repos.createRelease({
+            await github.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: `v${latest}`
