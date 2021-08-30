@@ -6,26 +6,35 @@ const { setupConda } = require("./conda");
 const { buildArticle } = require("./article");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
+const { runTests } = require("./tests");
 
 (async () => {
   try {
     // Exit on failure
     shell.set("-e");
 
-    // Setup conda or restore from cache
-    await setupConda();
+    const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
+    if (GITHUB_SLUG.startsWith("rodluger/showyourwork-template")) {
+      // This is a template repository; let's run the tests
+      runTests();
+    } else {
+      // This is a clone of the template; let's build the paper
 
-    // Build the article
-    output = await buildArticle();
+      // Setup conda or restore from cache
+      await setupConda();
 
-    // Generate the report
-    report = await generateReport();
+      // Build the article
+      output = await buildArticle();
 
-    // Publish the article output
-    await publishOutput(output, report);
+      // Generate the report
+      report = await generateReport();
 
-    // Format repository if it's a fresh fork
-    formatRepo();
+      // Publish the article output
+      await publishOutput(output, report);
+
+      // Format repository if it's a fresh fork
+      formatRepo();
+    }
   } catch (error) {
     // Exit gracefully
     core.setFailed(error.message);

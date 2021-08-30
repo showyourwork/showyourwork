@@ -44,6 +44,10 @@ inputs:
       **/*.py
       **/matplotlibrc
       **/.gitignore
+  access-token:
+    description: ""
+    required: false
+    default: ${{ secrets.ACCESS_TOKEN }}
 branding:
   icon: "book-open"
   color: "red"

@@ -1,5 +1,5 @@
 Quickstart
 ==========
 
-Click `here <https://github.com/rodluger/showyourwork-template/generate>`_ to generate a
+Click `here <https://github.com/rodluger/showyourwork-template-minimal/generate>`_ to generate a
 fresh GitHub repository from the ``showyourwork`` template.

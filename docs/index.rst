@@ -16,13 +16,14 @@ Documentation
 =============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    intro
    quickstart
    action
    local
    custom
+   projects
 
 
 Indices and tables
