@@ -10,6 +10,12 @@
 <a href="https://github.com/rodluger/showyourwork-template-minimal/generate">
     <img src="https://img.shields.io/static/v1?label=create&message=new%20repo&color=brightgreen"/>
 </a>
+<br>
+<a href="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml">
+    <img src="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
+</a>
+<a href="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml">
+    <img src="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
 </a>
 </p>
 <br>
