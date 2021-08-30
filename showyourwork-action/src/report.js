@@ -11,13 +11,8 @@ module.exports = { generateReport };
  *
  */
 async function generateReport() {
-  if (core.getInput("generate-report") == "true") {
-    core.startGroup("Generate article report");
-    exec("snakemake ms.pdf --report report.html");
-    exec("touch .nojekyll");
-    core.endGroup();
-    return ["report.html", ".nojekyll"];
-  } else {
-    return [];
-  }
+  core.startGroup("Generate article report");
+  exec("snakemake ms.pdf --dag | dot -Tpdf > dag.pdf");
+  core.endGroup();
+  return ["dag.pdf"];
 }

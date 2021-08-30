@@ -17,14 +17,10 @@ inputs:
     description: "Exact url pointing to the conda install script"
     required: false
     default: "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-  generate-report:
-    description: "Generate a full HTML report of the build process?"
+  output-branch-suffix:
+    description: "Force-push output to branch with this suffix"
     required: false
-    default: true
-  force-push:
-    description: "Force-push output to branch with suffix `-pdf`?"
-    required: false
-    default: true
+    default: pdf
   github-token:
     description: "A token for access to GitHub (e.g. 'secrets.GITHUB_TOKEN')"
     required: false
@@ -37,10 +33,6 @@ inputs:
     description: "Path to this action relative to the top level of the repo"
     required: false
     default: showyourwork/showyourwork-action
-  gh-pages-branch:
-    description: "Branch serving GitHub Pages"
-    required: false
-    default: gh-pages
   arxiv-tarball:
     description: "Build a tarball for easy ArXiV submission?"
     required: false
