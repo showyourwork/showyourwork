@@ -1,4 +1,4 @@
-name: release_minor
+name: release
 
 on:
   workflow_dispatch:
@@ -21,6 +21,8 @@ jobs:
       - name: Bump version
         uses: actions/github-script@v4
         id: bump
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release_type }}
         with:
           script: |
             // Get all tags
@@ -55,12 +57,13 @@ jobs:
             var major = latest[0];
             var minor = latest[1];
             var patch = latest[2];
-            if (github.event.inputs.release_type == 'patch') {
+            const {RELEASE_TYPE} = process.env;
+            if (RELEASE_TYPE == 'patch') {
               patch += 1;
-            } else if (github.event.inputs.release_type == 'minor') {
+            } else if (RELEASE_TYPE == 'minor') {
               patch = 0;
               minor += 1;
-            } else if (github.event.inputs.release_type == 'major') {
+            } else if (RELEASE_TYPE == 'major') {
               patch = 0;
               minor = 0;
               major += 1;
