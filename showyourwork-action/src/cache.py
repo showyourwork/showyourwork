@@ -31,7 +31,7 @@ def restore_cache():
     """
     # Get the commit when the files were cached
     try:
-        with open(".showyourwork/commit", "r") as f:
+        with open(".last-commit", "r") as f:
             commit = f.readlines()[0].replace("\n", "")
     except FileNotFoundError:
         print("Cache info not found.")
@@ -61,7 +61,7 @@ def update_cache():
     """
     # Store the current commit
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
-    with open(".showyourwork/commit", "w") as f:
+    with open(".last-commit", "w") as f:
         print(commit, file=f)
 
 

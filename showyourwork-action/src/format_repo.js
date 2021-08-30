@@ -45,18 +45,22 @@ function formatRepo() {
       shell.sed("-i", "Rodrigo Luger", `@${GITHUB_USER}`, "src/ms.tex");
 
       // Commit and push
-      shell.exec("git add README.md");
-      shell.exec("git add LICENSE");
-      shell.exec("git add src/ms.tex");
-      shell.exec(
-        "git -c user.name='showyourwork' -c user.email='showyourwork' " +
-          "commit -m '[skip ci] One-time autocommit to finish repo setup'"
-      );
-      shell.exec(
-        "git push " +
-          `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
-          `${GITHUB_BRANCH}`
-      );
+      try {
+        shell.exec("git add README.md");
+        shell.exec("git add LICENSE");
+        shell.exec("git add src/ms.tex");
+        shell.exec(
+          "git -c user.name='showyourwork' -c user.email='showyourwork' " +
+            "commit -m '[skip ci] One-time autocommit to finish repo setup'"
+        );
+        shell.exec(
+          "git push " +
+            `https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_SLUG} ` +
+            `${GITHUB_BRANCH}`
+        );
+      } catch (error) {
+        core.warning(error.message);
+      }
 
       core.endGroup();
     }

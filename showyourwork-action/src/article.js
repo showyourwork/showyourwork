@@ -14,11 +14,12 @@ const ACTION_PATH = core.getInput("action-path");
 const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
 const randomId = makeId(8);
-var article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
 const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
 const article_paths = [
   ".snakemake",
   ".showyourwork",
+  ".last-commit",
   "environment.yml",
   "ms.pdf",
   "src",
