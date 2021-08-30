@@ -106,6 +106,7 @@ jobs:
           sed -i "1s/.*/name: test-minimal/" .github/workflows/showyourwork.yml
           echo "        with:" >> .github/workflows/showyourwork.yml
           echo "          article-cache-number: ${{steps.bump.outputs.result}}" >> .github/workflows/showyourwork.yml
+          git add .github/workflows/showyourwork.yml
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${{steps.bump.outputs.result}}"
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template-minimal-test main
 
@@ -127,5 +128,6 @@ jobs:
           sed -i "1s/.*/name: test-full/" .github/workflows/showyourwork.yml
           echo "        with:" >> .github/workflows/showyourwork.yml
           echo "          article-cache-number: ${{steps.bump.outputs.result}}" >> .github/workflows/showyourwork.yml
+          git add .github/workflows/showyourwork.yml
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${{steps.bump.outputs.result}}"
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template-full-test main
