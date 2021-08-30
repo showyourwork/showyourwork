@@ -90,7 +90,9 @@ jobs:
 
       - name: Update template
         id: template
-        bash: |
+        if: steps.bump.outcome == 'success'
+        shell: bash -l {0}
+        run: |
           git clone --recurse-submodules https://github.com/rodluger/showyourwork-template
           cd showyourwork-template/showyourwork
           git fetch --all --tags
