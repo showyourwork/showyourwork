@@ -20,8 +20,8 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const randomId = makeId(8);
-  const article_key = `article-${RUNNER_OS}-${article_cache_number}-${randomId}`;
-  const article_restoreKeys = [`article-${RUNNER_OS}-${article_cache_number}`];
+  const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
   const article_paths = [
     ".snakemake",
     ".showyourwork",
