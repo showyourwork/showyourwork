@@ -41,7 +41,7 @@ shows the build status of all of these examples.
         <a href="https://github.com/rodluger/showyourwork-example/tree/main">main</a>
     </td>
     <td>
-    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml">
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amain">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=main" alt="test status"/>
     </a>
     </td>
@@ -56,7 +56,7 @@ shows the build status of all of these examples.
         <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">custom-figure-rule</a>
     </td>
     <td>
-    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml">
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-figure-rule">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-figure-rule" alt="test status"/>
     </a>
     </td>
