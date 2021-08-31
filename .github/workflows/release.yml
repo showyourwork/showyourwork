@@ -82,13 +82,14 @@ jobs:
           git clone https://github.com/rodluger/showyourwork-template
           cd showyourwork-template
           git fetch
-          git branch -r > branches.txt
+          git branch -r | tee branches.txt
           sed -i -e 's/origin\///' branches.txt
           sed -i -e 's/ //g' branches.txt
           sed -i -e 's/^/\"/' branches.txt
           sed -i -e 's/$/\"/' branches.txt
           BRANCHES=[$(awk -vORS=, '{ print $1 }' branches.txt | sed 's/,$//')]
           echo "::set-output name=branches::${BRANCHES}"
+          echo "Will update the following template branches: ${BRANCHES}"
 
     outputs:
       version: ${{ steps.bump.outputs.result }}
@@ -104,7 +105,6 @@ jobs:
     steps:
       - name: Update template
         id: template
-        if: steps.bump.outcome == 'success'
         shell: bash -l {0}
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
