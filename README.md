@@ -3,7 +3,7 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://showyourwork.readthedocs.io/en/v0.0.19">
+<a href="https://showyourwork.readthedocs.io/en/v0.0.20">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
