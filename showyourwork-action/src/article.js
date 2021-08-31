@@ -5,7 +5,7 @@ const shell = require("shelljs");
 const { makeId, exec, getInputAsArray } = require("./utils");
 
 // Exports
-module.exports = { buildArticle, testArticle };
+module.exports = { buildArticle };
 
 /**
  * Build the article.
@@ -80,17 +80,4 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   core.endGroup();
 
   return output;
-}
-
-/**
- * Test the article build.
- *
- */
-async function testArticle() {
-  // Build the article with a fresh cache by
-  // using a random ARTICLE_CACHE_NUMBER
-  buildArticle(makeId(8));
-
-  // Build the article again to test the cached build
-  return buildArticle();
 }

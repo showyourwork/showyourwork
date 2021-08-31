@@ -25,7 +25,7 @@ If you already have an existing repository that you'd like to use, please check 
 .. raw:: html
 
     <p>
-       Click <a href="https://github.com/rodluger/showyourwork-template-minimal/generate">here</a>
+       Click <a href="https://github.com/rodluger/showyourwork-template/generate">here</a>
        to generate a fresh GitHub repository from the
        <code class="docutils literal notranslate"><span class="pre">showyourwork</span></code>
        template. You'll be prompted for a repository name, and optionally a description.
@@ -37,7 +37,7 @@ If you already have an existing repository that you'd like to use, please check 
 
     <p>
        GitHub will create a new repository based on
-       <code class="docutils literal notranslate"><span class="pre">showyourwork-template-minimal</span></code>.
+       <code class="docutils literal notranslate"><span class="pre">showyourwork-template</span></code>.
        This should only take a few seconds.
     </p>
 
@@ -66,7 +66,7 @@ If you already have an existing repository that you'd like to use, please check 
     </p>
 
 
-2. Edit the manuscript online
+1. Edit the manuscript online
 -----------------------------
 
 

@@ -3,7 +3,7 @@ const core = require("@actions/core");
 const shell = require("shelljs");
 const { formatRepo } = require("./format_repo");
 const { setupConda } = require("./conda");
-const { buildArticle, testArticle } = require("./article");
+const { buildArticle } = require("./article");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
 
@@ -13,11 +13,10 @@ const { publishOutput } = require("./publish");
     shell.set("-e");
 
     const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
-    if (
-      GITHUB_SLUG == "rodluger/showyourwork-template-minimal" ||
-      GITHUB_SLUG == "rodluger/showyourwork-template-full"
-    ) {
+    if (GITHUB_SLUG == "rodluger/showyourwork-template") {
       // This is a template repository -- don't do anything!
+      // The workflow should be disabled by default on this
+      // repo, so this is just a failsafe
     } else {
       // This is a clone of the template; let's build the paper
 
@@ -25,9 +24,7 @@ const { publishOutput } = require("./publish");
       await setupConda();
 
       // Build the article
-      var output;
-      if (core.getInput("verbose") == "true") output = await buildArticle();
-      else output = await testArticle();
+      var output = await buildArticle();
 
       // Generate the report
       var report = await generateReport();

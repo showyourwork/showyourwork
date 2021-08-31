@@ -6,7 +6,7 @@
 <a href="https://showyourwork.readthedocs.io/en/v0.0.17">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
-<a href="https://github.com/rodluger/showyourwork-template-minimal/generate">
+<a href="https://github.com/rodluger/showyourwork-template/generate">
     <img src="https://img.shields.io/static/v1?label=create&message=new%20repo&color=brightgreen"/>
 </a>
 </p>
@@ -18,7 +18,7 @@ This repository is intended to help authors publish the code that generated the 
 </p>
 
 <p align="justify">
-Click <a href="https://github.com/rodluger/showyourwork-template-minimal/generate">here</a> to get started with a fresh article repository based on <code>showyourwork</code>. Once your repo is created, a GitHub Action will automatically run to finish setting it up. Refresh the page after a few minutes to view the new <code>README.md</code> with instructions on how to get started.
+Click <a href="https://github.com/rodluger/showyourwork-template/generate">here</a> to get started with a fresh article repository based on <code>showyourwork</code>. Once your repo is created, a GitHub Action will automatically run to finish setting it up. Refresh the page after a few minutes to view the new <code>README.md</code> with instructions on how to get started.
 </p>
 
 <h2>Test Suite</h2>
@@ -30,22 +30,12 @@ Tests are run whenever a new release is triggered via a GitHub Actions <a href="
 <table>
   <tr>
     <td>
-        <a href="https://github.com/rodluger/showyourwork-template-minimal">template-minimal</a>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/main">main</a>
     </td>
     <td>
-    <a href="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml">
-        <img src="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
-    </a>  
-    </td>
-  </tr>
-  <tr>
-    <td>
-        <a href="https://github.com/rodluger/showyourwork-template-full">template-full</a>
-    </td>
-    <td>
-    <a href="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml">
-        <img src="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
-    </a>  
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=main" alt="test status"/>
+    </a>
     </td>
   </tr>
 </table>

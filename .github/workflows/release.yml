@@ -10,7 +10,7 @@ on:
         default: "patch"
 
 jobs:
-  showyourwork:
+  release:
     runs-on: ubuntu-latest
     name: Release
     steps:
@@ -75,24 +75,39 @@ jobs:
             // Return new version
             return `v${latest}`;
 
-      - name: Update template-minimal
-        id: template-minimal
-        if: steps.bump.outcome == 'success'
+      - name: Get template branch names as JSON
+        id: branches
         shell: bash -l {0}
-        env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          USER: rodluger
-          REPO: showyourwork-template-minimal
-          VERSION: ${{steps.bump.outputs.result}}
-        run: ./.github/workflows/update_template.sh
+        run: |
+          git clone https://github.com/rodluger/showyourwork-template
+          cd showyourwork-template
+          git fetch
+          git branch -r > branches.txt
+          sed -i -e 's/origin\///' branches.txt
+          sed -i -e 's/ //g' branches.txt
+          sed -i -e 's/^/\"/' branches.txt
+          sed -i -e 's/$/\"/' branches.txt
+          BRANCHES=[$(awk -vORS=, '{ print $1 }' branches.txt | sed 's/,$//')]
+          echo "::set-output name=branches::${BRANCHES}"
 
-      - name: Update template-full
-        id: template-full
+    outputs:
+      version: ${{ steps.bump.outputs.result }}
+      branches: ${{ steps.branches.outputs.branches }}
+
+  update-template:
+    runs-on: ubuntu-latest
+    name: Update template
+    needs: release
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.release.outputs.branches) }}
+    steps:
+      - name: Update template
+        id: template
         if: steps.bump.outcome == 'success'
         shell: bash -l {0}
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          USER: rodluger
-          REPO: showyourwork-template-full
-          VERSION: ${{steps.bump.outputs.result}}
+          VERSION: ${{ needs.release.outputs.version }}
+          BRANCH: ${{ matrix.branch }}
         run: ./.github/workflows/update_template.sh

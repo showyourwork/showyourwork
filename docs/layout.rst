@@ -1,7 +1,7 @@
 Repository layout
 =================
 
-If you created your repository from the `showyourwork template <https://github.com/rodluger/showyourwork-template-minimal/generate>`_,
+If you created your repository from the `showyourwork template <https://github.com/rodluger/showyourwork-template/generate>`_,
 it should have the following overall layout:
 
 .. raw:: html
@@ -235,7 +235,9 @@ it if needed.
 The ``ms.tex`` manuscript
 *************************
 
-This is your manuscript file.
+This is your manuscript file. By default, it's a `AASTeX v6.3.1 <https://journals.aas.org/aastexguide/>`_
+article file with a placeholder title, abstract, and introduction. Feel free to
+change the article class to whatever you'd like, although you may have to ...
 
 
 .. _gitignore:
