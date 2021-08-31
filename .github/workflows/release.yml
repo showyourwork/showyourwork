@@ -83,4 +83,5 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           USER: rodluger
           REPO: showyourwork-template-minimal
+          VERSION: ${{steps.bump.outputs.result}}
         run: ./.github/workflows/update_template.sh
