@@ -79,15 +79,23 @@ jobs:
         id: branches
         shell: bash -l {0}
         run: |
+          # Clone the template
           git clone https://github.com/rodluger/showyourwork-template
           cd showyourwork-template
           git fetch
+
+          # Print branch names to file
           git branch -r | tee branches.txt
+
+          # Convert to a JSON list
+          sed -i '/->/d' branches.txt
           sed -i -e 's/origin\///' branches.txt
           sed -i -e 's/ //g' branches.txt
           sed -i -e 's/^/\"/' branches.txt
           sed -i -e 's/$/\"/' branches.txt
           BRANCHES=[$(awk -vORS=, '{ print $1 }' branches.txt | sed 's/,$//')]
+
+          # Output the list
           echo "::set-output name=branches::${BRANCHES}"
           echo "Will update the following template branches: ${BRANCHES}"
 
@@ -110,4 +118,19 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           VERSION: ${{ needs.release.outputs.version }}
           BRANCH: ${{ matrix.branch }}
-        run: ./.github/workflows/update_template.sh
+        run: |
+          # Exit on error
+          set -e
+
+          # Update the template
+          git clone --recurse-submodules --single-branch --branch ${BRANCH} https://github.com/rodluger/showyourwork-template
+          cd showyourwork-template/showyourwork
+          git fetch --all --tags
+          git checkout tags/${VERSION}
+          cd ..
+          git add showyourwork
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${VERSION}"
+          git push https://x-access-token:${ACCESS_TOKEN}@github.com/showyourwork-template ${BRANCH}
+
+          # Now update the example repo (an instance of the template)
+          git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/showyourwork-example ${BRANCH}
