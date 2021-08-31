@@ -51,4 +51,19 @@ shows the build status of all of these examples.
     </a>
     </td>
   </tr>
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">main</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-figure-rule" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-rule-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
 </table>
