@@ -20,8 +20,8 @@
 
 ## You're all set!
 
-Your new repository is set up and ready to go. A GitHub Action is currently running that will generate your article PDF; you can check on the progress of the build [here](https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml). Once it's done, you can click on the badge at the top to take you to the article PDF. The PDF is automatically updated every time you push changes to this repo; note that builds usually take a few minutes (or more, depending on what you're doing).
+Your new repository is set up and ready to go. Click on the badges at the top to take you to the compiled article PDF or to a tarball containing all of the manuscript files. Both the PDF and the tarball are automatically updated every time you push changes to this repo; note that builds usually take a few minutes (or more, depending on what you're doing).
 
 The first thing you might want to do is customize the `src/ms.tex` file, which is currently just filled with placeholder text. You should also delete the current placeholder figure scripts in the `src/figures` directory, and add the scripts needed to build your own figures. If your workflow has external dependencies (which it most likely will), you must add them to the `environment.yml` file so `showyourwork` can build the paper from scratch. See [here](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#managing-environments) for details. Finally, change or edit the `LICENSE` as needed and replace the text in this `README.md` with some useful information for the reader!
 
-If you run into any trouble, please check out the [showyourwork documentation](https://showyourwork.readthedocs.io). If you think you've encountered a bug, please check out the [issues page](https://github.com/rodluger/showyourwork/issues) and raise a new one if needed.
+If you run into any trouble, please check out the documentation by following the link in the badge at the top. If you think you've encountered a bug, please check out the [issues page](https://github.com/rodluger/showyourwork/issues) and raise a new one if needed.

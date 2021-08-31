@@ -34,7 +34,7 @@ function formatRepo() {
       shell.exec("git reset --hard HEAD");
       shell.exec(`git pull origin ${GITHUB_BRANCH}`);
 
-      // Customize the README.md, LICENSE, and src/ms.tex files
+      // Customize the README.md and LICENSE files
       shell.cp(`${ACTION_PATH}/resources/README.md`, "README.md");
       shell.cp(`${ACTION_PATH}/resources/LICENSE`, "LICENSE");
       shell.sed("-i", "{{ GITHUB_SLUG }}", GITHUB_SLUG, "README.md");
@@ -42,13 +42,11 @@ function formatRepo() {
       shell.sed("-i", "{{ GITHUB_REPO }}", GITHUB_REPO, "README.md");
       shell.sed("-i", "{{ GITHUB_USER }}", GITHUB_USER, "LICENSE");
       shell.sed("-i", "{{ YEAR }}", YEAR, "LICENSE");
-      shell.sed("-i", "Rodrigo Luger", `@${GITHUB_USER}`, "src/ms.tex");
 
       // Commit and push
       try {
         shell.exec("git add README.md");
         shell.exec("git add LICENSE");
-        shell.exec("git add src/ms.tex");
         shell.exec(
           "git -c user.name='showyourwork' -c user.email='showyourwork' " +
             "commit -m '[skip ci] One-time autocommit to finish repo setup'"

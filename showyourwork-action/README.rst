@@ -1,5 +1,5 @@
-Showyourwork GitHub action
-==========================
+The showyourwork GitHub action
+==============================
 
 The **showyourwork-action** runs on `GitHub Actions <https://github.com/features/actions>`_ to automatically build your article on the cloud every time you push changes to the repository. Under the hood, this action clones your repository, installs ``conda`` and ``Snakemake``, and runs your workflow to produce the figures and article PDF, which it then uploads to a separate branch on your repository. Importantly, everything is cached and all timestamps are preserved across builds, so this action will only re-run things that explicitly depend on the files that changed since the last time it ran.
 

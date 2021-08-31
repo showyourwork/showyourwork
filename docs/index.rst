@@ -20,9 +20,11 @@ Documentation
 
    intro
    quickstart
+   layout
    action
    local
    custom
+   faqs
    projects
 
 
