@@ -51,6 +51,7 @@ jobs:
             }
 
             // Bump the version
+            const {RELEASE_TYPE} = process.env;
             latest = semver.inc(latest, RELEASE_TYPE);
             if (latest == null) {
               core.setFailed(`Invalid release type: ${RELEASE_TYPE}`);
