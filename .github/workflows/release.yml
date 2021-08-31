@@ -62,7 +62,7 @@ jobs:
 
             // Push to repo
             await exec.exec("git", ["add", "README.md"]);
-            await exec.exec("git", ["-c", "user.name='gh-actions", "-c", "user.email='gh-actions'", "commit", "-m", `[skip ci] Update docs link to $v{latest}`]);
+            await exec.exec("git", ["-c", "user.name='gh-actions", "-c", "user.email='gh-actions'", "commit", "-m", `[skip ci] Update docs link to v${latest}`]);
             await exec.exec("git", ["push", "origin", "main"]);
 
             // Create release w/ new version
@@ -83,5 +83,16 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           USER: rodluger
           REPO: showyourwork-template-minimal
+          VERSION: ${{steps.bump.outputs.result}}
+        run: ./.github/workflows/update_template.sh
+
+      - name: Update template-full
+        id: template-full
+        if: steps.bump.outcome == 'success'
+        shell: bash -l {0}
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          USER: rodluger
+          REPO: showyourwork-template-full
           VERSION: ${{steps.bump.outputs.result}}
         run: ./.github/workflows/update_template.sh

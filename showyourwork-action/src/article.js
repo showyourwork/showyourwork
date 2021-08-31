@@ -11,16 +11,17 @@ module.exports = { buildArticle, testArticle };
  * Build the article.
  *
  */
-async function buildArticle() {
+async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   // Article cache settings. We're caching pretty much everything
   // in the repo, but overriding it with any files that changed since
   // the commit at which we cached everything
   const ACTION_PATH = core.getInput("action-path");
-  const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
+  if (ARTICLE_CACHE_NUMBER == null)
+    ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const randomId = makeId(8);
-  const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
-  const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
+  const article_key = `article-${RUNNER_OS}-${article_cache_number}-${randomId}`;
+  const article_restoreKeys = [`article-${RUNNER_OS}-${article_cache_number}`];
   const article_paths = [
     ".snakemake",
     ".showyourwork",
@@ -72,15 +73,11 @@ async function buildArticle() {
     core.endGroup();
   }
 
-  // Save article cache (failure OK)
-  try {
-    core.startGroup("Update article cache");
-    exec(`python ${ACTION_PATH}/src/cache.py --update`);
-    const article_cacheId = await cache.saveCache(article_paths, article_key);
-    core.endGroup();
-  } catch (error) {
-    core.warning(error.message);
-  }
+  // Save article cache
+  core.startGroup("Update article cache");
+  exec(`python ${ACTION_PATH}/src/cache.py --update`);
+  const article_cacheId = await cache.saveCache(article_paths, article_key);
+  core.endGroup();
 
   return output;
 }
@@ -90,6 +87,10 @@ async function buildArticle() {
  *
  */
 async function testArticle() {
-  // TODO!
-  return [];
+  // Build the article with a fresh cache by
+  // using a random ARTICLE_CACHE_NUMBER
+  buildArticle(makeId(8));
+
+  // Build the article again to test the cached build
+  return buildArticle();
 }
