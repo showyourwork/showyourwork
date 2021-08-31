@@ -23,6 +23,10 @@ Click <a href="https://github.com/rodluger/showyourwork-template-minimal/generat
 
 <h2>Test Suite</h2>
 
+<p align="justify">
+Tests are run whenever a new release is triggered via a GitHub Actions <a href="https://github.com/rodluger/showyourwork/actions/workflows/release.yml">workflow_dispatch</a> event.
+</p>
+
 <table>
   <tr>
     <td>
