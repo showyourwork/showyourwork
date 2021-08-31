@@ -7,10 +7,13 @@
 <a href="https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml">
 <img src="https://github.com/{{ GITHUB_SLUG }}/actions/workflows/showyourwork.yml/badge.svg" alt="Article status"/>
 </a>
-<a href="https://github.com/{{ GITHUB_SLUG }}/raw/main-pdf/arxiv.tar.gz">
+<a href="https://github.com/{{ GITHUB_SLUG }}/raw/{{ GITHUB_BRANCH }}-pdf/arxiv.tar.gz">
 <img src="https://img.shields.io/badge/article-tarball-blue.svg?style=flat" alt="Article tarball"/>
 </a>
-<a href="https://github.com/{{ GITHUB_SLUG }}/raw/main-pdf/ms.pdf">
+<a href="https://github.com/{{ GITHUB_SLUG }}/raw/{{ GITHUB_BRANCH }}-pdf/dag.pdf">
+<img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article graph"/>
+</a>
+<a href="https://github.com/{{ GITHUB_SLUG }}/raw/{{ GITHUB_BRANCH }}-pdf/ms.pdf">
 <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
 </a>
 </p>

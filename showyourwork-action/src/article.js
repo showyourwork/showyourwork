@@ -15,13 +15,18 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   // Article cache settings. We're caching pretty much everything
   // in the repo, but overriding it with any files that changed since
   // the commit at which we cached everything
+  // Note that the GITHUB_REF (branch) is part of the cache key
+  // so we don't mix up the caches for different branches!
   const ACTION_PATH = core.getInput("action-path");
   if (ARTICLE_CACHE_NUMBER == null)
     ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
+  const GITHUB_REF = shell.env["GITHUB_REF"];
   const randomId = makeId(8);
-  const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
-  const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
+  const article_key = `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_restoreKeys = [
+    `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
+  ];
   const article_paths = [
     ".snakemake",
     ".showyourwork",
