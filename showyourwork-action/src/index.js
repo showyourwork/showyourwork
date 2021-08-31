@@ -3,7 +3,7 @@ const core = require("@actions/core");
 const shell = require("shelljs");
 const { formatRepo } = require("./format_repo");
 const { setupConda } = require("./conda");
-const { buildArticle } = require("./article");
+const { buildArticle, testArticle } = require("./article");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
 
@@ -25,10 +25,12 @@ const { publishOutput } = require("./publish");
       await setupConda();
 
       // Build the article
-      output = await buildArticle();
+      var output;
+      if (core.getInput("verbose") == "true") output = await buildArticle();
+      else output = await testArticle();
 
       // Generate the report
-      report = await generateReport();
+      var report = await generateReport();
 
       // Publish the article output
       await publishOutput(output, report);

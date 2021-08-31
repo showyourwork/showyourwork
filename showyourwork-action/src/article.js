@@ -5,31 +5,31 @@ const shell = require("shelljs");
 const { makeId, exec, getInputAsArray } = require("./utils");
 
 // Exports
-module.exports = { buildArticle };
-
-// Article cache settings. We're caching pretty much everything
-// in the repo, but overriding it with any files that changed since
-// the commit at which we cached everything
-const ACTION_PATH = core.getInput("action-path");
-const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
-const RUNNER_OS = shell.env["RUNNER_OS"];
-const randomId = makeId(8);
-const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
-const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
-const article_paths = [
-  ".snakemake",
-  ".showyourwork",
-  ".last-commit",
-  "environment.yml",
-  "ms.pdf",
-  "src",
-];
+module.exports = { buildArticle, testArticle };
 
 /**
  * Build the article.
  *
  */
 async function buildArticle() {
+  // Article cache settings. We're caching pretty much everything
+  // in the repo, but overriding it with any files that changed since
+  // the commit at which we cached everything
+  const ACTION_PATH = core.getInput("action-path");
+  const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
+  const RUNNER_OS = shell.env["RUNNER_OS"];
+  const randomId = makeId(8);
+  const article_key = `article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_restoreKeys = [`article-${RUNNER_OS}-${ARTICLE_CACHE_NUMBER}`];
+  const article_paths = [
+    ".snakemake",
+    ".showyourwork",
+    ".last-commit",
+    "environment.yml",
+    "ms.pdf",
+    "src",
+  ];
+
   // Restore the article cache
   core.startGroup("Restore article cache");
   const article_cacheKey = await cache.restoreCache(
@@ -83,4 +83,13 @@ async function buildArticle() {
   }
 
   return output;
+}
+
+/**
+ * Test the article build.
+ *
+ */
+async function testArticle() {
+  // TODO!
+  return [];
 }
