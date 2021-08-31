@@ -24,10 +24,18 @@ Click <a href="https://github.com/rodluger/showyourwork-template/generate">here<
 <h2>Test Suite</h2>
 
 <p align="justify">
-Tests are run whenever a new release is triggered via a GitHub Actions <a href="https://github.com/rodluger/showyourwork/actions/workflows/release.yml">workflow_dispatch</a> event.
+The <a href="https://github.com/rodluger/showyourwork-template">showyourwork-template</a> repository contains several branches, each containing a workflow template that demonstrates a particular use case or customization of <code>showyourwork</code>.
+Upon every release of <code>showyourwork</code> (triggered via a GitHub Actions <a href="https://github.com/rodluger/showyourwork/actions/workflows/release.yml">workflow_dispatch</a> event), these templates are updated and instantiated
+on the <a href="https://github.com/rodluger/showyourwork-example">showyourwork-example</a> repository. The following table
+shows the build status of all of these examples.
 </p>
 
 <table>
+  <tr>
+    <th>branch</th>
+    <th>build status</th>
+    <th>output</th>
+  </tr>
   <tr>
     <td>
         <a href="https://github.com/rodluger/showyourwork-example/tree/main">main</a>
@@ -35,6 +43,11 @@ Tests are run whenever a new release is triggered via a GitHub Actions <a href="
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=main" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/main-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
     </td>
   </tr>
