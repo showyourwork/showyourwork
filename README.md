@@ -53,7 +53,7 @@ shows the build status of all of these examples.
   </tr>
   <tr>
     <td>
-        <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">main</a>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">custom-figure-rule</a>
     </td>
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml">
