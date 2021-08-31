@@ -9,15 +9,9 @@
 <a href="https://github.com/rodluger/showyourwork-template-minimal/generate">
     <img src="https://img.shields.io/static/v1?label=create&message=new%20repo&color=brightgreen"/>
 </a>
-<br>
-<a href="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml">
-    <img src="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
-</a>
-<a href="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml">
-    <img src="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
-</a>
 </p>
-<br>
+
+<h2>Overview</h2>
 
 <p align="justify">
 This repository is intended to help authors publish the code that generated the figures and results in a scientific article. It ensures that the compiled article PDF is always in sync with all of the code used to generate it. It does this automatically—and seamlessly—with the help of the <a href="https://snakemake.readthedocs.io">Snakemake</a> workflow management system, the <a href="https://tectonic-typesetting.github.io">tectonic</a> typesetting engine, and <a href="https://github.com/features/actions">Github Actions CI</a>. The basic philosophy behind <code>showyourwork</code> is this: scientific papers should exist as GitHub repositories comprised of LaTeX files, figure scripts, rules to access datasets, a platform/environment specification, <i>and nothing else</i>. Anyone should be able to re-generate the article PDF from scratch at the click of a button.
@@ -26,3 +20,28 @@ This repository is intended to help authors publish the code that generated the 
 <p align="justify">
 Click <a href="https://github.com/rodluger/showyourwork-template-minimal/generate">here</a> to get started with a fresh article repository based on <code>showyourwork</code>. Once your repo is created, a GitHub Action will automatically run to finish setting it up. Refresh the page after a few minutes to view the new <code>README.md</code> with instructions on how to get started.
 </p>
+
+<h2>Test Suite</h2>
+
+<table>
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-template-minimal">template-minimal</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml">
+        <img src="https://github.com/rodluger/showyourwork-template-minimal-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
+    </a>  
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-template-full">template-full</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml">
+        <img src="https://github.com/rodluger/showyourwork-template-full-test/actions/workflows/showyourwork.yml/badge.svg" alt="test status"/>
+    </a>  
+    </td>
+  </tr>
+</table>
