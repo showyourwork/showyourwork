@@ -101,7 +101,7 @@ If you already have an existing repository that you'd like to use, please check 
     builds. When the action is done running, download your PDF once more and verify that your changes were incorporated.
 
 
-1. Clone the repository
+3. Clone the repository
 -----------------------
 
 Editing stuff online is useful for quick changes and easy fixes, but you'll probably want to do most of your

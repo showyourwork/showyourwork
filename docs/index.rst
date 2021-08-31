@@ -21,10 +21,12 @@ Documentation
    intro
    quickstart
    layout
+   figures
    action
    local
    custom
    faqs
+   update
    projects
 
 
