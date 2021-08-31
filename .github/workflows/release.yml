@@ -79,6 +79,9 @@ jobs:
         id: branches
         shell: bash -l {0}
         run: |
+          # Exit on error
+          set -e
+
           # Clone the template
           git clone https://github.com/rodluger/showyourwork-template
           cd showyourwork-template
@@ -130,7 +133,7 @@ jobs:
           cd ..
           git add showyourwork
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${VERSION}"
-          git push https://x-access-token:${ACCESS_TOKEN}@github.com/showyourwork-template ${BRANCH}
+          git push https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-template ${BRANCH}
 
           # Now update the example repo (an instance of the template)
-          git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/showyourwork-example ${BRANCH}
+          git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example ${BRANCH}
