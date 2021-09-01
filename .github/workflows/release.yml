@@ -19,62 +19,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install node packages
-        run: npm install semver
-
-      - name: Bump version
-        uses: actions/github-script@v4
-        id: bump
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release_type }}
-        with:
-          result-encoding: string
-          script: |
-            // Import modules
-            const semver = require("semver");
-
-            // Get all tags
-            const tags = await github.repos.listTags({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
-
-            // Get latest version
-            var latest = "0.0.0";
-            for (let i = 0; i < tags.data.length; i++) {
-              const tag = tags.data[i].name;
-              if ((tag[0] == "v") && semver.valid(tag.slice(1))) {
-                if (semver.gt(tag.slice(1), latest)) {
-                  latest = tag.slice(1);
-                }
-              }
-            }
-
-            // Bump the version
-            const {RELEASE_TYPE} = process.env;
-            latest = semver.inc(latest, RELEASE_TYPE);
-            if (latest == null) {
-              core.setFailed(`Invalid release type: ${RELEASE_TYPE}`);
-            }
-
-            // Replace version in docs link in README
-            await exec.exec("sed", ["-i", "-E", `s|<a href=\"https://showyourwork.readthedocs.io/en/(.*)\">|<a href=\"https://showyourwork.readthedocs.io/en/v${latest}\">|g`, "README.md"]);
-
-            // Push to repo
-            await exec.exec("git", ["add", "README.md"]);
-            await exec.exec("git", ["-c", "user.name='gh-actions", "-c", "user.email='gh-actions'", "commit", "-m", `[skip ci] Update docs link to v${latest}`]);
-            await exec.exec("git", ["push", "origin", "main"]);
-
-            // Create release w/ new version
-            await github.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `v${latest}`
-            });
-
-            // Return new version
-            return `v${latest}`;
-
       - name: Get template branch names as JSON
         id: branches
         shell: bash -l {0}
@@ -101,6 +45,67 @@ jobs:
           # Output the list
           echo "::set-output name=branches::${BRANCHES}"
           echo "Will update the following template branches: ${BRANCHES}"
+
+      - name: Install node packages
+        run: npm install semver nunjucks fs
+
+      - name: Bump version
+        uses: actions/github-script@v4
+        id: bump
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release_type }}
+        with:
+          result-encoding: string
+          script: |
+            // Import modules
+            const semver = require("semver");
+            const nunjucks = require("nunjucks");
+            const nunjucks = require("fs");
+
+            // Get all tags
+            const tags = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            // Get latest version
+            var latest = "0.0.0";
+            for (let i = 0; i < tags.data.length; i++) {
+              const tag = tags.data[i].name;
+              if ((tag[0] == "v") && semver.valid(tag.slice(1))) {
+                if (semver.gt(tag.slice(1), latest)) {
+                  latest = tag.slice(1);
+                }
+              }
+            }
+
+            // Bump the version
+            const {RELEASE_TYPE} = process.env;
+            latest = semver.inc(latest, RELEASE_TYPE);
+            if (latest == null) {
+              core.setFailed(`Invalid release type: ${RELEASE_TYPE}`);
+            }
+
+            // Update the README from the template
+            const branches = JSON.parse("${{ steps.branches.outputs.branches }}");
+            nunjucks.configure('.github/workflows', { autoescape: true });
+            const README = nunjucks.render('README.md', { version: latest, branches: branches });
+            fs.writeFileSync('README.md', README);
+
+            // Push to repo
+            await exec.exec("git", ["add", "README.md"]);
+            await exec.exec("git", ["-c", "user.name='gh-actions", "-c", "user.email='gh-actions'", "commit", "-m", `[skip ci] Update docs link to v${latest}`]);
+            await exec.exec("git", ["push", "origin", "main"]);
+
+            // Create release w/ new version
+            await github.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${latest}`
+            });
+
+            // Return new version
+            return `v${latest}`;
 
     outputs:
       version: ${{ steps.bump.outputs.result }}
