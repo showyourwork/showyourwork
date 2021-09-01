@@ -3,7 +3,7 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://showyourwork.readthedocs.io/en/v{{ version }}">
+<a href="https://showyourwork.readthedocs.io/">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
@@ -29,28 +29,3 @@ Upon every release of <code>showyourwork</code> (triggered via a GitHub Actions 
 on the <a href="https://github.com/rodluger/showyourwork-example">showyourwork-example</a> repository. The following table
 shows the build status of all of these examples.
 </p>
-
-<table>
-  <tr>
-    <th>branch</th>
-    <th>build status</th>
-    <th>output</th>
-  </tr>
-  {% for branch in branches %}
-  <tr>
-    <td>
-        <a href="https://github.com/rodluger/showyourwork-example/tree/{{ branch }}">{{ branch }}</a>
-    </td>
-    <td>
-    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3A{{ branch }}">
-        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch={{ branch }}" alt="test status"/>
-    </a>
-    </td>
-    <td>
-    <a href="https://github.com/rodluger/showyourwork-example/raw/{{ branch }}-pdf/ms.pdf">
-    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
-    </a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
