@@ -3,7 +3,7 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://showyourwork.readthedocs.io/">
+<a href="https://showyourwork.readthedocs.io/en/0.0.26">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
@@ -29,3 +29,108 @@ Upon every release of <code>showyourwork</code> (triggered via a GitHub Actions 
 on the <a href="https://github.com/rodluger/showyourwork-example">showyourwork-example</a> repository. The following table
 shows the build status of all of these examples.
 </p>
+
+<table>
+  <tr>
+    <th>branch</th>
+    <th>build status</th>
+    <th>output</th>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">custom-figure-rule</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-figure-rule">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-figure-rule" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-rule-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/figure-dataset">figure-dataset</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Afigure-dataset">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=figure-dataset" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/figure-dataset-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/main">main</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amain">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=main" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/main-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/multi-panel-figure">multi-panel-figure</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amulti-panel-figure">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=multi-panel-figure" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/multi-panel-figure-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/simple-figure">simple-figure</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Asimple-figure">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=simple-figure" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/simple-figure-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/static-figure">static-figure</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Astatic-figure">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=static-figure" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/static-figure-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+</table>
