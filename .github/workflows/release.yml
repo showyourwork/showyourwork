@@ -87,7 +87,7 @@ jobs:
             }
 
             // Update the README from the template
-            const branches = JSON.parse("${{ steps.branches.outputs.branches }}");
+            const branches = JSON.parse('${{ steps.branches.outputs.branches }}');
             nunjucks.configure('.github/workflows', { autoescape: true });
             const README = nunjucks.render('README.md', { version: latest, branches: branches });
             fs.writeFileSync('README.md', README);
