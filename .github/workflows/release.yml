@@ -60,7 +60,7 @@ jobs:
             // Import modules
             const semver = require("semver");
             const nunjucks = require("nunjucks");
-            const nunjucks = require("fs");
+            const fs = require("fs");
 
             // Get all tags
             const tags = await github.repos.listTags({
