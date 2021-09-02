@@ -66,7 +66,7 @@ If you already have an existing repository that you'd like to use, please check 
     </p>
 
 
-1. Edit the manuscript online
+2. Edit the manuscript online
 -----------------------------
 
 
