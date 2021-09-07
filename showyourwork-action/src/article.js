@@ -43,6 +43,7 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     article_key,
     article_restoreKeys
   );
+  exec(`rm -f .showyourwork/repo.json`); // Always re-generate this!
   exec(`python ${ACTION_PATH}/src/cache.py --restore`);
   core.endGroup();
 
