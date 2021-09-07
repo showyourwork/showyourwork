@@ -89,7 +89,7 @@ If you already have an existing repository that you'd like to use, please check 
     </p>
 
     <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/article-minimal.png" width="75%"/>
+        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/article-abstract.png" width="75%"/>
     </div>
 
     Navigate to the LaTeX manuscript file <code class="docutils literal notranslate"><span class="pre">src/ms.tex</span></code>
@@ -116,23 +116,94 @@ where ``<user>`` is your GitHub user name and ``<repo>`` is the name of your rep
 option ``recurse-submodules``: this is necessary because the ``showyourwork`` package is included in your
 repository as a `Git submodule <https://git-scm.com/book/en/v2/Git-Tools-Submodules>`_.
 
-You can now edit the manuscript (``src/ms.tex``) and bibliography (``src/bib.bib``) files as well as add
-figure scripts (``src/figures/*.py``) and static resources (``src/static/*``). After you make these edits,
-add, commit, and push your changes to GitHub:
+Edit the manuscript (``src/ms.tex``) by replacing the \verb+\blindtext+ command in the abstract with a blurb about your project.
+After you make these edits, add, commit, and push your changes to GitHub:
 
 .. code-block:: bash
 
     git add src/ms.tex
-    git add src/bib.bib
-    git add <...>
-    git commit -m "Making edits to the manuscript"
+    git commit -m "Minor edits to the manuscript"
     git push
 
 Navigate to your repository on GitHub, and once again click on the Actions tab to verify that your article
 is building. Within a few minutes you should have an updated, fully synced PDF of your article.
 
 
-4. Build the repository locally
+4. Add a figure
+---------------
+
+Figures can be included in the article by adding a Python script to the folder ``src/figures``.
+Create a script called ``mandelbrot.py`` in that directory and add the following code to it:
+
+.. code-block:: python
+
+    """
+    Plot a pretty fractal. Adapted from
+    https://scipy-lectures.org/intro/numpy/auto_examples/plot_mandelbrot.html
+    """
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from numpy import newaxis
+    import copy
+
+    def compute_mandelbrot(N_max, some_threshold, nx, ny):
+        x = np.linspace(-2, 1, nx)
+        y = np.linspace(-1.5, 1.5, ny)
+        c = x[:, newaxis] + 1j * y[newaxis, :]
+        z = c
+        with np.warnings.catch_warnings():
+            np.warnings.simplefilter("ignore")
+            for j in range(N_max):
+                z = z ** 2 + c
+            mandelbrot_set = abs(z) < some_threshold
+        return mandelbrot_set
+
+    fig = plt.figure(figsize=(8, 8))
+    mandelbrot_set = np.round(1 - compute_mandelbrot(500, 50.0, 601, 401))
+    tab10 = copy.copy(plt.get_cmap("tab10"))
+    tab10.set_over("w")
+    plt.imshow(
+        mandelbrot_set.T,
+        extent=[-2, 1, -1.5, 1.5],
+        interpolation="nearest",
+        cmap=tab10,
+        vmin=0,
+        vmax=0.9,
+    )
+    plt.gca().axis("off")
+    fig.savefig("mandelbrot.pdf", bbox_inches="tight")
+
+In the TeX file (``src/ms.tex``), include this figure within a ``figure`` environment:
+
+.. code-block:: latex
+
+    \begin{figure}
+        \begin{centering}
+            \includegraphics{figures/mandelbrot.pdf}
+            \caption{The Mandelbrot set.}
+            \label{fig:mandelbrot}
+        \end{centering}
+    \end{figure}
+
+The figure label (``fig:mandelbrot``) tells ``showyourwork`` to look for a script
+called ``mandelbrot.py`` to produce the PDF for this particular figure. No extra
+directions from the user are needed!
+
+Now add, commit, and push your changes to GitHub:
+
+.. code-block:: bash
+
+    git add src/figures/mandelbrot.py
+    git add src/ms.tex
+    git commit -m "Add a figure"
+    git push
+
+Navigate to your repository on GitHub, and once again click on the Actions tab to verify that your article
+is building. Within a few minutes you should have an updated, fully synced PDF of your article with the new
+rendered figure.
+
+
+5. Build the repository locally
 -------------------------------
 
 It's also useful to be able to build your article PDF locally. To do this, you must have the
@@ -163,7 +234,7 @@ should either be generated on the fly or saved temporarily on the ``main-pdf``
 branch of your remote repository.
 
 
-5. Read the docs!
+6. Read the docs!
 -----------------
 
 That's it for this quickstart tutorial. Please check out the rest of the documentation
