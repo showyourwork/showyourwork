@@ -1,10 +1,10 @@
 import json
 import os
 from xml.etree.ElementTree import parse as ParseXMLTree
+import warnings
 
 
 # Figures that are allowed directly in the ``src/`` directory
-# TODO: Make this a user option
 special_figures = [
     "orcid-id.png",
     "showyourwork.pdf"
@@ -148,7 +148,7 @@ checkpoint script_info:
                         elif graphic.text.lower() in special_figures:
                             continue
                         else:
-                            raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
+                            warnings.warn(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
                     if len(files):
                         figures[label] = {"script": script, "files": files}
 
@@ -162,7 +162,7 @@ checkpoint script_info:
             elif graphic.text.lower() in special_figures:
                 continue
             else:
-                raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
+                warnings.warn(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
         if len(files):
             figures["unknown"] = {
                 "script": UNKNOWN_SCRIPT,
