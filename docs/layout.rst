@@ -196,7 +196,7 @@ The ``figures`` directory
 
 This directory should contain all of the scripts needed to produce the figures
 in your article. The names of these scripts should match the figure labels in
-the manuscript file (see :doc:`figures` for details), although you can override
+the manuscript file (see :doc:`here <custom>` for details), although you can override
 this behavior by providing custom workflow rules (see :doc:`custom`).
 You can have other stuff in this directory as well (such as auxiliary scripts
 or procedurally-generated datasets).
@@ -208,7 +208,7 @@ The ``matplotlibrc`` config
 ***************************
 
 This is a ``matplotlib`` configuration file
-(see `here <https://matplotlib.org/stable/tutorials/introductory/customizing.html>`_).
+(see `the matplotlib docs <https://matplotlib.org/stable/tutorials/introductory/customizing.html>`_).
 By default, it contains only a single instruction:
 
 .. code-block::
@@ -237,7 +237,11 @@ The ``ms.tex`` manuscript
 
 This is your manuscript file. By default, it's a `AASTeX v6.3.1 <https://journals.aas.org/aastexguide/>`_
 article file with a placeholder title, abstract, and introduction. Feel free to
-change the article class to whatever you'd like, although you may have to ...
+change the article class to whatever you'd like, although you may have to include
+(and commit) the ``.sty`` stylesheet if it's not in the standard TeXLive distribution.
+You can also import whatever packages you want in ``ms.tex`` -- the ``tectonic``
+typesetting system will automatically download and install them when building
+your article.
 
 
 .. _gitignore:
@@ -245,7 +249,14 @@ change the article class to whatever you'd like, although you may have to ...
 The ``.gitignore`` files
 ************************
 
-The ``.gitignore`` files ...
+The ``.gitignore`` files prevent you from committing certain kinds of files.
+You can add entries to these files, but you shouldn't have to remove any.
+In general, you should never commit figures (``.pdf``, ``.png``, ``.tiff``, etc),
+LaTeX temporaries (``.log``, ``.aux``, ``.blg``, etc), or any kind of output.
+In some cases, it might make sense to include one of these files (say, a ``.png``
+photograph that can't be generated programatically from a script). To commit
+something that's disallowed by a ``.gitignore`` file, just use the ``-f`` or ``--force``
+option when adding the file to ``git``.
 
 
 .. _gitmodules:
@@ -253,7 +264,8 @@ The ``.gitignore`` files ...
 The ``.gitmodules`` file
 ************************
 
-The ``.gitmodules`` file ...
+The ``.gitmodules`` file simply tells ``git`` that the ``showyourwork``
+directory is a submodule. You shouldn't have to change anything in here.
 
 
 .. _license:
@@ -261,7 +273,10 @@ The ``.gitmodules`` file ...
 The ``LICENSE`` file
 ********************
 
-The ``LICENSE`` file ...
+The ``LICENSE`` included in your repository is by default the MIT open-source
+license. Feel free to change this to whatever license you prefer, although we
+strongly recommend you to keep everything open source and free for others to
+modify and adapt into their own work!
 
 
 .. _readme:
@@ -269,7 +284,9 @@ The ``LICENSE`` file ...
 The ``README.md`` file
 **********************
 
-The ``README.md`` file ...
+You should include a description of your repository here. Keep the badges at
+the top, as these provide easy access to the compiled article and the build logs.
+Feel free to remove or change the logo, though!
 
 
 .. _snakefile:
@@ -277,7 +294,31 @@ The ``README.md`` file ...
 The ``Snakefile`` workflow
 **************************
 
-The ``Snakefile`` ...
+The ``Snakefile`` contains all of the instructions on how to build your article
+from the files in your repository. If you're not familiar with the ``Snakemake``
+workflow management system, read up on it `here <https://snakemake.readthedocs.io>`_.
+By default, the ``Snakefile`` should look something like this:
+
+.. code-block:: python
+
+    # Import the showyourwork module
+    module showyourwork:
+        snakefile:
+            "showyourwork/workflow/Snakefile"
+        config:
+            config
+
+    # Use all default rules
+    use rule * from showyourwork
+
+All this is doing is importing the ``showyourwork`` workflow (shipped within the
+``git`` submodule in your repo) and then telling ``Snakemake`` to use all the
+rules in that workflow. You typically won't want to remove any of these lines,
+but feel free to add whatever you'd like to your ``Snakefile``. This might include
+rules to build custom figures, to download datasets, etc; see
+:doc:`custom`.
+Note, finally, that this file is written in a language that's a straightforward
+superset of Python, so any regular Python commands and syntax is valid in it.
 
 
 .. _environment:
@@ -285,4 +326,26 @@ The ``Snakefile`` ...
 The ``environment.yml`` file
 ****************************
 
-The ``environment.yml`` file ...
+The ``environment.yml`` file specifies all of the ``conda`` packages needed to
+build your article. You can read more about environment files
+`in the conda docs <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_.
+By default, only the bare minimum specs are included
+(e.g., ``numpy`` and ``matplotlib``). Feel free to manually add to this list
+(noting that packages that can only be installed via ``pip`` should be placed in
+the ``pip`` section). It's recommended to either pin a specific version
+(i.e., ``matplotlib==3.3.4``) or specify a minimum version
+(i.e., ``matplotlib>=3.0.0``) for your packages. Just be aware that overconstrained
+requirements may break on other platforms
+(see `this post <https://stackoverflow.com/questions/39280638/how-to-share-conda-environments-across-platforms>`_),
+so you should probably only pin the direct dependencies of your project.
+If you alread have a ``conda`` environment for your project, you can export
+these direct dependencies -- the ones that you explicitly installed in the enviornment --
+by running
+
+.. code-block:: bash
+
+    conda env export --from-history | grep -v "^prefix: " > environment.yml
+
+The ``grep`` command removes the line in the environment file with the absolute path
+to your ``conda`` environment, which probably won't be useful to anyone else running
+your code!

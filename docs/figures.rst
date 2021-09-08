@@ -1,4 +1,0 @@
-Figure generation
-=================
-
-Coming soon.

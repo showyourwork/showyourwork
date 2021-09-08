@@ -7,10 +7,6 @@
    </div>
    <br/><br/>
 
-   <div align="center">
-   <i>This page is under construction. Please check back soon for more information!</i>
-   </div>
-   <br/><br/>
 
 Documentation
 =============
@@ -21,11 +17,11 @@ Documentation
    intro
    quickstart
    layout
-   figures
    action
    local
    custom
    faqs
+   changelog
    update
    projects
 

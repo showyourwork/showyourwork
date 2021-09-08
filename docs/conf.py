@@ -31,4 +31,5 @@ html_theme_options = {
     "use_download_button": True,
     "logo_only": True,
     "use_fullscreen_button": False,
+    "path_to_docs": "docs/",
 }
