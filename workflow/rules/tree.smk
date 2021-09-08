@@ -6,7 +6,7 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 # Figures that are allowed directly in the ``src/`` directory
 # TODO: Make this a user option
 special_figures = [
-    "orc-ID.png",
+    "orcid-ID.png",
     "showyourwork.pdf"
 ]
 
