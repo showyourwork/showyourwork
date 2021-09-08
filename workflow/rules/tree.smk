@@ -3,6 +3,14 @@ import os
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 
+# Figures that are allowed directly in the ``src/`` directory
+# TODO: Make this a user option
+special_figures = [
+    "orc-ID.png",
+    "showyourwork.pdf"
+]
+
+
 def check_figure_format(figure):
     """
     Check that all figures are declared correctly in `tex/ms.tex`
@@ -137,6 +145,8 @@ checkpoint script_info:
                             files.append(f"src/{graphic.text}")
                         elif graphic.text.startswith("static/"):
                             continue
+                        elif graphic.text in special_figures:
+                            continue
                         else:
                             raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
                     if len(files):
@@ -148,6 +158,8 @@ checkpoint script_info:
             if graphic.text.startswith("figures/"):
                 files.append(f"src/{graphic.text}")
             elif graphic.text.startswith("static/"):
+                continue
+            elif graphic.text in special_figures:
                 continue
             else:
                 raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
