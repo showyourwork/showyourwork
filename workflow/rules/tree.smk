@@ -6,7 +6,7 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 # Figures that are allowed directly in the ``src/`` directory
 # TODO: Make this a user option
 special_figures = [
-    "orcid-ID.png",
+    "orcid-id.png",
     "showyourwork.pdf"
 ]
 
@@ -145,7 +145,7 @@ checkpoint script_info:
                             files.append(f"src/{graphic.text}")
                         elif graphic.text.startswith("static/"):
                             continue
-                        elif graphic.text in special_figures:
+                        elif graphic.text.lower() in special_figures:
                             continue
                         else:
                             raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
@@ -159,7 +159,7 @@ checkpoint script_info:
                 files.append(f"src/{graphic.text}")
             elif graphic.text.startswith("static/"):
                 continue
-            elif graphic.text in special_figures:
+            elif graphic.text.lower() in special_figures:
                 continue
             else:
                 raise ValueError(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
