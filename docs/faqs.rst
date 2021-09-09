@@ -53,3 +53,15 @@ many people use commands like ``plotone`` and ``plottwo`` or user-defined shorth
 including figures in LaTeX. **This should still work!** As long as these shortcuts
 call ``includegraphics`` somewhere along the line (which they do), ``showyourwork``
 should work just fine. Just remember to always label your figures!
+
+
+How do I debug a run?
+---------------------
+
+Sometimes it can be difficult to figure out why a run failed from the terminal
+output, especially if it's an error during the LaTeX build. Try increasing the
+verbosity of the output to obtain more informative error messages:
+
+.. code-block:: bash
+
+    snakemake -c1 --use-conda ms.pdf --config verbose=true
