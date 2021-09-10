@@ -32,7 +32,10 @@ except FileNotFoundError:
     # fail silently without caching
     other_figures = []
 
-if len(other_figures):
+
+# Only enable caching if the script has multiple outputs,
+# but the current rule only has one output!
+if len(other_figures) != 0 and len(snakemake.output) == 1:
 
     # This script has multiple outputs.
     if (TEMP / this_figure_name).exists():
