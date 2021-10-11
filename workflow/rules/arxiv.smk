@@ -7,6 +7,7 @@ rule arxiv:
         POSIX(TEMP / "meta.json"),
         POSIX(TEX / "showyourwork.sty"),
         AUXFILES,
+        tectonic_files,
         class_files,
         figures,
     output:
@@ -19,6 +20,7 @@ rule arxiv:
         FIGURES=FIGURES,
         TEX=TEX,
         SYWTEXFILE=SYWTEXFILE,
+        TECTONIC=tectonic_cmd
     conda:
         "../envs/environment.yml"
     script:

@@ -12,6 +12,7 @@ TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
 FIGURES = snakemake.params["FIGURES"]
 SYWTEXFILE = snakemake.params["SYWTEXFILE"]
+TECTONIC = snakemake.params["TECTONIC"]
 arxiv_tarball_exclude = [
     file
     for file in snakemake.params["arxiv_tarball_exclude"].split(",")
@@ -26,9 +27,7 @@ if verbose:
     tectonic_args += ["--print"]
 else:
     tectonic_args += ["--chatter", "minimal"]
-subprocess.check_call(
-    ["tectonic"] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)]
-)
+subprocess.check_call([TECTONIC] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)])
 
 # Remove all output except the .bbl, .tex, and .pdf files
 for file in ["__latexindent_temp.tex", ".showyourwork-ms.*"]:
