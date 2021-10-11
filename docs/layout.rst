@@ -95,6 +95,7 @@ it should have the following overall layout:
           <li><a href="#readme">README.md</a></li>
           <li><a href="#snakefile">Snakefile</a></li>
           <li><a href="#environment">environment.yml</a></li>
+          <li><a href="#config">showyourwork.yml</a></li>
         </ul>
       </div>
 
@@ -113,8 +114,8 @@ them.
 
 .. _workflow:
 
-The ``showyourwork.yml`` workflow
-*********************************
+The ``.github/workflows/showyourwork.yml`` file
+***********************************************
 
 This is the configuration file for the workflow that builds your article on GitHub Actions.
 It instructs GitHub Actions to build the article every time a commit is pushed to the
@@ -349,3 +350,47 @@ by running
 The ``grep`` command removes the line in the environment file with the absolute path
 to your ``conda`` environment, which probably won't be useful to anyone else running
 your code!
+
+
+.. _config:
+
+The ``showyourwork.yml`` config file
+************************************
+
+This is the `Snakemake config file <https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html>`
+for ``showyourwork``, where you can customize several aspects of the build. Below is a list of all options
+along with their default values and a brief description of what they do:
+
+.. code-block:: yaml
+
+    # Enable verbose output during the build process?
+    verbose: true
+
+    # Recognized figure extensions
+    figexts:
+      - pdf
+      - png
+      - eps
+      - jpg
+      - jpeg
+      - gif
+      - svg
+      - tiff
+      
+    # Paths to be excluded from the arxiv tarball generated on GitHub Actions
+    arxiv_tarball_exclude:
+      - "**/*.py"
+      - "**/matplotlibrc"
+      - "**/.gitignore"
+
+    # Figure dependencies. Each entry should be the name of a figure script
+    # relative to the ``src/figuress`` directory. These entries, in turn, 
+    # should contain a list of dependencies, relative to the same folder.
+    # For example, if the figure script ``src/figures/script.py`` requires a
+    # file ``src/figures/dataset.dat`` in order to run, you may specify that as
+    #
+    #   figure_dependencies:
+    #     script.py:
+    #       - dataset.dat
+    #
+    figure_dependencies:

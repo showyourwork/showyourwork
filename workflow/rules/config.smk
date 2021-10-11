@@ -1,3 +1,5 @@
+from pathlib import Path
+
 # Get user config, if present
 try:
     config
@@ -5,7 +7,7 @@ except NameError:
     config = {}
 
 # Verbosity
-verbose = config.get("verbose", "false").lower() == "true"
+verbose = str(config.get("verbose", "false")).lower() == "true"
 
 # Recognized figure extensions
 figexts = config.get(
@@ -21,3 +23,10 @@ arxiv_tarball_exclude = config.get(
         "**/.gitignore",
     ]),
 )
+
+# Figure dependencies
+figure_dependencies = config.get("figure_dependencies", {})
+for fd in figure_dependencies:
+    full_path = (Path("src") / "figures" / fd).absolute()
+    if not full_path.exists():
+        raise ValueError("Figure script specified in config file does not exist: {}".format(full_path))

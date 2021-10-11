@@ -50,8 +50,20 @@ def restore_cache():
     # timestamp, which will force Snakemake to re-evaluate the
     # corresponding rule.
     for file in modified_files:
-        subprocess.check_call(["git", "checkout", "HEAD", "--", file])
         print("Ignoring cache for modified file {}.".format(file))
+        try:
+            subprocess.check_call(["git", "checkout", "HEAD", "--", file])
+        except Exception as e:
+            # Can fail if the file was deleted since the last commit
+            print(e)
+            try:
+                subprocess.check_call(
+                    ["git", "ls-files", "--error-unmatch", file]
+                )
+            except Exception as e:
+                print(e)
+                if os.path.exists(file):
+                    os.remove(file)
 
 
 def update_cache():

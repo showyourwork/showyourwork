@@ -31,6 +31,18 @@ def figure_script(wildcards):
     )
 
 
+def figure_script_dependencies(wildcards):
+    """
+    Return user-specified dependencies of the current figure script.
+
+    """
+    script = Path(figure_script(wildcards)).name
+    deps = []
+    for dep in figure_dependencies.get(script, []):
+        deps.append(str(Path("src") / "figures" / dep))
+    return deps
+
+
 def figures(wildcards):
     """
     Return all the figure files required by the manuscript.
@@ -50,6 +62,7 @@ rule figure:
         "Generating figure `{output}`..."
     input:
         figure_script,
+        figure_script_dependencies,
         "environment.yml",
     output:
         report("{figure}", category="Figure"),

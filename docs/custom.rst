@@ -27,6 +27,10 @@ By default, the workflow defined in the ``Snakefile`` looks like this:
 
 .. code-block:: python
 
+    # User config
+    configfile: "showyourwork.yml"
+
+
     # Import the showyourwork module
     module showyourwork:
     snakefile:
@@ -158,15 +162,16 @@ Download a dataset and make it a dependency of a particular figure:
         shell:
             "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
 
-    # Subclass the `figure` rule to specify that `src/data/dataset.dat`
-    # is a dependency of `src/figures/my_figure.pdf`
-    use rule figure from showyourwork as my_figure with:
-        input:
-            "src/figures/my_figure.py",
-            "src/figures/my_dataset.dat",
-            "environment.yml"
-        output:
-            report("src/figures/my_figure.pdf", category="Figure")
+
+Specify this dependency in the configuration file ``showyourwork.yml``:
+
+.. code-block:: yaml
+
+    # Tell showyourwork that `src/figures/my_figure.py`
+    # requires the file `src/figures/my_dataset.dat` to run
+    figure_dependencies:
+        my_figure.py:
+            - my_dataset.dat
 
 
 Custom figure scripts
@@ -214,5 +219,5 @@ Override the internal ``figure`` rule completely:
             report("src/figures/custom_figure.pdf", category="Figure")
         conda:
             "environment.yml"
-        bash:
+        shell:
             "cd src/figures && python custom_script.py"

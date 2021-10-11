@@ -65,3 +65,24 @@ verbosity of the output to obtain more informative error messages:
 .. code-block:: bash
 
     snakemake -c1 --use-conda ms.pdf --config verbose=true
+
+
+What if I don't use AASTeX?
+---------------------------
+
+If you're not using the `AASTeX <https://journals.aas.org/aastexguide/>`_ LaTeX 
+template for AAS journals, things should still work as long as you include the
+relevant class and style files in the ``src/`` directory alongside your texfile.
+You won't get the snazzy ``showyourwork`` logo at the top of the page, but
+everything else should still work. We're planning on adding explicit support for
+other templates (like MNRAS and A&A), so please check back soon for more.
+
+
+Why do I keep getting a Bad Gateway error?
+------------------------------------------
+
+On GitHub Actions you may occasionally run into a ``502: Bad Gateway`` HTTP
+error. These are sporadic and temporary, and are usually due to issues
+with downloading the (very large) TeX distributions from ``archive.org``. 
+To commiserate with others experiencing this issue, `see here <https://github.com/tectonic-typesetting/tectonic/issues/765>`_.
+Other than that, the best thing to do is simply wait a bit and re-run the failed job!

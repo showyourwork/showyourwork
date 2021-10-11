@@ -150,7 +150,10 @@ checkpoint script_info:
                         else:
                             warnings.warn(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
                     if len(files):
-                        figures[label] = {"script": script, "files": files}
+                        if label in figures:
+                            figures[label]["files"] += files
+                        else:
+                            figures[label] = {"script": script, "files": files}
 
         # Parse free-floating graphics
         files = []

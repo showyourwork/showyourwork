@@ -43,6 +43,7 @@
   \IfBeginWith*{#1}{fig:}{%
     % Figure label
     \StrBehind*{#1}{fig:}[\sywCurrentLabelName]
+    \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
     \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
   }{}
 }
