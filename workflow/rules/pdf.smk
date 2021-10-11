@@ -37,7 +37,7 @@ rule stylesheet:
     params:
         WORKFLOW=WORKFLOW,
         TEMP=TEMP,
-        TEX=TEX,
+        TEX=TEX
     conda:
         "../envs/environment.yml"
     script:
@@ -53,6 +53,7 @@ rule pdf:
         POSIX(TEMP / "meta.json"),
         POSIX(TEX / "showyourwork.sty"),
         AUXFILES,
+        tectonic_files,
         class_files,
         figures,
     output:
@@ -62,6 +63,7 @@ rule pdf:
         TEMP=TEMP,
         TEX=TEX,
         SYWTEXFILE=SYWTEXFILE,
+        TECTONIC=tectonic_cmd
     conda:
         "../envs/environment.yml"
     script:

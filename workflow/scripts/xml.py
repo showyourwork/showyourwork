@@ -6,6 +6,7 @@ verbose = snakemake.params["verbose"]
 TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
 TMPTEXFILE = snakemake.params["TMPTEXFILE"]
+TECTONIC = snakemake.params["TECTONIC"]
 
 
 # Generate the PDF
@@ -14,6 +15,4 @@ if verbose:
     tectonic_args += ["--print"]
 else:
     tectonic_args += ["--chatter", "minimal"]
-subprocess.check_call(
-    ["tectonic"] + tectonic_args + [TEX / "{}.tex".format(TMPTEXFILE)]
-)
+subprocess.check_call([TECTONIC] + tectonic_args + [TEX / "{}.tex".format(TMPTEXFILE)])

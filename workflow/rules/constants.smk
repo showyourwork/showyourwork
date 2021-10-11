@@ -43,3 +43,11 @@ for folder in (WORKFLOW / "resources" / "classes").glob("*"):
         file.name
         for file in (WORKFLOW / "resources" / "classes" / folder).glob("*.*")
     ]
+
+# Tectonic command
+if tectonic_latest:
+    tectonic_cmd = str(TEMP / "tectonic")
+    tectonic_files = [POSIX(TEMP / "tectonic")]
+else:
+    tectonic_cmd = "tectonic"
+    tectonic_files = []

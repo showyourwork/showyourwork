@@ -105,6 +105,7 @@ rule xml:
         AUXFILES,
         POSIX(TEX / "sywxml.sty"),
         POSIX(TEX / "{}.tex".format(TMPTEXFILE)),
+        tectonic_files
     output:
         POSIX(TEMP / "showyourwork.xml"),
         temp(POSIX(TEMP / "{}.pdf".format(TMPTEXFILE))),
@@ -113,6 +114,7 @@ rule xml:
         TEMP=TEMP,
         TEX=TEX,
         TMPTEXFILE=TMPTEXFILE,
+        TECTONIC=tectonic_cmd
     conda:
         "../envs/environment.yml"
     script:
