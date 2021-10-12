@@ -51,7 +51,10 @@ for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
 # Remove additional unnecessary files
 for file in arxiv_tarball_exclude:
     for file in (TEMP / "arxiv").glob(file):
-        os.remove(file)
+        try:
+            os.remove(file)
+        except IsADirectoryError:
+            shutil.rmtree(file)
 
 # Tar it up
 with tarfile.open("arxiv.tar.gz", "w:gz") as tar:
