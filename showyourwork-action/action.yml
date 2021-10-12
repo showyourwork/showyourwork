@@ -44,6 +44,7 @@ inputs:
       **/*.py
       **/matplotlibrc
       **/.gitignore
+      **/__pycache__
   run-tests:
     description: "Used internally for running tests"
     required: false

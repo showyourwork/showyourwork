@@ -116,8 +116,10 @@
     \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
     \normalfont%
     \IfEq*{\usevalue{\sywCurrentLabelName_status}}{KEYNOTFOUND}{}{%
+    \raisebox{0pt}[5pt][5pt]{%
     \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
       \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
+    }%
     }%
     }
   }{}%
