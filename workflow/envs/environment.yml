@@ -4,6 +4,6 @@ channels:
 dependencies:
   - pip>=20.3.3
   - python=3.9
-  - tectonic>=0.7.1
+  - tectonic>=0.8.0
   - pip:
       - jinja2>=2.11.3
