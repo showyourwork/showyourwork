@@ -33,10 +33,10 @@ By default, the workflow defined in the ``Snakefile`` looks like this:
 
     # Import the showyourwork module
     module showyourwork:
-    snakefile:
-        "showyourwork/workflow/Snakefile"
-    config:
-        config
+        snakefile:
+            "showyourwork/workflow/Snakefile"
+        config:
+            config
 
 
     # Use all default rules
@@ -135,8 +135,8 @@ try to produce it programmatically. Simply place the figure in the ``src/static`
     \end{figure}
 
 
-Custom dependencies
--------------------
+Custom dependencies: datasets
+-----------------------------
 
 .. raw:: html
 
@@ -172,6 +172,36 @@ Specify this dependency in the configuration file ``showyourwork.yml``:
     figure_dependencies:
         my_figure.py:
             - my_dataset.dat
+
+
+Custom dependencies: scripts
+----------------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Afigure-deps">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=figure-deps" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/figure-deps">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/figure-deps-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+Sometimes we would like to tell ``showyourwork`` about script dependencies, such as
+when our figure script imports something from a locally-hosted script or package.
+We can do this in the same way as above by specifying a dependency in the configuration
+file ``showyourwork.yml``:
+
+.. code-block:: yaml
+
+    # Tell showyourwork that `src/figures/my_figure.py`
+    # depends on `src/figures/utils/helper_script.py`
+    figure_dependencies:
+        my_figure.py:
+            - utils/helper_script.py
 
 
 Custom figure scripts
