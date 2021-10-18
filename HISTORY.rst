@@ -1,5 +1,14 @@
 .. :changelog:
 
+0.1.8 (2021-10-18)
+++++++++++++++++++
+
+- Added "One script, multiple figures" example
+- Improved the documentation for script dependencies and datasets
+- Fixed a bug when downloading deposits from Zenodo
+- Added release testing
+- Changelog: `v0.1.7...v0.1.8 <https://github.com/rodluger/showyourwork/compare/v0.1.7...v0.1.8>`_
+
 0.1.7 (2021-10-18)
 ++++++++++++++++++
 

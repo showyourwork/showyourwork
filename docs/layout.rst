@@ -393,4 +393,7 @@ along with their default values and a brief description of what they do:
     #     script.py:
     #       - dataset.dat
     #
+    # These dependencies can also include rules to generate, upload, and/or
+    # download them from Zenodo. Please see the ``Custom workflows`` section
+    # of the documentation for more details.
     figure_dependencies:
