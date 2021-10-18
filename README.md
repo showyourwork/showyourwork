@@ -3,10 +3,10 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.7">
-    <img src="https://img.shields.io/static/v1?label=version&message=0.1.7&color=blue"/>
+<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.8">
+    <img src="https://img.shields.io/static/v1?label=version&message=0.1.8&color=blue"/>
 </a>
-<a href="https://showyourwork.readthedocs.io/en/v0.1.7">
+<a href="https://showyourwork.readthedocs.io/en/v0.1.8">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
@@ -131,6 +131,22 @@ shows the build status of all of these examples.
     </td>
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/raw/multi-panel-figure-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/multiple-figures">multiple-figures</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amultiple-figures">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=multiple-figures" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/multiple-figures-pdf/ms.pdf">
     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
     </td>
