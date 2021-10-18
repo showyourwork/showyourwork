@@ -362,17 +362,17 @@ once you release your code/paper.
 Finally, since ``showyourwork`` will upload the results of the simulation to Zenodo, it needs your
 credentials to access the API. So, in order for this all to work, you need to do three things:
 
-1. If you haven't done this already, create a `Zenodo account <https://zenodo.org/signup>`_ and
-    generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
-    Make sure to give it at least ``deposit:actions`` and ``deposit:write`` scopes, and store it somewhere
-    safe.
+1. If you haven't done this already, create a `Zenodo account <https://zenodo.org/signup>`_ and 
+   generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
+   Make sure to give it at least ``deposit:actions`` and ``deposit:write`` scopes, and store it somewhere
+   safe.
 
 2. To give ``showyourwork`` access to Zenodo from your local machine, assign your token to an environment variable
-    called ``ZENODO_TOKEN``. I export mine from within my
-    ``.zshrc`` or ``.bashrc`` config file so that it's always available in all terminals.
+   called ``ZENODO_TOKEN``. I export mine from within my
+   ``.zshrc`` or ``.bashrc`` config file so that it's always available in all terminals.
 
 3. To give ``showyourwork`` access to Zenodo from GitHub Actions, create a `repository secret <https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository>`_
-    in your GitHub repository called ``ZENODO_TOKEN`` and set its value equal to your Zenodo token.
+   in your GitHub repository called ``ZENODO_TOKEN`` and set its value equal to your Zenodo token.
 
 .. warning::
 
