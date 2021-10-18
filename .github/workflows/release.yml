@@ -4,9 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: |-
-          Release type 
-          (major | minor | patch | test)
+        description: Type (major | minor | patch | test)
         required: true
         default: "test"
 
