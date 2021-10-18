@@ -153,7 +153,7 @@ checkpoint script_info:
                         else:
                             warnings.warn(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
                     if len(files):
-                        datasets = [dataset for dataset in figure_dependencies["{}.py".format(label)] if type(dataset) is str and dataset.endswith(".zenodo")]
+                        datasets = [dataset for dataset in figure_dependencies.get("{}.py".format(label), []) if type(dataset) is str and dataset.endswith(".zenodo")]
                         if label in figures:
                             figures[label]["files"] += files
                             figures[label]["datasets"] += datasets
