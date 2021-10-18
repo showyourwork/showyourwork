@@ -1,0 +1,606 @@
+% !TeX encoding = ISO-8859-1
+% Ce fichier contient le code de l'extension "listofitems"
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                    %
+\def\loiname                 {listofitems}                           %
+\def\loiver                      {1.63}                              %
+%                                                                    %
+\def\loidate                  {2019/08/21}                           %
+%                                                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                    %
+% Author     : Christian Tellechea, Steven B. Segletes (contributor) %
+% Status     : Maintained                                            %
+% Maintainer : Christian Tellechea                                   %
+% Email      : unbonpetit@netc.fr                                    %
+%              steven.b.segletes.civ@mail.mil                        %
+% Package URL: https://www.ctan.org/pkg/listofitems                  %
+% Bug tracker: https://framagit.org/unbonpetit/listofitems/issues    %
+% Repository : https://framagit.org/unbonpetit/listofitems/tree/master
+% Copyright  : Christian Tellechea 2016-2019                         %
+% Licence    : Released under the LaTeX Project Public License v1.3c %
+%              or later, see http://www.latex-project.org/lppl.txt   %
+% Files      : 1) listofitems.tex                                    %
+%              2) listofitems.sty                                    %
+%              3) listofitems-fr.tex                                 %
+%              4) listofitems-fr.pdf                                 %
+%              5) listofitems-en.tex                                 %
+%              6) listofitems-en.pdf                                 %
+%              7) README                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\expandafter\edef\csname loi_restorecatcode\endcsname{\catcode\number`\_=\number\catcode`\_\relax}
+\catcode`\_11
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% gestion des erreurs + annonce package %%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\unless\ifdefined\loi_fromsty
+	\immediate\write -1 {Package: \loidate\space v\loiver\space Grab items in lists using user-specified sep char (CT)}%
+\fi
+
+\ifdefined\PackageError
+	\def\loi_error#1{\PackageError\loiname{#1}{Read the \loiname\space manual}}% pour LaTeX
+\else
+	\def\loi_error#1{\errmessage{Package \loiname\space Error: #1^^J}}% pour TeX
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% verification des prerequis %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\loi_checkprimitive#1#2#3{% Verifie que #1 est une primitive et sinon, emet le message #2 et execute #3
+	\begingroup
+		\edef\__tempa{\meaning#1}\edef\__tempb{\string#1}\expandafter
+	\endgroup
+	\ifx\__tempa\__tempb\else
+		\loi_error{#2}%
+		\def\loi_temp{#3}%
+		\loi_restorecatcode\expandafter\loi_temp
+	\fi
+}
+\loi_checkprimitive\eTeXversion
+	{You are not using an eTeX engine, listofitems cannot work.}
+	{\endinput}%
+\loi_checkprimitive\expanded
+	{the \string\expanded\space primitive is not provided by your TeX engine, listofitems v\loiver\space cannot work: loading listofitems v1.61}
+	{\input listofitemsold.tex\relax\endinput}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% macros auxiliaires %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\loi_quark{\loi_quark}
+\long\def\loi_identity#1{#1}
+\long\def\loi_gobarg#1{}
+\long\def\loi_first#1#2{#1}
+\long\def\loi_second#1#2{#2}
+\long\def\loi_firsttonil#1#2\_nil{#1}
+\long\def\loi_antefi#1#2\fi{#2\fi#1}
+\long\def\loi_exparg#1#2{\expandafter\loi_exparg_a\expandafter{#2}{#1}}% \loi_exparg{<a>}{<b>} devient <a>{<*b>}
+\long\def\loi_exparg_a#1#2{#2{#1}}
+\long\def\loi_expafter#1#2{\expandafter\loi_expafter_a\expandafter{#2}{#1}}% \loi_expafter{<a>}{<b>} devient <a><*b>
+\long\def\loi_expafter_a#1#2{#2#1}
+\def\loi_macroname{\loi_ifinrange\escapechar[[0:255]]{\expandafter\loi_gobarg}{}\string}
+\def\loi_argcsname#1#{\loi_argcsname_a{#1}}
+\def\loi_argcsname_a#1#2{\loi_expafter{#1}{\csname#2\endcsname}}
+\long\def\loi_addtomacro#1#2{\loi_exparg{\def#1}{#1#2}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% macros de test %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\long\def\loi_ifnum#1{\ifnum#1\expandafter\loi_first\else\expandafter\loi_second\fi}
+\long\def\loi_ifx#1{\ifx#1\expandafter\loi_first\else\expandafter\loi_second\fi}
+\long\def\loi_ifempty#1{\loi_exparg\loi_ifx{\expandafter\relax\detokenize{#1}\relax}}
+\def\loi_ifstar#1#2{\def\loi_ifstar_a{\loi_ifx{*\loi_nxttok}{\loi_first{#1}}{#2}}\futurelet\loi_nxttok\loi_ifstar_a}
+\edef\loi_escapechar{\expandafter\loi_gobarg\string\\}
+\long\def\loi_ifcsexpandable#1{% #1 est-il constitue d'une seule sc _developpable_ ?
+	\loi_ifempty{#1}
+		{\loi_second
+		}
+		{\loi_ifspacefirst{#1}
+			{\loi_second% si espace en 1er, faux
+			}
+			{\csname loi_\if\loi_escapechar\expandafter\loi_firsttonil\detokenize{#1}\_nil first\else second\fi\endcsname
+				{\loi_exparg\loi_ifempty{\loi_gobarg#1}% 1 seul arg commeneant par "\" ?
+					{\def\loi_tempa{#1}\loi_exparg{\def\loi_tempb}{#1}% est-il developpable ?
+					\expandafter\unless\loi_ifx{\loi_tempa\loi_tempb}%
+					}
+					{\loi_second
+					}%
+				}
+				{\loi_second
+				}%
+			}%
+		}%
+}
+\def\loi_ifinrange#1[[#2:#3]]{\expandafter\unless\loi_ifnum{\numexpr(#1-#2)*(#1-#3)>0 }}
+\def\loi_ifstring#1#2{% si la chaine #1 est contenue dans #2
+	\def\loi_ifstring_a##1#1##2\_nil{\loi_ifempty{##2}\loi_second\loi_first}%
+	\loi_ifstring_a#2#1\_nil% appel de la macro auxiliaire
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% macro \loi_foreach %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcount\loi_cnt_foreach_nest \loi_cnt_foreach_nest=0
+\def\end_foreach{\end_foreach}
+\def\loi_def_foreachsep#1{%
+	\long\def\loi_foreach##1\in##2##3{%
+		\global\advance\loi_cnt_foreach_nest1
+		\loi_argcsname\def{loop_code_\number\loi_cnt_foreach_nest}{##3}%
+		\loi_foreach_a##1##2#1\end_foreach#1%
+		\loi_argcsname\let{loop_code_\number\loi_cnt_foreach_nest}\empty
+		\global\advance\loi_cnt_foreach_nest-1
+	}%
+	\long\def\loi_foreach_a##1##2#1{%
+		\def##1{##2}%
+		\loi_ifx{\end_foreach##1}
+			{}
+			{\csname loop_code_\number\loi_cnt_foreach_nest\endcsname% execute le code
+			\loi_foreach_a##1%
+			}%
+	}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% macros gerant l'appariement %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\long\def\defpair#1{%
+	\let\loi_listofpair\empty
+	\loi_ifempty{#1}
+		{}
+		{\defpair_a{}#1\loi_quark\loi_quark}%
+}
+\long\def\defpair_a#1#2#3{%
+	\loi_ifx{\loi_quark#2}
+		{\def\loi_sanitizelist##1,\_nil{\def\loi_listofpair{##1}}%
+		\loi_sanitizelist#1\_nil
+		}
+		{\loi_if_validpair#2#3%
+			{\long\def\loi_paired_a{#2}\long\def\loi_paired_b{#3}%
+			\loi_ifx{\loi_paired_a\loi_paired_b}
+				{\loi_error{Paired tokens must not be equal, the pair \detokenize{#2#3} is ignored}%
+				\defpair_a{#1}%
+				}
+				{\defpair_a{#1#2#3,}%
+				}%
+			}
+			{\loi_error{Invalid paired tokens, the pair "\detokenize{#2}" and "\detokenize{#3}" is ignored}%
+			\defpair_a{#1}%
+			}%
+		}%
+}
+\long\def\loi_if_validpair#1#2{%
+	\def\loi_validpair{1}%
+	\loi_if_invalid_pairtoken{#1}{\def\loi_validpair{0}}%
+	\loi_if_invalid_pairtoken{#2}{\def\loi_validpair{0}}%
+	\loi_ifnum{\loi_validpair=1 }
+}
+\long\def\loi_if_invalid_pairtoken#1{%
+	\loi_ifempty{#1}
+		{\loi_identity
+		}
+		{\loi_ifspacefirst{#1}
+			{\loi_identity
+			}
+			{\loi_exparg\loi_ifempty{\loi_gobarg#1}% 1 seul token ?
+				{\ifcat\relax\noexpand#1\expandafter\loi_identity\else\expandafter\loi_gobarg\fi}
+				{\loi_identity}% si plusieurs tokens, faux
+			}%
+		}%
+}
+\long\def\loi_count_occur#1\in#2:#3{% compte le nombre d'occurrences de #1 dans #2 et met le resultat dans la macro #3
+	\long\def\loi_count_occur_a##1##2#1##3\_nil{%
+		\loi_ifempty{##3}
+			{\def#3{##1}}
+			{\expandafter\loi_count_occur_a\number\numexpr##1+1\relax##3\_nil}%
+	}%
+	\loi_count_occur_a0#2#1\_nil
+}
+\long\def\loi_check_pair#1#2\in#3{% teste l'appariement de #1 et #2 dans #3
+	\loi_ifempty{#3}
+		{\loi_second
+		}
+		{\loi_count_occur#1\in#3:\loi_tempa
+		\loi_count_occur#2\in#3:\loi_tempb
+		\loi_ifnum{\loi_tempa=\loi_tempb\relax}%
+		}%
+}
+\long\def\loi_grabpaired_expr#1#2#3#4#5{% #1=liste de paires  #2=expression  #3=separateur   #4=resultat    #5=ce qui reste
+	\let#4\empty
+	\def\loi_remain{#2#3}%
+	\loi_foreach\loi_pair\in{#1}{\expandafter\loi_grabpaired_expr_a\loi_pair{#3}#4}%
+	\def\loi_remove_lastsep##1#3\_nil{\def#4{##1}}%
+	\expandafter\loi_remove_lastsep#4\_nil
+	\loi_expafter{\long\def\loi_grab_remain}#4##1\_nil{%
+		\loi_ifempty{##1}
+			{\let#5\empty}
+			{\loi_exparg{\def#5}{\loi_gobarg##1}}%
+	}%
+	\loi_grab_remain#2\_nil
+}
+\long\def\loi_grabpaired_expr_a#1#2#3#4{% #1#2=paire en cours  #3=separateur   #4=resultat
+	\loi_exparg{\loi_check_pair#1#2\in}#4% si les paires sont appariees dans le resultat
+		{}% passer e la paire suivante
+		{\long\def\loi_grabpaired_expr_b##1#3##2\_nil{%
+			\loi_addtomacro#4{##1#3}% ajouter au resultat ce qui est jusqu'au prochain separateur
+			\def\loi_remain{##2}%
+			\loi_exparg{\loi_check_pair#1#2\in}{#4}
+				{}
+				{\loi_ifempty{##2}
+					{\loi_error{"\detokenize{#1}" and "\detokenize{#2}" are not paired}}
+					{\loi_grabpaired_expr_b##2\_nil}%
+				}%
+			}%
+		\expandafter\loi_grabpaired_expr_b\loi_remain\_nil
+		}%
+}
+\def\insidepair#1#2#3#4{% #1#2=paire  #3=expr  #4=macro reeevant le resultat
+	\loi_if_validpair#1#2%
+		{\loi_ifcsexpandable{#3}
+			{\loi_exparg{\insidepair#1#2}{#3}#4%
+			}
+			{\loi_check_pair#1#2\in{#3}% si les paires sont appariees dans le resultat
+				{\def\insidepair_a##1#1##2\_nil{\insidepair_b##2\_nil{#1}}%
+				\def\insidepair_b##1#2##2\_nil##3{%
+					\loi_check_pair#1#2\in{##3##1#2}
+						{\loi_exparg{\def#4}{\loi_gobarg##3##1}%
+						\def\loi_remainafterparen{##2}%
+						}%
+						{\insidepair_b##2\_nil{##3##1#2}%
+						}%
+					}%
+				\insidepair_a#3\_nil
+				}
+				{\loi_error{"\detokenize{#1}" and "\detokenize{#2}" are not paired in "#3"}%
+				}%
+			}%
+		}
+		{\loi_error{Invalid paired tokens "\detokenize{#1}" and "\detokenize{#2}", empty \string#4 returned}% et bim
+		\let#4\empty% voile, bien fait pour vos gueules
+		}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% macro \loi_fornum %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\loi_fornum#1=#2to#3\do{%
+	\edef#1{\number\numexpr#2}%
+	\expandafter\loi_fornum_a
+		\csname loi_fornum_\string#1\expandafter\endcsname\expandafter
+		{\number\numexpr#3\expandafter}%
+		\expanded{\ifnum#1<\numexpr#3\relax>+\else<-\fi}%
+		#1%
+}
+\long\def\loi_fornum_a#1#2#3#4#5#6{%
+	\def#1{%
+		\unless\ifnum#5#3#2\relax
+			\loi_antefi{#6\edef#5{\number\numexpr#5#41\relax}#1}%
+		\fi}%
+	#1%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% macro retirant les espaces extremes %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\long\def\loi_ifspacefirst#1{\expandafter\loi_ifspacefirst_a\detokenize{#10} \_nil}
+\long\def\loi_ifspacefirst_a#1 #2\_nil{\loi_ifempty{#1}}
+\loi_expafter{\def\loi_gobspace}\space{}
+\long\def\loi_removefirstspaces#1{\loi_ifspacefirst{#1}{\loi_exparg\loi_removefirstspaces{\loi_gobspace#1}}{\unexpanded{#1}}}%##BUGFIX v1.63
+\begingroup
+	\catcode0 12
+	\long\gdef\loi_removelastspaces#1{\loi_removelastspaces_a#1^^00 ^^00\_nil}
+	\long\gdef\loi_removelastspaces_a#1 ^^00{\loi_removelastspaces_b#1^^00}
+	\long\gdef\loi_removelastspaces_b#1^^00#2\_nil{\loi_ifspacefirst{#2}{\loi_removelastspaces_a#1^^00 ^^00\_nil}{\unexpanded{#1}}}
+\endgroup
+\long\def\loi_removeextremespaces#1{\expanded{\loi_exparg\loi_removelastspaces{\expanded{\loi_removefirstspaces{#1}}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% macro publique \setsepchar %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\setsepchar{\futurelet\loi_nxttok\setsepchar_a}
+\def\setsepchar_a{\loi_ifx{[\loi_nxttok}\setsepchar_b{\setsepchar_b[/]}}
+\long\def\setsepchar_b[#1]#2{% #1=sepcar de <liste des sepcar>  #2=<liste des sepcar>
+	\loi_ifempty{#1}
+		{\loi_error{Empty separator not allowed, separator "/" used}%
+		\setsepchar_b[/]{#2}%
+		}
+		{\def\loi_currentsep{#1}%
+		\_removeextremespacesfalse
+		\loi_nestcnt1 % reinitaliser niveau initial e 1
+		\def\nestdepth{1}%
+		\loi_argcsname\let{loi_previndex[\number\loi_nestcnt]}\empty
+		\def\loi_listname{loi_listofsep}%
+		\let\loi_def\def \let\loi_edef\edef \let\loi_let\let
+		\let\loi_listofpair_saved\loi_list_ofpair
+		\let\loi_list_ofpair\empty
+		\loi_ifempty{#2}
+			{\loi_error{Empty list of separators not allowed, "," used}%
+			\readlist_g1{,}%
+			}
+			{\readlist_g1{#2}%
+			}%
+		\loi_argcsname\let\nestdepth{loi_listofseplen[0]}%
+		\loi_argcsname\let\loi_currentsep{loi_listofsep[1]}% 1er car de separation
+		\let\loi_listofpair\loi_listofpair_saved
+		}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% macro normalisant l'index %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\loi_normalizeindex#1#2{% #1=macroname  #2=liste d'index  --> renvoie {err}{indx norm}
+	\loi_ifempty{#2}
+		{{}{}}
+		{\loi_exparg{\loi_normalizeindex_a1{}}{\number\csname#1nest\endcsname}{#1}#2,\loi_quark,}%
+}%
+\def\loi_normalizeindex_a#1#2#3#4#5,{% #1=compteur de profondeur #2=index precedents  #3=profondeur max #4=macroname  #5=index courant
+	\loi_ifx{\loi_quark#5}
+		{\loi_normalizeindex_c#2\loi_quark% supprimer la derniere virgule
+		}
+		{\loi_ifnum{#1>#3 }
+			{\loi_invalidindex{Too deeply nested index, index [.] retained}{#2}% si profondeur trop grande
+			}
+			{\loi_ifinrange\ifnum\numexpr#5<0 -1*\fi(#5)[[1:\csname #4len[#20]\endcsname]]% si abs(#5) hors de [1,len]
+				{\loi_exparg\loi_normalizeindex_b{\number\numexpr#5\ifnum\numexpr#5<0 +\csname #4len[#20]\endcsname+1\fi}{#1}{#2}{#3}{#4}}
+				{\loi_invalidindex{#5 is an invalid index, index [.] retained}{#2}}%
+			}%
+		}%
+}
+\def\loi_normalizeindex_b#1#2#3{\loi_exparg\loi_normalizeindex_a{\number\numexpr#2+1}{#3#1,}}% #1=index e rajouter  #2=compteur de profondeur #3=index precedents
+\def\loi_normalizeindex_c#1,\loi_quark{{}{#1}}
+\def\loi_invalidindex#1#2{\loi_ifempty{#2}{\loi_invalidindex_a{#1},}\loi_invalidindex_a{#1}{#2}}
+\def\loi_invalidindex_a#1#2{\loi_invalidindex_b#1\loi_quark#2\loi_quark}
+\def\loi_invalidindex_b#1[.]#2\loi_quark#3,\loi_quark#4\loi_quark,{{#1[#3]#2}{#3}}% #4= index ignores
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% macro publique \readlist %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcount\loi_nestcnt
+\def\greadlist{\let\loi_def\gdef\let\loi_edef\xdef\def\loi_let{\global\let}\readlist_a}%
+\def\readlist{\let\loi_def\def\let\loi_edef\edef\let\loi_let\let\readlist_a}
+\def\readlist_a{%
+	\loi_nestcnt1 % niveau initial = 1
+	\loi_argcsname\let{loi_previndex[\number\loi_nestcnt]}\empty
+	\loi_ifstar{\_removeextremespacestrue\readlist_b}{\_removeextremespacesfalse\readlist_b}%
+}
+\long\def\readlist_b#1#2{% #1=macro stockant les elements  #2=liste des elements
+	\loi_ifcsexpandable{#2}
+		{\loi_exparg{\readlist_b#1}{#2}%
+		}
+		{\loi_edef\loi_listname{\loi_macroname#1}%
+		\loi_exparg{\readlist_c#1{#2}}{\loi_listname}%%
+		}%
+}
+\long\def\readlist_c#1#2#3{% #1=macro stockant les elements  #2=liste des elements #3=macroname
+	\loi_argcsname\loi_let{#3nest}\nestdepth
+	\loi_argcsname\loi_def{#3[]}{#2}% la liste entiere
+	\loi_argcsname\loi_def{#3sep[]}{}% separateur vide
+	\loi_ifempty{#2}
+		{\loi_def#1[##1]{}%
+		\loi_argcsname\loi_def{#3len}{0}\loi_argcsname\loi_def{#3len[0]}{0}%
+		\loi_error{Empty list ignored, nothing to do}%
+		}
+		{\loi_def#1[##1]{\expanded{\expandafter\readlist_d\expanded{\loi_normalizeindex{#3}{##1}}{#3}}}%
+		\loi_argcsname\loi_def{#3sep}[##1]{\expanded{\expandafter\readlist_d\expanded{\loi_normalizeindex{#3}{##1}}{#3sep}}}%
+		\readlist_e{#2}%
+		\loi_argcsname\loi_argcsname\loi_let{#3len}{#3len[0]}% longueur du niveau 0
+		}%
+}
+\def\readlist_d#1#2#3{%
+	\unexpanded\expandafter\expandafter\expandafter{\csname#3[#2]\expandafter\endcsname\expandafter}%
+	\expanded{\loi_ifempty{#1}{}{\unexpanded{\unexpanded{\loi_error{#1}}}}}%
+}
+\def\readlist_e{%
+	\loi_argcsname\loi_let\loi_currentsep{loi_listofsep[\number\loi_nestcnt]}%
+	\expandafter\readlist_f\loi_currentsep||\_nil
+}
+\long\def\readlist_f#1||#2\_nil#3{\readlist_g1{#3#1}}% #1=<sep courant simple>  #3=liste -> rajoute un element vide pour le test \ifempty ci dessous
+\long\def\readlist_g#1#2{% #1=compteur d'index  #2=liste d'elements e examiner terminee par <sep courant simple> >>RIEN laisse apres
+	\loi_ifempty{#2}
+		{\loi_argcsname\loi_edef{\loi_listname len[\csname loi_previndex[\number\loi_nestcnt]\endcsname0]}{\number\numexpr#1-1\relax}%
+		\loi_argcsname\loi_let{\loi_listname sep[\csname loi_previndex[\number\loi_nestcnt]\endcsname\number\numexpr#1-1\relax]}\empty% le dernier <sep> est <vide> ##NEW v1.52
+		\advance\loi_nestcnt-1
+		\loi_argcsname\loi_let\loi_currentsep{loi_listofsep[\number\loi_nestcnt]}%
+		}
+		{\loi_expafter{\readlist_h{#2}{}}\loi_currentsep||\loi_quark||#2\_nil{#1}% aller isoler le 1er item
+		}%
+}
+\long\def\readlist_h#1#2#3||{% #1=liste restante   #2=<dernier sep utilise>  #3=<sep courant>
+	\loi_ifx{\loi_quark#3}% on a epuise tous les <separateurs> ? RESTE e lire <expr+sep1>\_nil{<compteur>}
+		{\loi_ifempty{#2}% si #2 vide, aucun <sep utilise> n'a ete trouve, il reste e lire "<liste complete>\_nil"
+			{\long\def\readlist_i##1\_nil##2{\loi_exparg{\readlist_j{##2}{}}{\loi_gobarg##1}{#2}}% ##2=compteur d'index
+			}
+			{\loi_ifx{\loi_listofpair\empty}% paires definies ?
+				{\long\def\readlist_i##1#2##2\_nil##3{\loi_exparg{\readlist_j{##3}{##2}}{\loi_gobarg##1}{#2}}%
+				}
+				{\long\def\readlist_i##1\_nil##2{%
+					\loi_exparg{\loi_exparg\loi_grabpaired_expr\loi_listofpair}{\loi_gobarg##1}{#2}\loi_grabpaired_result\loi_grabpaired_remain
+					\loi_exparg{\loi_exparg{\readlist_j{##2}}{\loi_grabpaired_remain}}{\loi_grabpaired_result}{#2}}%{#}
+				}%
+			}%
+		\readlist_i\relax% le \relax meuble l'argument delimite
+		}
+		{\long\def\readlist_i##1#3##2\_nil{%
+			\loi_ifempty{##2}% si <liste restante> ne contient pas le <sep courant>
+				{\readlist_h{#1}{#2}% recommencer avec le meme <sep utile>
+				}%
+				{\loi_ifx{\loi_listofpair\empty}% si pas de paires definies
+					{\loi_exparg\readlist_h{\loi_gobarg##1#3}{#3}% raccourcir <liste restante> et <sep courant>:=<sep utile>% ##BUGFIX v1.53
+					}%
+					{\loi_exparg\loi_grabpaired_expr\loi_listofpair{#1#3}{#3}\loi_grabpaired_result\loi_grabpaired_remain
+					\loi_ifx{\loi_grabpaired_remain\empty}% si liste non raccourcie #BUGFIX 1.63
+						{\loi_exparg\readlist_h{\loi_grabpaired_result}{#2}}% garder le precedent <sep>
+						{\loi_exparg\readlist_h{\loi_grabpaired_result}{#3}}%
+					}%
+				}%
+			}%
+		\readlist_i\relax#1#3\_nil% ##BUGFIX v1.53
+		}%
+}
+\long\def\readlist_j#1#2#3{% #1=compteur d'index  #2=liste restante  #3=element courant
+	\loi_ifnum{0\loi_exparg\loi_ifspacefirst{\loi_currentsep}{}1\if_removeextremespaces1\fi=11 }% s'il faur retirer les espaces extremes
+		{\loi_exparg{\loi_exparg{\readlist_k{#1}{#2}}}{\loi_removeextremespaces{#3}}}% redefinir l'element courant
+		{\readlist_k{#1}{#2}{#3}}%
+}
+\long\def\readlist_k#1#2#3#4{% #1=compteur d'index  #2=liste restante  #3=element courant   #4=sep utilise
+	\loi_ifnum{0\if_ignoreemptyitems1\fi\loi_ifempty{#3}1{}=11 }
+		{\readlist_g{#1}{#2}% si l'on n'ignore pas les elements vides
+		}%
+		{\loi_argcsname\loi_def{\loi_listname[\csname loi_previndex[\number\loi_nestcnt]\endcsname#1]}{#3}% assignation
+		\loi_argcsname\loi_def{\loi_listname sep[\csname loi_previndex[\number\loi_nestcnt]\endcsname#1]}{#4}% assignation du <sep> actuel e la macro \<macrolist>sep
+		\loi_ifnum{\loi_nestcnt<\nestdepth\relax}% si imbrication max non atteinte
+			{\advance\loi_nestcnt1
+			\loi_argcsname\edef{loi_previndex[\number\loi_nestcnt]}{\csname loi_previndex[\number\numexpr\loi_nestcnt-1]\endcsname#1,}%
+			\readlist_e{#3}% recommencer avec l'element courant
+			}
+			{}%
+		\loi_exparg\readlist_g{\number\numexpr#1+1}{#2}% puis chercher l'element suivant dans la liste restante
+		}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% macro \listlen %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\listlen#1[#2]{%
+	\expanded{%
+		\loi_ifempty{#2}
+			{\csname\loi_macroname#1len[0]\endcsname}
+			{\loi_exparg\listlen_a{\expanded{\loi_macroname#1}}{#2}}%
+	}%
+}
+\def\listlen_a#1#2{% #1=macro name   #2=index non normalise    prendre <profondeur max-1>
+	\expandafter\listlen_b\expanded{\loi_normalizeindex{#1}{#2}}{#1}%
+}
+\def\listlen_b#1#2#3{% #1=err   #2=index normalise  #3=macroname
+	\csname#3len[#2,0]\expandafter\endcsname
+	\expanded{\loi_ifempty{#1}{}{\unexpanded{\unexpanded{\loi_error{#1}}}}}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% macro \foreachitem %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\foreachitem#1\in#2{%
+	\edef\foreachitem_a{\noexpand\foreachitem_c\noexpand#1{\expandafter\noexpand\csname\loi_macroname#1cnt\endcsname}{\loi_macroname#2}}%
+	\futurelet\loi_nxttok\foreachitem_b
+}
+\def\foreachitem_b{\loi_ifx{\loi_nxttok[}\foreachitem_a{\foreachitem_a[]}}
+\def\foreachitem_c#1#2#3[#4]{% prendre <profondeur max-1>
+	\expandafter\foreachitem_d\expanded{\loi_normalizeindex{#3}{#4}}#1{#2}{#3}%
+}
+\def\foreachitem_d#1#2{\loi_ifempty{#2}{\foreachitem_e{#1}{}}{\foreachitem_e{#1}{#2,}}}% #1=err  #2=index norm
+\long\def\foreachitem_e#1#2#3#4#5#6{% #1=err  #2=index norm  #3=macroiter  #4=compteur associe  #5=nom de macrolist  #6=code
+	\loi_ifnum{\csname#5len[#20]\endcsname>0 }
+		{\loi_ifempty{#1}{}{\loi_error{#1}}%
+		\loi_fornum#4=1to\csname#5len[#20]\endcsname\do{\loi_argcsname\let#3{#5[#2#4]}#6}%
+		}
+		{}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% macro \showitem %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\showitems{\loi_ifstar{\let\showitems_cmd\detokenize\showitems_a}{\let\showitems_cmd\loi_identity\showitems_a}}
+\def\showitems_a#1{\def\showitems_b{\showitems_d#1}\futurelet\loi_nxttok\showitems_c}
+\def\showitems_c{\loi_ifx{\loi_nxttok[}\showitems_b{\showitems_b[]}}
+\def\showitems_d#1[#2]{\foreachitem\showitems_iter\in#1[#2]{\showitemsmacro{\expandafter\showitems_cmd\expandafter{\showitems_iter}}}}
+\unless\ifdefined\fbox
+	\newdimen\fboxrule \newdimen\fboxsep \fboxrule=.4pt \fboxsep=3pt % reglages identiques e LaTeX
+	\def\fbox#1{% imitation de la macro \fbox de LaTeX, voir pages 271 e 274 de "Apprendre e programmer en TeX"
+		\hbox{%
+			\vrule width\fboxrule
+			\vtop{%
+				\vbox{\hrule height\fboxrule \kern\fboxsep \hbox{\kern\fboxsep#1\kern\fboxsep}}%
+				\kern\fboxsep \hrule height\fboxrule
+			}\vrule width\fboxrule
+		}%
+	}
+\fi
+\def\showitemsmacro#1{% encadrement par defaut
+	\begingroup\fboxsep=0.25pt \fboxrule=0.5pt \fbox{\strut#1}\endgroup
+	\hskip0.25em\relax
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% macro \itemtomacro %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\itemtomacro#1[#2]{% #1[#2]=item  non encore lu: #3=macro
+	\edef\loi_listname{\loi_macroname#1}%
+	\expandafter\itemtomacro_a\expanded{\loi_normalizeindex{\loi_listname}{#2}}\let
+}
+\def\gitemtomacro#1[#2]{% #1[#2]=item
+	\xdef\loi_listname{\loi_macroname#1}%
+	\expandafter\itemtomacro_a\expanded{\loi_normalizeindex{\loi_listname}{#2}}{\global\let}%
+}
+\def\itemtomacro_a#1#2#3#4{%
+	\loi_ifempty{#1}{}{\loi_error{#1}}%
+	\loi_argcsname#3#4{\loi_listname[#2]}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% reglages par defaut %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\if_removeextremespaces
+\newif\if_ignoreemptyitems
+\let\ignoreemptyitems\_ignoreemptyitemstrue
+\let\reademptyitems\_ignoreemptyitemsfalse
+\loi_def_foreachsep{,}
+\loi_restorecatcode
+\reademptyitems
+\setsepchar{,}
+\defpair{}
+\endinput
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%  historique %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+v1.0    19/8/2016
+  - Premiere version publique
+----------------------------------------------------------------------
+v1.1    01/09/2016
+  - Stockage des separateurs dans <macrolist>sep
+  - bug corrige dans \loi_restorecatcode
+----------------------------------------------------------------------
+v1.2    22/10/2016
+  - macros \greadlist et \gitemtomacro pour la globalite
+----------------------------------------------------------------------
+v1.3    18/11/2016
+  - bugs corriges dans la gestion de la globalite
+----------------------------------------------------------------------
+v1.4    05/10/2017
+  - test \loi_ifprimitive ajoute au test \loi_ifcs
+  - suppression de \loi_expafternil, creation de \loi_expafter,
+    modification de \loi_argcsname
+  - correction d'un bug : \setsepchar{\par} ne provoque plus d'erreur.
+    \loi_ifnum devient \long
+----------------------------------------------------------------------
+v1.5    06/10/2017
+  - correction d'un bug dans \loi_ifcs
+----------------------------------------------------------------------
+v1.51   24/10/2017
+  - correction d'un bug dans \loi_ifcs
+----------------------------------------------------------------------
+v1.52   13/01/2018
+  - le dernier separateur est <vide>
+----------------------------------------------------------------------
+v1.53   13/03/2018
+  - correction d'un bug dans \readlist_i
+----------------------------------------------------------------------
+v1.6    01/11/2018
+  - possibilite d'appariement de tokens dans les items
+----------------------------------------------------------------------
+v1.61   03/03/2019
+  - la macro \loi_ifcs contient une erreur de conception. Il faut
+    tester si le token est un sc && s'il est developpable pour
+    renvoyer vrai car il existe des sc non developpables && qui ne
+    sont _pas_ des primitives.
+    Macro rebaptisee \loi_ifcsexpandable
+----------------------------------------------------------------------
+v1.62   18/05/2019
+  - utilisation de la nouvelle primitive \expanded au lieu du
+    desormais obsolete \romannumeral
+  - bug corrige dans \loi_ifcsexpandable
+----------------------------------------------------------------------
+v1.63   21/08/2019
+  - bug corrige dans \readlist_h avec les tokens apparies
+  - bug corrige \loi_removefirstspaces est desormais \long

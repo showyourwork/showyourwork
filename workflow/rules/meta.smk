@@ -66,6 +66,7 @@ rule metadata:
         ],
         POSIX(TEMP / "repo.json"),
         POSIX(TEMP / "scripts.json"),
+        zenodo_files
     output:
         POSIX(TEMP / "meta.json"),
     run:
@@ -87,8 +88,14 @@ rule metadata:
             script = value["script"]
             if script != UNKNOWN_SCRIPT:
                 status = get_script_status(script)
+                datasets = value["datasets"]
                 meta["labels"]["{}_script".format(label)] = script
                 meta["labels"]["{}_status".format(label)] = str(status)
+                numbers = ["One", "Two", "Three"] # Built-in max of 3
+                for dataset, number in zip(datasets, numbers):
+                    with open(FIGURES / dataset, "r") as f:
+                        dataset = f.readlines()[0].replace("\n", "")
+                    meta["labels"]["{}_dataset{}".format(label, number)] = dataset
                 meta["status"] = max(meta["status"], status)
         meta["status"] = str(meta["status"])
 

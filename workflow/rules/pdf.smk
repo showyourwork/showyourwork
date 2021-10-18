@@ -57,7 +57,7 @@ rule pdf:
         class_files,
         figures,
     output:
-        report("ms.pdf", category="Article PDF"),
+        report("ms.pdf", category="Article")
     params:
         verbose=verbose,
         TEMP=TEMP,

@@ -158,7 +158,7 @@ Download a dataset and make it a dependency of a particular figure:
     # Custom rule to download a dataset
     rule my_dataset:
         output:
-            report("src/figures/my_dataset.dat", category="Dataset")
+            "src/figures/my_dataset.dat"
         shell:
             "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
 
@@ -234,7 +234,7 @@ included outside of a ``figure`` environment:
             "src/figures/custom_script.py",
             "environment.yml"
         output:
-            report("src/figures/custom_figure.pdf", category="Figure")
+            "src/figures/custom_figure.pdf"
 
 
 Override the internal ``figure`` rule completely:
@@ -246,96 +246,8 @@ Override the internal ``figure`` rule completely:
             "src/figures/custom_script.py",
             "environment.yml",
         output:
-            report("src/figures/custom_figure.pdf", category="Figure")
+            "src/figures/custom_figure.pdf"
         conda:
             "environment.yml"
         shell:
             "cd src/figures && python custom_script.py"
-
-
-Expensive figures
------------------
-
-.. raw:: html
-
-    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aexpensive-figure">
-        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=expensive-figure" alt="test status"/>
-    </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/expensive-figure">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
-    </a>
-    <a href="https://github.com/rodluger/showyourwork-example/raw/expensive-figure-pdf/ms.pdf">
-        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
-    </a>
-    <br/><br/>
-
-.. note::
-
-    This example is a bit involved, and we're working on integrating this feature more seamlessly with
-    ``showyourwork``. So stay tuned! It should get significantly easier to do this in the next release
-    of the workflow.
-
-Quite often you may have a figure that is very computationally expensive to run. An example is a posterior distribution plot for an MCMC run, or a plot of an expensive fluid dynamical simulation. If the runtime is more than a few tens of minutes (on a single machine), you probably don't want to run it on GitHub Actions, even if you rely on ``showyourwork`` caching. One strategy to help with this is to specify two separate rules for generating the figure: one that generates it from scratch (by running the simulation), and one that generates it from an intermediate step (i.e., by loading a file containing the simulation results and plotting them directly). Specifically, you can set up the first rule so that it generates the intermediate file and uploads it to the cloud; the second rule downloads that file and plots the figure.
-
-The ``expensive-figure`` workflow is an example of how to do this. It takes advantage of the `Zenodo API <https://developers.zenodo.org/#introduction>`_ to programmatically upload/download files. The workflow is a bit involved, but it consists of a ``Snakefile`` with two rules to produce the same output (a simulation result called ``simulation_results.dat``):
-
-.. code-block:: python
-
-    # Custom rule to generate the simulation results and upload them to Zenodo
-    rule generate_simulation_results:
-        input:
-            "src/figures/run_simulation.py"
-        output:
-            report("src/figures/simulation_results.dat", category="Dataset")
-        conda:
-            "environment.yml"
-        shell:
-            "cd src/figures && python run_simulation.py && python zenodo.py --upload"
-
-
-    # Custom rule to download the simulation results from Zenodo
-    rule download_simulation_results:
-        output:
-            report("src/figures/simulation_results.dat", category="Dataset")
-        conda:
-            "environment.yml"
-        shell:
-            "cd src/figures && python zenodo.py --download"
-
-
-The first rule is the one that runs the simulation (you can see that it calls the script ``run_simulation.py``) and uploads it to Zenodo (``python zenodo.py --upload``). The second rule simply downloads the simulation  (``python zenodo.py --download``). Both ``run_simulation.py`` and ``zenodo.py`` are located in the ``src/figures`` directory for this workflow. Since we now have a rule ambiguity (both rules produce the same output), we need to tell ``Snakemake`` the order in which to try to execute these rules. Here's what we do (still in the ``Snakefile``):
-
-.. code-block:: python
-
-    # If we are on GitHub Actions CI, use the rule where we download the data
-    # If not, use the rule where we generate the data.
-    import os
-    ON_GITHUB_ACTIONS = os.getenv("CI", "false") == "true"
-    if ON_GITHUB_ACTIONS:
-        ruleorder: download_simulation_results > generate_simulation_results
-    else:
-        ruleorder: generate_simulation_results > download_simulation_results
-
-This snippet tells ``Snakemake`` to download the data if it's running on GitHub Actions (which always sets the ``CI`` environment variable to ``true``) and to generate it instead if it's running on a local computer.
-
-The next thing we must do is tell ``showyourwork`` that the figure script (which we call ``my_figure.py``) requires the dataset (``simulation_results.dat``). We do this in ``showyourwork.yml``, as in the previous examples:
-
-.. code-block:: yaml
-
-    # Tell showyourwork that `src/figures/my_figure.py`
-    # requires the file `src/figures/simulation_results.dat` to run
-    figure_dependencies:
-        my_figure.py:
-            - simulation_results.dat
-            
-Finally, we need to provide credentials for accessing the Zenodo API. Create a `Zenodo access token <https://zenodo.org/account/settings/applications/tokens/new/>`_ and store it somewhere safe (NEVER place it in an unencrypted text file on GitHub, or anywhere public for that matter). If you poke around in ``zenodo.py``, you'll see that the script tries to read this token from the environment variable ``ZENODO_TOKEN``, so you should either set that variable within your session or export it in your `.bashrc` or `.zshrc` shell config file (see, e.g., `this link <https://www.digitalocean.com/community/tutorials/how-to-read-and-set-environmental-and-shell-variables-on-linux>`_). Then, to ensure things also run properly on GitHub Actions, store it as a repository secret called ``ZENODO_TOKEN`` in your `repository settings <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_. In order to make this secret available to the workflow, you also need to provide it in the ``.github/workflows/showyourwork.yml`` config file, as follows:
-
-.. code-block:: yaml
-
-    - name: Build the article PDF
-      id: build
-      uses: ./showyourwork/showyourwork-action
-      env:
-        ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
-        
-That should do the trick. Again, it's a bit involved, but you should be able to just copy the relevant files over to your repo and make a few tweaks (like the file names) to get it working in your workflow. Note that you don't have to change anything  in ``zenodo.py`` _except_ the ``file_name``, ``deposit_title``, and ``deposit_description`` variables toward the bottom of the file. But as we mentioned above, we're working on dramatically simplifying this workflow, so stay tuned for a much simpler solution!

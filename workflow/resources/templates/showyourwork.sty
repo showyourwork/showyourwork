@@ -21,6 +21,8 @@
 \RequirePackage{marginnote} % margin notes
 \RequirePackage{xspace} % better spacing after icons
 
+\RequirePackage{stackengine}
+
 \newcommand{\showyourwork}{%
     \href{https://github.com/rodluger/showyourwork}%
     {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}\hspace{0.2em}%
@@ -109,19 +111,49 @@
   \oldendabstract%
 }
 
-% Hack `showkeys' to show a GitHub link for figures
+% Hack `showkeys' to show margin links for figures
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
     \normalfont%
-    \IfEq*{\usevalue{\sywCurrentLabelName_status}}{KEYNOTFOUND}{}{%
-    \raisebox{0pt}[5pt][5pt]{%
-    \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
-      \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
+    \stackon[0pt]{%
+      \IfEq*{\usevalue{\sywCurrentLabelName_status}}{KEYNOTFOUND}{}{%
+      \raisebox{0pt}[5pt][5pt]{%
+        \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
+        \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
+      }%
+      }%
+      }%
+    }{%
+      \stackon[0pt]{%
+        \IfEq*{\usevalue{\sywCurrentLabelName_datasetOne}}{KEYNOTFOUND}{}{%
+        \raisebox{0pt}[5pt][5pt]{%
+          \href{\usevalue{\sywCurrentLabelName_datasetOne}}{%
+          \color{sywBlue}\faDatabase%
+        }%
+        }%
+        }%
+      }{%
+        \stackon[0pt]{%
+          \IfEq*{\usevalue{\sywCurrentLabelName_datasetTwo}}{KEYNOTFOUND}{}{%
+          \raisebox{0pt}[5pt][5pt]{%
+            \href{\usevalue{\sywCurrentLabelName_datasetTwo}}{%
+            \color{sywBlue}\faDatabase%
+          }%
+          }%
+          }%
+        }{%
+          \IfEq*{\usevalue{\sywCurrentLabelName_datasetThree}}{KEYNOTFOUND}{}{%
+          \raisebox{0pt}[5pt][5pt]{%
+            \href{\usevalue{\sywCurrentLabelName_datasetThree}}{%
+            \color{sywBlue}\faDatabase%
+          }%
+          }%
+          }%
+        }%
+      }%
     }%
-    }%
-    }
   }{}%
 }
 

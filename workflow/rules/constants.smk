@@ -51,3 +51,10 @@ if tectonic_latest:
 else:
     tectonic_cmd = "tectonic"
     tectonic_files = []
+
+
+# The `.zenodo` files in which we store the URL for the datasets
+# We make the PDF generation depend on these so we always have
+# access to the URLs for the icon generation.
+# These are updated in `zenodo.smk`
+zenodo_files = []

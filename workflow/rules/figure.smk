@@ -39,6 +39,8 @@ def figure_script_dependencies(wildcards):
     script = Path(figure_script(wildcards)).name
     deps = []
     for dep in figure_dependencies.get(script, []):
+        if type(dep) is OrderedDict:
+            dep = list(dep)[0]
         deps.append(str(Path("src") / "figures" / dep))
     return deps
 
@@ -65,7 +67,7 @@ rule figure:
         figure_script_dependencies,
         "environment.yml",
     output:
-        report("{figure}", category="Figure"),
+        report("{figure}", category="Figure")
     wildcard_constraints:
         figure="src/figures/(.*?)\.{}".format("|".join(figexts)),
     params:

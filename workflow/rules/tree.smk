@@ -126,6 +126,7 @@ checkpoint script_info:
         "Building figure dependency tree..."
     input:
         POSIX(TEMP / "showyourwork.xml"),
+        zenodo_files
     output:
         POSIX(TEMP / "scripts.json"),
     run:
@@ -152,10 +153,12 @@ checkpoint script_info:
                         else:
                             warnings.warn(f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders.")
                     if len(files):
+                        datasets = [dataset for dataset in figure_dependencies["{}.py".format(label)] if type(dataset) is str and dataset.endswith(".zenodo")]
                         if label in figures:
                             figures[label]["files"] += files
+                            figures[label]["datasets"] += datasets
                         else:
-                            figures[label] = {"script": script, "files": files}
+                            figures[label] = {"script": script, "files": files, "datasets": datasets}
 
         # Parse free-floating graphics
         files = []
@@ -172,6 +175,7 @@ checkpoint script_info:
             figures["unknown"] = {
                 "script": UNKNOWN_SCRIPT,
                 "files": files,
+                "datasets": []
             }
 
         # Store as JSON

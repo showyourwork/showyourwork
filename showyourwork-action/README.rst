@@ -26,11 +26,6 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 
 **Optional** Build a tarball for easy ArXiV submission? This tarball contains the article PDF, the rendered figures, and all the input files needed to compile the manuscript using a standard LaTeX compiler. The tarball is then pushed to the same branch as the article output (see ``force-push`` below). Default :code:`true`.
 
-:code:`arxiv-exclude`
-~~~~~~~~~~~~~~~~~~~~~
-
-**Optional** Files/paths to be excluded from the ArXiV tarball, one entry per line. If you have supplementary files or datasets that aren't explicitly required during the LaTeX compilation process, it's probably best to exclude them here! Default :code:`**/*.py`, :code:`**/matplotlibrc`, :code:`**/.gitignore`.
-
 :code:`conda-cache-number`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
