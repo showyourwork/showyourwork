@@ -4,10 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        # major, premajor, minor, preminor, patch, prepatch, or prerelease
-        description: "Release type"
+        description: "Release type (major | minor | patch | test)"
         required: true
-        default: "patch"
+        default: "test"
 
 jobs:
   release:
@@ -52,6 +51,7 @@ jobs:
       - name: Bump version
         uses: actions/github-script@v4
         id: bump
+        if: ${{ github.event.inputs.release_type != 'test' }}
         env:
           RELEASE_TYPE: ${{ github.event.inputs.release_type }}
         with:
@@ -119,7 +119,8 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.release.outputs.branches) }}
     steps:
-      - name: Update template
+      - name: Update showyourwork-template and showyourwork-example
+        if: ${{ github.event.inputs.release_type != 'test' }}
         id: template
         shell: bash -l {0}
         env:
@@ -142,3 +143,24 @@ jobs:
 
           # Now update the example repo (an instance of the template)
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example ${BRANCH}
+
+      - name: Update showyourwork-example-dev
+        if: ${{ github.event.inputs.release_type == 'test' }}
+        id: example-dev
+        shell: bash -l {0}
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: ${{ matrix.branch }}
+        run: |
+          # Exit on error
+          set -e
+
+          # Update the template
+          git clone --recurse-submodules --single-branch --branch ${BRANCH} https://github.com/rodluger/showyourwork-template
+          cd showyourwork-template
+          git submodule update --remote
+          git add showyourwork
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${VERSION}"
+
+          # Now update the example-dev repo (an instance of the template)
+          git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example-dev ${BRANCH}
