@@ -135,47 +135,8 @@ try to produce it programmatically. Simply place the figure in the ``src/static`
     \end{figure}
 
 
-Custom dependencies: datasets
------------------------------
-
-.. raw:: html
-
-    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Afigure-dataset">
-        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=figure-dataset" alt="test status"/>
-    </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/figure-dataset">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
-    </a>
-    <a href="https://github.com/rodluger/showyourwork-example/raw/figure-dataset-pdf/ms.pdf">
-        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
-    </a>
-    <br/><br/>
-
-Download a dataset and make it a dependency of a particular figure:
-
-.. code-block:: python
-
-    # Custom rule to download a dataset
-    rule my_dataset:
-        output:
-            "src/figures/my_dataset.dat"
-        shell:
-            "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
-
-
-Specify this dependency in the configuration file ``showyourwork.yml``:
-
-.. code-block:: yaml
-
-    # Tell showyourwork that `src/figures/my_figure.py`
-    # requires the file `src/figures/my_dataset.dat` to run
-    figure_dependencies:
-        my_figure.py:
-            - my_dataset.dat
-
-
-Custom dependencies: scripts
-----------------------------
+Script dependencies
+-------------------
 
 .. raw:: html
 
@@ -204,6 +165,171 @@ file ``showyourwork.yml``:
             - utils/helper_script.py
 
 
+Dataset dependencies
+--------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Afigure-dataset">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=figure-dataset" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/figure-dataset">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/figure-dataset-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+If you have a dataset hosted on `Zenodo <https://zenodo.org>`_, ``showyourwork`` can automatically
+download it for you and link to it in the corresponding figure caption in the article PDF.
+All you have to do is specify the name of the dataset and its Zenodo record ID in the config
+file ``showyourwork.yml``:
+
+.. code-block:: yaml
+
+    # Tell showyourwork that `src/figures/fibonacci.py`
+    # requires the file `src/figures/fibonacci.dat` to run
+    figure_dependencies:
+        fibonacci.py:
+            - fibonacci.dat:
+                download:
+                    id: 5187276
+
+The YAML snippet above tells ``showyourwork`` that the script ``src/figures/fibonacci.py``
+requires the dataset ``src/figures/fibonacci.dat`` in order to run (note that under the
+``figure_dependencies`` key, all paths are relative to the ``src/figures`` directory.)
+It also tells ``showyourwork`` that this dataset can be downloaded from Zenodo, and that
+it has the record ID ``5187276``. Specifically, that means the file lives at the URL
+`<https://zenodo.org/record/5187276>`_ and can be downloaded by running
+
+.. code-block:: bash
+
+    curl https://zenodo.org/record/5187276/files/fibonacci.dat
+
+Note that if this dataset is a tarball, you'll have to untar it within ``fibonacci.py``, or
+specify a custom rule in the ``Snakefile`` (see below).
+
+Alternatively, you can manually specify how to download a dataset dependency.
+This is useful if, e.g., it's hosted somewhere other than Zenodo, or if you
+need to do some post-processing (like unzipping) before running your figure
+script. To do that, simply don't provide a ``download`` instruction in the
+``showyourwork.yml`` file:
+
+.. code-block:: yaml
+
+    figure_dependencies:
+        fibonacci.py:
+            - fibonacci.dat
+
+and instead create a custom rule in the ``Snakefile``:
+
+.. code-block:: python
+
+    # Custom rule to download a dataset
+    rule fibonacci:
+        output:
+            "src/figures/fibonacci.dat"
+        shell:
+            "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
+
+Note that in the ``Snakefile``, all paths are relative to the top level of your repo.
+Also note that this approach will not automatically add a dataset link to your figure caption.
+
+
+Simulation dependencies
+-----------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aexpensive-figure">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=expensive-figure" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/expensive-figure">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/expensive-figure-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+Quite often you may have a figure that is very computationally expensive to run. 
+An example is a posterior distribution plot for an MCMC run, or a plot of an expensive fluid dynamical simulation. 
+If the runtime is more than a few tens of minutes (on a single machine), you probably don’t want to run it on 
+GitHub Actions, even if you rely on showyourwork caching. One way around this is to run the simulation,
+upload the results to Zenodo (via the workflow discussed above), and treat that as a static "dataset" on which
+your figure depends. The downside, however, is that your workflow is no longer fully reproducible, since
+it depends on the result of a black-box simulation.
+
+To address this, ``showyourwork`` supports dynamic rules that can alternate between running the simulation
+and uploading to Zenodo (when running on a local machine), and downloading the simulation from Zenodo (when
+running on GitHub Actions). This can be achieved by specifying additional instructions in the
+``showyourwork.yml`` file:
+
+.. code-block:: yaml
+
+    # Tell showyourwork that `src/figures/fibonacci.py`
+    # requires the file `src/figures/fibonacci.dat` to run
+    figure_dependencies:
+        my_figure.py:
+        - simulation.dat:
+            generate: 
+                shell: python run_simulation.py
+                dependencies:
+                    - run_simulation.py
+                title: Simulation results
+                description: >-
+                    This is the result of a very expensive simulation.
+                    Here is some text describing the simulation in detail,
+                    how it was generated, and how to use the dataset.
+                creators:
+                    - Luger, Rodrigo
+
+There's a lot going on in this example, so let's break it down piece by piece.
+First, we're telling ``showyourwork`` that the figure script ``src/figures/my_figure.py``
+requires the result of some expensive simulation, stored in the data file ``src/figures/simulation.dat``.
+Instead of specifying the ``download: id:`` of the dataset, we instead explicitly tell
+``showyourwork`` how to generate it with the ``generate`` key. Specifically, we provide a
+``shell`` command to run the simulation and produce the output (recalling that all paths
+are relative to the ``src/figures`` directory, which is also the CWD for the shell command).
+We also tell ``showyourwork`` about any ``dependencies`` of the simulation. These, as before,
+are files that, when modified, will trigger a re-run of the simulation (but only if running locally).
+In this case, changes to the script ``src/figures/run_simulation.py`` will result in a re-run
+of the simulation the next time I execute the workflow locally.
+
+The next several instructions tell ``showyourwork`` how to upload the results of the simulation
+to Zenodo. The ``title``, ``description``, and ``creators`` keys should be self-explanatory: they
+will show up in the metadata section of the Zenodo deposit.
+The ``sandbox`` key is a boolean flag telling ``showyourwork`` whether to use the ``Zenodo Sandbox``
+service (the default is False); this is useful for testing and debugging, and should be disabled
+once you release your code/paper.
+
+Finally, since ``showyourwork`` will upload the results of the simulation to Zenodo, it needs your
+credentials to access the API. So, in order for this all to work, you need to do three things:
+
+1. If you haven't done this already, create a `Zenodo account <https://zenodo.org/signup>`_ and
+    generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
+    Make sure to give it at least ``deposit:actions`` and ``deposit:write`` scopes, and store it somewhere
+    safe.
+
+2. To give ``showyourwork`` access to Zenodo from your local machine, assign your token to an environment variable
+    called ``ZENODO_TOKEN``. I export mine from within my
+    ``.zshrc`` or ``.bashrc`` config file so that it's always available in all terminals.
+
+3. To give ``showyourwork`` access to Zenodo from GitHub Actions, create a `repository secret <https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository>`_
+    in your GitHub repository called ``ZENODO_TOKEN`` and set its value equal to your Zenodo token.
+
+.. warning::
+
+    Never include your personal access tokens in any files committed to GitHub!
+
+Now you should be all set. Make sure to run your expensive simulation locally before pushing your changes
+to GitHub -- otherwise GitHub Actions won't find the file on Zenodo, and the build will fail.
+
+If all goes well, you should see an icon pop up next to the corresponding figure caption with a link
+to the record on Zenodo for your simulation results.
+
+
 Custom figure scripts
 ---------------------
 
@@ -220,9 +346,10 @@ Custom figure scripts
     </a>
     <br/><br/>
 
-Specify a custom script for a figure. Useful when ``showyourwork`` can't
+``showyourwork`` allows you to specify custom scripts for figures. This is useful when ``showyourwork`` can't
 automatically determine the figure script, such as when a figure is
-included outside of a ``figure`` environment:
+included outside of a ``figure`` environment. The easiest way is to subclass the
+``figure`` rule defined in the ``showyourwork`` module:
 
 .. code-block:: python
 
@@ -237,7 +364,7 @@ included outside of a ``figure`` environment:
             "src/figures/custom_figure.pdf"
 
 
-Override the internal ``figure`` rule completely:
+Alternatively, you may override the internal ``figure`` rule completely:
 
 .. code-block:: python
 
@@ -251,3 +378,9 @@ Override the internal ``figure`` rule completely:
             "environment.yml"
         shell:
             "cd src/figures && python custom_script.py"
+
+This can be used to execute arbitrary commands for generating figures, such
+as producing a figure via a language other than Python, or producing a figure
+from a Jupyter notebook. Note that in both cases, ``showyourwork`` expects that
+the first file listed under ``input`` is the main script associated with the
+figure, and this is what the link in the figure caption will point to on GitHub.

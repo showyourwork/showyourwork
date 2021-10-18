@@ -357,7 +357,7 @@ your code!
 The ``showyourwork.yml`` config file
 ************************************
 
-This is the `Snakemake config file <https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html>`
+This is the `Snakemake config file <https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html>`_
 for ``showyourwork``, where you can customize several aspects of the build. Below is a list of all options
 along with their default values and a brief description of what they do:
 
