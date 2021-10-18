@@ -74,7 +74,7 @@ for fig in figure_dependencies:
                     " && ".join(
                         [
                             f"curl https://zenodo.org/record/{zenodo_id}/files/{dep_name} --output {{output[0]}}", 
-                            "echo 'https://zenodo.org/record/{zenodo_id}' > {file_path}/{file_name}.zenodo"
+                            f"echo 'https://zenodo.org/record/{zenodo_id}' > {file_path}/{file_name}.zenodo"
                         ]
                     )
 
