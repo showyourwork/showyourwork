@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: "Release type (major | minor | patch | test)"
+        description: |-
+          Release type 
+          (major | minor | patch | test)
         required: true
         default: "test"
 
@@ -160,7 +162,7 @@ jobs:
           cd showyourwork-template
           git submodule update --remote
           git add showyourwork
-          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "update showyourwork to ${VERSION}"
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run"
 
           # Now update the example-dev repo (an instance of the template)
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example-dev ${BRANCH}
