@@ -4,7 +4,7 @@
 ++++++++++++++++++
 
 - Added explicit support for Zenodo-hosted datasets.
-- Changelog: `v0.1.5...v0.1.6 <https://github.com/rodluger/showyourwork/compare/v0.1.6...v0.1.7>`_
+- Changelog: `v0.1.6...v0.1.7 <https://github.com/rodluger/showyourwork/compare/v0.1.6...v0.1.7>`_
 
 0.1.6 (2021-10-14)
 ++++++++++++++++++
