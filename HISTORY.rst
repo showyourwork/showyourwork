@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.9 (2021-10-18)
+++++++++++++++++++
+
+- **Template repo update:** Added a ``Makefile`` for quick article generation; added docs on how to use it.
+- Changelog: `v0.1.8...v0.1.9 <https://github.com/rodluger/showyourwork/compare/v0.1.8...v0.1.9>`_
+
 0.1.8 (2021-10-18)
 ++++++++++++++++++
 
@@ -13,6 +19,7 @@
 ++++++++++++++++++
 
 - Added explicit support for Zenodo-hosted datasets.
+- **Template repo update:** Added the environment variable ``ZENODO_TOKEN`` to ``.github/workflows/showyourwork.yml``.
 - Changelog: `v0.1.6...v0.1.7 <https://github.com/rodluger/showyourwork/compare/v0.1.6...v0.1.7>`_
 
 0.1.6 (2021-10-14)
