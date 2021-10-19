@@ -55,6 +55,19 @@ call ``includegraphics`` somewhere along the line (which they do), ``showyourwor
 should work just fine. Just remember to always label your figures!
 
 
+Can I nest figure scripts inside folders?
+-----------------------------------------
+
+The suggested workflow is to place all your figures directly under the ``src/figures``
+directory. However, you may nest them under additional subfolders in that directory.
+Note that you must change your figure labels accordingly (i.e., if your figure script is 
+``src/figures/some_folder/script.py``, you should label the corresponding figure in LaTeX
+as ``fig:some_folder/script``.) The other catch is that your script will be run from
+the ``src/figures`` directory, so just make sure the file is saved to the current
+working directory (not the directory the script is in). This is the default behavior
+when doing I/O in Python, so it shouldn't generally be a problem.
+
+
 How do I debug a run?
 ---------------------
 
