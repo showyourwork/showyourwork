@@ -53,7 +53,11 @@ for fig in config["figure_dependencies"]:
         deposit_title = generate.get("title", f"{repo}:{dep_name}")
         deposit_description = generate.get("description", f"File uploaded from {repo}.")
         deposit_creators = generate.get("creators", get_repo_url().split("/")[-2])
-        
+        if sandbox:
+            zenodo_url = "sandbox.zenodo.org"
+        else:
+            zenodo_url = "zenodo.org"
+
         # Download settings
         zenodo_id = download.get("id", None)
         if download and zenodo_id is None:
@@ -87,8 +91,8 @@ for fig in config["figure_dependencies"]:
                     shell:
                         " && ".join(
                             [
-                                f"curl https://zenodo.org/record/{zenodo_id}/files/{dep_name} --output {{output[0]}}", 
-                                f"echo 'https://zenodo.org/record/{zenodo_id}' > {file_path}/{file_name}.zenodo"
+                                f"curl https://{zenodo_url}/record/{zenodo_id}/files/{dep_name} --output {{output[0]}}", 
+                                f"echo 'https://{zenodo_url}/record/{zenodo_id}' > {file_path}/{file_name}.zenodo"
                             ]
                         )
 
