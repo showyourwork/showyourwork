@@ -97,3 +97,9 @@ To delete all output generated when running the ``ms.pdf`` rule, run
 .. code-block:: bash
 
     snakemake -c1 ms.pdf --delete-all-output
+
+or simply
+
+.. code-block:: bash
+
+    make clean
