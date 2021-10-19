@@ -19,8 +19,8 @@ include: "rules/git.py"
 include: "rules/functions.py"
 
 
-# Special dynamically-generated rules for interfacing with Zenodo
-include: "rules/zenodo.smk"
+# Collect information on all Zenodo datasets
+include: "rules/zenodo.py"
 
 
 # Define all the rules
@@ -38,3 +38,14 @@ include: "rules/texfile.smk"
 include: "rules/stylesheet.smk"
 include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
+
+
+# Rules we instantiate only if certain conditions apply
+if len(files.zenodo_files_manual):
+    include: "rules/download_manual.smk"
+if len(files.zenodo_files_auto):
+    if config["CI"]:
+        include: "rules/download_ci.smk"
+    else:
+        include: "rules/generate.smk"
+        include: "rules/upload.smk"

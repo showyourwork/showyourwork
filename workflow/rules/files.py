@@ -7,6 +7,12 @@ Miscellaneous files used throughout the workflow.
 class files:
     """Houses lists of support files used throughout the workflow."""
 
+    #: The manually-uploaded datasets for this article that must be downloaded
+    zenodo_files_manual = []
+
+    #: The showyourwork-managed datasets for this article
+    zenodo_files_auto = []
+
     #: The `.zenodo` files in which we store the URL for the datasets
     #: We make the PDF generation depend on these so we always have
     #: access to the URLs for the icon generation.
