@@ -1,7 +1,12 @@
+"""
+Build the article to get the XML tree.
+This script is called from the ``xml`` rule.
+
+"""
 import subprocess
 
 
-# Params defined in `../rules/tree.smk`
+# Params defined in `../rules/xml.smk`
 verbose = snakemake.params["verbose"]
 TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]

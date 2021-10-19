@@ -1,17 +1,20 @@
 from pathlib import Path
 
 
-localrules:
-    aux_file,
+localrules: aux_file
 
 
 rule aux_file:
+    """
+    Copy auxiliary tex files to the ``src`` directory.
+    
+    """
     message:
         "Copying auxiliary tex file `{output}`..."
     input:
-        lambda wildcards: POSIX(WORKFLOW / "resources" / "tex" / Path(wildcards.file).name),
+        lambda wildcards: posix(abspaths.workflow / "resources" / "tex" / Path(wildcards.file).name),
     wildcard_constraints:
-        file="|".join(AUXFILES),
+        file="|".join(files.aux),
     output:
         temp("{file}"),
     shell:

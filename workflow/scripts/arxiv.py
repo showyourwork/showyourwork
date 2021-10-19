@@ -1,3 +1,8 @@
+"""
+Create the output tarball for easy arXiv upload.
+This script is called from the ``arxiv`` rule.
+
+"""
 import subprocess
 import shutil
 from pathlib import Path
@@ -5,7 +10,7 @@ import os
 import tarfile
 
 
-# Params defined in `../rules/pdf.smk`
+# Params defined in `../rules/arxiv.smk`
 verbose = snakemake.params["verbose"]
 figexts = snakemake.params["figexts"]
 TEMP = snakemake.params["TEMP"]
@@ -29,6 +34,7 @@ else:
     tectonic_args += ["--chatter", "minimal"]
 subprocess.check_call([TECTONIC] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)])
 
+
 # Remove all output except the .bbl, .tex, and .pdf files
 for file in ["__latexindent_temp.tex", ".showyourwork-ms.*"]:
     for file in TEX.glob(file):
@@ -39,14 +45,17 @@ for file in ["__latexindent_temp.tex", ".showyourwork-ms.*"]:
         ]:
             os.remove(file)
 
+
 # Copy the `tex` folder over to a temporary location
 if (TEMP / "arxiv").exists():
     shutil.rmtree(TEMP / "arxiv")
 shutil.copytree(TEX, TEMP / "arxiv")
 
+
 # Rename our temporary files to `ms.*`
 for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
     os.rename(file, str(file).replace(".showyourwork-ms", "ms"))
+
 
 # Remove additional unnecessary files
 for file in arxiv_tarball_exclude:
@@ -55,6 +64,7 @@ for file in arxiv_tarball_exclude:
             os.remove(file)
         except IsADirectoryError:
             shutil.rmtree(file)
+
 
 # Tar it up
 with tarfile.open("arxiv.tar.gz", "w:gz") as tar:

@@ -1,8 +1,13 @@
+"""
+Create the ``showyourwork`` stylesheet.
+This script is called from the ``stylesheet`` rule.
+
+"""
 import jinja2
 import json
 
 
-# Params defined in `../rules/pdf.smk`
+# Params defined in `../rules/stylesheet.smk`
 WORKFLOW = snakemake.params["WORKFLOW"]
 TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]

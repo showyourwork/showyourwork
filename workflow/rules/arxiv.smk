@@ -1,26 +1,30 @@
 rule arxiv:
+    """
+    Build a tarball of the article PDF and all output for posting to the arXiv.
+
+    """
     message:
         "Building arxiv tarball..."
     input:
-        POSIX(TEX / "{}.tex".format(SYWTEXFILE)),
-        [POSIX(file) for file in TEX.glob("*.bib")],
-        POSIX(TEMP / "meta.json"),
-        POSIX(TEX / "showyourwork.sty"),
-        AUXFILES,
-        tectonic_files,
+        posix(relpaths.tex / "{}.tex".format(files.tmp_syw)),
+        [posix(file) for file in relpaths.tex.glob("*.bib")],
+        posix(relpaths.temp / "meta.json"),
+        posix(relpaths.tex / "showyourwork.sty"),
+        files.aux,
+        files.tectonic,
         class_files,
         figures,
     output:
         "arxiv.tar.gz"
     params:
-        verbose=verbose,
-        figexts=figexts,
-        arxiv_tarball_exclude=arxiv_tarball_exclude,
-        TEMP=TEMP,
-        FIGURES=FIGURES,
-        TEX=TEX,
-        SYWTEXFILE=SYWTEXFILE,
-        TECTONIC=tectonic_cmd
+        verbose=config["verbose"],
+        figexts=config["figexts"],
+        arxiv_tarball_exclude=config["arxiv_tarball_exclude"],
+        TEMP=relpaths.temp,
+        FIGURES=relpaths.figures,
+        TEX=relpaths.tex,
+        SYWTEXFILE=files.tmp_syw,
+        TECTONIC=config["tectonic_cmd"]
     conda:
         "../envs/environment.yml"
     script:

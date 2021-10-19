@@ -1,4 +1,7 @@
-import os
+"""
+Dynamically define rules for interfacing with Zenodo.
+
+"""
 from pathlib import Path
 
 
@@ -6,15 +9,11 @@ from pathlib import Path
 repo = "/".join(get_repo_url().split("/")[-2:])
 
 
-# Are we on GitHub Actions?
-ON_GITHUB_ACTIONS = os.getenv("CI", "false") == "true"
-
-
 # Loop over figures
-for fig in figure_dependencies:
+for fig in config["figure_dependencies"]:
 
     # Loop over dependencies for this figure
-    for dep in figure_dependencies[fig]:
+    for dep in config["figure_dependencies"][fig]:
 
 
         # Get the dependency name and any instructions on how to generate it
@@ -25,9 +24,9 @@ for fig in figure_dependencies:
                 # it or upload it to Zenodo. Let's move on.
                 continue
             dep_props = dict(dep[dep_name])
-        elif type(figure_dependencies[fig]) is dict:
+        elif type(config["figure_dependencies"][fig]) is dict:
             dep_name = dep
-            dep_props = figure_dependencies[fig][dep]
+            dep_props = config["figure_dependencies"][fig][dep]
         else:
             # This is a static dependency, with no rules on how to generate
             # it or upload it to Zenodo. Let's move on.
@@ -41,7 +40,7 @@ for fig in figure_dependencies:
             raise ValueError("Cannot specify both `generate` and `download` for a figure dependency.")
 
         # Generate & upload settings
-        generate_deps = [POSIX(Path("src/figures") / gd) for gd in generate.get("dependencies", [])]
+        generate_deps = [posix(Path("src/figures") / gd) for gd in generate.get("dependencies", [])]
         generate_shell = generate.get("shell", None)
         if generate and generate_shell is None:
             raise ValueError(f"Please provide a `shell` command for dependency {dep_name}.")
@@ -65,11 +64,15 @@ for fig in figure_dependencies:
         if download:
 
             rule:
+                """
+                Download a figure dependency that was manually uploaded to Zenodo.
+
+                """
                 message:
                     f"Downloading dependency file {dep_name} from Zenodo..."
                 output:
-                    temp(f"src/figures/{dep_name}") if ON_GITHUB_ACTIONS else f"src/figures/{dep_name}",
-                    POSIX(f"{file_path}/{file_name}.zenodo")
+                    temp(f"src/figures/{dep_name}") if config["CI"] else f"src/figures/{dep_name}",
+                    posix(f"{file_path}/{file_name}.zenodo")
                 shell:
                     " && ".join(
                         [
@@ -78,16 +81,20 @@ for fig in figure_dependencies:
                         ]
                     )
 
-        elif ON_GITHUB_ACTIONS:
+        elif config["CI"]:
 
             rule:
+                """
+                Download a figure dependency from Zenodo that's managed by showyourwork.
+                
+                """
                 message:
                     f"Downloading dependency file {dep_name} from Zenodo..."
                 output:
                     temp(f"src/figures/{dep_name}"),
-                    POSIX(f"{file_path}/{file_name}.zenodo")
+                    posix(f"{file_path}/{file_name}.zenodo")
                 conda:
-                    POSIX(USER / "environment.yml")
+                    posix(abspaths.user / "environment.yml")
                 params:
                     action="download",
                     file_name=file_name,
@@ -101,6 +108,10 @@ for fig in figure_dependencies:
         elif generate:
 
             rule:
+                """
+                Generate a figure dependency.
+                
+                """
                 message:
                     f"Generating figure dependency file {dep_name}..."
                 input:
@@ -108,19 +119,23 @@ for fig in figure_dependencies:
                 output:
                     f"src/figures/{dep_name}"
                 conda:
-                    POSIX(USER / "environment.yml")
+                    posix(abspaths.user / "environment.yml")
                 shell:
                     f"cd src/figures && {generate_shell}"
 
             rule:
+                """
+                Upload a figure dependency to Zenodo.
+                
+                """
                 message:
                     f"Uploading dependency file {dep_name} to Zenodo..."
                 input:
                     f"src/figures/{dep_name}"
                 output:
-                    POSIX(f"{file_path}/{file_name}.zenodo")
+                    posix(f"{file_path}/{file_name}.zenodo")
                 conda:
-                    POSIX(USER / "environment.yml")
+                    posix(abspaths.user / "environment.yml")
                 params:
                     action="upload",
                     file_name=file_name,
@@ -136,8 +151,8 @@ for fig in figure_dependencies:
                     "../scripts/zenodo.py"
 
         # Make the deposit a dependency of the figure
-        figure_dependencies[fig].append(f"{dep_name}.zenodo")
+        config["figure_dependencies"][fig].append(f"{dep_name}.zenodo")
 
         # Make it a dependency of the PDF as well
         # so we can add Zenodo links to the figure caption
-        zenodo_files.append(POSIX(FIGURES / f"{dep_name}.zenodo"))
+        files.dot_zenodo.append(posix(relpaths.figures / f"{dep_name}.zenodo"))

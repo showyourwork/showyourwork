@@ -1,24 +1,40 @@
+# Require Snakemake >= this version
 from snakemake.utils import min_version
-
-
 min_version("6.7.0")
 
 
+# Workflow report template
 report: "report/workflow.rst"
 
 
-include: "rules/config.smk"
-include: "rules/constants.smk"
-include: "rules/errors.smk"
-include: "rules/repo.smk"
-include: "rules/auxfiles.smk"
-include: "rules/documentclass.smk"
+# Import config, constants, paths, and error codes used by the rules
+include: "rules/config.py"
+include: "rules/paths.py"
+include: "rules/files.py"
+include: "rules/errors.py"
 
+
+# Import miscellaneous functions used by the rules
+include: "rules/git.py"
+include: "rules/functions.py"
+
+
+# Special dynamically-generated rules for interfacing with Zenodo
 include: "rules/zenodo.smk"
 
-include: "rules/tree.smk"
+
+# Define all the rules
+include: "rules/repo.smk"
+include: "rules/auxfiles.smk"
+include: "rules/tectonic.smk"
+include: "rules/class_name.smk"
+include: "rules/class_file.smk"
+include: "rules/tmptexfile.smk"
+include: "rules/xml.smk"
+include: "rules/script_info.smk"
 include: "rules/meta.smk"
 include: "rules/figure.smk"
+include: "rules/texfile.smk"
+include: "rules/stylesheet.smk"
 include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
-include: "rules/tectonic.smk"

@@ -1,9 +1,15 @@
+"""
+Download and install ``tectonic`` from source.
+This script is called from the ``tectonic`` rule.
+
+"""
 import json
 import urllib
 import urllib.request
 import tarfile
 
 
+# Params defined in `../rules/tectonic.smk`
 TEMP = snakemake.params["TEMP"]
 OS = snakemake.params["OS"]
 

@@ -1,8 +1,12 @@
 rule tectonic:
+    """
+    Install the latest version of tectonic.
+    
+    """
     output:
-        POSIX(TEMP / "tectonic")
+        posix(relpaths.temp / "tectonic")
     params:
-        TEMP=TEMP,
-        OS=tectonic_os
+        TEMP=relpaths.temp,
+        OS=config["tectonic_os"]
     script:
         "../scripts/tectonic.py"

@@ -1,3 +1,8 @@
+"""
+Build the article PDF.
+This script is called from the ``pdf`` rule.
+
+"""
 import subprocess
 import shutil
 

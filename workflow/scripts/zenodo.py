@@ -1,3 +1,8 @@
+"""
+Upload or downlod a dataset to/from Zenodo.
+This script is called from the ``zenodo`` rule.
+
+"""
 import requests
 import os
 import json

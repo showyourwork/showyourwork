@@ -1,79 +1,32 @@
-import subprocess
 import os
-import re
 import json
-from pathlib import Path
 
 
-def get_script_status(script):
-    """
-    Return an error code corresponding to the git status of a given script.
-
-    """
-    # Check if the file exists
-    script = Path(script)
-    if not script.exists():
-        error = ScriptDoesNotExist
-    else:
-        # Check if the file is version controlled
-        try:
-            status = (
-                subprocess.check_output(
-                    ["git", "ls-files", "--error-unmatch", script],
-                    cwd=USER,
-                    stderr=subprocess.DEVNULL,
-                )
-                .decode()
-                .replace("\n", "")
-            )
-        except Exception as e:
-            # File is not version controlled
-            error = ScriptNotVersionControlled
-        else:
-            # Check if the file has uncommitted changes
-            try:
-                status = (
-                    subprocess.check_output(
-                        ["git", "status", "-s", script],
-                        cwd=USER,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    .decode()
-                    .replace("\n", "")
-                )
-                if len(status):
-                    raise Exception("Uncommitted changes!")
-            except Exception as e:
-                # Uncommited changes
-                error = ScriptHasUncommittedChanges
-            else:
-                # File is good!
-                error = ScriptUpToDate
-    return error
-
-
-localrules:
-    metadata,
+localrules: metadata
 
 
 rule metadata:
+    """
+    Generate article metadata.
+    
+    """
     message:
         "Generating article metadata..."
     input:
         [
-            POSIX(file)
-            for file in (GITHUB / "workflows").glob("showyourwork.yml")
+            posix(file)
+            for file in (relpaths.dot_github / "workflows").glob("showyourwork.yml")
         ],
-        POSIX(TEMP / "repo.json"),
-        POSIX(TEMP / "scripts.json"),
-        zenodo_files
+        posix(relpaths.temp / "repo.json"),
+        posix(relpaths.temp / "scripts.json"),
+        files.dot_zenodo
     output:
-        POSIX(TEMP / "meta.json"),
+        posix(relpaths.temp / "meta.json"),
     run:
         # Load the metadata
-        with open(TEMP / "repo.json", "r") as f:
+        with open(relpaths.temp / "repo.json", "r") as f:
             repo = json.load(f)
-        with open(TEMP / "scripts.json", "r") as f:
+        with open(relpaths.temp / "scripts.json", "r") as f:
             scripts = json.load(f)
         meta = dict(repo=repo)
 
@@ -86,19 +39,19 @@ rule metadata:
         meta["labels"] = {}
         for label, value in scripts["figures"].items():
             script = value["script"]
-            if script != UNKNOWN_SCRIPT:
+            if script != files.unknown:
                 status = get_script_status(script)
                 datasets = value["datasets"]
                 meta["labels"]["{}_script".format(label)] = script
                 meta["labels"]["{}_status".format(label)] = str(status)
                 numbers = ["One", "Two", "Three"] # Built-in max of 3
                 for dataset, number in zip(datasets, numbers):
-                    with open(FIGURES / dataset, "r") as f:
+                    with open(relpaths.figures / dataset, "r") as f:
                         dataset = f.readlines()[0].replace("\n", "")
                     meta["labels"]["{}_dataset{}".format(label, number)] = dataset
                 meta["status"] = max(meta["status"], status)
         meta["status"] = str(meta["status"])
 
         # Store as JSON
-        with open(TEMP / "meta.json", "w") as f:
+        with open(relpaths.temp / "meta.json", "w") as f:
             print(json.dumps(meta, indent=4), file=f)

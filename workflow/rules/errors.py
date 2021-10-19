@@ -1,5 +1,15 @@
-# Error codes
+"""
+Figure "error" (status) codes.
+
+"""
+
+
 class _ShowYourWorkError:
+    """
+    Showyourwork ``error'' codes for figure GitHub links.
+
+    """
+
     def __str__(self):
         return "syw{}".format(self.__class__.__name__[1:])
 
@@ -35,7 +45,14 @@ class _ScriptUpToDate(_ShowYourWorkError):
     code = 0
 
 
+#: The figure script does not exist
 ScriptDoesNotExist = _ScriptDoesNotExist()
+
+#: The figure script is not version controlled
 ScriptNotVersionControlled = _ScriptNotVersionControlled()
+
+#: The figure script has uncommitted changes
 ScriptHasUncommittedChanges = _ScriptHasUncommittedChanges()
+
+#: The figure script is version controlled and up to date
 ScriptUpToDate = _ScriptUpToDate()
