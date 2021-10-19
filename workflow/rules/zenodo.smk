@@ -53,13 +53,14 @@ for fig in config["figure_dependencies"]:
         deposit_title = generate.get("title", f"{repo}:{dep_name}")
         deposit_description = generate.get("description", f"File uploaded from {repo}.")
         deposit_creators = generate.get("creators", get_repo_url().split("/")[-2])
-        if sandbox:
-            zenodo_url = "sandbox.zenodo.org"
-        else:
-            zenodo_url = "zenodo.org"
 
         # Download settings
         zenodo_id = download.get("id", None)
+        download_sandbox = download.get("sandbox", False)
+        if download_sandbox:
+            zenodo_url = "sandbox.zenodo.org"
+        else:
+            zenodo_url = "zenodo.org"
         if download and zenodo_id is None:
             raise ValueError(f"Please provide a Zenodo `id` for dependency {dep_name}.")
 
