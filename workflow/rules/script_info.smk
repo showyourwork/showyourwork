@@ -31,10 +31,10 @@ checkpoint script_info:
                 label = labels[0].text
                 if label is not None:
                     script = posix(relpaths.figures / "{}.py".format(label))
-                    files = []
+                    filenames = []
                     for graphic in figure.findall("GRAPHICS"):
                         if graphic.text.startswith("figures/"):
-                            files.append(f"src/{graphic.text}")
+                            filenames.append(f"src/{graphic.text}")
                         elif graphic.text.startswith("static/"):
                             continue
                         elif graphic.text.lower() in files.special_figures:
@@ -43,7 +43,7 @@ checkpoint script_info:
                             warnings.warn(
                                 f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders."
                             )
-                    if len(files):
+                    if len(filenames):
                         datasets = [
                             dataset for dataset in 
                             config["figure_dependencies"].get(
@@ -52,20 +52,20 @@ checkpoint script_info:
                             dataset.endswith(".zenodo")
                         ]
                         if label in figures:
-                            figures[label]["files"] += files
+                            figures[label]["files"] += filenames
                             figures[label]["datasets"] += datasets
                         else:
                             figures[label] = {
                                 "script": script, 
-                                "files": files, 
+                                "files": filenames, 
                                 "datasets": datasets
                             }
 
         # Parse free-floating graphics
-        files = []
+        filenames = []
         for graphic in root.findall("GRAPHICS"):
             if graphic.text.startswith("figures/"):
-                files.append(f"src/{graphic.text}")
+                filenames.append(f"src/{graphic.text}")
             elif graphic.text.startswith("static/"):
                 continue
             elif graphic.text.lower() in files.special_figures:
@@ -74,10 +74,10 @@ checkpoint script_info:
                 warnings.warn(
                     f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders."
                 )
-        if len(files):
+        if len(filenames):
             figures["unknown"] = {
                 "script": files.unknown,
-                "files": files,
+                "files": filenames,
                 "datasets": []
             }
 
