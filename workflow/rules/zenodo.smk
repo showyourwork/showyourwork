@@ -38,6 +38,8 @@ for fig in config["figure_dependencies"]:
         download = dep_props.get("download", {})
         if generate and download:
             raise ValueError("Cannot specify both `generate` and `download` for a figure dependency.")
+        elif not generate and not download:
+            raise ValueError(f"Must specify either `generate` or `download` for dependency {dep_name}.")
 
         # Generate & upload settings
         generate_deps = [posix(Path("src/figures") / gd) for gd in generate.get("dependencies", [])]
@@ -55,104 +57,110 @@ for fig in config["figure_dependencies"]:
         # Download settings
         zenodo_id = download.get("id", None)
         if download and zenodo_id is None:
-            raise ValueError(f"Please provide either a Zenodo `id` for dependency {dep_name}.")
+            raise ValueError(f"Please provide a Zenodo `id` for dependency {dep_name}.")
 
-        # Now either download the dataset (if an `id` was provided or if 
-        # we are on GH Actions) or generate & upload it (locally).
-        # Note that we do NOT cache the dataset on GH Actions, since we don't
-        # want to risk running into the cache limit (5 GB I think).
-        if download:
-
-            rule:
-                """
-                Download a figure dependency that was manually uploaded to Zenodo.
-
-                """
-                message:
-                    f"Downloading dependency file {dep_name} from Zenodo..."
-                output:
-                    temp(f"src/figures/{dep_name}") if config["CI"] else f"src/figures/{dep_name}",
-                    posix(f"{file_path}/{file_name}.zenodo")
-                shell:
-                    " && ".join(
-                        [
-                            f"curl https://zenodo.org/record/{zenodo_id}/files/{dep_name} --output {{output[0]}}", 
-                            f"echo 'https://zenodo.org/record/{zenodo_id}' > {file_path}/{file_name}.zenodo"
-                        ]
-                    )
-
-        elif config["CI"]:
-
-            rule:
-                """
-                Download a figure dependency from Zenodo that's managed by showyourwork.
-                
-                """
-                message:
-                    f"Downloading dependency file {dep_name} from Zenodo..."
-                output:
-                    temp(f"src/figures/{dep_name}"),
-                    posix(f"{file_path}/{file_name}.zenodo")
-                conda:
-                    posix(abspaths.user / "environment.yml")
-                params:
-                    action="download",
-                    file_name=file_name,
-                    file_path=file_path,
-                    deposit_title=deposit_title,
-                    sandbox=sandbox,
-                    token_name=token_name
-                script:
-                    "../scripts/zenodo.py"
-
-        elif generate:
-
-            rule:
-                """
-                Generate a figure dependency.
-                
-                """
-                message:
-                    f"Generating figure dependency file {dep_name}..."
-                input:
-                    generate_deps
-                output:
-                    f"src/figures/{dep_name}"
-                conda:
-                    posix(abspaths.user / "environment.yml")
-                shell:
-                    f"cd src/figures && {generate_shell}"
-
-            rule:
-                """
-                Upload a figure dependency to Zenodo.
-                
-                """
-                message:
-                    f"Uploading dependency file {dep_name} to Zenodo..."
-                input:
-                    f"src/figures/{dep_name}"
-                output:
-                    posix(f"{file_path}/{file_name}.zenodo")
-                conda:
-                    posix(abspaths.user / "environment.yml")
-                params:
-                    action="upload",
-                    file_name=file_name,
-                    file_path=file_path,
-                    deposit_title=deposit_title,
-                    deposit_description=deposit_description,
-                    deposit_creators=deposit_creators,
-                    sandbox=sandbox,
-                    token_name=token_name,
-                    generate=generate,
-                    repo_url="{}/tree/{}".format(get_repo_url(), get_repo_sha())
-                script:
-                    "../scripts/zenodo.py"
+        # Name of the dummy file we'll use to track the download
+        dot_zenodo_file = posix(relpaths.figures / f"{dep_name}.zenodo")
 
         # Make the deposit a dependency of the figure
         config["figure_dependencies"][fig].append(f"{dep_name}.zenodo")
 
-        # Make it a dependency of the PDF as well
-        # so we can add Zenodo links to the figure caption
-        files.dot_zenodo.append(posix(relpaths.figures / f"{dep_name}.zenodo"))
+        # Only declare the rules once per zenodo file
+        if not dot_zenodo_file in files.dot_zenodo:
+
+            # Now either download the dataset (if an `id` was provided or if 
+            # we are on GH Actions) or generate & upload it (locally).
+            # Note that we do NOT cache the dataset on GH Actions, since we don't
+            # want to risk running into the cache limit (5 GB I think).
+            if download:
+
+                rule:
+                    """
+                    Download a figure dependency that was manually uploaded to Zenodo.
+
+                    """
+                    message:
+                        f"Downloading dependency file {dep_name} from Zenodo..."
+                    output:
+                        temp(f"src/figures/{dep_name}") if config["CI"] else f"src/figures/{dep_name}",
+                        posix(f"{file_path}/{file_name}.zenodo")
+                    shell:
+                        " && ".join(
+                            [
+                                f"curl https://zenodo.org/record/{zenodo_id}/files/{dep_name} --output {{output[0]}}", 
+                                f"echo 'https://zenodo.org/record/{zenodo_id}' > {file_path}/{file_name}.zenodo"
+                            ]
+                        )
+
+            elif config["CI"]:
+
+                rule:
+                    """
+                    Download a figure dependency from Zenodo that's managed by showyourwork.
+                    
+                    """
+                    message:
+                        f"Downloading dependency file {dep_name} from Zenodo..."
+                    output:
+                        temp(f"src/figures/{dep_name}"),
+                        posix(f"{file_path}/{file_name}.zenodo")
+                    conda:
+                        posix(abspaths.user / "environment.yml")
+                    params:
+                        action="download",
+                        file_name=file_name,
+                        file_path=file_path,
+                        deposit_title=deposit_title,
+                        sandbox=sandbox,
+                        token_name=token_name
+                    script:
+                        "../scripts/zenodo.py"
+
+            elif generate:
+
+                rule:
+                    """
+                    Generate a figure dependency.
+                    
+                    """
+                    message:
+                        f"Generating figure dependency file {dep_name}..."
+                    input:
+                        generate_deps
+                    output:
+                        f"src/figures/{dep_name}"
+                    conda:
+                        posix(abspaths.user / "environment.yml")
+                    shell:
+                        f"cd src/figures && {generate_shell}"
+
+                rule:
+                    """
+                    Upload a figure dependency to Zenodo.
+                    
+                    """
+                    message:
+                        f"Uploading dependency file {dep_name} to Zenodo..."
+                    input:
+                        f"src/figures/{dep_name}"
+                    output:
+                        posix(f"{file_path}/{file_name}.zenodo")
+                    conda:
+                        posix(abspaths.user / "environment.yml")
+                    params:
+                        action="upload",
+                        file_name=file_name,
+                        file_path=file_path,
+                        deposit_title=deposit_title,
+                        deposit_description=deposit_description,
+                        deposit_creators=deposit_creators,
+                        sandbox=sandbox,
+                        token_name=token_name,
+                        generate=generate,
+                        repo_url="{}/tree/{}".format(get_repo_url(), get_repo_sha())
+                    script:
+                        "../scripts/zenodo.py"
+
+            # Make the deposit a dependency of the PDF
+            # so we can add Zenodo links to the figure caption
+            files.dot_zenodo.append(dot_zenodo_file)
