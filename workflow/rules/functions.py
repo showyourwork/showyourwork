@@ -34,7 +34,7 @@ def script_name(wildcards, input):
 
     """
     py_scripts = [file for file in input if file.endswith(".py")]
-    return Path(py_scripts[0]).name
+    return Path(py_scripts[0]).relative_to(Path("src") / "figures")
 
 
 def figure_script(wildcards):
