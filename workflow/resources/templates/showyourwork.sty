@@ -117,7 +117,7 @@
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
     \normalfont%
-    \stackon[0pt]{%
+    \stackon[3pt]{%
       \IfEq*{\usevalue{\sywCurrentLabelName_status}}{KEYNOTFOUND}{}{%
       \raisebox{0pt}[5pt][5pt]{%
         \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
@@ -126,7 +126,7 @@
       }%
       }%
     }{%
-      \stackon[0pt]{%
+      \stackon[3pt]{%
         \IfEq*{\usevalue{\sywCurrentLabelName_datasetOne}}{KEYNOTFOUND}{}{%
         \raisebox{0pt}[5pt][5pt]{%
           \href{\usevalue{\sywCurrentLabelName_datasetOne}}{%
@@ -135,7 +135,7 @@
         }%
         }%
       }{%
-        \stackon[0pt]{%
+        \stackon[3pt]{%
           \IfEq*{\usevalue{\sywCurrentLabelName_datasetTwo}}{KEYNOTFOUND}{}{%
           \raisebox{0pt}[5pt][5pt]{%
             \href{\usevalue{\sywCurrentLabelName_datasetTwo}}{%

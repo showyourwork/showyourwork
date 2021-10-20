@@ -52,8 +52,12 @@ checkpoint script_info:
                             dataset.endswith(".zenodo")
                         ]
                         if label in figures:
-                            figures[label]["files"] += filenames
-                            figures[label]["datasets"] += datasets
+                            for fn in filenames:
+                                if fn not in figures[label]["files"]:
+                                    figures[label]["files"].append(fn)
+                            for ds in datasets:
+                                if ds not in figures[label]["datasets"]:
+                                    figures[label]["datasets"].append(ds)
                         else:
                             figures[label] = {
                                 "script": script, 

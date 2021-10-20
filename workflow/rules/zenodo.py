@@ -3,6 +3,7 @@ Collect information about all the datasets we'll need to upload to/download from
 
 """
 from pathlib import Path
+import copy
 from sphinx_mock import *
 
 
@@ -49,12 +50,14 @@ class zenodo:
 # Get repo name for Zenodo metadata
 repo = "/".join(get_repo_url().split("/")[-2:])
 
+# Make a static copy
+figure_dependencies = copy.deepcopy(config["figure_dependencies"])
 
 # Loop over figures
-for fig in config["figure_dependencies"]:
+for fig in figure_dependencies:
 
     # Loop over dependencies for this figure
-    for dep in config["figure_dependencies"][fig]:
+    for dep in figure_dependencies[fig]:
 
         # Get the dependency name and any instructions on how to generate it
         if type(dep) is OrderedDict:
@@ -64,9 +67,9 @@ for fig in config["figure_dependencies"]:
                 # it or upload it to Zenodo. Let's move on.
                 continue
             dep_props = dict(dep[dep_name])
-        elif type(config["figure_dependencies"][fig]) is dict:
+        elif type(figure_dependencies[fig]) is dict:
             dep_name = dep
-            dep_props = config["figure_dependencies"][fig][dep]
+            dep_props = figure_dependencies[fig][dep]
         else:
             # This is a static dependency, with no rules on how to generate
             # it or upload it to Zenodo. Let's move on.

@@ -7,45 +7,58 @@ min_version("6.7.0")
 report: "report/workflow.rst"
 
 
-# Import config, constants, paths, and error codes used by the rules
-include: "rules/config.py"
-include: "rules/paths.py"
-include: "rules/files.py"
-include: "rules/errors.py"
+# Hack to prevent loading this file multiple times
+import builtins
+try:
+    __snakefile_loaded__
+except:
+    __snakefile_loaded__ = False
+if not __snakefile_loaded__:
 
 
-# Import miscellaneous functions used by the rules
-include: "rules/git.py"
-include: "rules/functions.py"
+    # Import config, constants, paths, and error codes used by the rules
+    include: "rules/config.py"
+    include: "rules/paths.py"
+    include: "rules/files.py"
+    include: "rules/errors.py"
 
 
-# Collect information on all Zenodo datasets
-include: "rules/zenodo.py"
+    # Import miscellaneous functions used by the rules
+    include: "rules/git.py"
+    include: "rules/functions.py"
 
 
-# Define all the rules
-include: "rules/repo.smk"
-include: "rules/auxfiles.smk"
-include: "rules/tectonic.smk"
-include: "rules/class_name.smk"
-include: "rules/class_file.smk"
-include: "rules/tmptexfile.smk"
-include: "rules/xml.smk"
-include: "rules/script_info.smk"
-include: "rules/meta.smk"
-include: "rules/figure.smk"
-include: "rules/texfile.smk"
-include: "rules/stylesheet.smk"
-include: "rules/pdf.smk"
-include: "rules/arxiv.smk"
+    # Collect information on all Zenodo datasets
+    include: "rules/zenodo.py"
 
 
-# Rules we instantiate only if certain conditions apply
-if len(files.zenodo_files_manual):
-    include: "rules/download_manual.smk"
-if len(files.zenodo_files_auto):
-    if config["CI"]:
-        include: "rules/download_ci.smk"
-    else:
-        include: "rules/generate.smk"
-        include: "rules/upload.smk"
+    # Define all the rules
+    include: "rules/repo.smk"
+    include: "rules/auxfiles.smk"
+    include: "rules/tectonic.smk"
+    include: "rules/class_name.smk"
+    include: "rules/class_file.smk"
+    include: "rules/tmptexfile.smk"
+    include: "rules/xml.smk"
+    include: "rules/script_info.smk"
+    include: "rules/meta.smk"
+    include: "rules/figure.smk"
+    include: "rules/texfile.smk"
+    include: "rules/stylesheet.smk"
+    include: "rules/pdf.smk"
+    include: "rules/arxiv.smk"
+
+
+    # Rules we instantiate only if certain conditions apply
+    if len(files.zenodo_files_manual):
+        include: "rules/download_manual.smk"
+    if len(files.zenodo_files_auto):
+        if config["CI"]:
+            include: "rules/download_ci.smk"
+        else:
+            include: "rules/generate.smk"
+            include: "rules/upload.smk"
+
+    
+    # Prevent us from loading this Snakefile again
+    builtins.__snakefile_loaded__ = True
