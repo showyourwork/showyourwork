@@ -1,5 +1,14 @@
 .. :changelog:
 
+0.1.12 (2021-10-20)
++++++++++++++++++++
+
+- Revert code that prevents the Snakefile from being loaded more than once. Turns out that is
+  expected behavior, and is required in order for the module import syntax to work!
+- Switched to adding checks within the ``zenodo.py`` script to prevent dependencies from getting
+  ingested multiple times.
+- Changelog: `v0.1.11...v0.1.12 <https://github.com/rodluger/showyourwork/compare/v0.1.11...v0.1.12>`_
+
 0.1.11 (2021-10-20)
 +++++++++++++++++++
 
