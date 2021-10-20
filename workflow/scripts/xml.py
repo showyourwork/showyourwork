@@ -23,8 +23,11 @@ else:
 subprocess.check_call([TECTONIC] + tectonic_args + [TEX / "{}.tex".format(TMPTEXFILE)])
 
 # Add <HTML></HTML> tags to the XML file
-with open(TEMP / "showyourwork.xml", "r") as f:
-    contents = f.read()
+try:
+    with open(TEMP / "showyourwork.xml", "r") as f:
+        contents = f.read()
+except FileNotFoundError:
+    contents = ""
 contents = "<HTML>\n" + contents + "</HTML>"
 with open(TEMP / "showyourwork.xml", "w") as f:
     print(contents, file=f)
