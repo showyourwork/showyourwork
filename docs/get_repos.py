@@ -16,6 +16,7 @@ def get_repos(
 
     """
     repos = []
+    dates = []
     for page in range(1, maxpages + 1):
         req = Request(
             f"https://api.github.com/search/code?q=path:{path}+filename:{filename}&per_page=100&page={page}"
@@ -25,7 +26,7 @@ def get_repos(
         if API_KEY is None:
             # We can't authenticate!
             return []
-        req.add_header("Authorization", "token %s" % API_KEY)
+        req.add_header("Authorization", f"token {API_KEY}")
         content = urlopen(req).read()
         content = json.loads(content)
         if len(content["items"]) == 0:
@@ -34,4 +35,18 @@ def get_repos(
             repo = res["repository"]["full_name"]
             if repo not in exclude_repos:
                 repos.append(repo)
+
+                # Get the timestamp when it was last pushed to
+                req = Request(f"https://api.github.com/repos/{repo}")
+                req.add_header("Accept", "application/vnd.github.v3+json")
+                req.add_header("Authorization", f"token {API_KEY}")
+                content = urlopen(req).read()
+                content = json.loads(content)
+                date = content["pushed_at"]
+                dates.append(date)
+
+    # Sort by the timestamps
+    repos = [repo for _, repo in sorted(zip(dates, repos))]
+    repos = repos[::-1]
+
     return repos
