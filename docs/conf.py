@@ -41,7 +41,7 @@ with open("projects.rst", "w") as f:
 # Generate the `rules.rst` page
 try:
     subprocess.check_call(
-        ["make", "docstrings"], cwd=Path(__file__).absolute().parents[2]
+        ["make", "docstrings"], cwd=Path(__file__).absolute().parents[1]
     )
 except Exception as e:
     print(e)
