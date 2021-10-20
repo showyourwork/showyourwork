@@ -1,0 +1,28 @@
+Projects that use showyourwork
+==============================
+
+Below is a list of GitHub repositories that make use of ``showyourwork``. If you're working
+on a project based on ``showyourwork``, please add it to this list by
+`suggesting an edit on GitHub <https://github.com/rodluger/showyourwork/edit/main/docs/projects.json>`_.
+
+Astronomy articles
+^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+    :maxdepth: 2
+    {% for repo, description in projects.get("astronomy", {}).items() %}
+    {{ repo }}: {{ description }} <https://github.com/{{ repo }}>
+    {% endfor %}
+
+
+Uncategorized
+^^^^^^^^^^^^^
+
+These were found via a quick search on GitHub. If you would like to showcase one of
+these, add it to our `list of curated repos <https://github.com/rodluger/showyourwork/edit/main/docs/projects.json>`_.
+
+.. toctree::
+    :maxdepth: 2
+    {% for repo in projects.get("uncategorized", []) %}
+    {{ repo }} <https://github.com/{{ repo }}>
+    {% endfor %}

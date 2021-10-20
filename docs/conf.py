@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 import builtins
+import json
+import jinja2
 
 # -- Hacks --------------------------------------------------------------------
 
@@ -11,6 +13,29 @@ sys.path.insert(0, str(Path(__file__).absolute().parents[1] / "workflow" / "rule
 # Add a global flag telling our workflow this is a sphinx run
 builtins.__sphinx_docs_build__ = True
 
+# Get curated list of projects that use showyourwork
+with open("projects.json", "r") as f:
+    projects = json.load(f)
+
+# Do a GitHub API search for all other projects that use showyourwork
+from get_repos import get_repos
+
+exclude_repos = [
+    item
+    for sublist in [projects[project].keys() for project in projects]
+    for item in sublist
+]
+exclude_repos += [
+    "rodluger/showyourwork-template",
+    "rodluger/showyourwork-sandbox",
+    "rodluger/showyourwork-example-dev",
+]
+projects["uncategorized"] = get_repos(exclude_repos=exclude_repos)
+
+# Generate the `projects.rst` page
+env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
+with open("projects.rst", "w") as f:
+    print(env.get_template("projects.rst.jinja").render(projects=projects), file=f)
 
 # -- Project information -----------------------------------------------------
 
