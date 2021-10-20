@@ -56,11 +56,25 @@
   \oldendfigure%
   \sywLogMessage{</FIGURE>}%
 }
+\renewenvironment{figure*}{%
+  \sywLogMessage{<FIGURE>}%
+  \oldfigure%
+}{%
+  \oldendfigure%
+  \sywLogMessage{</FIGURE>}%
+}
 
 % Log equations
 \let\oldalign\align
 \let\oldendalign\endalign
 \renewenvironment{align}{%
+  \sywLogMessage{<ALIGN>}%
+  \oldalign%
+}{%
+  \oldendalign%
+  \sywLogMessage{</ALIGN>}%
+}
+\renewenvironment{align*}{%
   \sywLogMessage{<ALIGN>}%
   \oldalign%
 }{%
