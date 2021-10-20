@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.11 (2021-10-20)
++++++++++++++++++++
+
+- Fix bug preventing figures from being cached properly when one script generates multiple figures
+- Fixed issues due to Snakefile being loaded multiple times
+- Auto-populate the `projects` page on the docs via a GitHub API search on every release
+- Changelog: `v0.1.10...v0.1.11 <https://github.com/rodluger/showyourwork/compare/v0.1.10...v0.1.11>`_
+
 0.1.10 (2021-10-20)
 +++++++++++++++++++
 
