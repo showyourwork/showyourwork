@@ -1,12 +1,8 @@
 channels:
   - defaults
-  - conda-forge
-  - bioconda
 dependencies:
   - pip>=20.3.3
   - python=3.9
-  - mamba
-  - snakemake
   - pip:
       - requests
       - sphinx-book-theme>=0.1.3
