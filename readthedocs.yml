@@ -3,10 +3,8 @@ version: 2
 submodules:
   include: all
 
-python:
-  version: 3.7
-  install:
-    - requirements: docs/requirements.txt
+conda:
+  environment: docs/environment.yml
 
 sphinx:
   configuration: docs/conf.py

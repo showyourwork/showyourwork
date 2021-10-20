@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import subprocess
 import builtins
 import json
 import jinja2
@@ -36,6 +37,17 @@ projects["uncategorized"] = get_repos(exclude_repos=exclude_repos)
 env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
 with open("projects.rst", "w") as f:
     print(env.get_template("projects.rst.jinja").render(projects=projects), file=f)
+
+# Generate the `rules.rst` page
+try:
+    subprocess.check_call(
+        ["make", "docstrings"], cwd=Path(__file__).absolute().parents[2]
+    )
+except Exception as e:
+    print(e)
+    with open("rules.rst", "w") as f:
+        print("Error retrieving rule docstrings.", file=f)
+
 
 # -- Project information -----------------------------------------------------
 

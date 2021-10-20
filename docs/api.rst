@@ -7,8 +7,13 @@ Developer API
     Please check back soon for more details.
 
 
-Rule scripts
-------------
+Modules
+-------
+
+These modules are located in ``showyourwork/worfklow/rules`` and their contents
+are importted into the global namespace when executing the workflow. 
+The functions and variables defined in these modules are used in several of 
+the rules.
 
 config.py
 ^^^^^^^^^
@@ -35,8 +40,20 @@ zenodo.py
 .. automodule:: rules.zenodo
 
 
-Rule files
-----------
+Rules
+-----
+
+These rules are located in files of the same name in the 
+``showyourwork/workflow/rules`` directory with the extension ``.smk``.
+
+.. include:: rules.rst
+
+
+Scripts
+-------
+
+These scripts are located in ``showyourwork/workflow/scripts`` and are
+called from some of the rules defined above.
 
 .. note::
 

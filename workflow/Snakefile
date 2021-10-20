@@ -49,3 +49,7 @@ if len(files.zenodo_files_auto):
     else:
         include: "rules/generate.smk"
         include: "rules/upload.smk"
+
+
+# Rule for autogenerating rule documentation
+include: "rules/docstrings.smk"
