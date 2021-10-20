@@ -2,6 +2,7 @@
 Miscellaneous files used throughout the workflow.
 
 """
+from sphinx_mock import *
 
 
 class files:
@@ -44,10 +45,11 @@ class files:
     #: Temporary tex file.
     tmp_syw = ".showyourwork-ms"
 
-    #: Tectonic command
     if config["tectonic_latest"]:
+        #: Tectonic command
         tectonic = [posix(relpaths.temp / "tectonic")]
     else:
+        #: Tectonic command
         tectonic = []
 
     #: Figures that are allowed directly in the ``src/`` directory

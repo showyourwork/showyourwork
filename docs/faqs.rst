@@ -20,7 +20,8 @@ directly under ``src``. Next, you'll have to add the ``showyourwork`` submodule 
 
     git submodule add https://github.com/rodluger/showyourwork
 
-Finally, copy the files ``Snakefile``, ``environment.yml``, and ``.github/workflow/showyourwork.yml``
+Finally, copy the files ``Snakefile``, ``Makefile``, ``environment.yml``, ``showyourwork.yml``, 
+and ``.github/workflow/showyourwork.yml``
 from the `showyourwork template <https://github.com/rodluger/showyourwork-template>`_,
 and edit them as needed. See :doc:`the layout guide <layout>` for details.
 
@@ -78,6 +79,10 @@ verbosity of the output to obtain more informative error messages:
 .. code-block:: bash
 
     snakemake -c1 --use-conda ms.pdf --config verbose=true
+
+If that doesn't help, check out the `issues <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_
+page for ``showyourwork`` to see if someone has run into the same problem before.
+Feel free to open a new one if you don't see what you're looking for.
 
 
 What if I don't use AASTeX?

@@ -4,6 +4,7 @@ Sets global constants for the workflow.
 """
 from pathlib import Path, PurePosixPath
 import os
+from sphinx_mock import *
 
 
 _workflow = workflow

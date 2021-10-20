@@ -2,6 +2,15 @@
 Figure "error" (status) codes.
 
 """
+from sphinx_mock import *
+
+
+__all__ = [
+    "ScriptDoesNotExist",
+    "ScriptNotVersionControlled",
+    "ScriptHasUncommittedChanges",
+    "ScriptUpToDate",
+]
 
 
 class _ShowYourWorkError:
@@ -45,14 +54,14 @@ class _ScriptUpToDate(_ShowYourWorkError):
     code = 0
 
 
-#: The figure script does not exist
+#: The figure script does not exist.
 ScriptDoesNotExist = _ScriptDoesNotExist()
 
-#: The figure script is not version controlled
+#: The figure script is not version controlled.
 ScriptNotVersionControlled = _ScriptNotVersionControlled()
 
-#: The figure script has uncommitted changes
+#: The figure script has uncommitted changes.
 ScriptHasUncommittedChanges = _ScriptHasUncommittedChanges()
 
-#: The figure script is version controlled and up to date
+#: The figure script is version controlled and up to date.
 ScriptUpToDate = _ScriptUpToDate()

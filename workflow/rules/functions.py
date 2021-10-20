@@ -1,6 +1,11 @@
+"""
+Functions used as inputs / params in various rules.
+
+"""
 import json
 from pathlib import Path
 import warnings
+from sphinx_mock import *
 
 
 def input_class_file(wildcards):

@@ -5,12 +5,17 @@ Process the user config settings.
 from pathlib import Path
 import platform
 import os
+from sphinx_mock import *
+
+
+__all__ = ["config"]
 
 
 # Get user config, if present
 try:
     config
 except NameError:
+    #: Dictionary containing all the user config settings
     config = {}
 
 #: Verbosity

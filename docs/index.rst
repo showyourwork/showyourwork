@@ -21,6 +21,7 @@ Documentation
    local
    custom
    faqs
+   api
    changelog
    update
    projects

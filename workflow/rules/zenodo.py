@@ -3,19 +3,46 @@ Collect information about all the datasets we'll need to upload to/download from
 
 """
 from pathlib import Path
+from sphinx_mock import *
 
 
 class zenodo:
+    """
+    Class containing metadata for all Zenodo deposits.
+
+    """
+
+    #: List of dependencies of each dataset
     generate_deps = {}
+
+    #: Shell command for generating each dataset
     generate_shell = {}
+
+    #: File name for each dataset
     file_name = {}
+
+    #: Path to each dataset
     file_path = {}
+
+    #: Use Zenodo sandbox for a particular dataset?
     sandbox = {}
+
+    #: Zenodo token name (name of an env. var.) for each dataset
     token_name = {}
+
+    #: Zenodo deposit title for each dataset
     deposit_title = {}
+
+    #: Zenodo deposit description for each dataset
     deposit_description = {}
+
+    #: Zenodo authors for each dataset
     deposit_creators = {}
+
+    #: Id for each Zenodo download
     zenodo_id = {}
+
+    #: Url for each Zenodo download
     zenodo_url = {}
 
 
