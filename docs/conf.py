@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-import subprocess
+import ast
 import builtins
 import json
 import jinja2
@@ -37,6 +37,18 @@ projects["uncategorized"] = get_repos(exclude_repos=exclude_repos)
 env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
 with open("projects.rst", "w") as f:
     print(env.get_template("projects.rst.jinja").render(projects=projects), file=f)
+
+# Get docstrings from scripts
+scripts = Path(__file__).absolute().parents[1] / "workflow" / "scripts"
+with open("scripts.rst", "w") as f:
+    for script in scripts.glob("*.py"):
+        with open(script, "r") as fin:
+            tree = ast.parse(fin.read())
+            docstring = ast.get_docstring(tree)
+            print(script.name, file=f)
+            print("^" * len(script.name), file=f)
+            print(docstring, file=f)
+            print("\n", file=f)
 
 # -- Project information -----------------------------------------------------
 

@@ -55,7 +55,4 @@ Scripts
 These scripts are located in ``showyourwork/workflow/scripts`` and are
 called from some of the rules defined above.
 
-
-.. note::
-
-    Coming soon!
+.. include:: scripts.rst
