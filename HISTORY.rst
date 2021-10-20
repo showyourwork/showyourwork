@@ -1,5 +1,16 @@
 .. :changelog:
 
+0.1.10 (2021-10-20)
++++++++++++++++++++
+
+- Cleaned up the workflow, separating rules into their own files with better documentation.
+- Added a fix for nested figures (figures under subdirectories in the ``src/figures`` folder).
+- Fixed issue with multiple Zenodo datasets causing the build to fail.
+- Added support for figures in figure* environments.
+- Fixed issue with occasional missing </HTML> closing tags in the showyourwork XML tree.
+- Added some API documentation; more coming soon.
+- Changelog: `v0.1.8...v0.1.9 <https://github.com/rodluger/showyourwork/compare/v0.1.9...v0.1.10>`_
+
 0.1.9 (2021-10-18)
 ++++++++++++++++++
 
