@@ -122,7 +122,8 @@ for fig in figure_dependencies:
         dot_zenodo_file = posix(relpaths.figures / f"{dep_name}.zenodo")
 
         # Make the deposit a dependency of the figure
-        config["figure_dependencies"][fig].append(f"{dep_name}.zenodo")
+        if not f"{dep_name}.zenodo" in config["figure_dependencies"][fig]:
+            config["figure_dependencies"][fig].append(f"{dep_name}.zenodo")
 
         # Make the deposit a dependency of the PDF
         # so we can add Zenodo links to the figure caption
