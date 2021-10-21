@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.14 (2021-10-21)
++++++++++++++++++++
+
+- Remove duplicated Zenodo links from figure captions
+- Changelog: `v0.1.13...v0.1.14 <https://github.com/rodluger/showyourwork/compare/v0.1.13...v0.1.14>`_
+
 0.1.13 (2021-10-21)
 +++++++++++++++++++
 
