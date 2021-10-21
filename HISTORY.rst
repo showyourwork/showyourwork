@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.15 (2021-10-21)
++++++++++++++++++++
+
+- **Template repo update:** Added options to the ``Makefile`` to generate a report and a DAG.
+  Added a submodule setup check; if the user didn't init the showyourwork submodule, does it
+  automatically before building.
+- Changelog: `v0.1.14...v0.1.15 <https://github.com/rodluger/showyourwork/compare/v0.1.14...v0.1.15>`_
+
 0.1.14 (2021-10-21)
 +++++++++++++++++++
 
