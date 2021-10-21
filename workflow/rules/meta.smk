@@ -45,10 +45,14 @@ rule metadata:
                 meta["labels"]["{}_script".format(label)] = script
                 meta["labels"]["{}_status".format(label)] = str(status)
                 numbers = ["One", "Two", "Three"] # Built-in max of 3
-                for dataset, number in zip(datasets, numbers):
+                urls = []
+                for dataset in datasets:
                     with open(relpaths.figures / dataset, "r") as f:
-                        dataset = f.readlines()[0].replace("\n", "")
-                    meta["labels"]["{}_dataset{}".format(label, number)] = dataset
+                        url = f.readlines()[0].replace("\n", "")
+                        if url not in urls:
+                            urls.append(url)
+                for url, number in zip(urls, numbers):
+                    meta["labels"]["{}_dataset{}".format(label, number)] = url
                 meta["status"] = max(meta["status"], status)
         meta["status"] = str(meta["status"])
 
