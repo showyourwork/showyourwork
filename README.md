@@ -3,10 +3,10 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.13">
-    <img src="https://img.shields.io/static/v1?label=version&message=0.1.13&color=blue"/>
+<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.14">
+    <img src="https://img.shields.io/static/v1?label=version&message=0.1.14&color=blue"/>
 </a>
-<a href="https://showyourwork.readthedocs.io/en/v0.1.13">
+<a href="https://showyourwork.readthedocs.io/en/v0.1.14">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
