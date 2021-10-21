@@ -1,5 +1,12 @@
 .. :changelog:
 
+0.1.13 (2021-10-21)
++++++++++++++++++++
+
+- Fixed API documentation
+- Fixed error with `arxiv_tarball_exclude` and arxiv tarball issue (`#21 <https://github.com/rodluger/showyourwork/issues/21>`_)
+- Changelog: `v0.1.12...v0.1.13 <https://github.com/rodluger/showyourwork/compare/v0.1.12...v0.1.13>`_
+
 0.1.12 (2021-10-20)
 +++++++++++++++++++
 
