@@ -378,10 +378,9 @@ along with their default values and a brief description of what they do:
       - tiff
       
     # Paths to be excluded from the arxiv tarball generated on GitHub Actions
+    # Provide a list of files, one item per line preceded by a - ; glob 
+    # syntax allowed.
     arxiv_tarball_exclude:
-      - "**/*.py"
-      - "**/matplotlibrc"
-      - "**/.gitignore"
 
     # Figure dependencies. Each entry should be the name of a figure script
     # relative to the ``src/figuress`` directory. These entries, in turn, 

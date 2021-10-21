@@ -18,12 +18,8 @@ TEX = snakemake.params["TEX"]
 FIGURES = snakemake.params["FIGURES"]
 SYWTEXFILE = snakemake.params["SYWTEXFILE"]
 TECTONIC = snakemake.params["TECTONIC"]
-arxiv_tarball_exclude = [
-    file
-    for file in snakemake.params["arxiv_tarball_exclude"].split(",")
-    if len(file) > 0
-]
-arxiv_tarball_exclude += ["sywxml.sty"]
+ZENODO_FILES = snakemake.params["ZENODO_FILES"]
+arxiv_tarball_exclude = snakemake.params["arxiv_tarball_exclude"]
 
 
 # Run tectonic to get the .bbl file
@@ -35,15 +31,10 @@ else:
 subprocess.check_call([TECTONIC] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)])
 
 
-# Remove all output except the .bbl, .tex, and .pdf files
-for file in ["__latexindent_temp.tex", ".showyourwork-ms.*"]:
-    for file in TEX.glob(file):
-        if file.name not in [
-            ".showyourwork-ms.bbl",
-            ".showyourwork-ms.tex",
-            ".showyourwork-ms.pdf",
-        ]:
-            os.remove(file)
+# Remove all output except the .bbl and .tex files
+for file in TEX.glob(".showyourwork-ms.*"):
+    if file.name not in [".showyourwork-ms.bbl", ".showyourwork-ms.tex"]:
+        os.remove(file)
 
 
 # Copy the `tex` folder over to a temporary location
@@ -56,17 +47,29 @@ shutil.copytree(TEX, TEMP / "arxiv")
 for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
     os.rename(file, str(file).replace(".showyourwork-ms", "ms"))
 
-
 # Remove additional unnecessary files
-for file in arxiv_tarball_exclude:
-    for file in (TEMP / "arxiv").glob(file):
+arxiv_tarball_exclude += [
+    "**/*.py",
+    "**/matplotlibrc",
+    "**/.gitignore",
+    "**/__pycache__",
+    "**/__latexindent_temp.tex",
+    "**/sywxml.sty",
+    "**/*.zenodo",
+]
+for name in arxiv_tarball_exclude:
+    for file in (TEMP / "arxiv").glob(name):
         try:
             os.remove(file)
         except IsADirectoryError:
             shutil.rmtree(file)
 
+# Remove datasets
+for file in ZENODO_FILES:
+    if os.path.exists(TEMP / "arxiv" / "figures" / file):
+        os.remove(TEMP / "arxiv" / "figures" / file)
 
 # Tar it up
 with tarfile.open("arxiv.tar.gz", "w:gz") as tar:
-    tar.add(TEMP / "arxiv", arcname=os.path.sep)
+    tar.add(TEMP / "arxiv", arcname="arxiv")
 shutil.rmtree(TEMP / "arxiv")

@@ -29,7 +29,7 @@ config["figexts"] = config.get(
 #: Paths to be excluded from the tarball
 config["arxiv_tarball_exclude"] = config.get(
     "arxiv_tarball_exclude",
-    ",".join(["**/*.py", "**/matplotlibrc", "**/.gitignore", "**/__pycache__"]),
+    [],
 )
 
 #: Install latest version of tectonic from source? May be useful for debugging.
