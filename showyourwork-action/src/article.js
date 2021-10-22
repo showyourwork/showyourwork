@@ -53,9 +53,9 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   // Build the article
   core.startGroup("Build article");
   if (core.getInput("verbose") == "true") {
-    exec("snakemake -c1 --use-conda --verbose --reason --notemp ms.pdf");
+    exec("make ms.pdf OPTIONS='-c1 --verbose --reason --notemp'");
   } else {
-    exec("snakemake -c1 --use-conda --reason --notemp ms.pdf");
+    exec("make ms.pdf OPTIONS='-c1 --reason --notemp'");
   }
   output.push("ms.pdf");
   core.endGroup();
@@ -65,11 +65,11 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     core.startGroup("Build ArXiV tarball");
     if (core.getInput("verbose") == "true") {
       exec(
-        `snakemake -c1 --use-conda --verbose --reason --notemp arxiv.tar.gz`
+        `make arxiv.tar.gz OPTIONS='-c1 --verbose --reason --notemp'`
       );
     } else {
       exec(
-        `snakemake -c1 --use-conda --reason --notemp arxiv.tar.gz`
+        `make arxiv.tar.gz OPTIONS='-c1 --reason --notemp'`
       );
     }
     output.push("arxiv.tar.gz");
