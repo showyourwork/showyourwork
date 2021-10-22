@@ -20,6 +20,8 @@ values if none are provided. Current config options are
 
 - ``figure_dependencies`` (*dict*): List of dependencies for each figure.
 
+- ``zenodo`` (*dict*): Rules for how to upload/download dependencies.
+
 """
 from pathlib import Path
 import platform
@@ -78,6 +80,9 @@ for fd in config["figure_dependencies"]:
                 full_path
             )
         )
+
+#: Zenodo instructions
+config["zenodo"] = config.get("zenodo", {})
 
 
 #: Are we on GitHub Actions?
