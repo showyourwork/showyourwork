@@ -1,5 +1,16 @@
 .. :changelog:
 
+0.1.17 (2021-10-22)
++++++++++++++++++++
+
+- Changed the way Zenodo dependencies are provided in the ``showyourwork.yml`` file. Dependencies like
+  datasets should still be listed as entries under the corresponding figure scripts in ``figure_dependencies``,
+  but all information on how to ``generate`` or ``download`` them should now go in a separate top-level
+  ``zenodo:`` key. This makes it much easier to, e.g., specify datasets used by multiple figures.
+  Please see the ``Custom workflows`` section of the docs for more information.
+- Improved the API documentation.
+- Changelog: `v0.1.16...v0.1.17 <https://github.com/rodluger/showyourwork/compare/v0.1.16...v0.1.17>`_
+
 0.1.16 (2021-10-22)
 +++++++++++++++++++
 
