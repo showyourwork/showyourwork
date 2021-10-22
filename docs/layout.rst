@@ -393,16 +393,13 @@ along with their default values and a brief description of what they do:
     arxiv_tarball_exclude:
 
     # Figure dependencies. Each entry should be the name of a figure script
-    # relative to the ``src/figuress`` directory. These entries, in turn, 
+    # relative to the ``src/figures`` directory. These entries, in turn, 
     # should contain a list of dependencies, relative to the same folder.
-    # For example, if the figure script ``src/figures/script.py`` requires a
-    # file ``src/figures/dataset.dat`` in order to run, you may specify that as
-    #
-    #   figure_dependencies:
-    #     script.py:
-    #       - dataset.dat
-    #
-    # These dependencies can also include rules to generate, upload, and/or
-    # download them from Zenodo. Please see the ``Custom workflows`` section
-    # of the documentation for more details.
     figure_dependencies:
+
+    # Zenodo metadata. This should be a list of dataset names relative to the
+    # ``src/figures`` directory. Each one should contain either a ``generate``
+    # or a ``download`` key, each containing instructions on how to generate
+    # or download the dataset, respectively. Please see the documentation for
+    # `Custom workflows` for more information.
+    zenodo:

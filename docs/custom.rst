@@ -247,9 +247,13 @@ file ``showyourwork.yml``:
     # requires the file `src/figures/fibonacci.dat` to run
     figure_dependencies:
         fibonacci.py:
-            - fibonacci.dat:
-                download:
-                    id: 5187276
+            - fibonacci.dat
+
+    # Tell showyourwork where to find ``src/figures/fibonacci.dat``
+    zenodo:
+        - fibonacci.dat:
+            download:
+                id: 5187276
 
 The YAML snippet above tells ``showyourwork`` that the script ``src/figures/fibonacci.py``
 requires the dataset ``src/figures/fibonacci.dat`` in order to run (note that under the
@@ -323,15 +327,18 @@ running on GitHub Actions). This can be achieved by specifying additional instru
 
 .. code-block:: yaml
 
-    # Tell showyourwork that `src/figures/fibonacci.py`
-    # requires the file `src/figures/fibonacci.dat` to run
     figure_dependencies:
         my_figure.py:
+            - simulation.dat
+
+    zenodo:
         - simulation.dat:
             generate: 
                 shell: python run_simulation.py
                 dependencies:
                     - run_simulation.py
+                sandbox: false
+                token_name: ZENODO_TOKEN
                 title: Simulation results
                 description: >-
                     This is the result of a very expensive simulation.
@@ -343,7 +350,7 @@ running on GitHub Actions). This can be achieved by specifying additional instru
 There's a lot going on in this example, so let's break it down piece by piece.
 First, we're telling ``showyourwork`` that the figure script ``src/figures/my_figure.py``
 requires the result of some expensive simulation, stored in the data file ``src/figures/simulation.dat``.
-Instead of specifying the ``download: id:`` of the dataset, we instead explicitly tell
+Then, under ``zenodo:``, instead of specifying the ``download: id:`` of the dataset, we instead explicitly tell
 ``showyourwork`` how to generate it with the ``generate`` key. Specifically, we provide a
 ``shell`` command to run the simulation and produce the output (recalling that all paths
 are relative to the ``src/figures`` directory, which is also the CWD for the shell command).
