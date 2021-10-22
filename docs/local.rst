@@ -84,6 +84,11 @@ To generate a directed acyclic graph (DAG) of the build process, run
 
     snakemake ms.pdf --dag | dot -Tpdf > dag.pdf
 
+or simply
+
+.. code-block:: bash
+
+    make dag
 
 To generate an HTML build report, run
 
