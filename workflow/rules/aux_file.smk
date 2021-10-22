@@ -6,7 +6,7 @@ localrules: aux_file
 
 rule aux_file:
     """
-    Copy auxiliary tex files to the ``src`` directory.
+    Copies auxiliary tex files to the ``src`` directory.
     
     """
     message:

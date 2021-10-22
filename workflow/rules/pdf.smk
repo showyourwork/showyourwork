@@ -1,6 +1,7 @@
 rule pdf:
     """
-    Build the article PDF.
+    Builds the final article PDF. This is the final step in the article
+    build process.
     
     """
     message:

@@ -1,5 +1,5 @@
 """
-Create the output tarball for easy arXiv upload.
+Creates the output tarball for easy arXiv upload.
 This script is called from the ``arxiv`` rule.
 
 """

@@ -3,7 +3,13 @@ localrules: xml
 
 rule xml:
     """
-    Generate the article XML tree.
+    Generates the article XML tree. Specifically, builds the article
+    using ``tectonic``, but re-defines ``figure``, ``caption``, and ``label``
+    commands to print XML tags to a special log file. This way, we can
+    use LaTeX to construct a full XML tree of the document for us, without
+    any need for parsing the TeX file ourselves.
+    This XML tree is then used to determine relationships between the figure
+    scripts and the figure files.
     
     """
     message:

@@ -1,5 +1,5 @@
 """
-Build the article PDF.
+Builds the article PDF.
 This script is called from the ``pdf`` rule.
 
 """

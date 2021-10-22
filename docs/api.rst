@@ -11,7 +11,7 @@ Modules
 -------
 
 These modules are located in ``showyourwork/worfklow/rules`` and their contents
-are importted into the global namespace when executing the workflow. 
+are imported into the global namespace when executing the workflow. 
 The functions and variables defined in these modules are used in several of 
 the rules.
 
@@ -45,6 +45,8 @@ Rules
 
 These rules are located in files of the same name in the 
 ``showyourwork/workflow/rules`` directory with the extension ``.smk``.
+They are the building blocks of the ``Snakemake`` workflow, and can even be
+called externally as ``make <rule_name>``.
 
 .. include:: rules.rst
 

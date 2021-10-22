@@ -4,6 +4,8 @@ import ast
 import builtins
 import json
 import jinja2
+import os
+import subprocess
 
 # -- Hacks --------------------------------------------------------------------
 
@@ -49,6 +51,12 @@ with open("scripts.rst", "w") as f:
             print("^" * len(script.name), file=f)
             print(docstring, file=f)
             print("\n", file=f)
+
+# Generate the `rules.rst` page
+# NOTE: We don't set up Snakemake on RTD, so we need to run this
+# locally and commit the `rules.rst` file periodically.
+if not os.environ.get("READTHEDOCS") == "True":
+    subprocess.check_call(["make", "-C", "..", "docstrings"])
 
 # -- Project information -----------------------------------------------------
 

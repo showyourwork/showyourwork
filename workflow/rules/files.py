@@ -1,5 +1,7 @@
 """
 Miscellaneous files used throughout the workflow.
+The static members of the class ``files`` are populated
+automatically as the workflow reads the user config.
 
 """
 from sphinx_mock import *

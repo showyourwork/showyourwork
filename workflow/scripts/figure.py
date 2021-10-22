@@ -1,5 +1,5 @@
 """
-Generate a figure output.
+Generates a figure output.
 This script is called from the ``figure`` rule.
 
 """

@@ -8,7 +8,9 @@ localrules: script_info
 
 checkpoint script_info:
     """
-    Build the figure dependency tree.
+    Builds the figure dependency tree from the XML file
+    generated in the ``xml`` rule. Stores it in a JSON
+    file in the temporary ``showyourwork`` directory.
 
     """
     message:

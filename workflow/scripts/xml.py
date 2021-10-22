@@ -1,5 +1,5 @@
 """
-Build the article to get the XML tree.
+Builds the article to get the XML tree.
 This script is called from the ``xml`` rule.
 
 """

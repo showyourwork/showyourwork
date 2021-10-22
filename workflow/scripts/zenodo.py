@@ -1,5 +1,5 @@
 """
-Upload or downlod a dataset to/from Zenodo.
+Uploads or downlods a dataset to/from Zenodo.
 This script is called from the ``zenodo`` rule.
 
 """

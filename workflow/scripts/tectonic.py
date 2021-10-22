@@ -1,5 +1,5 @@
 """
-Download and install ``tectonic`` from source.
+Downloads and installs ``tectonic`` from source.
 This script is called from the ``tectonic`` rule.
 
 """

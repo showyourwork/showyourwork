@@ -93,6 +93,7 @@ it should have the following overall layout:
           <li><a href="#gitmodules">.gitmodules</a></li>
           <li><a href="#license">LICENSE</a></li>
           <li><a href="#readme">README.md</a></li>
+          <li><a href="#makefile">Makefile</a></li>
           <li><a href="#snakefile">Snakefile</a></li>
           <li><a href="#environment">environment.yml</a></li>
           <li><a href="#config">showyourwork.yml</a></li>
@@ -288,6 +289,15 @@ The ``README.md`` file
 You should include a description of your repository here. Keep the badges at
 the top, as these provide easy access to the compiled article and the build logs.
 Feel free to remove or change the logo, though!
+
+
+.. _makefile:
+
+The ``Makefile``
+****************
+
+This is a standard Unix Makefile, enabling you to type ``make`` to build the article.
+You shouldn't have to edit anything in here.
 
 
 .. _snakefile:

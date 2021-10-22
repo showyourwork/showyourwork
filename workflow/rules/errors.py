@@ -1,5 +1,9 @@
 """
-Figure "error" (status) codes.
+Defines figure "error" (status) codes. These codes are used to
+determine the color of the GitHub icon next to each figure
+caption, ranging from blue (all is well!) to yellow (the script
+has uncommitted changes or is not version controlled) to red (the
+script can't be located).
 
 """
 from sphinx_mock import *

@@ -1,5 +1,5 @@
 """
-Create the ``showyourwork`` stylesheet.
+Creates the ``showyourwork`` stylesheet.
 This script is called from the ``stylesheet`` rule.
 
 """

@@ -3,7 +3,7 @@ localrules: class_file
 
 rule class_file:
     """
-    Copy the LaTeX class file to the ``src`` directory.
+    Copies the LaTeX class file to the ``src`` directory.
 
     """
     message:

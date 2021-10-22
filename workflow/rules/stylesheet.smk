@@ -3,7 +3,8 @@ localrules: stylesheet
 
 rule stylesheet:
     """
-    Generating the ``showyourwork.sty`` LaTeX style sheet.
+    Generates the ``showyourwork.sty`` LaTeX style sheet from a Jinja
+    template and copies it to the ``src`` directory.
 
     """
     message:

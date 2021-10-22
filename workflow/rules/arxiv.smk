@@ -1,6 +1,6 @@
 rule arxiv:
     """
-    Build a tarball of the article PDF and all output for posting to the arXiv.
+    Builds a tarball of the article PDF and all output for posting to the arXiv.
 
     """
     message:

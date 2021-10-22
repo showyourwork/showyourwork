@@ -3,7 +3,7 @@ localrules: tmptexfile
 
 rule tmptexfile:
     """
-    Copy the manuscript to a temporary TeX file for the XML build step.
+    Copies the manuscript to a temporary TeX file for the XML build step.
 
     """
     message:

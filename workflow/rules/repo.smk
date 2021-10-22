@@ -6,7 +6,8 @@ localrules: repo
 
 rule repo:
     """
-    Generate repository metadata (git url, branch name, commit sha).
+    Generates repository metadata (git url, branch name, commit sha).
+    Runs every time the article is generated.
 
     """
     message:

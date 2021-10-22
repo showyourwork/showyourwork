@@ -1,6 +1,9 @@
 rule figure:
     """
-    Generate a figure given a figure script and optional dependencies.
+    Generates a figure given a figure script and optional dependencies.
+    This is the workhorse of ``showyourwork``, which generates all the
+    figures in the article. Users can subclass this rule or override it
+    entirely to customize the build process.
 
     """
     message:

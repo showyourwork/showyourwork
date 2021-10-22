@@ -7,7 +7,9 @@ localrules: class_name
 
 checkpoint class_name:
     """
-    Infer the name of the LaTeX document class for the article.
+    Infers the name of the LaTeX document class for the article
+    by doing a regex on the TeX file. This helps ``showyourwork``
+    decide which class files to include in the build.
 
     """
     message:

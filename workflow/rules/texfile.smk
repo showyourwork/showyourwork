@@ -3,7 +3,7 @@ localrules: texfile
 
 rule texfile:
     """
-    Copy the manuscript to a temporary TeX file for the final build.
+    Copies the manuscript to a temporary TeX file for the final build.
 
     """
     message:

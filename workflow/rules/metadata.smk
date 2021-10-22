@@ -7,7 +7,9 @@ localrules: metadata
 
 rule metadata:
     """
-    Generate article metadata.
+    Generates article metadata from the output of the ``repo``
+    and ``script_info`` rules. Saves it as a JSON in the temporary
+    ``showyourwork`` directory.
     
     """
     message:

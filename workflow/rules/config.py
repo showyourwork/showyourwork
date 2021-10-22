@@ -1,5 +1,24 @@
 """
-Process the user config settings.
+Processes the user config settings, setting default
+values if none are provided. Current config options are
+
+- ``verbose`` (*bool*): Enable verbose output? Default False.
+
+- ``figexts`` (*list*): List of recognized figure extensions. Default
+  is ``["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]``
+
+- ``arxiv_tarball_exclude`` (*list*): List of files/paths to exclude from 
+  the tarball.
+
+- ``tectonic_latest`` (*bool*): Use the latest version of ``tectonic`` (built
+  from source)? Default False.
+
+- ``tectonic_os`` (*str*): Operating system (used for choosing which ``tectonic``
+  binary to install). This is usually determined automatically, but can be
+  overridden. Options are ``x86_64-unknown-linux-gnu``, ``x86_64-apple-darwin``,
+  or ``x86_64-pc-windows-msvc``.
+
+- ``figure_dependencies`` (*dict*): List of dependencies for each figure.
 
 """
 from pathlib import Path
