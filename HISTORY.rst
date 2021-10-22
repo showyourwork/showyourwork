@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.16 (2021-10-22)
++++++++++++++++++++
+
+- **Template repo update:** Pared down the ``Makefile`` in the template repository. This now calls
+  a ``Makefile`` in the ``showyourwork`` submodule (this repo), which contains all the directives.
+  This makes it easier to improve/update the workflow, since we can just update ``showyourwork``.
+- Changelog: `v0.1.15...v0.1.16 <https://github.com/rodluger/showyourwork/compare/v0.1.15...v0.1.16>`_
+
 0.1.15 (2021-10-21)
 +++++++++++++++++++
 
