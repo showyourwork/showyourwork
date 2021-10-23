@@ -14,6 +14,12 @@ include: "rules/files.py"
 include: "rules/errors.py"
 
 
+# Clear any existing exception messages on startup
+include: "rules/exceptions.py"
+if files.exception.exists():
+    files.exception.unlink()
+
+
 # Import miscellaneous functions used by the rules
 include: "rules/git.py"
 include: "rules/functions.py"
@@ -53,3 +59,8 @@ if len(files.zenodo_files_auto):
 
 # Rule for autogenerating rule documentation
 include: "rules/docstrings.smk"
+
+
+# Attempt to print an informative error message at the end of the build log
+onerror:
+    ShowyourworkException.print()

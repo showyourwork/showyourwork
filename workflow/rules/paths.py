@@ -18,11 +18,16 @@ def posix(path):
 class abspaths:
     """Absolute paths used throughout the workflow."""
 
-    #: Path to the showyourwork workflow
-    workflow = Path(_workflow.modules["showyourwork"].snakefile).absolute().parents[0]
-
     #: Path to the user's repository root
     user = Path(_workflow.basedir).absolute()
+
+    #: Path to the showyourwork workflow
+    try:
+        workflow = (
+            Path(_workflow.modules["showyourswork"].snakefile).absolute().parents[0]
+        )
+    except KeyError:
+        workflow = user / "showyourwork" / "workflow"
 
 
 class relpaths:

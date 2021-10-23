@@ -28,7 +28,8 @@ rule xml:
         TEMP=relpaths.temp,
         TEX=relpaths.tex,
         TMPTEXFILE=files.tmp_xml,
-        TECTONIC=config["tectonic_cmd"]
+        TECTONIC=config["tectonic_cmd"],
+        EXCEPTIONFILE=files.exception
     conda:
         "../envs/environment.yml"
     script:

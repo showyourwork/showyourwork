@@ -5,7 +5,7 @@ OPTIONS         ?= -c1
 
 # Local vars
 FORCE_OPTIONS   := --use-conda
-TEMPORARIES     := src/ms.pdf src/__latexindent*.tex
+TEMPORARIES     := .showyourwork src/ms.pdf src/__latexindent*.tex
 CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 WORKDIR         := ..
