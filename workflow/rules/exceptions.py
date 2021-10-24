@@ -42,6 +42,7 @@ class ShowyourworkException(Exception):
         script=None,
         rule_name=None,
         context=None,
+        delayed=True,
         brief="An error occurred while executing your workflow.",
         *args,
         **kwargs,
@@ -69,9 +70,27 @@ class ShowyourworkException(Exception):
         pad = " " * max(0, (width - len(title)) // 2 - 2)
         title = f"{pad}{title}{pad}"
 
-        # Store the message in a temp file (read in the `onerror:` section
-        # of the `Snakefile`, to be printed at the end of the log).
-        with open(exception_file, "w") as f:
+        if delayed:
+
+            # Store the message in a temp file (read in the `onerror:` section
+            # of the `Snakefile`, to be printed at the end of the log).
+            with open(exception_file, "w") as f:
+                print(
+                    TEMPLATE.format(
+                        hline=hline,
+                        title=title,
+                        script=script,
+                        rule_name=rule_name,
+                        brief=brief,
+                        context=context,
+                        message=message,
+                    ),
+                    file=f,
+                )
+
+        else:
+
+            # Print it to the terminal right away
             print(
                 TEMPLATE.format(
                     hline=hline,
@@ -81,8 +100,7 @@ class ShowyourworkException(Exception):
                     brief=brief,
                     context=context,
                     message=message,
-                ),
-                file=f,
+                )
             )
 
         # Raise the exception as usual

@@ -63,5 +63,4 @@ include: "rules/docstrings.smk"
 
 # Attempt to print an informative error message at the end of the build log
 onerror:
-    breakpoint()
     ShowyourworkException.print()

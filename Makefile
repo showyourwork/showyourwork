@@ -38,8 +38,8 @@ snakemake_setup: conda_setup
 # Remove all intermediates, outputs, and temporaries
 clean: snakemake_setup
 	@cd $(WORKDIR);\
-	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output;\
-	rm -rf $(TEMPORARIES)
+	rm -rf $(TEMPORARIES);\
+	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
 
 
 # Generate a workflow report

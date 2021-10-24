@@ -53,8 +53,51 @@ def figure_script(wildcards):
         scripts = json.load(f)
     for entry in scripts["figures"].values():
         if figure in entry["files"]:
-            return entry["script"]
-    raise ValueError("Input script not found for output figure `{}`.".format(figure))
+            script = entry["script"]
+            if script != files.unknown:
+                if Path(script).exists():
+                    return script
+                else:
+                    raise ShowyourworkException(
+                        f"Input script `{script}` for figure `{figure}` does not exist.",
+                        rule_name="figure",
+                        brief=f"Input script `{script}` for figure `{figure}` does not exist.",
+                        context="showyourwork infers the script that generates a given figure "
+                        "in your TeX file by inspecting the label inside the figure environment. "
+                        r"The convention is that if a figure is labeled `\label{fig:foo}`, "
+                        "showyourwork expects there to be a script called `foo.py` in the `src/figures` "
+                        "directory that generates the figure(s) in the current figure environment.",
+                        delayed=False,
+                    )
+            else:
+                raise ShowyourworkException(
+                    f"Unable to generate figure `{figure}`."
+                    "Did you forget to provide a custom rule for it?",
+                    rule_name="figure",
+                    brief=f"Unable to generate figure `{figure}`.",
+                    context="showyourwork doesn't know how to generate the "
+                    f"figure `{figure}` in your TeX file. "
+                    "Usually, showyourwork is able to infer the script that "
+                    r"generates a given figure by parsing \includegraphics "
+                    r"and \label commands in your TeX file, provided they are "
+                    "inside a figure environment. But if a figure is included "
+                    "outside of a figure environment, showyourwork can't "
+                    "automatically infer its parent script. In such cases, you "
+                    "must provide a custom rule in your Snakefile to generate "
+                    "the figure; see the documentation for details.",
+                    delayed=False,
+                )
+    raise ShowyourworkException(
+        f"Input script not found for figure `{figure}`.",
+        rule_name="figure",
+        brief=f"Input script not found for figure `{figure}`.",
+        context="showyourwork infers the script that generates a given figure "
+        "in your TeX file by inspecting the label inside the figure environment. "
+        r"The convention is that if a figure is labeled `\label{fig:foo}`, "
+        "showyourwork expects there to be a script called `foo.py` in the `src/figures` "
+        "directory that generates the figure(s) in the current figure environment.",
+        delayed=False,
+    )
 
 
 def figure_script_dependencies(wildcards):
