@@ -71,7 +71,7 @@ for dataset in config["zenodo"]:
     # Generate & upload settings
     zenodo.script[dependency] = dep_props.get("script", None)
     zenodo.file_name[dependency] = str(Path(dependency).name)
-    zenodo.file_path[dependency] = str(relpaths.src / Path(dependency).parent)
+    zenodo.file_path[dependency] = str(Path(dependency).parent)
     zenodo.token_name[dependency] = dep_props.get("token_name", "ZENODO_TOKEN")
     zenodo.deposit_title[dependency] = dep_props.get(
         "title", f"{repo}:{zenodo.file_name[dependency]}"
