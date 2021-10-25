@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.19 (2021-10-25)
++++++++++++++++++++
+
+- Fixed typo that causes Zenodo integration to fail.
+- Changelog: `v0.1.18...v0.1.19 <https://github.com/rodluger/showyourwork/compare/v0.1.18...v0.1.19>`_
+
 0.1.18 (2021-10-25)
 +++++++++++++++++++
 
