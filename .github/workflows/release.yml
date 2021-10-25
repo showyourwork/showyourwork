@@ -160,7 +160,7 @@ jobs:
           cd showyourwork-template
           git submodule update --remote
           git add showyourwork
-          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run"
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run" || echo "nothing to commit"
 
           # Now update the example-dev repo (an instance of the template)
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example-dev ${BRANCH}
