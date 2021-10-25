@@ -8,13 +8,13 @@ rule generate:
     input:
         script_dependencies
     output:
-        "src/{dependency}"
+        "{dependency}"
     wildcard_constraints:
         dependency="{}".format("|".join(files.zenodo_files_auto)),
     conda:
         posix(abspaths.user / "environment.yml")
     params:
-        path=lambda w: str(relpaths.src / Path(zenodo.script[w.dependency]).parent),
+        path=lambda w: str(Path(zenodo.script[w.dependency]).parent),
         script=lambda w: str(Path(zenodo.script[w.dependency]).name)
     shell:
         "cd {params.path} && python {params.script}"

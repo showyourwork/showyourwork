@@ -6,8 +6,8 @@ rule download_manual:
     message:
         "Downloading dependency file {output[0]} from Zenodo..."
     output:
-        temp("src/{dependency}") if config["CI"] else "src/{dependency}",
-        "src/{dependency}.zenodo"
+        temp("{dependency}") if config["CI"] else "{dependency}",
+        "{dependency}.zenodo"
     wildcard_constraints:
         dependency="{}".format("|".join(files.zenodo_files_manual))
     params:

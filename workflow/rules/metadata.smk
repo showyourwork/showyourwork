@@ -21,7 +21,7 @@ rule metadata:
         ],
         posix(relpaths.temp / "repo.json"),
         posix(relpaths.temp / "scripts.json"),
-        [posix(relpaths.src / f) for f in files.dot_zenodo]
+        [posix(f) for f in files.dot_zenodo]
     output:
         posix(relpaths.temp / "meta.json"),
     run:
@@ -49,7 +49,7 @@ rule metadata:
                 numbers = ["One", "Two", "Three"] # Built-in max of 3
                 urls = []
                 for dataset in datasets:
-                    with open(relpaths.src / dataset, "r") as f:
+                    with open(dataset, "r") as f:
                         url = f.readlines()[0].replace("\n", "")
                         if url not in urls:
                             urls.append(url)

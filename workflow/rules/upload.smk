@@ -6,9 +6,9 @@ rule upload:
     message:
         "Uploading dependency file {input[0]} to Zenodo..."
     input:
-        "src/{dependency}"
+        "{dependency}"
     output:
-        "src/{dependency}.zenodo"
+        "{dependency}.zenodo"
     wildcard_constraints:
         dependency="{}".format("|".join(files.zenodo_files_auto))
     conda:

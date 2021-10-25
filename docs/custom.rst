@@ -208,16 +208,18 @@ Script dependencies
 
 Sometimes we would like to tell ``showyourwork`` about script dependencies, such as
 when our figure script imports something from a locally-hosted script or package.
-We can do this in the same way as above by specifying a dependency in the configuration
+We can do this by specifying a dependency in the configuration
 file ``showyourwork.yml``:
 
 .. code-block:: yaml
 
     # Tell showyourwork that `src/figures/my_figure.py`
     # depends on `src/figures/utils/helper_script.py`
-    figure_dependencies:
-        my_figure.py:
-            - utils/helper_script.py
+    dependencies:
+        src/figures/my_figure.py:
+            - src/figures/utils/helper_script.py
+
+Note that all paths are relative to the root of your repository.
 
 
 Dataset dependencies
@@ -244,20 +246,18 @@ file ``showyourwork.yml``:
 .. code-block:: yaml
 
     # Tell showyourwork that `src/figures/fibonacci.py`
-    # requires the file `src/figures/fibonacci.dat` to run
-    figure_dependencies:
-        fibonacci.py:
-            - fibonacci.dat
+    # requires the file `src/data/fibonacci.dat` to run
+    dependencies:
+        src/figures/fibonacci.py:
+            - src/data/fibonacci.dat
 
-    # Tell showyourwork where to find ``src/figures/fibonacci.dat``
+    # Tell showyourwork where to find ``src/data/fibonacci.dat``
     zenodo:
-        - fibonacci.dat:
-            download:
-                id: 5187276
+        - src/data/fibonacci.dat:
+            id: 5187276
 
 The YAML snippet above tells ``showyourwork`` that the script ``src/figures/fibonacci.py``
-requires the dataset ``src/figures/fibonacci.dat`` in order to run (note that under the
-``figure_dependencies`` key, all paths are relative to the ``src/figures`` directory.)
+requires the dataset ``src/data/fibonacci.dat`` in order to run.
 It also tells ``showyourwork`` that this dataset can be downloaded from Zenodo, and that
 it has the record ID ``5187276``. Specifically, that means the file lives at the URL
 `<https://zenodo.org/record/5187276>`_ and can be downloaded by running
@@ -272,14 +272,14 @@ specify a custom rule in the ``Snakefile`` (see below).
 Alternatively, you can manually specify how to download a dataset dependency.
 This is useful if, e.g., it's hosted somewhere other than Zenodo, or if you
 need to do some post-processing (like unzipping) before running your figure
-script. To do that, simply don't provide a ``download`` instruction in the
+script. To do that, simply don't specify the entry in the ``zenodo`` section of your
 ``showyourwork.yml`` file:
 
 .. code-block:: yaml
 
-    figure_dependencies:
-        fibonacci.py:
-            - fibonacci.dat
+    dependencies:
+        src/figures/fibonacci.py:
+            - src/data/fibonacci.dat
 
 and instead create a custom rule in the ``Snakefile``:
 
@@ -292,8 +292,7 @@ and instead create a custom rule in the ``Snakefile``:
         shell:
             "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
 
-Note that in the ``Snakefile``, all paths are relative to the top level of your repo.
-Also note that this approach will not automatically add a dataset link to your figure caption.
+Note that this approach will not automatically add a dataset link to your figure caption.
 
 
 Simulation dependencies
@@ -327,37 +326,36 @@ running on GitHub Actions). This can be achieved by specifying additional instru
 
 .. code-block:: yaml
 
-    figure_dependencies:
-        my_figure.py:
-            - simulation.dat
+    dependencies:
+        src/figures/my_figure.py:
+            - src/data/simulation.dat
 
     zenodo:
-        - simulation.dat:
-            generate: 
-                shell: python run_simulation.py
-                dependencies:
-                    - run_simulation.py
-                sandbox: false
-                token_name: ZENODO_TOKEN
-                title: Simulation results
-                description: >-
-                    This is the result of a very expensive simulation.
-                    Here is some text describing the simulation in detail,
-                    how it was generated, and how to use the dataset.
-                creators:
-                    - Luger, Rodrigo
+        - src/data/simulation.dat:
+            script: src/figures/run_simulation.py
+            sandbox: false
+            token_name: ZENODO_TOKEN
+            title: Simulation results
+            description: >-
+                This is the result of a very expensive simulation.
+                Here is some text describing the simulation in detail,
+                how it was generated, and how to use the dataset.
+            creators:
+                - Luger, Rodrigo
 
 There's a lot going on in this example, so let's break it down piece by piece.
 First, we're telling ``showyourwork`` that the figure script ``src/figures/my_figure.py``
-requires the result of some expensive simulation, stored in the data file ``src/figures/simulation.dat``.
-Then, under ``zenodo:``, instead of specifying the ``download: id:`` of the dataset, we instead explicitly tell
-``showyourwork`` how to generate it with the ``generate`` key. Specifically, we provide a
-``shell`` command to run the simulation and produce the output (recalling that all paths
-are relative to the ``src/figures`` directory, which is also the CWD for the shell command).
-We also tell ``showyourwork`` about any ``dependencies`` of the simulation. These, as before,
-are files that, when modified, will trigger a re-run of the simulation (but only if running locally).
-In this case, changes to the script ``src/figures/run_simulation.py`` will result in a re-run
-of the simulation the next time I execute the workflow locally.
+requires the result of some expensive simulation, stored in the data file ``src/data/simulation.dat``.
+Then, under ``zenodo:``, instead of specifying the ``id:`` of the dataset, we instead explicitly tell
+``showyourwork`` how to generate it with a ``script`` key. Specifically, we specify the Python
+``script`` that runs the simulation.
+
+.. note::
+
+    ``showyourwork`` executes the Python ``script`` from within the directory containing it.
+    In this example, the simulation script is executed from within the ``src/figures/`` directory,
+    so it must save the simulation file as ``../data/simulation.dat``, since that's where
+    ``showyourwork`` expects to see it based on the config file.
 
 The next several instructions tell ``showyourwork`` how to upload the results of the simulation
 to Zenodo. The ``title``, ``description``, and ``creators`` keys should be self-explanatory: they

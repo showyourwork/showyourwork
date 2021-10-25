@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.18 (2021-10-25)
++++++++++++++++++++
+
+- 
+- Changelog: `v0.1.17...v0.1.18 <https://github.com/rodluger/showyourwork/compare/v0.1.17...v0.1.18>`_
+
 0.1.17 (2021-10-22)
 +++++++++++++++++++
 

@@ -392,14 +392,14 @@ along with their default values and a brief description of what they do:
     # syntax allowed.
     arxiv_tarball_exclude:
 
-    # Figure dependencies. Each entry should be the name of a figure script
-    # relative to the ``src/figures`` directory. These entries, in turn, 
+    # Script dependencies. Each entry should be the name of a Python script
+    # relative to the ``src/`` directory. These entries, in turn, 
     # should contain a list of dependencies, relative to the same folder.
-    figure_dependencies:
+    dependencies:
 
     # Zenodo metadata. This should be a list of dataset names relative to the
-    # ``src/figures`` directory. Each one should contain either a ``generate``
-    # or a ``download`` key, each containing instructions on how to generate
-    # or download the dataset, respectively. Please see the documentation for
-    # `Custom workflows` for more information.
+    # ``src/`` directory. Each one should contain either a Zenodo ``id``
+    # for an existing deposit or instructions on how to generate and upload
+    # a new deposit. Please see the documentation on `Custom workflows` for 
+    # more information.
     zenodo:

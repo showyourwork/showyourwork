@@ -9,6 +9,8 @@ TEMPORARIES     := .showyourwork src/ms.pdf src/__latexindent*.tex
 CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 WORKDIR         := ..
+CLEAN_SYW       := rm -rf $(TEMPORARIES)
+CLEAN_SM        := snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
 
 .PHONY:  ms.pdf clean report dag snakemake_setup conda_setup Makefile
 
@@ -38,9 +40,8 @@ snakemake_setup: conda_setup
 # Remove all intermediates, outputs, and temporaries
 clean: snakemake_setup
 	@cd $(WORKDIR);\
-	rm -rf $(TEMPORARIES);\
-	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
-
+	{ $(CLEAN_SM) && $(CLEAN_SYW); } || { $(CLEAN_SYW) && $(CLEAN_SM); }
+	
 
 # Generate a workflow report
 report: snakemake_setup

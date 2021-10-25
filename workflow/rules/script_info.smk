@@ -17,7 +17,7 @@ checkpoint script_info:
         "Building figure dependency tree..."
     input:
         posix(relpaths.temp / "showyourwork.xml"),
-        [posix(relpaths.src / f) for f in files.dot_zenodo]
+        [posix(f) for f in files.dot_zenodo]
     output:
         posix(relpaths.temp / "scripts.json"),
     run:
@@ -49,7 +49,7 @@ checkpoint script_info:
                         datasets = [
                             dataset for dataset in 
                             config["dependencies"].get(
-                                "{}.py".format(Path("figures") / label), []
+                                "{}.py".format(relpaths.figures / label), []
                             ) if type(dataset) is str and 
                             dataset.endswith(".zenodo")
                         ]
