@@ -35,6 +35,7 @@ class relpaths:
 
     #: Path to the showyourwork workflow
     tex = Path("src")
+    src = Path("src")
 
     #: Path to the showyourwork workflow
     figures = Path("src") / "figures"

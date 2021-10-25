@@ -59,3 +59,5 @@ class files:
 
     #: Store temporary exception messages
     exception = relpaths.temp / "exception.log"
+    if exception.exists():
+        exception.unlink()

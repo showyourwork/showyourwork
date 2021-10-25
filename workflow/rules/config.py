@@ -70,15 +70,18 @@ else:
 config["tectonic_os"] = config.get("tectonic_os", tectonic_os_default)
 
 
-#: Figure dependencies
-config["figure_dependencies"] = config.get("figure_dependencies", {})
-for fd in config["figure_dependencies"]:
-    full_path = (Path("src") / "figures" / fd).absolute()
-    if not full_path.exists():
-        raise ValueError(
-            "Figure script specified in config file does not exist: {}".format(
-                full_path
-            )
+#: Dependencies
+config["dependencies"] = config.get("dependencies", {})
+for fd in config["dependencies"]:
+    if not (Path("src") / fd).exists():
+        raise ShowyourworkException(
+            f"File specified in `dependencies` does not exist: {fd}.",
+            brief=f"File specified in `dependencies` does not exist: {fd}.",
+            context="You seem to have specified a file under the `dependencies` "
+            "key in `showyourwork.yml` that does not currently exist. "
+            "Dependencies can only be specified for scripts and/or the manuscript "
+            "file, and all paths should be relative to the `src/` directory.",
+            delayed=False,
         )
 
 #: Zenodo instructions

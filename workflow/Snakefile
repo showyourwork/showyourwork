@@ -7,17 +7,15 @@ min_version("6.7.0")
 report: "report/workflow.rst"
 
 
+# Set up custom exception handling
+include: "rules/exceptions.py"
+
+
 # Import config, constants, paths, and error codes used by the rules
 include: "rules/config.py"
 include: "rules/paths.py"
 include: "rules/files.py"
 include: "rules/errors.py"
-
-
-# Clear any existing exception messages on startup
-include: "rules/exceptions.py"
-if files.exception.exists():
-    files.exception.unlink()
 
 
 # Import miscellaneous functions used by the rules

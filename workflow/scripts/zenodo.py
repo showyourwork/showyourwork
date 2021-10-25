@@ -64,7 +64,7 @@ def upload_simulation(
     sandbox=False,
     token_name="ZENODO_TOKEN",
     file_path=".",
-    generate_shell="",
+    script="",
     repo_url="",
 ):
 
@@ -152,7 +152,7 @@ def upload_simulation(
             "metadata": {
                 "title": deposit_title,
                 "upload_type": "dataset",
-                "description": f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && {generate_shell}</code></pre>",
+                "description": f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>",
                 "creators": [{"name": name} for name in deposit_creators],
             }
         }
@@ -216,7 +216,7 @@ def upload_simulation(
             "metadata": {
                 "title": deposit_title,
                 "upload_type": "dataset",
-                "description": f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && {generate_shell}</code></pre>",
+                "description": f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>",
                 "creators": [{"name": name} for name in deposit_creators],
             }
         }
@@ -323,7 +323,7 @@ if snakemake.params["action"] == "upload":
         token_name=snakemake.params["token_name"],
         file_path=snakemake.params["file_path"],
         repo_url=snakemake.params["repo_url"],
-        generate_shell=snakemake.params["generate_shell"],
+        script=snakemake.params["script"],
     )
 else:
     download_simulation(

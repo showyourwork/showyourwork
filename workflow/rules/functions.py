@@ -107,10 +107,24 @@ def figure_script_dependencies(wildcards):
     """
     script = Path(figure_script(wildcards)).name
     deps = []
-    for dep in config["figure_dependencies"].get(script, []):
+    for dep in config["dependencies"].get(script, []):
         if type(dep) is OrderedDict:
             dep = list(dep)[0]
-        deps.append(str(Path("src") / "figures" / dep))
+        deps.append(str(relpaths.src / dep))
+    return deps
+
+
+def script_dependencies(wildcards):
+    """
+    Return user-specified dependencies of the current script.
+
+    """
+    script = zenodo.script[wildcards.dependency]
+    deps = [str(relpaths.src / script)]
+    for dep in config["dependencies"].get(script, []):
+        if type(dep) is OrderedDict:
+            dep = list(dep)[0]
+        deps.append(str(relpaths.src / dep))
     return deps
 
 

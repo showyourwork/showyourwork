@@ -5,6 +5,7 @@ end of the build log.
 
 """
 import os
+from pathlib import Path
 
 
 TEMPLATE = """
@@ -51,7 +52,10 @@ class ShowyourworkException(Exception):
         # We only need to provide `exception_file` if we're not
         # inside the main Snakemake workflow run
         if exception_file is None:
-            exception_file = files.exception
+            try:
+                exception_file = files.exception
+            except:
+                exception_file = Path(".showyourwork/exception.log")
 
         # Format the info
         if script is None:
@@ -112,7 +116,10 @@ class ShowyourworkException(Exception):
         # We only need to provide `exception_file` if we're not
         # inside the main Snakemake workflow run
         if exception_file is None:
-            exception_file = files.exception
+            try:
+                exception_file = files.exception
+            except:
+                exception_file = Path(".showyourwork/exception.log")
 
         # Print any existing exceptions
         if exception_file.exists():

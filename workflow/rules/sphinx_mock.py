@@ -21,6 +21,7 @@ try:
 
     class relpaths:
         tex = Path("src")
+        src = Path("src")
         temp = Path(".showyourwork")
 
     config = {}

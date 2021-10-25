@@ -6,14 +6,15 @@ rule generate:
     message:
         "Generating figure dependency file {output[0]}..."
     input:
-        lambda w: zenodo.generate_deps[w.dep_name]
+        script_dependencies
     output:
-        "src/figures/{dep_name}"
+        "src/{dependency}"
     wildcard_constraints:
-        dep_name="{}".format("|".join(files.zenodo_files_auto)),
+        dependency="{}".format("|".join(files.zenodo_files_auto)),
     conda:
         posix(abspaths.user / "environment.yml")
     params:
-        generate_shell=lambda w: zenodo.generate_shell[w.dep_name]
+        path=lambda w: str(relpaths.src / Path(zenodo.script[w.dependency]).parent),
+        script=lambda w: str(Path(zenodo.script[w.dependency]).name)
     shell:
-        "cd src/figures && {params.generate_shell}"
+        "cd {params.path} && python {params.script}"

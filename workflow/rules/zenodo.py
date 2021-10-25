@@ -13,11 +13,8 @@ class zenodo:
 
     """
 
-    #: List of dependencies of each dataset
-    generate_deps = {}
-
-    #: Shell command for generating each dataset
-    generate_shell = {}
+    #: Script for generating each dataset
+    script = {}
 
     #: File name for each dataset
     file_name = {}
@@ -56,57 +53,53 @@ for dataset in config["zenodo"]:
 
     # Get the dataset name & properties
     if type(dataset) is str:
-        dep_name = dataset
-        dep_props = config["zenodo"][dep_name]
+        dependency = dataset
+        dep_props = config["zenodo"][dependency]
     elif type(dataset) is OrderedDict:
-        dep_name = list(dataset)[0]
-        dep_props = dict(dataset[dep_name])
+        dependency = list(dataset)[0]
+        dep_props = dict(dataset[dependency])
     else:
         raise ValueError("Cannot parse `zenodo` entry in `showyourwork.yml`.")
 
-    # User settings for generating / uploading / downloading the dependency
-    generate = dep_props.get("generate", {})
-    download = dep_props.get("download", {})
-    if generate and download:
-        raise ValueError(
-            "Cannot specify both `generate` and `download` for a Zenodo dataset."
-        )
-    elif not generate and not download:
-        raise ValueError(
-            f"Must specify either `generate` or `download` for Zenodo dataset {dep_name}."
-        )
+    # Sandbox?
+    zenodo.sandbox[dependency] = dep_props.get("sandbox", False)
+    if zenodo.sandbox[dependency]:
+        zenodo.zenodo_url[dependency] = "sandbox.zenodo.org"
+    else:
+        zenodo.zenodo_url[dependency] = "zenodo.org"
 
     # Generate & upload settings
-    zenodo.generate_deps[dep_name] = [
-        posix(Path("src/figures") / gd) for gd in generate.get("dependencies", [])
-    ]
-    zenodo.generate_shell[dep_name] = generate.get("shell", None)
-    if generate and zenodo.generate_shell[dep_name] is None:
-        raise ValueError(f"Please provide a `shell` command for dependency {dep_name}.")
-    zenodo.file_name[dep_name] = str(Path(dep_name).name)
-    zenodo.file_path[dep_name] = str(Path("src/figures") / Path(dep_name).parent)
-    zenodo.sandbox[dep_name] = generate.get("sandbox", False)
-    zenodo.token_name[dep_name] = generate.get("token_name", "ZENODO_TOKEN")
-    zenodo.deposit_title[dep_name] = generate.get("title", f"{repo}:{dep_name}")
-    zenodo.deposit_description[dep_name] = generate.get(
+    zenodo.script[dependency] = dep_props.get("script", None)
+    zenodo.file_name[dependency] = str(Path(dependency).name)
+    zenodo.file_path[dependency] = str(relpaths.src / Path(dependency).parent)
+    zenodo.token_name[dependency] = dep_props.get("token_name", "ZENODO_TOKEN")
+    zenodo.deposit_title[dependency] = dep_props.get(
+        "title", f"{repo}:{zenodo.file_name[dependency]}"
+    )
+    zenodo.deposit_description[dependency] = dep_props.get(
         "description", f"File uploaded from {repo}."
     )
-    zenodo.deposit_creators[dep_name] = generate.get(
+    zenodo.deposit_creators[dependency] = dep_props.get(
         "creators", get_repo_url().split("/")[-2]
     )
 
     # Download settings
-    zenodo.zenodo_id[dep_name] = download.get("id", None)
-    download_sandbox = download.get("sandbox", False)
-    if download_sandbox:
-        zenodo.zenodo_url[dep_name] = "sandbox.zenodo.org"
-    else:
-        zenodo.zenodo_url[dep_name] = "zenodo.org"
-    if download and zenodo.zenodo_id[dep_name] is None:
-        raise ValueError(f"Please provide a Zenodo `id` for dependency {dep_name}.")
+    zenodo.zenodo_id[dependency] = dep_props.get("id", None)
+
+    # Checks
+    if zenodo.script[dependency] is None and zenodo.zenodo_id[dependency] is None:
+        raise ValueError(
+            f"Please provide a `script` or a Zenodo `id` for dependency "
+            f"{dependency}."
+        )
+    elif zenodo.script[dependency] and zenodo.zenodo_id[dependency]:
+        raise ValueError(
+            f"Please provide either a `script` *or* a Zenodo `id` for "
+            f"dependency {dependency} (but not both)."
+        )
 
     # Name of the dummy file we'll use to track the upload/download
-    dot_zenodo_file = posix(relpaths.figures / f"{dep_name}.zenodo")
+    dot_zenodo_file = posix(f"{dependency}.zenodo")
 
     # Make the deposit a dependency of the PDF
     # so we can add Zenodo links to the figure caption
@@ -114,25 +107,25 @@ for dataset in config["zenodo"]:
         files.dot_zenodo.append(dot_zenodo_file)
 
     # Track download-only files
-    if download and not dep_name in files.zenodo_files_manual:
-        files.zenodo_files_manual.append(dep_name)
+    if zenodo.zenodo_id[dependency] and not dependency in files.zenodo_files_manual:
+        files.zenodo_files_manual.append(dependency)
 
     # Track upload-download files
-    if generate and not dep_name in files.zenodo_files_auto:
-        files.zenodo_files_auto.append(dep_name)
+    if zenodo.script[dependency] and not dependency in files.zenodo_files_auto:
+        files.zenodo_files_auto.append(dependency)
 
 
-# Loop over figures
-figure_dependencies = copy.deepcopy(config["figure_dependencies"])
-for fig in figure_dependencies:
+# Loop over files w/ dependencies
+dependencies = copy.deepcopy(config["dependencies"])
+for file in dependencies:
 
-    # Loop over dependencies for this figure
-    for dep_name in figure_dependencies[fig]:
+    # Loop over dependencies for this file
+    for dependency in dependencies[file]:
 
         # Name of the dummy file we'll use to track the upload/download
-        dot_zenodo_file = posix(relpaths.figures / f"{dep_name}.zenodo")
+        dot_zenodo_file = posix(f"{dependency}.zenodo")
 
         # If this is a Zenodo dataset, make it a dependency of the figure
         if dot_zenodo_file in files.dot_zenodo:
-            if not f"{dep_name}.zenodo" in config["figure_dependencies"][fig]:
-                config["figure_dependencies"][fig].append(f"{dep_name}.zenodo")
+            if not f"{dependency}.zenodo" in config["dependencies"][file]:
+                config["dependencies"][file].append(f"{dependency}.zenodo")
