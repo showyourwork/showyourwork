@@ -107,7 +107,7 @@ def figure_script_dependencies(wildcards):
     """
     script = Path(figure_script(wildcards)).name
     deps = []
-    for dep in config["dependencies"].get(script, []):
+    for dep in config["dependencies"].get(str(Path("figures") / script), []):
         if type(dep) is OrderedDict:
             dep = list(dep)[0]
         deps.append(str(relpaths.src / dep))
