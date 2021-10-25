@@ -3,7 +3,10 @@
 0.1.18 (2021-10-25)
 +++++++++++++++++++
 
-- 
+- Added more informative error messages that are displayed at the very *end* of the build logs.
+  Still more work to be done on this front, but error logs should now be much easier to parse.
+- Implemented the new Zenodo config structure in the ``showyourwork.yml`` file, as per
+  `#31 <https://github.com/rodluger/showyourwork/issues/31>`_.
 - Changelog: `v0.1.17...v0.1.18 <https://github.com/rodluger/showyourwork/compare/v0.1.17...v0.1.18>`_
 
 0.1.17 (2021-10-22)
