@@ -111,18 +111,9 @@
   \oldendabstract%
 }
 
-% Hack: Disable the figure links if line numbers = true
-% TODO: Figure out a better approach!
-\newif\iflinenumbers
-\ifdefined\numlinestrue
-    \global\linenumberstrue
-\fi
-
 % Hack `showkeys' to show margin links for figures
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
-  \iflinenumbers
-  \else
   \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
     \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
     \normalfont%
@@ -164,7 +155,6 @@
       }%
     }%
   }{}%
-  \fi
 }
 
 % Set the graphics path for all figures
