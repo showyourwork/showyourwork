@@ -11,8 +11,9 @@ SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 WORKDIR         := ..
 CLEAN_SYW       := rm -rf $(TEMPORARIES)
 CLEAN_SM        := snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
+LATEST          = $(shell git describe --tags `git rev-list --tags --max-count=1`)
 
-.PHONY:  ms.pdf clean report dag snakemake_setup conda_setup Makefile
+.PHONY:  ms.pdf clean report dag update snakemake_setup conda_setup Makefile
 
 
 # Default target: generate the article
@@ -53,6 +54,12 @@ report: snakemake_setup
 dag: snakemake_setup
 	@cd $(WORKDIR);\
 	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --dag | dot -Tpdf > dag.pdf
+
+
+# Update to the latest version of showyourwork
+update: snakemake_setup
+	@git fetch --all --tags
+	git checkout $(LATEST)
 
 
 # Catch-all target: route all unknown targets to Snakemake
