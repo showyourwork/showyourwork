@@ -53,7 +53,10 @@ for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
 for name in arxiv_tarball_exclude:
     for file in Path(".").glob(name):
         # Get path to the version of the file in `arxiv`
-        arxiv_file = TEMP / "arxiv" / file.relative_to(SRC)
+        try:
+            arxiv_file = TEMP / "arxiv" / file.relative_to(SRC)
+        except ValueError:
+            continue
         if arxiv_file.exists():
             if arxiv_file.is_dir():
                 shutil.rmtree(arxiv_file)
