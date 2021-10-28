@@ -23,7 +23,7 @@ rule arxiv:
         ZENODO_FILES=files.zenodo_files_manual + files.zenodo_files_auto,
         TEMP=relpaths.temp,
         FIGURES=relpaths.figures,
-        TEX=relpaths.tex,
+        SRC=relpaths.src,
         SYWTEXFILE=files.tmp_syw,
         TECTONIC=config["tectonic_cmd"]
     conda:

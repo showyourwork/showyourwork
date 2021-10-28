@@ -14,7 +14,7 @@ import tarfile
 verbose = snakemake.params["verbose"]
 figexts = snakemake.params["figexts"]
 TEMP = snakemake.params["TEMP"]
-TEX = snakemake.params["TEX"]
+SRC = snakemake.params["SRC"]
 FIGURES = snakemake.params["FIGURES"]
 SYWTEXFILE = snakemake.params["SYWTEXFILE"]
 TECTONIC = snakemake.params["TECTONIC"]
@@ -28,27 +28,41 @@ if verbose:
     tectonic_args += ["--print"]
 else:
     tectonic_args += ["--chatter", "minimal"]
-subprocess.check_call([TECTONIC] + tectonic_args + [TEX / "{}.tex".format(SYWTEXFILE)])
+subprocess.check_call([TECTONIC] + tectonic_args + [SRC / "{}.tex".format(SYWTEXFILE)])
 
 
 # Remove all output except the .bbl and .tex files
-for file in TEX.glob(".showyourwork-ms.*"):
+for file in SRC.glob(".showyourwork-ms.*"):
     if file.name not in [".showyourwork-ms.bbl", ".showyourwork-ms.tex"]:
         os.remove(file)
 
 
-# Copy the `tex` folder over to a temporary location
+# Copy the `src` folder over to a temporary location
 if (TEMP / "arxiv").exists():
     shutil.rmtree(TEMP / "arxiv")
-shutil.copytree(TEX, TEMP / "arxiv")
+shutil.copytree(SRC, TEMP / "arxiv")
 
 
 # Rename our temporary files to `ms.*`
 for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
     os.rename(file, str(file).replace(".showyourwork-ms", "ms"))
 
+
+# Remove user-defined files.
+# Note that these are relative to the repo root!
+for name in arxiv_tarball_exclude:
+    for file in Path(".").glob(name):
+        # Get path to the version of the file in `arxiv`
+        arxiv_file = TEMP / "arxiv" / file.relative_to(SRC)
+        if arxiv_file.exists():
+            if arxiv_file.is_dir():
+                shutil.rmtree(arxiv_file)
+            else:
+                os.remove(arxiv_file)
+
+
 # Remove additional unnecessary files
-arxiv_tarball_exclude += [
+other_exclude = [
     "**/*.py",
     "**/matplotlibrc",
     "**/.gitignore",
@@ -57,11 +71,11 @@ arxiv_tarball_exclude += [
     "**/sywxml.sty",
     "**/*.zenodo",
 ]
-for name in arxiv_tarball_exclude:
+for name in other_exclude:
     for file in (TEMP / "arxiv").glob(name):
         try:
             os.remove(file)
-        except IsADirectoryError:
+        except (IsADirectoryError, PermissionError):
             shutil.rmtree(file)
 
 # Remove datasets
