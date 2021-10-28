@@ -52,6 +52,8 @@ config["arxiv_tarball_exclude"] = config.get(
     "arxiv_tarball_exclude",
     [],
 )
+if config["arxiv_tarball_exclude"] is None:
+    config["arxiv_tarball_exclude"] = []
 
 #: Install latest version of tectonic from source? May be useful for debugging.
 config["tectonic_latest"] = (
@@ -72,6 +74,8 @@ config["tectonic_os"] = config.get("tectonic_os", tectonic_os_default)
 
 #: Dependencies
 config["dependencies"] = config.get("dependencies", {})
+if config["dependencies"] is None:
+    config["dependencies"] = {}
 for fd in config["dependencies"]:
     if not Path(fd).exists():
         raise ShowyourworkException(
