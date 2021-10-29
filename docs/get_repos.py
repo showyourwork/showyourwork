@@ -97,7 +97,4 @@ def get_repos(
     # Sort by the timestamps
     for topic in projects:
         projects[topic] = sorted(projects[topic], key=lambda item: item["date"])[::-1]
-
-    breakpoint()
-
     return projects
