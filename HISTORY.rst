@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.20 (2021-10-28)
++++++++++++++++++++
+
+- Fixed issue with figure link formatting when enabling linenumbers in AASTeX
+- Made `arxiv_tarball_exclude` paths relative to the repository root
+- Added a `make update` option to update `showyourwork` to the latest release.
+- Changelog: `v0.1.19...v0.1.20 <https://github.com/rodluger/showyourwork/compare/v0.1.19...v0.1.20>`_
+
 0.1.19 (2021-10-25)
 +++++++++++++++++++
 
