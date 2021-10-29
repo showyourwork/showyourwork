@@ -13,7 +13,7 @@ on a project based on ``showyourwork``, please add it to this list by
 .. toctree::
     :maxdepth: 2
     {% for repo in projects.get(topic, []) %}
-    {{ repo["name"] }}: {{ repo["description"] }} **[** {{ repo["version"] }} **]** <https://github.com/{{ repo["name"] }}>
+    {{ repo["name"] }}: {{ repo["description"] }} [{{ repo["version"] }}] <https://github.com/{{ repo["name"] }}>
     {% endfor %}
 
 {% endfor %}
@@ -28,5 +28,5 @@ these, add it to our `list of curated repos <https://github.com/rodluger/showyou
 .. toctree::
     :maxdepth: 2
     {% for repo in projects.get("Uncategorized", []) %}
-    {{ repo["name"] }} **[** {{ repo["version"] }} **]** <https://github.com/{{ repo["name"] }}>
+    {{ repo["name"] }} [{{ repo["version"] }}] <https://github.com/{{ repo["name"] }}>
     {% endfor %}
