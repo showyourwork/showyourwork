@@ -13,6 +13,7 @@ def get_repos(
         "rodluger/showyourwork-template",
         "rodluger/showyourwork-sandbox",
         "rodluger/showyourwork-example-dev",
+        "gusbeane/fdbk_eos-temp",
     ],
 ):
     """
