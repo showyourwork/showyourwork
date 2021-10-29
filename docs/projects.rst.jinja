@@ -5,15 +5,18 @@ Below is a list of GitHub repositories that make use of ``showyourwork``. If you
 on a project based on ``showyourwork``, please add it to this list by
 `suggesting an edit on GitHub <https://github.com/rodluger/showyourwork/edit/main/docs/projects.json>`_.
 
-Astronomy articles
-^^^^^^^^^^^^^^^^^^
+{% for topic in projects.keys() if topic != "Uncategorized" %}
+
+{{ topic }} articles
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
     :maxdepth: 2
-    {% for repo, description in projects.get("astronomy", {}).items() %}
-    {{ repo }}: {{ description }} <https://github.com/{{ repo }}>
+    {% for repo in projects.get(topic, []) %}
+    {{ repo["name"] }}: {{ repo["description"] }} **[** {{ repo["version"] }} **]** <https://github.com/{{ repo["name"] }}>
     {% endfor %}
 
+{% endfor %}
 
 Uncategorized
 ^^^^^^^^^^^^^
@@ -24,6 +27,6 @@ these, add it to our `list of curated repos <https://github.com/rodluger/showyou
 
 .. toctree::
     :maxdepth: 2
-    {% for repo in projects.get("uncategorized", []) %}
-    {{ repo }} <https://github.com/{{ repo }}>
+    {% for repo in projects.get("Uncategorized", []) %}
+    {{ repo["name"] }} **[** {{ repo["version"] }} **]** <https://github.com/{{ repo["name"] }}>
     {% endfor %}
