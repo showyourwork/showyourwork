@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 TEMPLATE = """
-{hline}
+\033[0m{hline}
 
 \033[1;30m{title}\033[0m
 
@@ -45,6 +45,7 @@ class ShowyourworkException(Exception):
         context=None,
         delayed=True,
         brief="An error occurred while executing your workflow.",
+        display_full_message=False,
         *args,
         **kwargs,
     ):
@@ -73,42 +74,29 @@ class ShowyourworkException(Exception):
         title = "SHOWYOURWORK ERROR"
         pad = " " * max(0, (width - len(title)) // 2 - 2)
         title = f"{pad}{title}{pad}"
+        full_message = TEMPLATE.format(
+            hline=hline,
+            title=title,
+            script=script,
+            rule_name=rule_name,
+            brief=brief,
+            context=context,
+            message=message,
+        )
 
         if delayed:
 
             # Store the message in a temp file (read in the `onerror:` section
             # of the `Snakefile`, to be printed at the end of the log).
             with open(exception_file, "w") as f:
-                print(
-                    TEMPLATE.format(
-                        hline=hline,
-                        title=title,
-                        script=script,
-                        rule_name=rule_name,
-                        brief=brief,
-                        context=context,
-                        message=message,
-                    ),
-                    file=f,
-                )
+                print(full_message, file=f)
+            super().__init__("\n\n" + full_message, *args, **kwargs)
 
         else:
 
             # Print it to the terminal right away
-            print(
-                TEMPLATE.format(
-                    hline=hline,
-                    title=title,
-                    script=script,
-                    rule_name=rule_name,
-                    brief=brief,
-                    context=context,
-                    message=message,
-                )
-            )
-
-        # Raise the exception as usual
-        super().__init__("\n\n" + message, *args, **kwargs)
+            print(full_message)
+            super().__init__("\n\n" + message, *args, **kwargs)
 
     @staticmethod
     def print(exception_file=None):
