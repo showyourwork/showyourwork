@@ -133,14 +133,6 @@ Builds a tarball of the article PDF and all output for posting to the arXiv.
 
 
 
-rule download_manual
-^^^^^^^^^^^^^^^^^^^^
-
-Download a figure dependency that was manually uploaded to Zenodo.
-
-
-
-
 rule docstrings
 ^^^^^^^^^^^^^^^
 

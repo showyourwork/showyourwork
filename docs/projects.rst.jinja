@@ -1,3 +1,25 @@
+.. raw:: html
+
+    <style>
+        li p {
+            margin-bottom: 0px;
+            font-size: small;
+        }
+
+        dt {
+            font-weight: unset;
+        }
+
+        dd li::marker {
+            content: "";
+            color: hotpink;
+        }
+
+        dd ul {
+            padding-left: 0px;
+        }
+    </style>
+
 Projects that use showyourwork
 ==============================
 
@@ -5,16 +27,21 @@ Below is a list of GitHub repositories that make use of ``showyourwork``. If you
 on a project based on ``showyourwork``, please add it to this list by
 `suggesting an edit on GitHub <https://github.com/rodluger/showyourwork/edit/main/docs/projects.json>`_.
 
-{% for topic in projects.keys() if topic != "Uncategorized" %}
+{% for field in fields %}
 
-{{ topic }} articles
+{{ field }} articles
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. toctree::
-    :maxdepth: 2
-    {% for repo in projects.get(topic, []) %}
-    {{ repo["name"] }}: {{ repo["description"] }} [{{ repo["version"] }}] <https://github.com/{{ repo["name"] }}>
-    {% endfor %}
+{% for repo in repos %}
+{% if projects[repo]["field"] == field %}
+- `{{ repo }} <https://github.com/{{ repo }}>`_
+    - **Title:** {{ projects[repo]["title"] }}
+    - **Authors:** {{ ", ".join(projects[repo]["authors"]) }}
+    - **Version:** ``{{ projects[repo]["version"] }}``
+    - **Commits:** ``{{ projects[repo]["commits"] }}``
+    - **Last updated:** ``{{ projects[repo]["date"].split("T")[0] }}``
+{% endif %}
+{% endfor %}
 
 {% endfor %}
 
@@ -25,8 +52,11 @@ These were found via a quick search on GitHub, and are listed in order of the
 timestamp of the latest commit. If you would like to showcase one of
 these, add it to our `list of curated repos <https://github.com/rodluger/showyourwork/edit/main/docs/projects.json>`_.
 
-.. toctree::
-    :maxdepth: 2
-    {% for repo in projects.get("Uncategorized", []) %}
-    {{ repo["name"] }} [{{ repo["version"] }}] <https://github.com/{{ repo["name"] }}>
-    {% endfor %}
+{% for repo in repos %}
+{% if projects[repo]["field"] == "Uncategorized" %}
+- `{{ repo }} <https://github.com/{{ repo }}>`_
+    - **Version:** ``{{ projects[repo]["version"] }}``
+    - **Commits:** ``{{ projects[repo]["commits"] }}``
+    - **Last updated:** ``{{ projects[repo]["date"].split("T")[0] }}``
+{% endif %}
+{% endfor %}

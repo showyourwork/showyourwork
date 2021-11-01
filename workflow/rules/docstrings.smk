@@ -9,7 +9,12 @@ rule docstrings:
 
     """
     run:
-        with open(abspaths.workflow.parents[0] / "docs" / "rules.rst", "w") as f:
+        rules_rst = abspaths.workflow.parents[0] / "docs" / "rules.rst"
+        if not rules_rst.exists():
+            rules_rst = abspaths.workflow.parents[2] / "docs" / "rules.rst"
+        if not rules_rst.exists():
+            raise ValueError("Can't find `docs/rules.rst`.")
+        with open(rules_rst, "w") as f:
             for rule in workflow.rules:
                 header = "rule {}".format(rule.name)
                 print(header, file=f)

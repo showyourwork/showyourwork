@@ -1,5 +1,7 @@
 {
-    "Astronomy": {
-        "rodluger/paparazzi": "An Efficient, Scalable, and Open-Source Doppler Imaging Model"
+    "rodluger/paparazzi": {
+        "title": "An Efficient, Scalable, and Open-Source Doppler Imaging Model",
+        "authors": ["Rodrigo Luger"],
+        "field": "Astronomy"
     }
 }
