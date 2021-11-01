@@ -57,7 +57,7 @@ if len(files.zenodo_files_auto):
 
 # Rule for autogenerating rule documentation
 include: "rules/docstrings.smk"
-if True:
+try:
     # Always include conditional rules when building the docs
     assert __sphinx_docs_build__
     include: "rules/download_manual.smk"
