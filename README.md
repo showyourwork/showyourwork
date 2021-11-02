@@ -3,10 +3,10 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.22">
-    <img src="https://img.shields.io/static/v1?label=version&message=0.1.22&color=blue"/>
+<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.23">
+    <img src="https://img.shields.io/static/v1?label=version&message=0.1.23&color=blue"/>
 </a>
-<a href="https://showyourwork.readthedocs.io/en/v0.1.22">
+<a href="https://showyourwork.readthedocs.io/en/v0.1.23">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
@@ -38,6 +38,22 @@ shows the build status of all of these examples.
     <th>branch</th>
     <th>build status</th>
     <th>output</th>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/aa">aa</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aaa">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=aa" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
   </tr>
   
   <tr>
@@ -115,6 +131,22 @@ shows the build status of all of these examples.
     </td>
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/raw/main-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/mnras">mnras</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amnras">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=mnras" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
     </td>
