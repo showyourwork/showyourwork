@@ -88,12 +88,13 @@ Feel free to open a new one if you don't see what you're looking for.
 What if I don't use AASTeX?
 ---------------------------
 
-If you're not using the `AASTeX <https://journals.aas.org/aastexguide/>`_ LaTeX 
-template for AAS journals, things should still work as long as you include the
+If you're not using the `AASTeX <https://journals.aas.org/aastexguide/>`_ or 
+`MNRAS <https://ctan.org/tex-archive/macros/latex/contrib/mnras?lang=en>`_ LaTeX 
+templates, things should still work as long as you include the
 relevant class and style files in the ``src/`` directory alongside your texfile.
 You won't get the snazzy ``showyourwork`` logo at the top of the page, but
 everything else should still work. We're planning on adding explicit support for
-other templates (like MNRAS and A&A), so please check back soon for more.
+other templates (like A&A), so please check back soon for more.
 
 
 Why do I keep getting a Bad Gateway error?

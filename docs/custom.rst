@@ -444,3 +444,28 @@ as producing a figure via a language other than Python, or producing a figure
 from a Jupyter notebook. Note that in both cases, ``showyourwork`` expects that
 the first file listed under ``input`` is the main script associated with the
 figure, and this is what the link in the figure caption will point to on GitHub.
+
+
+Other LaTeX classes
+-------------------
+
+We are slowly adding support for LaTeX classes other than AASTeX.
+
+.. raw:: html
+
+    <ul>
+
+    <li>
+        <span style="font-weight:bold";>MNRAS:</span>
+        <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amnras">
+            <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=mnras" alt="test status"/>
+        </a>
+        <a href="https://github.com/rodluger/showyourwork-example/blob/mnras">
+            <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+        </a>
+        <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
+            <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+        </a>
+    </li>
+
+    </ul>

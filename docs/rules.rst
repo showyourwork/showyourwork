@@ -146,35 +146,3 @@ containing these docstrings so that our online docs are up to date.
 
 
 
-rule download_manual
-^^^^^^^^^^^^^^^^^^^^
-
-Download a figure dependency that was manually uploaded to Zenodo.
-
-
-
-
-rule download_ci
-^^^^^^^^^^^^^^^^
-
-Download a figure dependency from Zenodo that's managed by showyourwork.
-
-
-
-
-rule generate
-^^^^^^^^^^^^^
-
-Generate a figure dependency.
-
-
-
-
-rule upload
-^^^^^^^^^^^
-
-Upload a figure dependency to Zenodo.
-
-
-
-
