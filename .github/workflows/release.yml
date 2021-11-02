@@ -160,7 +160,7 @@ jobs:
           cd showyourwork-template
           pushd showyourwork
           git fetch
-          git checkout ${GITHUB_SHA}
+          git checkout ${GITHUB_REF}
           git pull
           popd
           git add showyourwork
