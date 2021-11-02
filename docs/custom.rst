@@ -449,14 +449,16 @@ figure, and this is what the link in the figure caption will point to on GitHub.
 Other LaTeX classes
 -------------------
 
-We are slowly adding support for LaTeX classes other than AASTeX.
+We are slowly adding support for LaTeX classes other than AASTeX. If you
+don't see what you're looking for here, please
+`open an issue <https://github.com/rodluger/showyourwork/issues>`_.
 
 .. raw:: html
 
     <ul>
 
     <li>
-        <span style="font-weight:bold";>MNRAS:</span>
+        <a href="https://ctan.org/tex-archive/macros/latex/contrib/mnras?lang=en"><span style="font-weight:bold";>MNRAS:</span></a>
         <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amnras">
             <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=mnras" alt="test status"/>
         </a>
@@ -464,6 +466,19 @@ We are slowly adding support for LaTeX classes other than AASTeX.
             <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
         </a>
         <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
+            <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+        </a>
+    </li>
+
+    <li>
+        <a href="https://www.aanda.org/for-authors"><span style="font-weight:bold";>A&amp;A:</span></a>
+        <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aaa">
+            <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=aa" alt="test status"/>
+        </a>
+        <a href="https://github.com/rodluger/showyourwork-example/blob/aa">
+            <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+        </a>
+        <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/ms.pdf">
             <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
         </a>
     </li>

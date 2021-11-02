@@ -28,8 +28,6 @@
     {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}\hspace{0.2em}%
 }
 
-% Add version info to header.
-
 % Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
 \let\oldmaketitle\maketitle
 \def\maketitle{%
@@ -39,7 +37,7 @@
     \let\LaTeX\oldLaTeX
 }
 
-% MNRAS
+% MNRAS hack for displaying showyourwork logo
 \@ifclassloaded{mnras}{
   \ifx\CUP@mtlplain@loaded\undefined
     \def\@printed{Preprint \tod@y\
@@ -47,6 +45,28 @@
   \else
     \def\@printed{}
   \fi
+}{}
+
+% A&A hack for displaying showyourwork logo + abstract links
+\@ifclassloaded{aa}{
+  \renewcommand*\aa@manuscriptname{%
+    \LaTeX
+    \hspace{\stretch{1}}%
+    \smash{\stackunder[0.5em]{\copyright ESO \the\year}{%
+        \href{((- repo.url -))/tree/((- repo.sha -))/}{%
+          \color{((- status -))}%
+          \faGithub%
+        }%
+        ((* if CI *))
+        \hspace{3pt}%
+        \href{((- repo.url -))/actions/runs/((- run_id -))/}{%
+          \color{sywGreen}%
+          \faCheckCircle%
+        }%
+        ((* endif *))
+      }
+    }
+  }
 }{}
 
 % Logging

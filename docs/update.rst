@@ -7,7 +7,7 @@ In most cases all you need to do is to update the ``showyourwork`` submodule:
 
 .. code-block:: bash
 
-    git submodule update --remote
+    make update
 
 Then add, commit, and push your changes to GitHub. Note that future versions of
 ``showyourwork`` may change the repository layout or the workflow syntax, so

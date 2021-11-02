@@ -73,8 +73,8 @@ How do I debug a run?
 ---------------------
 
 Sometimes it can be difficult to figure out why a run failed from the terminal
-output, especially if it's an error during the LaTeX build. Try increasing the
-verbosity of the output to obtain more informative error messages:
+output. Try increasing the verbosity of the output to obtain more informative 
+error messages:
 
 .. code-block:: bash
 
@@ -89,12 +89,13 @@ What if I don't use AASTeX?
 ---------------------------
 
 If you're not using the `AASTeX <https://journals.aas.org/aastexguide/>`_ or 
-`MNRAS <https://ctan.org/tex-archive/macros/latex/contrib/mnras?lang=en>`_ LaTeX 
-templates, things should still work as long as you include the
+some of the other built-in templates (see :doc:`Custom workflows <custom>`), 
+things should still work as long as you include the
 relevant class and style files in the ``src/`` directory alongside your texfile.
 You won't get the snazzy ``showyourwork`` logo at the top of the page, but
 everything else should still work. We're planning on adding explicit support for
-other templates (like A&A), so please check back soon for more.
+other templates, so please check back soon for more or open 
+`an issue <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_.
 
 
 Why do I keep getting a Bad Gateway error?
