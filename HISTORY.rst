@@ -1,23 +1,29 @@
 .. :changelog:
 
+0.1.25 (2021-11-02)
++++++++++++++++++++
+
+- Fixed issue that prevented ORCID badges from showing up when building the PDF on GitHub Actions
+- Changelog: `v0.1.24...v0.1.25 <https://github.com/rodluger/showyourwork/compare/v0.1.24...v0.1.25>`_
+
 0.1.24 (2021-11-02)
 +++++++++++++++++++
 
-- Fix issue with ``os.get_terminal_size`` breaking CI builds when displaying error messages
+- Fixed issue with ``os.get_terminal_size`` breaking CI builds when displaying error messages
 - Changelog: `v0.1.23...v0.1.24 <https://github.com/rodluger/showyourwork/compare/v0.1.23...v0.1.24>`_
 
 0.1.23 (2021-11-02)
 +++++++++++++++++++
 
-- Add explicit support for MNRAS and A&A LaTeX document classes
-- Improve support for new Apple M1 chips
-- Fix options clash for package ``hyperref``
+- Added explicit support for MNRAS and A&A LaTeX document classes
+- Improved support for new Apple M1 chips
+- Fixed options clash for package ``hyperref``
 - Changelog: `v0.1.22...v0.1.23 <https://github.com/rodluger/showyourwork/compare/v0.1.22...v0.1.23>`_
 
 0.1.22 (2021-11-02)
 +++++++++++++++++++
 
-- Update LaTeX package `fontawesome` to `fontawesome5`
+- Updated LaTeX package `fontawesome` to `fontawesome5`
 - [Developers] Can now run tests on PR branches to generate `showyourwork-example-dev` branches
 - Changelog: `v0.1.21...v0.1.22 <https://github.com/rodluger/showyourwork/compare/v0.1.21...v0.1.22>`_
 
