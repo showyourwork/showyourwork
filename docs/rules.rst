@@ -133,14 +133,6 @@ Builds a tarball of the article PDF and all output for posting to the arXiv.
 
 
 
-rule download_manual
-^^^^^^^^^^^^^^^^^^^^
-
-Download a figure dependency that was manually uploaded to Zenodo.
-
-
-
-
 rule docstrings
 ^^^^^^^^^^^^^^^
 
@@ -150,6 +142,38 @@ it locally (since we do not install ``Snakemake``, or ``conda`` for that
 matter, on ``ReadTheDocs``). Therefore, we should build the documentation
 locally from time to time and push changes to the ``rules.rst`` file
 containing these docstrings so that our online docs are up to date.
+
+
+
+
+rule download_manual
+^^^^^^^^^^^^^^^^^^^^
+
+Download a figure dependency that was manually uploaded to Zenodo.
+
+
+
+
+rule download_ci
+^^^^^^^^^^^^^^^^
+
+Download a figure dependency from Zenodo that's managed by showyourwork.
+
+
+
+
+rule generate
+^^^^^^^^^^^^^
+
+Generate a figure dependency.
+
+
+
+
+rule upload
+^^^^^^^^^^^
+
+Upload a figure dependency to Zenodo.
 
 
 

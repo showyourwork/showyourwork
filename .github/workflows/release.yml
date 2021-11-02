@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
+          
       - name: Get template branch names as JSON
         id: branches
         shell: bash -l {0}
@@ -157,8 +157,11 @@ jobs:
 
           # Update the template
           git clone --recurse-submodules --single-branch --branch ${BRANCH} https://github.com/rodluger/showyourwork-template
-          cd showyourwork-template
-          git submodule update --remote
+          cd showyourwork-template/showyourwork
+          git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --all
+          git checkout origin/${GITHUB_REF#refs/heads/}
+          cd ..
           git add showyourwork
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run" || echo "nothing to commit"
 

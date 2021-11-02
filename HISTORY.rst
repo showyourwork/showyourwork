@@ -1,5 +1,19 @@
 .. :changelog:
 
+0.1.22 (2021-11-02)
++++++++++++++++++++
+
+- Update LaTeX package `fontawesome` to `fontawesome5`
+- [Developers] Can now run tests on PR branches to generate `showyourwork-example-dev` branches
+- Changelog: `v0.1.21...v0.1.22 <https://github.com/rodluger/showyourwork/compare/v0.1.21...v0.1.22>`_
+
+0.1.21 (2021-11-01)
++++++++++++++++++++
+
+- Fixed minor issue with error messages for custom figures
+- Improved documentation page on projects that use ``showyourwork``
+- Changelog: `v0.1.20...v0.1.21 <https://github.com/rodluger/showyourwork/compare/v0.1.20...v0.1.21>`_
+
 0.1.20 (2021-10-28)
 +++++++++++++++++++
 

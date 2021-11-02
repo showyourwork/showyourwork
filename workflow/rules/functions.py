@@ -85,7 +85,7 @@ def figure_script(wildcards):
                     "automatically infer its parent script. In such cases, you "
                     "must provide a custom rule in your Snakefile to generate "
                     "the figure; see the documentation for details.",
-                    delayed=False,
+                    delayed=True,
                 )
     raise ShowyourworkException(
         f"Input script not found for figure `{figure}`.",
