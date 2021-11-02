@@ -158,9 +158,7 @@ jobs:
           # Update the template
           git clone --recurse-submodules --single-branch --branch ${BRANCH} https://github.com/rodluger/showyourwork-template
           cd showyourwork-template/showyourwork
-          git fetch --all
-          git branch
-          git checkout ${GITHUB_REF#refs/heads/}
+          git checkout origin/${GITHUB_REF#refs/heads/}
           cd ..
           git add showyourwork
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run" || echo "nothing to commit"
