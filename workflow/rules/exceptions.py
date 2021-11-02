@@ -69,7 +69,11 @@ class ShowyourworkException(Exception):
             rule_name = f"{rule_name} in `showyourwork/workflow/rules/{rule_name}.smk`"
         if context is None:
             context = "N/A"
-        width = os.get_terminal_size().columns
+        try:
+            width = os.get_terminal_size().columns
+        except:
+            # This doesn't work on CI
+            width = 80
         hline = "*" * width
         title = "SHOWYOURWORK ERROR"
         pad = " " * max(0, (width - len(title)) // 2 - 2)
