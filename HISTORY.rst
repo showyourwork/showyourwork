@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.24 (2021-11-02)
++++++++++++++++++++
+
+- Fix issue with ``os.get_terminal_size`` breaking CI builds when displaying error messages
+- Changelog: `v0.1.23...v0.1.24 <https://github.com/rodluger/showyourwork/compare/v0.1.23...v0.1.24>`_
+
 0.1.23 (2021-11-02)
 +++++++++++++++++++
 
