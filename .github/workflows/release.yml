@@ -158,6 +158,8 @@ jobs:
           # Update the template
           git clone --recurse-submodules --single-branch --branch ${BRANCH} https://github.com/rodluger/showyourwork-template
           cd showyourwork-template/showyourwork
+          git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --all
           git checkout origin/${GITHUB_REF#refs/heads/}
           cd ..
           git add showyourwork
