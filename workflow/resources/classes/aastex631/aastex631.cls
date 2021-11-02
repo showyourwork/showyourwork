@@ -6290,12 +6290,12 @@ on page
  \move@AU\move@AF\move@AUAF
  \let\@AF@join\@author@join
  \def\@author{{\href{http://orcid.org/#1}{#2%
-\openin1 Orcid-ID.png \ifeof1
+\openin1 orcid-ID.png \ifeof1
 %% message for authors??
-%\typeout{^^J^^J  ! Missing File: Orcid-ID.png; needed for Orcid Author icon !
+%\typeout{^^J^^J  ! Missing File: orcid-ID.png; needed for Orcid Author icon !
 %^^J}
 \else%
-\hskip2pt\includegraphics[width=9pt]{Orcid-ID.png}\fi}}{}}%
+\hskip2pt\includegraphics[width=9pt]{orcid-ID.png}\fi}}{}}%
 }%
 
 \def\orciderrormessage{%
