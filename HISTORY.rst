@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.23 (2021-11-02)
++++++++++++++++++++
+
+- Add explicit support for MNRAS and A&A LaTeX document classes
+- Improve support for new Apple M1 chips
+- Fix options clash for package ``hyperref``
+- Changelog: `v0.1.22...v0.1.23 <https://github.com/rodluger/showyourwork/compare/v0.1.22...v0.1.23>`_
+
 0.1.22 (2021-11-02)
 +++++++++++++++++++
 
