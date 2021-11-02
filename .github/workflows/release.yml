@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
+          
       - name: Get template branch names as JSON
         id: branches
         shell: bash -l {0}
@@ -160,7 +160,7 @@ jobs:
           cd showyourwork-template
           pushd showyourwork
           git fetch
-          git checkout ${GITHUB_REF}
+          git checkout ${GITHUB_REF#refs/heads/}
           git pull
           popd
           git add showyourwork
