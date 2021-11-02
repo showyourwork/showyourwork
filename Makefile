@@ -12,6 +12,7 @@ WORKDIR         := ..
 CLEAN_SYW       := rm -rf $(TEMPORARIES)
 CLEAN_SM        := snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
 LATEST          = $(shell git describe --tags `git rev-list --tags --max-count=1`)
+BRAND_STRING    := $(shell sysctl -n machdep.cpu.brand_string)
 
 .PHONY:  ms.pdf clean report dag update snakemake_setup conda_setup Makefile
 
@@ -31,10 +32,16 @@ conda_setup:
 
 
 # Ensure Snakemake is setup
+# If we're on an M1 mac, we install snakemake-minimal for better compatibility
 snakemake_setup: conda_setup
 	@if [ "$(SNAKEMAKE)" = "0" ]; then \
 		echo "Snakemake not found. Installing it using conda...";\
-		conda install -c defaults -c conda-forge -c bioconda mamba snakemake;\
+		if [[ "$(BRAND_STRING)" == *"M1"* ]]; then \
+			echo "M1 chip detected. Installing snakemake-minimal...";\
+			conda install -c defaults -c conda-forge -c bioconda mamba snakemake-minimal;\
+		else \
+			conda install -c defaults -c conda-forge -c bioconda mamba snakemake;\
+		fi; \
 	fi
 
 
