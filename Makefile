@@ -12,7 +12,7 @@ WORKDIR         := ..
 CLEAN_SYW       := rm -rf $(TEMPORARIES)
 CLEAN_SM        := snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
 LATEST          = $(shell git describe --tags `git rev-list --tags --max-count=1`)
-BRAND_STRING    := $(shell sysctl -n machdep.cpu.brand_string)
+BRAND_STRING    := $(shell sysctl -n machdep.cpu.brand_string 2&> /dev/null && sysctl -n machdep.cpu.brand_string || echo unknown)
 
 .PHONY:  ms.pdf clean report dag update snakemake_setup conda_setup Makefile
 
