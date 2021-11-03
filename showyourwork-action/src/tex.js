@@ -1,6 +1,5 @@
 // Imports
-const core = require("@actions/core");
-const shell = require("shelljs");
+const { makeId, exec, getInputAsArray } = require("./utils");
 
 // Exports
 module.exports = { installTeX };
