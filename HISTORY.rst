@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.27 (2021-11-03)
++++++++++++++++++++
+
+- Added support for installing a minimal TeX distribution so that TeX can be rendered in matplotlib; see Custom workflows.
+- Changelog: `v0.1.26...v0.1.27 <https://github.com/rodluger/showyourwork/compare/v0.1.26...v0.1.27>`_
+
 0.1.26 (2021-11-02)
 +++++++++++++++++++
 
