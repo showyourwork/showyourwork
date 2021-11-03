@@ -45,6 +45,12 @@ inputs:
     description: "Install a minimal TeX distribution in addition to tectonic"
     required: false
     default: false
+  tex-packages:
+    description: "TeX packages to install (only if `install-tex` is `true`)"
+    required: false
+    default: |
+      type1cm 
+      cm-super
 branding:
   icon: "book-open"
   color: "red"

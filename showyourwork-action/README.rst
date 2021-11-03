@@ -51,6 +51,12 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 
 **Optional** Force-push output to branch :code:`<current-branch>-<output-branch-suffix>`? For example, if you've pushed a commit to the ``main`` branch, this action will by default compile your paper and force-push the output (the paper PDF as well as the ArXiV tarball, if enabled) to the branch ``main-pdf``. The *force* in *force-push* means this is not a typical ``git`` commit, as it will overwrite everything on that branch. This way, your repository won't get bloated over time with tons of committed output history. Default: :code:`pdf`.
 
+:code:`tex-packages`
+~~~~~~~~~~~~~~~~~~~~
+
+**Optional** TeX packages to install, one item per line. Matplotlib requires at least ``type1cm`` and ``cm-super`` (default).
+
+
 :code:`verbose`
 ~~~~~~~~~~~~~~~
 
