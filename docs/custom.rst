@@ -446,6 +446,61 @@ the first file listed under ``input`` is the main script associated with the
 figure, and this is what the link in the figure caption will point to on GitHub.
 
 
+Figures that require LaTeX
+--------------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Alatex-figure">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=latex-figure" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/latex-figure">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/latex-figure-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+If you set ``matplotlib.rc("text", usetex=True)`` in your ``Python`` script, you'll likely
+get an error on GitHub Actions complaining that it can't find ``latex``. That's because the
+engine used to compile your TeX article -- ``tectonic`` -- is not a standard TeX
+distribution. We recommend disabling the ``usetex`` option in ``matplotlib``, since
+the most common math-mode commands can be rendered using the built-in ``mathtext``;
+see `the matplotlib docs <https://matplotlib.org/stable/tutorials/text/mathtext.html>`_.
+If, however, you really do need a TeX installation, you can request it in the
+``.github/workflows/showyourwork.yml`` file as follows:
+
+.. code-block:: yaml
+
+    - name: Build the article PDF
+      id: build
+      uses: ./showyourwork/showyourwork-action
+      with:
+        install-tex: true
+      env:
+        ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+
+This will install `TinyTex <https://yihui.org/tinytex/>`_, a very lightweight
+TeX distribution, on the GitHub Actions runner. Note that TeX rendering in ``matplotlib``
+requires certain packages. By default, ``showyourwork`` installs ``type1cm`` and
+``cm-super``. If you get an error message saying a package is not found, you can request
+a package called ``<package>`` to be installed as follows:
+
+.. code-block:: yaml
+
+    - name: Build the article PDF
+      id: build
+      uses: ./showyourwork/showyourwork-action
+      with:
+        install-tex: true
+        tex-packages: |
+          type1cm 
+          cm-super
+          <package>
+      env:
+        ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+
 Other LaTeX classes
 -------------------
 
