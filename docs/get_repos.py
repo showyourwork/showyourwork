@@ -70,7 +70,10 @@ def get_repos(
         )
         req.add_header("Accept", "application/vnd.github.v3+json")
         req.add_header("Authorization", f"token {API_KEY}")
-        content = urlopen(req).read()
+        try:
+            content = urlopen(req).read()
+        except urllib.error.HTTPError as e:
+            break
         content = json.loads(content)
         if len(content["items"]) == 0:
             break
