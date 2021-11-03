@@ -36,11 +36,15 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 
 **Optional** Exact url pointing to the :code:`conda` install script. This always points to the latest ``conda`` installer, so you probably don't need to change this. Default: :code:`https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh`.
 
-
 :code:`github-token`
 ~~~~~~~~~~~~~~~~~~~~
 
 **Optional** A token for access to GitHub (e.g. :code:`secrets.GITHUB_TOKEN`). Do not set this value explicitly -- always use a secret! Default: :code:`${{ github.token }}` (usually set automatically)
+
+:code:`install-tex`
+~~~~~~~~~~~~~~~~~~~
+
+**Optional** Install the :code:`TinyTex` distribution in addition to :code:`tectonic`? Useful if :code:`LaTeX` is required by :code:`matplotlib`. Default: :code:`false`.
 
 :code:`output-branch-suffix`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

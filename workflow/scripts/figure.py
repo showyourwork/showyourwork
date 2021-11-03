@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 import shutil
 import json
+import os
 
 
 # Params defined in `../rules/figure.smk`
@@ -39,6 +40,14 @@ except FileNotFoundError:
     other_figures = []
 
 
+# Add the `~/bin` directory to the PATH in case we require
+# the `latex` installation.
+env = dict(os.environ)
+HOME = env["HOME"]
+env["PATH"] += f":{HOME}/bin"
+print(env["PATH"])
+
+
 # Only enable caching if the script has multiple outputs,
 # but the current rule only has one output!
 if len(other_figures) != 0 and len(snakemake.output) == 1:
@@ -65,7 +74,7 @@ if len(other_figures) != 0 and len(snakemake.output) == 1:
                 move_figures.append(figure)
 
         # We need to run the script
-        subprocess.check_call(["python", script_name], cwd=FIGURES)
+        subprocess.check_call(["python", script_name], cwd=FIGURES, env=env)
 
         # Cache the other figures
         for figure in copy_figures:
@@ -76,4 +85,4 @@ if len(other_figures) != 0 and len(snakemake.output) == 1:
 else:
 
     # This script has only one output, so no need for caching
-    subprocess.check_call(["python", script_name], cwd=FIGURES)
+    subprocess.check_call(["python", script_name], cwd=FIGURES, env=env)

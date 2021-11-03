@@ -6,6 +6,7 @@ const { setupConda } = require("./conda");
 const { buildArticle } = require("./article");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
+const { installTeX } = require("./tex");
 
 (async () => {
   try {
@@ -19,6 +20,11 @@ const { publishOutput } = require("./publish");
       // repo, so this is just a failsafe
     } else {
       // This is a clone of the template; let's build the paper
+
+      // Install TeX?
+      if (core.getInput("install-tex") == "true") {
+        installTeX();
+      }
 
       // Setup conda or restore from cache
       await setupConda();

@@ -41,6 +41,10 @@ inputs:
     description: "Used internally for running tests"
     required: false
     default: false
+  install-tex:
+    description: "Install a minimal TeX distribution in addition to tectonic"
+    required: false
+    default: false
 branding:
   icon: "book-open"
   color: "red"
