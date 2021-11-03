@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.26 (2021-11-02)
++++++++++++++++++++
+
+- Fixed issue causing documentation builds to fail
+- Changelog: `v0.1.25...v0.1.26 <https://github.com/rodluger/showyourwork/compare/v0.1.25...v0.1.26>`_
+
 0.1.25 (2021-11-02)
 +++++++++++++++++++
 
