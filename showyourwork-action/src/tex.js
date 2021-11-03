@@ -14,6 +14,6 @@ function installTeX() {
   exec(`wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh && ~/bin/latex --version`, "Download and install TinyTex");
 
   //
-  exec(`sudo tlmgr install type1cm cm-super`);
+  exec(`sudo ~/bin/tlmgr install type1cm cm-super`);
 
 }
