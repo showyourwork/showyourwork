@@ -16,8 +16,8 @@ function installTeX() {
   // Get custom package names
   const packages_array = getInputAsArray("tex-packages");
   var packages = '';
-  for (var p in packages_array) {
-      packages += ' ' + p;
+  for (var i in packages_array) {
+      packages += ' ' + packages_array[i];
   }
 
   // Install custom packages
