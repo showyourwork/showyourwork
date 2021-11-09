@@ -148,11 +148,15 @@ def upload_simulation(
 
         # Add some metadata
         print("Adding metadata...")
+        if script is None:
+            description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>."
+        else:
+            description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>"
         data = {
             "metadata": {
                 "title": deposit_title,
                 "upload_type": "dataset",
-                "description": f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>",
+                "description": description,
                 "creators": [{"name": name} for name in deposit_creators],
             }
         }
@@ -212,11 +216,15 @@ def upload_simulation(
 
         # Add some metadata
         print("Adding metadata...")
+        if script is None:
+            description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>."
+        else:
+            description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>"
         data = {
             "metadata": {
                 "title": deposit_title,
                 "upload_type": "dataset",
-                "description": f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>",
+                "description": description,
                 "creators": [{"name": name} for name in deposit_creators],
             }
         }

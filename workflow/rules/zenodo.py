@@ -87,12 +87,7 @@ for dataset in config["zenodo"]:
     zenodo.zenodo_id[dependency] = dep_props.get("id", None)
 
     # Checks
-    if zenodo.script[dependency] is None and zenodo.zenodo_id[dependency] is None:
-        raise ValueError(
-            f"Please provide a `script` or a Zenodo `id` for dependency "
-            f"{dependency}."
-        )
-    elif zenodo.script[dependency] and zenodo.zenodo_id[dependency]:
+    if zenodo.script[dependency] and zenodo.zenodo_id[dependency]:
         raise ValueError(
             f"Please provide either a `script` *or* a Zenodo `id` for "
             f"dependency {dependency} (but not both)."
@@ -107,12 +102,13 @@ for dataset in config["zenodo"]:
         files.dot_zenodo.append(dot_zenodo_file)
 
     # Track download-only files
-    if zenodo.zenodo_id[dependency] and not dependency in files.zenodo_files_manual:
-        files.zenodo_files_manual.append(dependency)
-
+    if zenodo.zenodo_id[dependency]:
+        if not dependency in files.zenodo_files_manual:
+            files.zenodo_files_manual.append(dependency)
     # Track upload-download files
-    if zenodo.script[dependency] and not dependency in files.zenodo_files_auto:
-        files.zenodo_files_auto.append(dependency)
+    else:
+        if not dependency in files.zenodo_files_auto:
+            files.zenodo_files_auto.append(dependency)
 
 
 # Loop over files w/ dependencies
