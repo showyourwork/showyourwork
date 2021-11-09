@@ -11,17 +11,17 @@ from pathlib import Path
 TEMPLATE = """
 \033[0m{hline}
 
-\033[1;30m{title}\033[0m
+\033[1;{color}m{title}\033[0m
 
 {hline}
 
-\033[1;30mError:\033[0m {brief}
-\033[1;30mRule:\033[0m {rule_name}
-\033[1;30mScript:\033[0m {script}
+\033[1;{color}mError:\033[0m {brief}
+\033[1;{color}mRule:\033[0m {rule_name}
+\033[1;{color}mScript:\033[0m {script}
 
-\033[1;30mContext:\033[0m {context}
+\033[1;{color}mContext:\033[0m {context}
 
-\033[1;30mDetailed error message:\033[0m 
+\033[1;{color}mDetailed error message:\033[0m 
 
 {message}
 {hline}
@@ -69,11 +69,18 @@ class ShowyourworkException(Exception):
             rule_name = f"{rule_name} in `showyourwork/workflow/rules/{rule_name}.smk`"
         if context is None:
             context = "N/A"
+        CI = os.getenv("CI", "false") == "true"
         try:
-            width = os.get_terminal_size().columns
+            if not CI:
+                width = os.get_terminal_size().columns
+            else:
+                width = 80
         except:
-            # This doesn't work on CI
             width = 80
+        if CI:
+            color = "37"  # white
+        else:
+            color = "30"  # black
         hline = "*" * width
         title = "SHOWYOURWORK ERROR"
         pad = " " * max(0, (width - len(title)) // 2 - 2)
@@ -86,6 +93,7 @@ class ShowyourworkException(Exception):
             brief=brief,
             context=context,
             message=message,
+            color=color,
         )
 
         if delayed:
