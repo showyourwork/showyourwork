@@ -103,4 +103,4 @@ config["scripts"]["py"] = config["scripts"].get("py", "python {script}")
 
 #: Article name
 config["ms"] = config.get("ms", "src/ms.tex")
-config["ms_name"] = Path(config["ms_name"]).relative_to("src").name
+config["ms_name"] = Path(config["ms"]).relative_to("src").name
