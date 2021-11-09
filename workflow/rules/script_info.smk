@@ -69,13 +69,22 @@ checkpoint script_info:
                                 f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders."
                             )
                     if len(filenames):
+
+                        alldeps = config["dependencies"].get(
+                            "{}.{}".format(relpaths.figures / label, ext), []
+                        )
                         datasets = [
-                            dataset for dataset in 
-                            config["dependencies"].get(
-                                "{}.{}".format(relpaths.figures / label, ext), []
-                            ) if type(dataset) is str and 
+                            dataset for dataset in alldeps 
+                            if type(dataset) is str and 
                             dataset.endswith(".zenodo")
                         ]
+
+                        for tarball in zenodo.deposit_contents:
+                            for f in zenodo.deposit_contents[tarball]:
+                                if f in alldeps:
+                                    if not f"{tarball}.zenodo" in datasets:
+                                        datasets.append(f"{tarball}.zenodo")
+
                         if label in figures:
                             for fn in filenames:
                                 if fn not in figures[label]["files"]:

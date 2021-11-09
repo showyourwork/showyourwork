@@ -129,15 +129,6 @@ for dataset in config["zenodo"]:
                 f"Must specify `contents` for tar file `{tf}` in `showyourwork.yml`."
             )
 
-        # Make the tarball an explicit dependency of any figure that
-        # depends on its contents; this ensures we get the Zenodo link
-        # next to the figure caption when building the PDF
-        for file in config["dependencies"]:
-            for dep in config["dependencies"][file]:
-                if dep in zenodo.deposit_contents[dependency]:
-                    if dependency not in config["dependencies"][file]:
-                        config["dependencies"][file].append(dependency)
-
         if config["CI"]:
             # Dynamically create a rule to unpack the tarball
             rule:
