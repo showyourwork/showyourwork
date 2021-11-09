@@ -6,7 +6,7 @@ end of the build log.
 """
 import os
 from pathlib import Path
-
+import textwrap as tw
 
 TEMPLATE = """
 \033[0m{hline}
@@ -90,9 +90,9 @@ class ShowyourworkException(Exception):
             title=title,
             script=script,
             rule_name=rule_name,
-            brief=brief,
-            context=context,
-            message=message,
+            brief="\n".join(tw.wrap(str(brief), width=width)),
+            context="\n".join(tw.wrap(str(context), width=width)),
+            message="\n".join(tw.wrap(str(message), width=width)),
             color=color,
         )
 
