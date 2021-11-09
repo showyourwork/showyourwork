@@ -52,7 +52,6 @@ except FileNotFoundError:
 env = dict(os.environ)
 HOME = env["HOME"]
 env["PATH"] += f":{HOME}/bin"
-print(env["PATH"])
 
 
 # Only enable caching if the script has multiple outputs,
