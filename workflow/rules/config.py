@@ -99,3 +99,7 @@ config["CI"] = os.getenv("CI", "false") == "true"
 #: Figure script extensions & executing instructions
 config["scripts"] = config.get("scripts", {})
 config["scripts"]["py"] = config["scripts"].get("py", "python {script}")
+
+
+#: Article name
+config["ms"] = Path(config.get("ms", "src/ms.tex")).relative_to("src").name

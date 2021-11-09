@@ -558,6 +558,34 @@ don't see what you're looking for here, please
     </table>
 
 
+Custom manuscript name
+----------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-ms-name">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-ms-name" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/custom-ms-name">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-ms-name-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+By default, ``showyourwork`` expects the manuscript to be called ``src/ms.tex``. This
+can be customized; for example, if you wish to call your article ``src/article.tex``,
+specify it in the ``showyourwork.yml`` file:
+
+.. code-block:: yaml
+
+    ms:
+        src/article.tex
+
+Note that ``showyourwork`` still expects it to live in the ``src`` directory.
+
+
 Non-Python figure scripts
 -------------------------
 

@@ -9,11 +9,11 @@ rule texfile:
     message:
         "Writing temporary tex file..."
     input:
-        posix(relpaths.tex / "ms.tex"),
+        posix(relpaths.tex / config["ms"]),
     output:
         temp(posix(relpaths.tex / "{}.tex".format(files.tmp_syw))),
     run:
-        with open(relpaths.tex / "ms.tex", "r") as f:
+        with open(relpaths.tex / config["ms"], "r") as f:
             lines = f.readlines()
         for idx, line in enumerate(lines):
             if line.startswith(r"\documentclass"):
@@ -24,6 +24,6 @@ rule texfile:
                 )
                 break
         else:
-            raise ValueError(r"Missing `\documentclass` in file `tex/ms.tex`.")
+            raise ValueError(r"Missing `\documentclass` in file `{}`.".format(config["ms"]))
         with open(relpaths.tex / "{}.tex".format(files.tmp_syw), "w") as f:
             f.writelines(lines)
