@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 
@@ -24,6 +25,20 @@ checkpoint script_info:
         # Load the XML tree
         root = ParseXMLTree(relpaths.temp / "showyourwork.xml").getroot()
 
+        # Parse graphicspath command
+        # NOTE: If there are multiple graphicspath calls, only the first one
+        # is read. Same for multiple directories within a graphicspath call.
+        try:
+            graphicspath = root.findall("GRAPHICSPATH")
+            if len(graphicspath) == 0:
+                graphicspath = relpaths.figures
+            else:
+                graphicspath = re.findall("\{(.*?)\}", graphicspath[-1].text)[0]
+                graphicspath = Path(graphicspath)
+        except:
+            warnings.warn("Unable to parse the `graphicspath` command. Ignoring...")
+            graphicspath = Path(".")
+
         # Parse graphics inside `figure` environments
         figures = {}
         for figure in root.findall("FIGURE"):
@@ -41,11 +56,13 @@ checkpoint script_info:
                         script = posix(relpaths.figures / "{}.py".format(label))
                     filenames = []
                     for graphic in figure.findall("GRAPHICS"):
-                        if graphic.text.startswith("figures/"):
-                            filenames.append(f"src/{graphic.text}")
-                        elif graphic.text.startswith("static/"):
+                        src = relpaths.src.absolute()
+                        path = (src / graphicspath / graphic.text).resolve().relative_to(src)
+                        if path.parts[0] == "figures":
+                            filenames.append(str(relpaths.src / path))
+                        elif path.parts[0] == "static":
                             continue
-                        elif graphic.text.lower() in files.special_figures:
+                        elif path.name in files.special_figures:
                             continue
                         else:
                             warnings.warn(
@@ -76,11 +93,13 @@ checkpoint script_info:
         # Parse free-floating graphics
         filenames = []
         for graphic in root.findall("GRAPHICS"):
-            if graphic.text.startswith("figures/"):
-                filenames.append(f"src/{graphic.text}")
-            elif graphic.text.startswith("static/"):
+            src = relpaths.src.absolute()
+            path = (src / graphicspath / graphic.text).resolve().relative_to(src)
+            if path.parts[0] == "figures":
+                filenames.append(str(relpaths.src / path))
+            elif path.parts[0] == "static":
                 continue
-            elif graphic.text.lower() in files.special_figures:
+            elif path.name in files.special_figures:
                 continue
             else:
                 warnings.warn(

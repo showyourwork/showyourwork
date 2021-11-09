@@ -93,6 +93,11 @@
   \sywLogMessage{<GRAPHICS>#2</GRAPHICS>}%
 }
 
+% Log graphicspath
+\renewcommand{\graphicspath}[1]{%
+  \sywLogMessage{<GRAPHICSPATH>#1</GRAPHICSPATH>}%
+}
+
 % Disable bibliography
 \renewcommand{\bibliography}[1]{}
 
