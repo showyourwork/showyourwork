@@ -31,7 +31,7 @@ checkpoint script_info:
         try:
             graphicspath = root.findall("GRAPHICSPATH")
             if len(graphicspath) == 0:
-                graphicspath = relpaths.figures
+                graphicspath = Path(".")
             else:
                 graphicspath = re.findall("\{(.*?)\}", graphicspath[-1].text)[0]
                 graphicspath = Path(graphicspath)
