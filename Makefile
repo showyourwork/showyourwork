@@ -4,7 +4,7 @@ OPTIONS         ?= -c1
 
 
 # Local vars
-FORCE_OPTIONS   := --use-conda
+FORCE_OPTIONS   := -c1 --use-conda
 TEMPORARIES     := .showyourwork src/ms.pdf src/__latexindent*.tex
 CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
@@ -20,7 +20,7 @@ BRAND_STRING    := $(shell sysctl -n machdep.cpu.brand_string)
 # Default target: generate the article
 ms.pdf: snakemake_setup
 	@cd $(WORKDIR);\
-	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf
+	snakemake $(FORCE_OPTIONS) $(OPTIONS) ms.pdf
 
 
 # Ensure conda is setup
@@ -54,13 +54,13 @@ clean: snakemake_setup
 # Generate a workflow report
 report: snakemake_setup
 	@cd $(WORKDIR);\
-	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --report
+	snakemake $(FORCE_OPTIONS) $(OPTIONS) ms.pdf --report
 
 
 # Generate a workflow directed acyclic graph (DAG)
 dag: snakemake_setup
 	@cd $(WORKDIR);\
-	snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --dag | dot -Tpdf > dag.pdf
+	snakemake $(FORCE_OPTIONS) $(OPTIONS) ms.pdf --dag | dot -Tpdf > dag.pdf
 
 
 # Update to the latest version of showyourwork
@@ -72,4 +72,4 @@ update: snakemake_setup
 # Catch-all target: route all unknown targets to Snakemake
 %: Makefile snakemake_setup
 	@cd $(WORKDIR);\
-	snakemake $(OPTIONS) $(FORCE_OPTIONS) $@
+	snakemake $(FORCE_OPTIONS) $(OPTIONS) $@

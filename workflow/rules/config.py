@@ -94,3 +94,8 @@ config["zenodo"] = config.get("zenodo", {})
 
 #: Are we on GitHub Actions?
 config["CI"] = os.getenv("CI", "false") == "true"
+
+
+#: Figure script extensions & executing instructions
+config["scripts"] = config.get("scripts", {})
+config["scripts"]["py"] = config["scripts"].get("py", "python {script}")

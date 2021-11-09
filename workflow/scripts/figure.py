@@ -11,6 +11,7 @@ import json
 
 # Params defined in `../rules/figure.smk`
 script_name = snakemake.params["script_name"]
+script_cmd = snakemake.params["script_cmd"]
 this_figure = snakemake.output[0]
 this_figure_name = Path(this_figure).name
 FIGURES = snakemake.params["FIGURES"]
@@ -65,7 +66,11 @@ if len(other_figures) != 0 and len(snakemake.output) == 1:
                 move_figures.append(figure)
 
         # We need to run the script
-        subprocess.check_call(["python", script_name], cwd=FIGURES)
+        subprocess.check_call(
+            script_cmd.format(script=script_name, figure=this_figure_name),
+            cwd=FIGURES,
+            shell=True,
+        )
 
         # Cache the other figures
         for figure in copy_figures:
@@ -76,4 +81,8 @@ if len(other_figures) != 0 and len(snakemake.output) == 1:
 else:
 
     # This script has only one output, so no need for caching
-    subprocess.check_call(["python", script_name], cwd=FIGURES)
+    subprocess.check_call(
+        script_cmd.format(script=script_name, figure=this_figure_name),
+        cwd=FIGURES,
+        shell=True,
+    )

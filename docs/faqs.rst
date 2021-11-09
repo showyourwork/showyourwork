@@ -74,13 +74,14 @@ How do I debug a run?
 
 Sometimes it can be difficult to figure out why a run failed from the terminal
 output. Try increasing the verbosity of the output to obtain more informative 
-error messages:
+error messages by specifying ``verbose: true`` in your ``showyourwork.yml``
+file. If you've fixed an issue and are still getting the same error, you might try
+deleting the ``.showyourwork`` folder at the top level of the repo to get rid
+of the build cache. You can also try running ``make clean``, although that will
+delete all your build output.
 
-.. code-block:: bash
-
-    snakemake -c1 --use-conda ms.pdf --config verbose=true
-
-If that doesn't help, check out the `issues <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_
+If none of this helps, please check out the 
+`issues <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_
 page for ``showyourwork`` to see if someone has run into the same problem before.
 Feel free to open a new one if you don't see what you're looking for.
 
@@ -96,13 +97,3 @@ You won't get the snazzy ``showyourwork`` logo at the top of the page, but
 everything else should still work. We're planning on adding explicit support for
 other templates, so please check back soon for more or open 
 `an issue <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_.
-
-
-Why do I keep getting a Bad Gateway error?
-------------------------------------------
-
-On GitHub Actions you may occasionally run into a ``502: Bad Gateway`` HTTP
-error. These are sporadic and temporary, and are usually due to issues
-with downloading the (very large) TeX distributions from ``archive.org``. 
-To commiserate with others experiencing this issue, `see here <https://github.com/tectonic-typesetting/tectonic/issues/765>`_.
-Other than that, the best thing to do is simply wait a bit and re-run the failed job!

@@ -32,7 +32,13 @@ checkpoint script_info:
             if len(labels):
                 label = labels[0].text
                 if label is not None:
-                    script = posix(relpaths.figures / "{}.py".format(label))
+                    for ext in files.script_extensions:
+                        script = posix(relpaths.figures / "{}.{}".format(label, ext))
+                        if Path(script).exists():
+                            break
+                    else:
+                        # Fallback to ".py"; we'll catch the error later!
+                        script = posix(relpaths.figures / "{}.py".format(label))
                     filenames = []
                     for graphic in figure.findall("GRAPHICS"):
                         if graphic.text.startswith("figures/"):
@@ -49,7 +55,7 @@ checkpoint script_info:
                         datasets = [
                             dataset for dataset in 
                             config["dependencies"].get(
-                                "{}.py".format(relpaths.figures / label), []
+                                "{}.{}".format(relpaths.figures / label, ext), []
                             ) if type(dataset) is str and 
                             dataset.endswith(".zenodo")
                         ]

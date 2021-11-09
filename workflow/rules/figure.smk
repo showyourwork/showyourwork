@@ -18,6 +18,7 @@ rule figure:
         figure="src/figures/(.*?)\.{}".format("|".join(config["figexts"])),
     params:
         script_name=script_name,
+        script_cmd=script_cmd,
         FIGURES=relpaths.figures,
         TEMP=relpaths.temp
     conda:

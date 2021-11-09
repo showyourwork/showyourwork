@@ -61,3 +61,8 @@ class files:
     exception = relpaths.temp / "exception.log"
     if exception.exists():
         exception.unlink()
+
+    #: Recognized figure script extensions
+    script_extensions = []
+    for ext in config["scripts"]:
+        script_extensions.append(ext)

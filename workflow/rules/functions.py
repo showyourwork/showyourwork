@@ -38,8 +38,33 @@ def script_name(wildcards, input):
     generates the script.
 
     """
-    py_scripts = [file for file in input if file.endswith(".py")]
-    return str(Path(py_scripts[0]).relative_to(Path("src") / "figures"))
+    # Get all files with these extensions
+    scripts = []
+    for file in input:
+        for ext in files.script_extensions:
+            if file.endswith(ext):
+                scripts.append(file)
+    return str(Path(scripts[0]).relative_to(Path("src") / "figures"))
+
+
+def script_cmd(wildcards, input):
+    """
+    Returns the shell command to produce a figure output from its script.
+
+    """
+    ext = Path(figure_script(wildcards)).suffix.split(".")[-1]
+    cmd = config["scripts"].get(ext, None)
+    if cmd is None:
+        raise ShowyourworkException(
+            f"Unknown figure script extension: `{ext}`.",
+            rule_name="figure",
+            brief=f"Unknown figure script extension: `{ext}`.",
+            context="showyourwork does not know how to generate figures from "
+            f"figure scripts ending in `{ext}`. Please provide instructions "
+            "in the `showyourwork.yml` config file; see the docs for details.",
+            delayed=False,
+        )
+    return cmd
 
 
 def figure_script(wildcards):
@@ -66,7 +91,13 @@ def figure_script(wildcards):
                         "in your TeX file by inspecting the label inside the figure environment. "
                         r"The convention is that if a figure is labeled `\label{fig:foo}`, "
                         "showyourwork expects there to be a script called `foo.py` in the `src/figures` "
-                        "directory that generates the figure(s) in the current figure environment.",
+                        "directory that generates the figure(s) in the current figure environment. "
+                        "Note that showyourwork supports figure scripts with other extensions, but in "
+                        "those cases users must explicitly tell showyourwork how to generate figures "
+                        "from those scripts by providing a shell command in `showyourwork.yml`. Please "
+                        "see the docs for details. If you're still getting this error message after "
+                        "fixing the issue, try deleting the `.showyourwork` folder to clear the build "
+                        "cache.",
                         delayed=False,
                     )
             else:
@@ -95,7 +126,13 @@ def figure_script(wildcards):
         "in your TeX file by inspecting the label inside the figure environment. "
         r"The convention is that if a figure is labeled `\label{fig:foo}`, "
         "showyourwork expects there to be a script called `foo.py` in the `src/figures` "
-        "directory that generates the figure(s) in the current figure environment.",
+        "directory that generates the figure(s) in the current figure environment. "
+        "Note that showyourwork supports figure scripts with other extensions, but in "
+        "those cases users must explicitly tell showyourwork how to generate figures "
+        "from those scripts by providing a shell command in `showyourwork.yml`. Please "
+        "see the docs for details. If you're still getting this error message after "
+        "fixing the issue, try deleting the `.showyourwork` folder to clear the build "
+        "cache.",
         delayed=False,
     )
 
