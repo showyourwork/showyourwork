@@ -3,10 +3,10 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.27">
-    <img src="https://img.shields.io/static/v1?label=version&message=0.1.27&color=blue"/>
+<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.1.28">
+    <img src="https://img.shields.io/static/v1?label=version&message=0.1.28&color=blue"/>
 </a>
-<a href="https://showyourwork.readthedocs.io/en/v0.1.27">
+<a href="https://showyourwork.readthedocs.io/en/v0.1.28">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
@@ -74,6 +74,22 @@ shows the build status of all of these examples.
   
   <tr>
     <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/custom-ms-name">custom-ms-name</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-ms-name">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-ms-name" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-ms-name-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
         <a href="https://github.com/rodluger/showyourwork-example/tree/expensive-figure">expensive-figure</a>
     </td>
     <td>
@@ -115,6 +131,22 @@ shows the build status of all of these examples.
     </td>
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/raw/figure-deps-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/graphicspath">graphicspath</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Agraphicspath">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=graphicspath" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/graphicspath-pdf/ms.pdf">
     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
     </td>
@@ -195,6 +227,22 @@ shows the build status of all of these examples.
     </td>
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/raw/multiple-figures-pdf/ms.pdf">
+    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+    </a>
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+        <a href="https://github.com/rodluger/showyourwork-example/tree/non-python">non-python</a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Anon-python">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=non-python" alt="test status"/>
+    </a>
+    </td>
+    <td>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/non-python-pdf/ms.pdf">
     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
     </td>
