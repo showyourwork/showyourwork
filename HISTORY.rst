@@ -1,5 +1,14 @@
 .. :changelog:
 
+0.1.28 (2021-11-09)
++++++++++++++++++++
+
+- Added support for non-Python scripts; users can now define instructions in the YAML config file to execute other kinds of scripts.
+- Implemented better error messages when figure scripts fail.
+- Allow users to specify a ``graphicspath`` for all figures in the document.
+- Allow users to customize the name of the manuscript (it no longer needs to be called ``ms.tex``).
+- Changelog: `v0.1.27...v0.1.28 <https://github.com/rodluger/showyourwork/compare/v0.1.27...v0.1.28>`_
+
 0.1.27 (2021-11-03)
 +++++++++++++++++++
 
