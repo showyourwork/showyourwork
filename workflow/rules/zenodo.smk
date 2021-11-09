@@ -91,7 +91,7 @@ for dataset in config["zenodo"]:
     zenodo.zenodo_id[dependency] = dep_props.get("id", None)
 
     # Checks
-    if zenodo.script[dependency] and zenodo.zenodo_id[dependency]:
+    if zenodo.script[dependency] != files.unknown and zenodo.zenodo_id[dependency]:
         raise ValueError(
             f"Please provide either a `script` *or* a Zenodo `id` for "
             f"dependency {dependency} (but not both)."
