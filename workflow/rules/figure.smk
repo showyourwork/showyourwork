@@ -20,7 +20,8 @@ rule figure:
         script_name=script_name,
         script_cmd=script_cmd,
         FIGURES=relpaths.figures,
-        TEMP=relpaths.temp
+        TEMP=relpaths.temp,
+        EXCEPTIONFILE=files.exception
     conda:
         posix(abspaths.user / "environment.yml")
     script:
