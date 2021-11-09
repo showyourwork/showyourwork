@@ -501,6 +501,7 @@ a package called ``<package>`` to be installed as follows:
       env:
         ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
 
+
 Other LaTeX classes
 -------------------
 
@@ -510,32 +511,103 @@ don't see what you're looking for here, please
 
 .. raw:: html
 
-    <ul>
+    <table>
 
-    <li>
-        <a href="https://ctan.org/tex-archive/macros/latex/contrib/mnras?lang=en"><span style="font-weight:bold";>MNRAS:</span></a>
-        <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amnras">
-            <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=mnras" alt="test status"/>
-        </a>
-        <a href="https://github.com/rodluger/showyourwork-example/blob/mnras">
-            <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
-        </a>
-        <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
-            <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
-        </a>
-    </li>
+        <tr>
+            <td>
+                <a href="https://ctan.org/tex-archive/macros/latex/contrib/mnras?lang=en"><span style="font-weight:bold";>MNRAS</span></a>
+            </td>
+            <td>
+                <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amnras">
+                    <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=mnras" alt="test status"/>
+                </a>
+            </td>
+            <td>
+                <a href="https://github.com/rodluger/showyourwork-example/blob/mnras">
+                    <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+                </a>
+            </td>
+            <td>
+                <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
+                    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+                </a>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <a href="https://www.aanda.org/for-authors"><span style="font-weight:bold";>A&amp;A</span></a>
+            </td>
+            <td>
+                <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aaa">
+                    <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=aa" alt="test status"/>
+                </a>
+            </td>
+            <td>
+                <a href="https://github.com/rodluger/showyourwork-example/blob/aa">
+                    <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+                </a>
+            </td>
+            <td>
+                <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/ms.pdf">
+                    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+                </a>
+            </td>
+        </tr>
 
-    <li>
-        <a href="https://www.aanda.org/for-authors"><span style="font-weight:bold";>A&amp;A:</span></a>
-        <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aaa">
-            <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=aa" alt="test status"/>
-        </a>
-        <a href="https://github.com/rodluger/showyourwork-example/blob/aa">
-            <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
-        </a>
-        <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/ms.pdf">
-            <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
-        </a>
-    </li>
+    </table>
 
-    </ul>
+
+Non-Python figure scripts
+-------------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Anon-python">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=non-python" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/non-python">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/non-python-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+Although ``showyourwork`` expects figures to be generated from ``Python`` scripts, it allows
+users to provide instructions on how to generate figures using any programming language.
+This is done in the ``showyourwork.yml`` config file under the ``scripts`` key. Each entry
+should be a file extension, such as ``sh`` for shell scripts, ``jl`` for ``Julia`` scripts,
+etc. Under each extension key, users should provide the shell command for generating a figure
+from the corresponding script.
+
+For example, the default configuration for ```Python`` scripts looks like this:
+
+.. code-block:: yaml
+
+    scripts:
+        py:
+            python {script}
+
+This tells ``showyourwork`` that to generate a figure from a ``Python`` script, all it
+needs to do is run the ``python`` shell command followed by the script name, which we
+provide as ``{script}`` (this special variable gets automatically expanded at runtime to
+the name--not the path--of the script file).
+
+Users don't need to specify this, however, as ``Python`` is the default language.
+The example linked to above shows a more realistic use case: generating a directed
+acyclic graph (DAG) from a Graphviz ``.gv`` file:
+
+
+.. code-block:: yaml
+
+    scripts:
+        gv:
+            dot -Tpdf {script} > {figure}
+
+Here, we tell ``showyourwork`` that we need to run the ``dot`` command to generate
+the figure ``{figure}`` from the Graphviz script ``{script}``. Note that ``{figure}``
+is another special variable that gets expanded to the name of the output figure file.
+Note that because ``showyourwork`` expects scripts to have the ``.py`` extension
+by default, you might have to force-add (i.e., ``git add -f script.gv``) scripts
+with other extensions in order to actually commit them!

@@ -38,11 +38,10 @@ output over to Overleaf manually as needed.
 What if I don't use Python?
 ---------------------------
 
-Currently, ``showyourwork`` requires figure scripts to be Python ``.py`` scripts.
-Support for other languages -- such as ``julia``, ``Jupyter`` notebooks, or even
-just plain ``bash`` is coming soon! In the meantime, check out :doc:`custom` for
-information on how to override this behavior manually to specify your own figure
-generation rules.
+By default, ``showyourwork`` expects figure scripts to be Python ``.py`` scripts.
+Other languages are also supported, but users must provide explicit instructions
+on how to produce figures from the corresponding figure scripts. See the :doc:`custom`
+page for details on how to get ``showyourwork`` to recognize non-Python scripts.
 
 
 What if I don't use ``includegraphics`` calls?

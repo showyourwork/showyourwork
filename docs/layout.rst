@@ -73,6 +73,11 @@ it should have the following overall layout:
           </li>
           <li class="folder"><a href="#src">src</a>
             <ul>
+              <li class="folder"><a href="#data">data</a>
+                <ul>
+                  <li><a href="#gitignore">.gitignore</a></li>
+                </ul>
+              </li>
               <li class="folder"><a href="#figures">figures</a>
                 <ul>
                   <li><a href="#gitignore">.gitignore</a></li>
@@ -191,6 +196,16 @@ committed figures (if absolutely necessary!) should be placed in the ``static``
 directory. See below for details.
 
 
+.. _data:
+
+The ``data`` directory
+************************
+
+This directory is included in the template as a convenience. It is meant to
+house temporary (non-tracked) datasets, such as those downloaded from Zenodo.
+By default, nothing in this directory is tracked by ``git``.
+
+
 .. _figures:
 
 The ``figures`` directory
@@ -202,6 +217,17 @@ the manuscript file (see :doc:`here <custom>` for details), although you can ove
 this behavior by providing custom workflow rules (see :doc:`custom`).
 You can have other stuff in this directory as well (such as auxiliary scripts
 or procedurally-generated datasets).
+
+
+.. _static:
+
+The ``static`` directory
+************************
+
+This directory is meant to house figure files that can't be generated from
+scripts, such as photos, flowcharts, reproductions of figures in other papers, etc.
+If you place your figure in here, ``showyourwork`` will know not to try to
+generate it from any script.
 
 
 .. _matplotlibrc:
