@@ -502,6 +502,52 @@ a package called ``<package>`` to be installed as follows:
         ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
 
 
+Using graphicspath
+------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Agraphicspath">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=graphicspath" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/graphicspath">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/graphicspath-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+Users can take advantage of the ``graphicspath`` LaTeX command to specify a
+path for all the figures in the workflow. The following snippet
+
+.. code-block:: TeX
+
+    \graphicspath{{./figures/}}
+
+    \begin{figure}[ht!]
+        \begin{centering}
+            \includegraphics[width=0.4\linewidth]{foo.pdf}
+            \label{fig:foo}
+        \end{centering}
+    \end{figure}
+
+is therefore equivalent to
+
+.. code-block:: TeX
+
+    \begin{figure}[ht!]
+        \begin{centering}
+            \includegraphics[width=0.4\linewidth]{figures/foo.pdf}
+            \label{fig:foo}
+        \end{centering}
+    \end{figure}
+
+Note that only a **single** ``graphicspath`` call is supported, with only
+a **single** path. Additional calls / paths will be ignored by ``showyourwork``
+and can lead to errors.
+
+
 Other LaTeX classes
 -------------------
 
