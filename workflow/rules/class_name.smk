@@ -18,7 +18,7 @@ checkpoint class_name:
         posix(relpaths.temp / "class_name"),
     priority: 100
     run:
-        with open(relpaths.tex / config["ms"], "r") as f:
+        with open(relpaths.tex / config["ms_name"], "r") as f:
             lines = f.readlines()
             for line in lines:
                 match = re.match(
@@ -29,7 +29,7 @@ checkpoint class_name:
                     break
             else:
                 raise ValueError(
-                    "Unable to determine document class in `{}`.".format(config["ms"])
+                    "Unable to determine document class in `{}`.".format(config["ms_name"])
                 )
             if not relpaths.temp.exists():
                 os.mkdir(relpaths.temp)
