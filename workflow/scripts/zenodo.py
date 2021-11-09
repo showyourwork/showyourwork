@@ -148,7 +148,7 @@ def upload_simulation(
 
         # Add some metadata
         print("Adding metadata...")
-        if script is None:
+        if script == "unknown-script":
             description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>."
         else:
             description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>"
@@ -216,7 +216,7 @@ def upload_simulation(
 
         # Add some metadata
         print("Adding metadata...")
-        if script is None:
+        if script == "unknown-script":
             description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>."
         else:
             description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command: <pre><code class='language-bash'>cd src/figures && python {script}</code></pre>"

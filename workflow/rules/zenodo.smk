@@ -37,6 +37,9 @@ class zenodo:
     #: Zenodo authors for each dataset
     deposit_creators = {}
 
+    #: Contents of each dataset (if it's a tarball)
+    deposit_contents = {}
+
     #: Id for each Zenodo download
     zenodo_id = {}
 
@@ -69,7 +72,7 @@ for dataset in config["zenodo"]:
         zenodo.zenodo_url[dependency] = "zenodo.org"
 
     # Generate & upload settings
-    zenodo.script[dependency] = dep_props.get("script", None)
+    zenodo.script[dependency] = dep_props.get("script", files.unknown)
     zenodo.file_name[dependency] = str(Path(dependency).name)
     zenodo.file_path[dependency] = str(Path(dependency).parent)
     zenodo.token_name[dependency] = dep_props.get("token_name", "ZENODO_TOKEN")
@@ -82,6 +85,7 @@ for dataset in config["zenodo"]:
     zenodo.deposit_creators[dependency] = dep_props.get(
         "creators", get_repo_url().split("/")[-2]
     )
+    zenodo.deposit_contents[dependency] = dep_props.get("contents", [])
 
     # Download settings
     zenodo.zenodo_id[dependency] = dep_props.get("id", None)
@@ -110,6 +114,49 @@ for dataset in config["zenodo"]:
         if not dependency in files.zenodo_files_auto:
             files.zenodo_files_auto.append(dependency)
 
+    # Set up rules to compress and extract the tarballs
+    tf = zenodo.file_name[dependency]
+    if not tf.endswith(".tar.gz"):
+        # Not a tarball
+        if len(zenodo.deposit_contents[dependency]) > 0:
+            raise ValueError(
+                f"File `{tf}` is not a tarball, so `contents` cannot be specified in `showyourwork.yml`."
+            )
+    else:
+        # This is a tarball
+        if len(zenodo.deposit_contents[dependency]) == 0:
+            raise ValueError(
+                f"Must specify `contents` for tar file `{tf}` in `showyourwork.yml`."
+            )
+
+        # Make the tarball an explicit dependency of any figure that
+        # depends on its contents; this ensures we get the Zenodo link
+        # next to the figure caption when building the PDF
+        for file in config["dependencies"]:
+            for dep in config["dependencies"][file]:
+                if dep in zenodo.deposit_contents[dependency]:
+                    if dependency not in config["dependencies"][file]:
+                        config["dependencies"][file].append(dependency)
+
+        if config["CI"]:
+            # Dynamically create a rule to unpack the tarball
+            rule:
+                input:
+                    dependency
+                output:
+                    zenodo.deposit_contents[dependency]
+                shell:
+                    "tar -xzvf {input}"
+        else:
+            # Dynamically create a rule to generate the tarball
+            rule:
+                input:
+                    zenodo.deposit_contents[dependency]
+                output:
+                    dependency
+                shell:
+                    "tar -czvf {output} {input}"
+            
 
 # Loop over files w/ dependencies
 dependencies = copy.deepcopy(config["dependencies"])
@@ -125,3 +172,13 @@ for file in dependencies:
         if dot_zenodo_file in files.dot_zenodo:
             if not f"{dependency}.zenodo" in config["dependencies"][file]:
                 config["dependencies"][file].append(f"{dependency}.zenodo")
+
+# On CI, we delete all datasets at the end so we don't cache them;
+# this ensures we're always generating the figures based on the
+# latest version of the deposit.
+if config["CI"]:
+    rule remove_zenodo_datasets:
+        run:
+            for file in files.zenodo_files_auto:
+                if Path(file).exists():
+                    Path(file).unlink()

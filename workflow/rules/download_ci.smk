@@ -6,7 +6,7 @@ rule download_ci:
     message:
         "Downloading dependency file {output[0]} from Zenodo..."
     output:
-        temp("{dependency}"),
+        "{dependency}",
         "{dependency}.zenodo"
     wildcard_constraints:
         dependency="{}".format("|".join(files.zenodo_files_auto)),

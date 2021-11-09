@@ -24,7 +24,7 @@ include: "rules/functions.py"
 
 
 # Collect information on all Zenodo datasets
-include: "rules/zenodo.py"
+include: "rules/zenodo.smk"
 
 
 # Define all the rules
@@ -42,6 +42,7 @@ include: "rules/texfile.smk"
 include: "rules/stylesheet.smk"
 include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
+
 
 
 # Rules we instantiate only if certain conditions apply

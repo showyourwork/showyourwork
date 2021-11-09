@@ -13,7 +13,7 @@ rule download_manual:
     params:
         zenodo_url=lambda w: zenodo.zenodo_url[w.dependency],
         zenodo_id=lambda w: zenodo.zenodo_id[w.dependency],
-        file_name=lambda w: zenodo.file_name[w.dependency]
+        file_name=lambda w: zenodo.file_name[w.dependency],
     shell:
         " && ".join(
             [
