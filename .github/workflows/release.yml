@@ -165,14 +165,27 @@ jobs:
           git add showyourwork
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run" || echo "nothing to commit"
 
-          # Reset the build cache
-          sed -i -e 's/id: build/id: build\n        with:\n          article-cache-number: ${RANDOM}/' .github/workflows/showyourwork.yml
+          # Reset the build cache & update the example-dev repo (an instance of the template)
+          STRT=$(grep -n "id: build" .github/workflows/showyourwork.yml | cut -d : -f 1)
+          STOP=$(wc -l .github/workflows/showyourwork.yml | awk '{ print $1 }')
+          USES="        uses: .\/showyourwork\/showyourwork-action"
+          WITH="        with:"
+          ARCN="          article-cache-number: ${RANDOM}"
+          if grep -q "article-cache-number" .github/workflows/showyourwork.yml; then
+              :
+          else
+              sed -i -e "${STRT},${STOP}s/${WITH}/${WITH}\n${ARCN}/" .github/workflows/showyourwork.yml
+          fi
+          if grep -q "article-cache-number" .github/workflows/showyourwork.yml; then
+              :
+          else
+              sed -i -e "${STRT},${STOP}s/${USES}/${USES}\n${WITH}\n${ARCN}/" .github/workflows/showyourwork.yml
+          fi
           git add .github/workflows/showyourwork.yml
-          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "reset build cache"
-
-          # Now update the example-dev repo (an instance of the template)
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "reset build cache" || echo "nothing to commit"
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example-dev ${BRANCH}
 
           # Touch the `environment.yml` file to trigger a new build on CI
           sed -i -e 's/channels:/channels: /' environment.yml
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "run cached build"
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example-dev ${BRANCH}
