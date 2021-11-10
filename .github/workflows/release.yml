@@ -187,5 +187,6 @@ jobs:
 
           # Touch the `environment.yml` file to trigger a new build on CI
           sed -i -e 's/channels:/channels: /' environment.yml
-          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "run cached build"
+          git add environment.yml
+          git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "run cached build" || echo "nothing to commit"
           git push --force https://x-access-token:${ACCESS_TOKEN}@github.com/rodluger/showyourwork-example-dev ${BRANCH}
