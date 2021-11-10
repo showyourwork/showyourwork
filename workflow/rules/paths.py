@@ -29,6 +29,11 @@ class abspaths:
     except KeyError:
         workflow = user / "showyourwork" / "workflow"
 
+    #: Path to the temp folder
+    temp = user / ".showyourwork"
+    if not temp.exists():
+        os.mkdir(str(temp))
+
 
 class relpaths:
     """Relative paths used throughout the workflow."""
@@ -43,7 +48,5 @@ class relpaths:
     #: Path to the showyourwork workflow
     dot_github = Path(".github")
 
-    #: Path to the showyourwork workflow
-    temp = Path(".showyourwork")
-    if not temp.exists():
-        os.mkdir(str(temp))
+    #: Path to the temp folder
+    temp = abspaths.temp.relative_to(abspaths.user)

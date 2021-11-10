@@ -5,6 +5,8 @@ Collect information about all the datasets we'll need to upload to/download from
 from pathlib import Path
 import copy
 from sphinx_mock import *
+import jinja2
+import re
 
 
 class zenodo:
@@ -49,6 +51,10 @@ class zenodo:
 
 # Get repo name for Zenodo metadata
 repo = "/".join(get_repo_url().split("/")[-2:])
+
+
+# List of dynamic rules, to be included in the `Snakefile`
+dynamic_rules = []
 
 
 # Loop over datasets
@@ -129,25 +135,59 @@ for dataset in config["zenodo"]:
                 f"Must specify `contents` for tar file `{tf}` in `showyourwork.yml`."
             )
 
+        # Jinja env
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(
+                abspaths.workflow / "resources" / "templates"
+            ),
+        )
+
         if config["CI"]:
+
             # Dynamically create a rule to unpack the tarball
-            rule:
-                input:
-                    dependency
-                output:
-                    zenodo.deposit_contents[dependency]
-                shell:
-                    "tar -xzvf {input}"
+            rulename = re.sub("[^0-9a-zA-Z]+", "_", f"extract_{dependency}")
+            with open(abspaths.temp / f"{rulename}.smk", "w") as f:
+                smk = env.get_template("extract.smk").render(
+                    rulename=rulename,
+                    input=dependency,
+                    contents=zenodo.deposit_contents[dependency],
+                )
+                print(smk, file=f)
+            dynamic_rules.append(rulename)
+
         else:
+
+            if zenodo.script[dependency] != files.unknown:
+
+                # Dynamically create a rule to generate the datasets if
+                # the user provided a `script`
+                rulename = re.sub(
+                    "[^0-9a-zA-Z]+", "_", f"run_{zenodo.script[dependency]}"
+                )
+                zenodo_script_name = Path(zenodo.script[dependency]).name
+                zenodo_script_path = Path(zenodo.script[dependency]).parents[0]
+                shell_cmd = f"cd {zenodo_script_path} && python {zenodo_script_name}"
+                with open(abspaths.temp / f"{rulename}.smk", "w") as f:
+                    smk = env.get_template("run.smk").render(
+                        rulename=rulename,
+                        input=zenodo.script[dependency],
+                        contents=zenodo.deposit_contents[dependency],
+                        shell_cmd=shell_cmd,
+                    )
+                    print(smk, file=f)
+                dynamic_rules.append(rulename)
+
             # Dynamically create a rule to generate the tarball
-            rule:
-                input:
-                    zenodo.deposit_contents[dependency]
-                output:
-                    dependency
-                shell:
-                    "tar -czvf {output} {input}"
-            
+            rulename = re.sub("[^0-9a-zA-Z]+", "_", f"compress_{dependency}")
+            with open(abspaths.temp / f"{rulename}.smk", "w") as f:
+                smk = env.get_template("compress.smk").render(
+                    rulename=rulename,
+                    output=dependency,
+                    contents=zenodo.deposit_contents[dependency],
+                )
+                print(smk, file=f)
+            dynamic_rules.append(rulename)
+
 
 # Loop over files w/ dependencies
 dependencies = copy.deepcopy(config["dependencies"])
@@ -163,13 +203,3 @@ for file in dependencies:
         if dot_zenodo_file in files.dot_zenodo:
             if not f"{dependency}.zenodo" in config["dependencies"][file]:
                 config["dependencies"][file].append(f"{dependency}.zenodo")
-
-# On CI, we delete all datasets at the end so we don't cache them;
-# this ensures we're always generating the figures based on the
-# latest version of the deposit.
-if config["CI"]:
-    rule remove_zenodo_datasets:
-        run:
-            for file in files.zenodo_files_auto:
-                if Path(file).exists():
-                    Path(file).unlink()

@@ -49,7 +49,7 @@ async function setupConda() {
       "Create environment"
     );
     exec(
-      "conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake",
+      "conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake jinja2",
       "Install snakemake"
     );
   }

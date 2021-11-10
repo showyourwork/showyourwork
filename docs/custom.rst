@@ -390,6 +390,70 @@ If all goes well, you should see an icon pop up next to the corresponding figure
 to the record on Zenodo for your simulation results.
 
 
+Dependency tarballs
+-------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Azenodo-tarball">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=zenodo-tarball" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/zenodo-tarball">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+``showyourwork`` also supports the upload/download of Zenodo tarballs. Consider the following ``showyourwork.yml`` file:
+
+.. code-block:: yaml
+
+    zenodo:
+        - src/data/results.tar.gz:
+            script: src/data/run_simulation.py
+            sandbox: false
+            token_name: ZENODO_TOKEN
+            title: Random numbers
+            description: >-
+                This is a collection of ten datasets, each containing
+                ten iid zero-mean, unit-variance random numbers. These
+                are used in an example of the showyourwork open source
+                scientific article workflow.
+            creators:
+                - Luger, Rodrigo
+            contents:
+                - src/data/results_0.dat
+                - src/data/results_1.dat
+                - src/data/results_2.dat
+                - src/data/results_3.dat
+                - src/data/results_4.dat
+                - src/data/results_5.dat
+                - src/data/results_6.dat
+                - src/data/results_7.dat
+                - src/data/results_8.dat
+                - src/data/results_9.dat
+
+        dependencies:
+            src/figures/my_figure.py:
+                - src/data/results_0.dat
+                - src/data/results_1.dat
+                - src/data/results_2.dat
+                - src/data/results_3.dat
+                - src/data/results_4.dat
+                - src/data/results_5.dat
+                - src/data/results_6.dat
+                - src/data/results_7.dat
+                - src/data/results_8.dat
+                - src/data/results_9.dat
+
+This is similar to the previous example, except this time the figure script
+depends on a large number of simulation result files. By specifying a ``contents``
+key, we can instruct ``showyourwork`` to generate the tarball ``results.tar.gz``
+out of those contents and upload it to Zenodo.
+
+
 Custom figure scripts
 ---------------------
 

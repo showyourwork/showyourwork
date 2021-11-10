@@ -23,8 +23,11 @@ include: "rules/git.py"
 include: "rules/functions.py"
 
 
-# Collect information on all Zenodo datasets
-include: "rules/zenodo.smk"
+# Collect information on all Zenodo datasets and
+# generate rules to upload/download them dynamically
+include: "rules/zenodo.py"
+for dynamic_rule in dynamic_rules:
+    include: posix(abspaths.temp / f"{dynamic_rule}.smk")
 
 
 # Define all the rules
@@ -51,6 +54,7 @@ if len(files.zenodo_files_manual):
 if len(files.zenodo_files_auto):
     if config["CI"]:
         include: "rules/download_ci.smk"
+        include: "rules/remove_zenodo.smk"
     else:
         include: "rules/generate.smk"
         include: "rules/upload.smk"

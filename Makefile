@@ -38,9 +38,9 @@ snakemake_setup: conda_setup
 		echo "Snakemake not found. Installing it using conda...";\
 		if [[ "$(BRAND_STRING)" == *"M1"* ]]; then \
 			echo "M1 chip detected. Installing snakemake-minimal...";\
-			conda install -c defaults -c conda-forge -c bioconda mamba snakemake-minimal;\
+			conda install -c defaults -c conda-forge -c bioconda mamba snakemake-minimal jinja2;\
 		else \
-			conda install -c defaults -c conda-forge -c bioconda mamba snakemake;\
+			conda install -c defaults -c conda-forge -c bioconda mamba snakemake jinja2;\
 		fi; \
 	fi
 
