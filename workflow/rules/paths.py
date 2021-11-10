@@ -31,8 +31,9 @@ class abspaths:
 
     #: Path to the temp folder
     temp = user / ".showyourwork"
-    if not temp.exists():
-        os.mkdir(str(temp))
+    if _workflow.basedir != "/path/to/repo/":
+        if not temp.exists():
+            os.mkdir(str(temp))
 
 
 class relpaths:
