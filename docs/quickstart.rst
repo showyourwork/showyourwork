@@ -35,6 +35,17 @@ If you already have an existing repository that you'd like to use, please check 
         <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/repo-from-template.png" width="75%"/>
     </div>
 
+    <div class="admonition warning">
+        <p class="admonition-title">Warning</p>
+        <p>
+            Don't check <span style="font-weight:bold;">Include all branches</span>.
+            The template repository has many branches used in the  
+            <code class="docutils literal notranslate"><span class="pre">showyourwork</span></code>
+            <a href="https://github.com/rodluger/showyourwork#test-suite">unit tests</a>
+            that will just end up clogging your repository.
+        </p>
+    </div>
+
     <p>
        GitHub will create a new repository based on
        <code class="docutils literal notranslate"><span class="pre">showyourwork-template</span></code>.

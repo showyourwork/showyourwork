@@ -756,20 +756,20 @@ don't see what you're looking for here, please
     <table>
 
         <tr>
-            <td>
+            <td style="padding-right: 30px;">
                 <a href="https://ctan.org/tex-archive/macros/latex/contrib/mnras?lang=en"><span style="font-weight:bold";>MNRAS</span></a>
             </td>
-            <td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amnras">
                     <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=mnras" alt="test status"/>
                 </a>
             </td>
-            <td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/blob/mnras">
                     <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
                 </a>
             </td>
-            <td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
                     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
                 </a>
@@ -777,20 +777,20 @@ don't see what you're looking for here, please
         </tr>
         
         <tr>
-            <td>
+            <td style="padding-right: 30px;">
                 <a href="https://www.aanda.org/for-authors"><span style="font-weight:bold";>A&amp;A</span></a>
             </td>
-            <td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aaa">
                     <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=aa" alt="test status"/>
                 </a>
             </td>
-            <td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/blob/aa">
                     <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
                 </a>
             </td>
-            <td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/ms.pdf">
                     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
                 </a>
