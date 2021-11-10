@@ -142,7 +142,7 @@ for dataset in config["zenodo"]:
             ),
         )
 
-        if config["CI"]:
+        if config["CI"] or zenodo.zenodo_id[dependency]:
 
             # Dynamically create a rule to unpack the tarball
             rulename = re.sub("[^0-9a-zA-Z]+", "_", f"extract_{dependency}")
