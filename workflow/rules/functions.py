@@ -52,7 +52,11 @@ def script_cmd(wildcards, input):
     Returns the shell command to produce a figure output from its script.
 
     """
-    ext = Path(figure_script(wildcards)).suffix.split(".")[-1]
+    if hasattr(wildcards, "figure"):
+        figscript = figure_script(wildcards)
+    else:
+        figscript = input[0]
+    ext = Path(figscript).suffix.split(".")[-1]
     cmd = config["scripts"].get(ext, None)
     if cmd is None:
         raise ShowyourworkException(
