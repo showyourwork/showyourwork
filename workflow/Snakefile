@@ -54,11 +54,11 @@ if len(files.zenodo_files_manual):
 if len(files.zenodo_files_auto):
     if config["CI"]:
         include: "rules/download_ci.smk"
-        include: "rules/remove_zenodo.smk"
     else:
         include: "rules/generate.smk"
         include: "rules/upload.smk"
-
+if config["CI"]:
+    include: "rules/remove_zenodo.smk"
 
 # Rule for autogenerating rule documentation
 include: "rules/docstrings.smk"
