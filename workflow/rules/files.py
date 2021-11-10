@@ -38,6 +38,14 @@ class files:
             )
         ]
 
+    #: Dependencies of the manuscript defined by the user
+    for file in config["dependencies"]:
+        if file == config["ms"]:
+            ms_deps = config["dependencies"][file]
+            break
+    else:
+        ms_deps = []
+
     #: Dummy file dependency for figures w/ unknown parent scripts.
     unknown = "unknown-script"
 
@@ -55,7 +63,7 @@ class files:
         tectonic = []
 
     #: Figures that are allowed directly in the ``src/`` directory
-    special_figures = ["orcid-id.png", "showyourwork.pdf"]
+    special_figures = ["orcid-id.png", "orcid-ID.png", "showyourwork.pdf"]
 
     #: Store temporary exception messages
     exception = relpaths.temp / "exception.log"

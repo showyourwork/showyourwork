@@ -12,6 +12,7 @@ rule pdf:
         posix(relpaths.temp / "meta.json"),
         posix(relpaths.tex / "showyourwork.sty"),
         files.aux,
+        files.ms_deps,
         files.tectonic,
         class_files,
         figures,

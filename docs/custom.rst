@@ -828,6 +828,51 @@ specify it in the ``showyourwork.yml`` file:
 Note that ``showyourwork`` still expects it to live in the ``src`` directory.
 
 
+Custom manuscript dependencies
+------------------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Ams-deps">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=ms-deps" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/ms-deps">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/ms-deps-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+Sometimes it is useful to specify custom dependencies of the manuscript file, such as when
+you use the ``input`` directive to ingest content from other LaTeX files. Say we have a special
+rules that computes the answer to some problem in the ``Snakefile``:
+
+.. code-block:: python
+
+    rule answer:
+        input:
+            "src/answer.py"
+        output:
+            "src/answer.tex"
+        conda:
+            "environment.yml"
+        shell:
+            "cd src && python answer.py"
+
+In order to tell ``showyourwork`` that ``src/ms.tex`` depends on ``src/answer.tex``, simply
+specify it as a dependency in ``showyourwork.yml``:
+
+.. code-block:: yaml
+
+    dependencies:
+        src/ms.tex:
+            - src/answer.tex
+
+Because of the way ``Snakemake`` builds the dependency graph, changes to ``src/answer.py``
+will automatically trigger re-computation of ``src/answer.tex`` and a rebuild of the PDF.
+
+
 Non-Python figure scripts
 -------------------------
 

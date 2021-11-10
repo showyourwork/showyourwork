@@ -17,6 +17,7 @@ rule xml:
     input:
         class_files,
         files.aux,
+        files.ms_deps,
         posix(relpaths.tex / "sywxml.sty"),
         posix(relpaths.tex / "{}.tex".format(files.tmp_xml)),
         files.tectonic
