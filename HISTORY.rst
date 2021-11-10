@@ -1,5 +1,15 @@
 .. :changelog:
 
+0.1.29 (2021-11-10)
++++++++++++++++++++
+
+- Support for creation/download of Zenodo tarballs.
+- Implements the idea in `#48 <https://github.com/rodluger/showyourwork/issues/48>`_ for specifying custom manuscript dependencies.
+- Bugfix for rules that subclass the main showyourwork figure rule.
+- Implements the idea in `#47 <https://github.com/rodluger/showyourwork/issues/47>`_ for custom Zenodo dataset generation.
+- **Developers:** Now resetting the build cache before each unit test on ``showyourwork-example`` and then re-running the cached build.
+- Changelog: `v0.1.28...v0.1.29 <https://github.com/rodluger/showyourwork/compare/v0.1.28...v0.1.29>`_
+
 0.1.28 (2021-11-09)
 +++++++++++++++++++
 
@@ -45,7 +55,7 @@
 +++++++++++++++++++
 
 - Updated LaTeX package `fontawesome` to `fontawesome5`
-- [Developers] Can now run tests on PR branches to generate `showyourwork-example-dev` branches
+- **Developers:** Can now run tests on PR branches to generate `showyourwork-example-dev` branches
 - Changelog: `v0.1.21...v0.1.22 <https://github.com/rodluger/showyourwork/compare/v0.1.21...v0.1.22>`_
 
 0.1.21 (2021-11-01)
