@@ -166,8 +166,8 @@ jobs:
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "showyourwork test run" || echo "nothing to commit"
 
           # Reset the build cache
-          sed -i -e 's/id: build/id: build\n        with:\n          article-cache-number: ${RANDOM}/' .github/showyourwork.yml
-          git add .github/showyourwork.yml
+          sed -i -e 's/id: build/id: build\n        with:\n          article-cache-number: ${RANDOM}/' .github/workflows/showyourwork.yml
+          git add .github/workflows/showyourwork.yml
           git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "reset build cache"
 
           # Now update the example-dev repo (an instance of the template)
