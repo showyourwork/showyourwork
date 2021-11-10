@@ -47,7 +47,6 @@ include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
 
 
-
 # Rules we instantiate only if certain conditions apply
 if len(files.zenodo_files_manual):
     include: "rules/download_manual.smk"
@@ -60,6 +59,7 @@ if len(files.zenodo_files_auto):
 if config["CI"]:
     include: "rules/remove_zenodo.smk"
 
+
 # Rule for autogenerating rule documentation
 include: "rules/docstrings.smk"
 try:
@@ -71,6 +71,7 @@ try:
     include: "rules/upload.smk"
 except:
     pass
+
 
 # Attempt to print an informative error message at the end of the build log
 onerror:
