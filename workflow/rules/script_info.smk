@@ -70,6 +70,7 @@ checkpoint script_info:
                             )
                     if len(filenames):
 
+                        # Get all Zenodo datasets for this script
                         alldeps = config["dependencies"].get(
                             "{}.{}".format(relpaths.figures / label, ext), []
                         )
@@ -79,6 +80,8 @@ checkpoint script_info:
                             dataset.endswith(".zenodo")
                         ]
 
+                        # Check if any of the datasets are inside a Zenodo
+                        # tarball, and if so, add a link to that deposit
                         for tarball in zenodo.deposit_contents:
                             for f in zenodo.deposit_contents[tarball]:
                                 if f in alldeps:

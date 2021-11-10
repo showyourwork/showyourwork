@@ -410,6 +410,19 @@ Dependency tarballs
 
 .. code-block:: yaml
 
+    dependencies:
+        src/figures/my_figure.py:
+            - src/data/results_0.dat
+            - src/data/results_1.dat
+            - src/data/results_2.dat
+            - src/data/results_3.dat
+            - src/data/results_4.dat
+            - src/data/results_5.dat
+            - src/data/results_6.dat
+            - src/data/results_7.dat
+            - src/data/results_8.dat
+            - src/data/results_9.dat
+
     zenodo:
         - src/data/results.tar.gz:
             script: src/data/run_simulation.py
@@ -435,23 +448,142 @@ Dependency tarballs
                 - src/data/results_8.dat
                 - src/data/results_9.dat
 
-        dependencies:
-            src/figures/my_figure.py:
-                - src/data/results_0.dat
-                - src/data/results_1.dat
-                - src/data/results_2.dat
-                - src/data/results_3.dat
-                - src/data/results_4.dat
-                - src/data/results_5.dat
-                - src/data/results_6.dat
-                - src/data/results_7.dat
-                - src/data/results_8.dat
-                - src/data/results_9.dat
-
 This is similar to the previous example, except this time the figure script
 depends on a large number of simulation result files. By specifying a ``contents``
-key, we can instruct ``showyourwork`` to generate the tarball ``results.tar.gz``
-out of those contents and upload it to Zenodo.
+key under a ``zenodo`` entry, we can instruct ``showyourwork`` to generate the 
+tarball ``results.tar.gz`` out of those contents and upload it to Zenodo.
+We then list all of those *individual* files as dependencies of the figure script.
+This example works in the same way as above -- the simulation is only ever
+run locally. So again, make sure to run it before pushing your changes
+to GitHub -- otherwise GitHub Actions won't find the tarball on Zenodo, 
+and the build will fail.
+
+By the way, there's a handy feature of the YAML syntax that can save us
+some repetition: anchors and aliases. It's a handy way of defining and re-using
+chunks of metadata. You can 
+`read more about them here <https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet#anchors>`_.
+We can use the anchor/alias syntax to re-write the YAML file above as
+
+.. code-block:: yaml
+
+    dependencies:
+        src/figures/my_figure.py: &results
+            - src/data/results_0.dat
+            - src/data/results_1.dat
+            - src/data/results_2.dat
+            - src/data/results_3.dat
+            - src/data/results_4.dat
+            - src/data/results_5.dat
+            - src/data/results_6.dat
+            - src/data/results_7.dat
+            - src/data/results_8.dat
+            - src/data/results_9.dat
+
+    zenodo:
+        - src/data/results.tar.gz:
+            script: src/data/run_simulation.py
+            sandbox: false
+            token_name: ZENODO_TOKEN
+            title: Random numbers
+            description: >-
+                This is a collection of ten datasets, each containing
+                ten iid zero-mean, unit-variance random numbers. These
+                are used in an example of the showyourwork open source
+                scientific article workflow.
+            creators:
+                - Luger, Rodrigo
+            contents: 
+                *results
+
+The first time we listed all our results files, we added an anchor (``&results``),
+which we then refer to as an alias (``*results``) the next time we need to
+list those files. The anchor/alias syntax can help make YAML files shorter
+and more readable.
+
+
+Dependency tarballs (advanced)
+------------------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Azenodo-tarball-manual">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=zenodo-tarball-manual" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/zenodo-tarball-manual">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-manual-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+Sometimes our procedure for generating the results of a simulation might be more involved
+than simply executing a single python script. Consider the following example: we have
+a file ``src/data/run_simulation.py`` that accepts a number as input, runs a simulation,
+and then generates a dataset corresponding to that unique input.
+We would then like to ingest all of these datasets into a plotting script that generates
+a figure in the paper, all while taking advantage of the Zenodo tarball functionality
+in ``showyourwork``.
+
+Achieving this is simple: let's re-use the ``showyourwork.yml`` file from the previous
+example, but this time **omit** the ``script`` key:
+
+.. code-block:: yaml
+
+    dependencies:
+        src/figures/my_figure.py: &results
+            - src/data/results_0.dat
+            - src/data/results_1.dat
+            - src/data/results_2.dat
+            - src/data/results_3.dat
+            - src/data/results_4.dat
+            - src/data/results_5.dat
+            - src/data/results_6.dat
+            - src/data/results_7.dat
+            - src/data/results_8.dat
+            - src/data/results_9.dat
+
+    zenodo:
+        - src/data/results.tar.gz:
+            sandbox: false
+            token_name: ZENODO_TOKEN
+            title: Random numbers
+            description: >-
+                This is a collection of ten datasets, each containing
+                ten iid zero-mean, unit-variance random numbers. These
+                are used in an example of the showyourwork open source
+                scientific article workflow.
+            creators:
+                - Luger, Rodrigo
+            contents: 
+                *results
+
+Instead of the ``script`` key, we include a custom ``rule`` in the ``Snakefile``
+to generate all of the results files:
+
+.. code-block:: python
+
+    if not config["CI"]:
+        rule analysis:
+            input:
+                "src/data/run_simulation.py"
+            output:
+                "src/data/results_{value}.dat"
+            shell:
+                "python {input[0]} {wildcards.value}"
+
+That's it! ``showyourwork`` automatically infers that it must execute the
+``analysis`` rule with all values of the (integer) wildcard ``value`` 
+in the range ``[0, 10)`` to produce the dependencies of the figure script.
+When run locally, it will tar them up and upload the tarball to Zenodo;
+when running on GitHub Actions, it will download and unpack the tarball
+instead of running the ``analysis`` rule.
+
+Note that we explicitly placed the ``analysis`` rule inside a branch that gets
+executed only if ``config["CI"] is False``. The ``config["CI"]`` variable
+is automatically set in all ``showyourwork`` workflows: it's always
+``False``, except when the workflow is being executed on a GitHub Actions
+runner.
 
 
 Custom figure scripts
