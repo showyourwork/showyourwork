@@ -78,11 +78,15 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
 
   
 
-  // Save article cache
+  // Save article cache (failure OK)
   core.startGroup("Update article cache");
-  exec("make remove_zenodo");
-  exec(`python ${ACTION_PATH}/src/cache.py --update`);
-  const article_cacheId = await cache.saveCache(article_paths, article_key);
+  try {
+    exec("make remove_zenodo");
+    exec(`python ${ACTION_PATH}/src/cache.py --update`);
+    const article_cacheId = await cache.saveCache(article_paths, article_key);
+  } catch (error) {
+    core.warning(error.message);
+  }
   core.endGroup();
 
   return output;
