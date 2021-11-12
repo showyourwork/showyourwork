@@ -586,6 +586,94 @@ is automatically set in all ``showyourwork`` workflows: it's always
 runner.
 
 
+Many, many dependencies
+-----------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Ajinja-yaml">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=jinja-yaml" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/blob/jinja-yaml">
+        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/jinja-yaml-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+
+Sometimes, it might be a pain to explicitly list all the dependencies for a script. This could
+be the case if your simulation or analysis step produces many (tens, hundreds, or even thousands of)
+data files. The recommended way of dealing with this is through ``jinja`` templating.
+For example, instead of explicitly listing all the dependencies in ``showyourwork.yml``:
+
+**showyourwork.yml:**
+
+.. code-block:: yaml
+
+    dependencies:
+        src/figures/my_figure.py:
+            - src/data/results_0.dat
+            - src/data/results_1.dat
+            - src/data/results_2.dat
+            - src/data/results_3.dat
+            - src/data/results_4.dat
+            - src/data/results_5.dat
+            - src/data/results_6.dat
+            - src/data/results_7.dat
+            - src/data/results_8.dat
+            - src/data/results_9.dat
+
+we recommend **deleting the config file** ``showyourwork.yml`` and creating
+a new file called ``showyourwork.yml.jinja`` with the following template:
+
+**showyourwork.yml.jinja:**
+
+.. code-block:: jinja
+
+    dependencies:
+        src/figures/my_figure.py:
+            {% for i in range(10) -%}
+            - src/data/results_{{i}}.dat
+            {% endfor %}
+
+If you're not familiar with ``jinja`` templating, check out the 
+`documentation <https://jinja.palletsprojects.com/en/3.0.x/>`_. The idea here
+is to define a for loop over the variable ``i`` to list all the dependencies
+for us. But since this file isn't a valid YAML config file, we have to add
+a bit of boilerplate at the very top of our ``Snakefile``:
+
+**Snakefile:**
+
+.. code-block:: python
+
+    # Render the config file
+    import jinja2
+    with open("showyourwork.yml", "w") as f:
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
+        print(env.get_template("showyourwork.yml.jinja").render(), file=f)
+
+
+    # User config
+    configfile: "showyourwork.yml"
+
+This code loads the ``jinja`` template, parses it, and prints it to the
+actual config file ``showyourwork.yml`` that is ingested by ``Snakemake``.
+This way, ``showyourwork`` only ever sees the config file with all of the
+dependencies listed out explicitly, without any of the headaches associated
+with listing them all yourself.
+
+Note that if you take this approach, it's a good idea to add
+
+.. code-block::
+
+    showyourwork.yml
+
+to your top-level ``.gitignore`` file so that it's never committed (since
+this file is programmatically generated every time you run your workflow).
+
+
 Custom figure scripts
 ---------------------
 

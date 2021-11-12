@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.30 (2021-11-12)
++++++++++++++++++++
+
+- Added an example on how to use jinja templating to simplify the ``showyourwork.yml`` config file.
+- **Developers:** Undo the reset build cache operation from the previous patch, since this causes race conditions when
+  accessing the cache during the unit tests (since we are concurrently running dozens of actions on a single repo!)
+- Changelog: `v0.1.29...v0.1.30 <https://github.com/rodluger/showyourwork/compare/v0.1.29...v0.1.30>`_
+
 0.1.29 (2021-11-10)
 +++++++++++++++++++
 
