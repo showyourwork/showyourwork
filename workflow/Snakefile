@@ -45,6 +45,7 @@ include: "rules/texfile.smk"
 include: "rules/stylesheet.smk"
 include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
+include: "rules/conda_list.smk"
 
 
 # Rules we instantiate only if certain conditions apply
