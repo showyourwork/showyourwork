@@ -22,6 +22,10 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const GITHUB_REF = shell.env["GITHUB_REF"];
+  const GITHUB_BRANCH = shell
+    .exec("echo ${GITHUB_REF##*/}")
+    .replace(/(\r\n|\n|\r)/gm, "");
+  const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
   const randomId = makeId(8);
   const article_key = `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
   const article_restoreKeys = [
@@ -36,16 +40,29 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     "src",
   ];
 
-  // Restore the article cache
-  core.startGroup("Restore article cache");
-  const article_cacheKey = await cache.restoreCache(
-    article_paths,
-    article_key,
-    article_restoreKeys
+  // Is this a unit test run?
+  const UNIT_TEST = (
+    (GITHUB_SLUG == "rodluger/showyourwork-example") || 
+    (GITHUB_SLUG == "rodluger/showyourwork-example-dev")
   );
-  exec(`rm -f .showyourwork/repo.json`); // Always re-generate this!
-  exec(`python ${ACTION_PATH}/src/cache.py --restore`);
-  core.endGroup();
+
+  // We'll cache the article unless it's a unit test run.
+  // But for good measure, we test the caching feature on 
+  // the ``simple-figure`` branch when running unit tests
+  const CACHE_ARTICLE = (!UNIT_TEST || (GITHUB_BRANCH == "simple-figure"));
+
+  // Restore the article cache
+  if (CACHE_ARTICLE) {
+    core.startGroup("Restore article cache");
+    const article_cacheKey = await cache.restoreCache(
+      article_paths,
+      article_key,
+      article_restoreKeys
+    );
+    exec(`rm -f .showyourwork/repo.json`); // Always re-generate this!
+    exec(`python ${ACTION_PATH}/src/cache.py --restore`);
+    core.endGroup();
+  }
 
   // Outputs
   var output = [];
@@ -76,17 +93,17 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     core.endGroup();
   }
 
-  
-
   // Save article cache (failure OK)
-  try {
-    core.startGroup("Update article cache");
-    exec("make remove_zenodo");
-    exec(`python ${ACTION_PATH}/src/cache.py --update`);
-    const article_cacheId = await cache.saveCache(article_paths, article_key);
-    core.endGroup();
-  } catch (error) {
-    core.warning(error.message);
+  if (CACHE_ARTICLE) {
+    try {
+      core.startGroup("Update article cache");
+      exec("make remove_zenodo");
+      exec(`python ${ACTION_PATH}/src/cache.py --update`);
+      const article_cacheId = await cache.saveCache(article_paths, article_key);
+      core.endGroup();
+    } catch (error) {
+      core.warning(error.message);
+    }
   }
   
   return output;
