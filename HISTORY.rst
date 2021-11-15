@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.31 (2021-11-15)
++++++++++++++++++++
+
+- Migrated to the new Zenodo API; previously the limit for uploading files was 100 MB (now 50 GB).
+- Changelog: `v0.1.30...v0.1.31 <https://github.com/rodluger/showyourwork/compare/v0.1.30...v0.1.31>`_
+
 0.1.30 (2021-11-12)
 +++++++++++++++++++
 
