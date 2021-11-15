@@ -102,6 +102,13 @@ def upload_simulation(
                 )
             )
             DEPOSIT_ID = r.json()["links"]["latest_draft"].split("/")[-1]
+            r = check_status(
+                requests.get(
+                    f"https://{zenodo_url}/api/deposit/depositions/{DEPOSIT_ID}",
+                    params={"access_token": access_token},
+                )
+            )
+            bucket_url = r.json()["links"]["bucket"]
 
         except ZenodoError as e:
 
@@ -109,6 +116,13 @@ def upload_simulation(
 
                 # Seems like we already have a draft. Let's use it
                 DEPOSIT_ID = deposit["links"]["latest_draft"].split("/")[-1]
+                r = check_status(
+                    requests.get(
+                        f"https://{zenodo_url}/api/deposit/depositions/{DEPOSIT_ID}",
+                        params={"access_token": access_token},
+                    )
+                )
+                bucket_url = r.json()["links"]["bucket"]
 
             else:
 
@@ -135,13 +149,12 @@ def upload_simulation(
                 break
 
         # Upload the new version of the file
-        print("Uploading new file...")
+        print("Uploading the file...")
         with open(os.path.join(file_path, file_name), "rb") as fp:
             r = check_status(
-                requests.post(
-                    f"https://{zenodo_url}/api/deposit/depositions/{DEPOSIT_ID}/files",
-                    data={"name": file_name},
-                    files={"file": fp},
+                requests.put(
+                    "%s/%s" % (bucket_url, file_name),
+                    data=fp,
                     params={"access_token": access_token},
                 )
             )
