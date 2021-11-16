@@ -394,38 +394,5 @@ The ``showyourwork.yml`` config file
 ************************************
 
 This is the `Snakemake config file <https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html>`_
-for ``showyourwork``, where you can customize several aspects of the build. Below is a list of all options
-along with their default values and a brief description of what they do:
-
-.. code-block:: yaml
-
-    # Enable verbose output during the build process?
-    verbose: true
-
-    # Recognized figure extensions
-    figexts:
-      - pdf
-      - png
-      - eps
-      - jpg
-      - jpeg
-      - gif
-      - svg
-      - tiff
-      
-    # Paths to be excluded from the arxiv tarball generated on GitHub Actions
-    # Provide a list of files, one item per line preceded by a - ; glob 
-    # syntax allowed. Paths are relative to the root of the repo.
-    arxiv_tarball_exclude:
-
-    # Script dependencies. Each entry should be the name of a Python script
-    # relative to the root of the repo. These entries, in turn, 
-    # should contain a list of dependencies, relative to the same folder.
-    dependencies:
-
-    # Zenodo metadata. This should be a list of dataset names relative to the
-    # root of the repo. Each one should contain either a Zenodo ``id``
-    # for an existing deposit or instructions on how to generate and upload
-    # a new deposit. Please see the documentation on `Custom workflows` for 
-    # more information.
-    zenodo:
+for ``showyourwork``, where you can customize several aspects of the build. For
+detailed information on this file, see `the showyourwork.yml file <config.html>`_.

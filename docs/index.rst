@@ -17,6 +17,8 @@ Documentation
    intro
    quickstart
    layout
+   config
+   Snakefile
    action
    local
    custom

@@ -68,6 +68,14 @@ working directory (not the directory the script is in). This is the default beha
 when doing I/O in Python, so it shouldn't generally be a problem.
 
 
+What if I'm on Windows?
+-----------------------
+
+I don't know! Does it work? Please give me your feedback `here <https://github.com/rodluger/showyourwork/issues/33>`_.
+I'm hoping to add unit tests for Windows and add explicit support for it soon,
+but any help is appreciated!
+
+
 How do I debug a run?
 ---------------------
 

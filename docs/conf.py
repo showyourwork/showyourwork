@@ -17,23 +17,26 @@ sys.path.insert(0, str(Path(__file__).absolute().parents[1] / "workflow" / "rule
 builtins.__sphinx_docs_build__ = True
 
 # Get list of projects that use showyourwork
-from get_repos import get_repos
+if os.getenv("CI", "false") == "true":
 
-projects = get_repos()
-fields = list(
-    set([projects[project]["field"] for project in projects]) - set(["Uncategorized"])
-)
-repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[::-1]
+    from get_repos import get_repos
 
-# Generate the `projects.rst` page
-env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
-with open("projects.rst", "w") as f:
-    print(
-        env.get_template("projects.rst.jinja").render(
-            projects=projects, fields=fields, repos=repos
-        ),
-        file=f,
+    projects = get_repos()
+    fields = list(
+        set([projects[project]["field"] for project in projects])
+        - set(["Uncategorized"])
     )
+    repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[::-1]
+
+    # Generate the `projects.rst` page
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
+    with open("projects.rst", "w") as f:
+        print(
+            env.get_template("projects.rst.jinja").render(
+                projects=projects, fields=fields, repos=repos
+            ),
+            file=f,
+        )
 
 # Get docstrings from scripts
 scripts = Path(__file__).absolute().parents[1] / "workflow" / "scripts"

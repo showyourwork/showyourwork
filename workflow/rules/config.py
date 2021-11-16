@@ -18,7 +18,12 @@ values if none are provided. Current config options are
   overridden. Options are ``x86_64-unknown-linux-gnu``, ``x86_64-apple-darwin``,
   or ``x86_64-pc-windows-msvc``.
 
-- ``figure_dependencies`` (*dict*): List of dependencies for each figure.
+- ``dependencies`` (*dict*): List of dependencies for each figure.
+
+- ``ms`` (*str*): Path to the main TeX manuscript. Default ``src/ms.tex``
+
+- ``scripts`` (*dict*): List of script extensions and instructions on how to
+  execute them.
 
 - ``zenodo`` (*dict*): Rules for how to upload/download dependencies.
 
@@ -93,7 +98,7 @@ config["zenodo"] = config.get("zenodo", {})
 
 
 #: Are we on GitHub Actions?
-config["CI"] = os.getenv("CI", "false") == "true"
+config["CI"] = config.get("CI", (os.getenv("CI", "false") == "true"))
 
 
 #: Figure script extensions & executing instructions

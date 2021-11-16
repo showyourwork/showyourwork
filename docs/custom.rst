@@ -984,7 +984,7 @@ should be a file extension, such as ``sh`` for shell scripts, ``jl`` for ``Julia
 etc. Under each extension key, users should provide the shell command for generating a figure
 from the corresponding script.
 
-For example, the default configuration for ```Python`` scripts looks like this:
+For example, the default configuration for ``Python`` scripts looks like this:
 
 .. code-block:: yaml
 
