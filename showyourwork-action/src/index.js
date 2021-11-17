@@ -7,6 +7,7 @@ const { buildArticle } = require("./article");
 const { generateReport } = require("./report");
 const { publishOutput } = require("./publish");
 const { installTeX } = require("./tex");
+const { uploadTemporaries } = require("./onerror");
 
 (async () => {
   try {
@@ -43,6 +44,7 @@ const { installTeX } = require("./tex");
     }
   } catch (error) {
     // Exit gracefully
+    uploadTemporaries();
     core.setFailed(error.message);
   }
 })();
