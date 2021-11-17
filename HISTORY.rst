@@ -1,5 +1,14 @@
 .. :changelog:
 
+
+0.1.32 (2021-11-17)
++++++++++++++++++++
+
+- Fixed `issue #57 <https://github.com/rodluger/showyourwork/issues/57>`_.
+- Better documentation for the config file and the ``Snakefile``.
+- Changelog: `v0.1.31...v0.1.32 <https://github.com/rodluger/showyourwork/compare/v0.1.31...v0.1.32>`_
+
+
 0.1.31 (2021-11-15)
 +++++++++++++++++++
 
