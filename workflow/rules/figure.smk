@@ -11,6 +11,7 @@ rule figure:
     input:
         figure_script,
         figure_script_dependencies,
+        relpaths.temp / "scripts.json",
         "environment.yml",
     output:
         report("{figure}", category="Figure")
