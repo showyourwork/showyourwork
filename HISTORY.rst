@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.1.33 (2021-11-17)
++++++++++++++++++++
+
+- Fixed issue with unnecessary reruns of figure scripts
+- Changelog: `v0.1.32...v0.1.33 <https://github.com/rodluger/showyourwork/compare/v0.1.32...v0.1.33>`_
+
 
 0.1.32 (2021-11-17)
 +++++++++++++++++++
