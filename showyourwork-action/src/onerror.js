@@ -15,6 +15,7 @@ async function uploadTemporaries() {
     // TODO: Assemble a list of files to upload
 
     // Upload an artifact
+    /*
     const files = {};
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
@@ -25,4 +26,6 @@ async function uploadTemporaries() {
         continueOnError: false
       }
     );
+    */
+   
 }
