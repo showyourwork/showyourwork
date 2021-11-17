@@ -51,6 +51,7 @@ inputs:
     default: |
       type1cm 
       cm-super
+      underscore
 branding:
   icon: "book-open"
   color: "red"
