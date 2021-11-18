@@ -17,6 +17,9 @@ async function uploadTemporaries() {
     // than this will be skipped.
     const maxSizeInKB = 5000;
 
+    // Assemble a simple directory tree
+    shell.exec("tree -I .snakemake > tree.txt", {silent:true});
+
     // Assemble a list of folders/files in the root and src directories
     const patterns = [
       "*.*",
@@ -34,11 +37,6 @@ async function uploadTemporaries() {
       }
     }
       
-    // DEBUG
-    core.info("<FILES>");
-    core.info(files);
-    core.info("</FILES>");
-
     // Upload the artifact
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
