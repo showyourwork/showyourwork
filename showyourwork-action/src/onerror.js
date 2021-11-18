@@ -24,7 +24,7 @@ async function uploadTemporaries() {
     ];
     var files = [];
     patterns.forEach(function (pattern) {
-      glob(pattern, (err, fs) => {
+      glob(pattern, function (err, fs) {
         fs.forEach(function (f) {
           try {
             var sz = parseInt(shell.exec(`du -k ${f} | cut -f1`, {silent:true}).stdout.replace('\n', ''));
