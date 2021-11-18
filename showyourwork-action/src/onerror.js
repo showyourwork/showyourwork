@@ -36,7 +36,7 @@ async function uploadTemporaries() {
             core.warning(error.message);
           }
         }
-      });
+      })();
     }
 
       
