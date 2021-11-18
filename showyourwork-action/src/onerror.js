@@ -35,6 +35,9 @@ async function uploadTemporaries() {
             // DEBUG
             core.info(f);
             core.info(sz);
+            core.info("<FILES>");
+            core.info(files);
+            core.info("</FILES>");
 
           } catch (error) {
             core.warning(error.message);
@@ -43,10 +46,13 @@ async function uploadTemporaries() {
       })
     });
 
-    // Log the files to be uploaded
+    // DEBUG
     core.info("<FILES>");
     core.info(files);
     core.info("</FILES>");
+
+    // DEBUG
+    shelljs.exec("more showyourwork/Makefile");
 
     // Upload the artifact
     const artifactClient = artifact.create();
