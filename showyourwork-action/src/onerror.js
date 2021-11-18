@@ -2,7 +2,7 @@
 const core = require("@actions/core");
 const artifact = require("@actions/artifact");
 const shell = require("shelljs");
-import {globby} from 'globby';
+const globby = require("globby");
 
 // Exports
 module.exports = { uploadTemporaries };

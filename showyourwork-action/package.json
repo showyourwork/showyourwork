@@ -21,7 +21,7 @@
     "@actions/cache": "^1.0.7",
     "@actions/core": "^1.5.0",
     "glob": "^7.2.0",
-    "globby": "^12.0.2",
+    "globby": "^10.0.0",
     "shelljs": "^0.8.4"
   }
 }
