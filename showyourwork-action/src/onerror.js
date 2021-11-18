@@ -27,16 +27,24 @@ async function uploadTemporaries() {
       glob(pattern, (err, fs) => {
         fs.forEach(function (f) {
           try {
-            var sz = parseInt(shell.exec(`du -k ${f} | cut -f1`).stdout.replace('\n', ''));
+            var sz = parseInt(shell.exec(`du -k ${f} | cut -f1`, {silent:true}).stdout.replace('\n', ''));
             if (sz < maxSizeInKB) {
               files.push(f);
             }
+            
+            // DEBUG
+            core.info(f);
+            core.info(sz);
+
           } catch (error) {
             core.warning(error.message);
           }
         })
       })
     });
+
+    // Log the files to be uploaded
+    core.info(files);
 
     // Upload the artifact
     const artifactClient = artifact.create();
