@@ -44,7 +44,9 @@ async function uploadTemporaries() {
     });
 
     // Log the files to be uploaded
+    core.info("<FILES>");
     core.info(files);
+    core.info("</FILES>");
 
     // Upload the artifact
     const artifactClient = artifact.create();

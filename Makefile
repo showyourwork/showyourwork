@@ -36,7 +36,6 @@ snakemake_setup: conda_setup
 	@if [ "$(SNAKEMAKE)" = "0" ]; then \
 		echo "Snakemake not found. Installing it using conda...";\
 		if [ "$(CI)" != "true" ]; then \
-			break build here debug remove me todo; \
 			if [[ "$(shell sysctl -q -n machdep.cpu.brand_string || echo 'unknown')" == *"M1"* ]]; then \
 				echo "M1 chip detected. Installing snakemake-minimal...";\
 				conda install -c defaults -c conda-forge -c bioconda mamba snakemake-minimal jinja2;\
