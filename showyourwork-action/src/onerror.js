@@ -18,7 +18,7 @@ async function uploadTemporaries() {
     const maxSizeInKB = 5000;
 
     // Assemble a simple directory tree
-    shell.exec("tree -I .snakemake > tree.txt", {silent:true});
+    shell.exec("tree -I '.snakemake|envs' > tree.txt", {silent:true});
 
     // Assemble a list of folders/files in the root and src directories
     const patterns = [
