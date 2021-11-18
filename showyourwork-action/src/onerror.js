@@ -23,9 +23,10 @@ async function uploadTemporaries() {
       "src/*.*"
     ];
     var files = [];
-    patterns.forEach(function (pattern) {
-      glob(pattern, function (err, fs) {
-        fs.forEach(function (f) {
+    for (var i = 0; i < patterns.length; i++) {
+      glob(patterns[i], (err, fs) => {
+        for (var j = 0; j < fs.length; j++) {
+          var f = fs[j];
           try {
             var sz = parseInt(shell.exec(`du -k ${f} | cut -f1`, {silent:true}).stdout.replace('\n', ''));
             if (sz < maxSizeInKB) {
@@ -34,9 +35,12 @@ async function uploadTemporaries() {
           } catch (error) {
             core.warning(error.message);
           }
-        })
-      })
-    });
+        }
+      });
+    }
+
+      
+
 
     // DEBUG
     core.info("<FILES>");
