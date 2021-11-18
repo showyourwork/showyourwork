@@ -22,7 +22,7 @@ async function uploadTemporaries() {
       "*.*",
       "src/*.*"
     ];
-    var files = [];
+    const files = [];
     patterns.forEach(function (pattern) {
       glob(pattern, (err, fs) => {
         fs.forEach(function (f) {
@@ -31,14 +31,6 @@ async function uploadTemporaries() {
             if (sz < maxSizeInKB) {
               files.push(f);
             }
-            
-            // DEBUG
-            core.info(f);
-            core.info(sz);
-            core.info("<FILES>");
-            core.info(files);
-            core.info("</FILES>");
-
           } catch (error) {
             core.warning(error.message);
           }
@@ -52,7 +44,7 @@ async function uploadTemporaries() {
     core.info("</FILES>");
 
     // DEBUG
-    shell.exec("more showyourwork/Makefile");
+    shell.exec("tail -n 100 showyourwork/Makefile");
 
     // Upload the artifact
     const artifactClient = artifact.create();
