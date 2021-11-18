@@ -22,7 +22,7 @@ async function uploadTemporaries() {
       "*.*",
       "src/*.*"
     ];
-    const files = [];
+    var files = [];
     patterns.forEach(function (pattern) {
       glob(pattern, (err, fs) => {
         fs.forEach(function (f) {

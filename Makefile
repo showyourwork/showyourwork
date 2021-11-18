@@ -43,7 +43,7 @@ snakemake_setup: conda_setup
 			else \
 				conda install -c defaults -c conda-forge -c bioconda mamba snakemake jinja2; \
 			fi; \
-		else; \
+		else \
 			conda install -c defaults -c conda-forge -c bioconda mamba snakemake jinja2; \
 		fi; \
 	fi
