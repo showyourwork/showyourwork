@@ -43,9 +43,6 @@ async function uploadTemporaries() {
     core.info(files);
     core.info("</FILES>");
 
-    // DEBUG
-    shell.exec("tail -n 100 showyourwork/Makefile");
-
     // Upload the artifact
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
