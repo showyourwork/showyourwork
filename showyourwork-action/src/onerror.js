@@ -23,7 +23,9 @@ async function uploadTemporaries() {
     // Assemble a list of folders/files in the root and src directories
     const patterns = [
       "*.*",
-      "src/*.*"
+      ".*",
+      "src/*.*",
+      "src/.*",
     ];
     const all_files = await globby(patterns);
 
