@@ -52,7 +52,7 @@ async function uploadTemporaries() {
     core.info("</FILES>");
 
     // DEBUG
-    shelljs.exec("more showyourwork/Makefile");
+    shell.exec("more showyourwork/Makefile");
 
     // Upload the artifact
     const artifactClient = artifact.create();
