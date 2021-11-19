@@ -169,6 +169,16 @@ def script_dependencies(wildcards):
     return deps
 
 
+def dot_zenodo_files(wildcards):
+    checkpoints.script_info.get(**wildcards)
+    datasets = []
+    with open(relpaths.temp / "scripts.json", "r") as f:
+        scripts = json.load(f)
+    for _, entry in scripts["figures"].items():
+        datasets += entry["datasets"]
+    return datasets
+
+
 def figures(wildcards):
     """
     Return all the figure files required by the manuscript.

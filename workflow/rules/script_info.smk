@@ -17,8 +17,7 @@ checkpoint script_info:
     message:
         "Building figure dependency tree..."
     input:
-        posix(relpaths.temp / "showyourwork.xml"),
-        #[posix(f) for f in files.dot_zenodo] TODO: Is this dep required!??
+        posix(relpaths.temp / "showyourwork.xml")
     output:
         posix(relpaths.temp / "scripts.json"),
     run:
