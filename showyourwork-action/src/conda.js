@@ -10,7 +10,7 @@ module.exports = { setupConda };
 // Cache settings
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
-const conda_key = `conda-v4-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
+const conda_key = `conda-v5-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
 const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
 
@@ -53,7 +53,7 @@ async function setupConda() {
       "Install snakemake"
     );
     exec(
-      "sudo apt install graphviz",
+      "sudo apt-get install graphviz",
       "Install graphviz"
     );
   }
