@@ -52,6 +52,10 @@ async function setupConda() {
       "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal jinja2",
       "Install snakemake"
     );
+    exec(
+      "sudo apt install graphviz",
+      "Install graphviz"
+    );
   }
 
   // Save conda cache (failure OK)
