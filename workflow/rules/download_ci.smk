@@ -17,6 +17,7 @@ rule download_ci:
         file_name=lambda w: zenodo.file_name[w.dependency],
         file_path=lambda w: zenodo.file_path[w.dependency],
         deposit_title=lambda w: zenodo.deposit_title[w.dependency],
+        deposit_creators=lambda w: zenodo.deposit_creators[w.dependency],
         sandbox=lambda w: zenodo.sandbox[w.dependency],
         token_name=lambda w: zenodo.token_name[w.dependency]
     script:

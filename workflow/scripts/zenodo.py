@@ -21,7 +21,9 @@ def check_status(r):
     return r
 
 
-def find_deposit(deposit_title, sandbox=False, token_name="ZENODO_TOKEN"):
+def find_deposit(
+    deposit_title, deposit_creators, sandbox=False, token_name="ZENODO_TOKEN"
+):
 
     # Zenodo Sandbox (for testing) or Zenodo?
     if sandbox:
@@ -38,9 +40,11 @@ def find_deposit(deposit_title, sandbox=False, token_name="ZENODO_TOKEN"):
 
     # Search for an existing deposit with the given title
     print("Searching for existing deposit...")
+
+    # Search all of Zenodo
     r = check_status(
         requests.get(
-            f"https://{zenodo_url}/api/deposit/depositions",
+            f"https://{zenodo_url}/api/records",
             params={
                 "q": deposit_title,
                 "access_token": access_token,
@@ -48,10 +52,14 @@ def find_deposit(deposit_title, sandbox=False, token_name="ZENODO_TOKEN"):
         )
     )
     deposit = None
-    for entry in r.json():
-        if entry["title"] == deposit_title:
-            deposit = entry
-            break
+    for entry in r.json().get("hits", {}).get("hits", []):
+        if entry["metadata"]["title"] == deposit_title:
+            entry_creators = [
+                creator["name"] for creator in entry["metadata"]["creators"]
+            ]
+            if sorted(entry_creators) == sorted(deposit_creators):
+                deposit = entry
+                break
 
     return deposit
 
@@ -82,7 +90,9 @@ def upload_simulation(
         )
 
     # Search for an existing deposit with the given title
-    deposit = find_deposit(deposit_title, sandbox=sandbox, token_name=token_name)
+    deposit = find_deposit(
+        deposit_title, deposit_creators, sandbox=sandbox, token_name=token_name
+    )
 
     # Either retrieve the deposit or create a new one
     if deposit:
@@ -268,6 +278,7 @@ def upload_simulation(
 def download_simulation(
     file_name,
     deposit_title,
+    deposit_creators,
     sandbox=False,
     token_name="ZENODO_TOKEN",
     file_path=".",
@@ -287,34 +298,27 @@ def download_simulation(
         )
 
     # Search for an existing deposit with the given title
-    deposit = find_deposit(deposit_title, sandbox=sandbox, token_name=token_name)
+    deposit = find_deposit(
+        deposit_title, deposit_creators, sandbox=sandbox, token_name=token_name
+    )
     if deposit is None:
         raise ZenodoError("Cannot find deposit with the given title.")
 
     # Get the latest *submitted* version
-    if deposit["submitted"]:
-        DEPOSIT_ID = deposit["id"]
-    else:
-        DEPOSIT_ID = deposit["links"]["latest_html"].split("/")[-1]
+    DEPOSIT_ID = deposit["links"]["latest_html"].split("/")[-1]
 
     # Download the file
     print("Downloading file...")
+
     r = check_status(
         requests.get(
-            f"https://{zenodo_url}/api/deposit/depositions/{DEPOSIT_ID}/files",
+            f"https://{zenodo_url}/api/records/{DEPOSIT_ID}",
             params={"access_token": access_token},
         )
     )
-    for file in r.json():
-        if file["filename"] == file_name:
-            FILE_ID = file["id"]
-            r = check_status(
-                requests.get(
-                    f"https://{zenodo_url}/api/deposit/depositions/{DEPOSIT_ID}/files/{FILE_ID}",
-                    params={"access_token": access_token},
-                )
-            )
-            url = r.json()["links"]["download"]
+    for file in r.json()["files"]:
+        if file["key"] == file_name:
+            url = file["links"]["self"]
             r = check_status(
                 requests.get(
                     url,
@@ -350,6 +354,7 @@ else:
     download_simulation(
         snakemake.params["file_name"],
         snakemake.params["deposit_title"],
+        snakemake.params["deposit_creators"],
         sandbox=snakemake.params["sandbox"],
         token_name=snakemake.params["token_name"],
         file_path=snakemake.params["file_path"],

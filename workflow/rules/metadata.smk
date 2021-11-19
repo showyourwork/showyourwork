@@ -21,7 +21,7 @@ rule metadata:
         ],
         posix(relpaths.temp / "repo.json"),
         posix(relpaths.temp / "scripts.json"),
-        [posix(f) for f in files.dot_zenodo]
+        #[posix(f) for f in files.dot_zenodo] TODO: Is this dep required!??
     output:
         posix(relpaths.temp / "meta.json"),
     run:
