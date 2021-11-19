@@ -56,6 +56,7 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 
 **Optional** TeX packages to install, one item per line. Matplotlib requires at least ``type1cm`` and ``cm-super`` (default).
 
+.. _github_action_verbose:
 
 :code:`verbose`
 ~~~~~~~~~~~~~~~

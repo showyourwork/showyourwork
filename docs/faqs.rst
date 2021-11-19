@@ -87,6 +87,28 @@ deleting the ``.showyourwork`` folder at the top level of the repo to get rid
 of the build cache. You can also try running ``make clean``, although that will
 delete all your build output.
 
+If your local build is passing but the remote (GitHub Actions) build
+is failing, this is usually due to one of the following:
+
+- Missing files on the remote. This can happen if you forgot to ``git add``
+  and push the file to the remote repository. Some files are not tracked by
+  default (like things in the ``data`` directory, non-Python scripts in the
+  ``figures`` directory, or anything other than ``tex`` and ``bib`` files
+  in the ``src`` directory), so you'll have to ``git add -f`` (force add) them.
+- Missing environment variables. If you're using the Zenodo upload/download
+  feature, you'll need to specify an `encrypted repository secret <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_
+  called ``ZENODO_TOKEN`` containing your API access key. See
+  :ref:`custom_simulation_dependencies` for details.
+
+When a remote build fails, an artifact is uploaded called ``showyourwork-output``
+(see `the docs <https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts>`_ 
+for details on how to download it). This is a tarball containing all files in the
+root of your repository and all files directly under the ``src`` directory
+at the time the build failed, excluding large (> 5MB) files. Poking around here
+can sometimes help identify the cause of the failure. You can also try
+increasing the verbosity in the ``.github/workflows/showyourwork.yml`` file
+(see :ref:`github_action_verbose`.)
+
 If none of this helps, please check out the 
 `issues <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_
 page for ``showyourwork`` to see if someone has run into the same problem before.
