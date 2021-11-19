@@ -1,11 +1,16 @@
 .. :changelog:
 
+0.1.34 (2021-11-18)
++++++++++++++++++++
+
+- Now uploads a build artifact whenever the workflow fails on CI for easier debugging.
+- Changelog: `v0.1.33...v0.1.34 <https://github.com/rodluger/showyourwork/compare/v0.1.33...v0.1.34>`_
+
 0.1.33 (2021-11-17)
 +++++++++++++++++++
 
 - Fixed issue with unnecessary reruns of figure scripts
 - Changelog: `v0.1.32...v0.1.33 <https://github.com/rodluger/showyourwork/compare/v0.1.32...v0.1.33>`_
-
 
 0.1.32 (2021-11-17)
 +++++++++++++++++++
@@ -13,7 +18,6 @@
 - Fixed `issue #57 <https://github.com/rodluger/showyourwork/issues/57>`_.
 - Better documentation for the config file and the ``Snakefile``.
 - Changelog: `v0.1.31...v0.1.32 <https://github.com/rodluger/showyourwork/compare/v0.1.31...v0.1.32>`_
-
 
 0.1.31 (2021-11-15)
 +++++++++++++++++++

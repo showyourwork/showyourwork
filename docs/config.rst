@@ -92,7 +92,7 @@ a helper script called ``helper_script.py``:
     src/figures/my_figure.py:
       - src/figures/utils/helper_script.py
 
-See `script dependencies <custom.html#script-dependencies>`_. You can also
+See :ref:`custom_script_deps`. You can also
 specify a dependency on a programmatically-generated file:
 
 .. code-block:: yaml
@@ -101,7 +101,7 @@ specify a dependency on a programmatically-generated file:
     src/figures/fibonacci.py:
         - src/data/fibonacci.dat
 
-See `dataset dependencies <custom.html#dataset-dependencies>`_. Finally,
+See :ref:`custom_dataset_deps`. Finally,
 dependencies of the manuscript file are also allowed:
 
 .. code-block:: yaml
@@ -110,7 +110,7 @@ dependencies of the manuscript file are also allowed:
     src/ms.tex:
         - src/answer.tex
 
-See `custom manuscript dependencies <custom.html#custom-manuscript-dependencies>`_.
+See :ref:`custom_ms_deps`.
 
 
 ``figexts``
@@ -153,7 +153,7 @@ keep it in the ``src/`` directory. Note also that the compiled PDF will still be
 
   ms: src/article.tex
 
-See `custom manuscript name <custom.html#custom-manuscript-name>`_.
+See :ref:`custom_ms_name`.
 
 
 .. _scripts:
@@ -189,7 +189,7 @@ files as follows:
     gv:
       dot -Tpdf {script} > {figure}
 
-See `non-Python figure scripts <custom.html#non-python-figure-scripts>`_.
+See :ref:`custom_non_python`.
 
 
 ``tectonic_latest``
@@ -292,11 +292,11 @@ In all cases, a :ref:`sandbox <zenodo.dataset.sandbox>` and a
 **Default:** ``[]``
 
 **Example:**
-See `dataset dependencies <custom.html#dataset-dependencies>`_,
-`simulation dependencies <custom.html#simulation-dependencies>`_,
-`dependency tarballs <custom.html#dependency-tarballs>`_,
+See :ref:`custom_dataset_deps`,
+:ref:`custom_simulation_deps`,
+:ref:`custom_tarballs`,
 and
-`dependency tarballs (advanced) <custom.html#dependency-tarballs-advanced>`_.
+:ref:`custom_tarballs_advanced`.
 
 
 .. _zenodo.dataset.contents:
@@ -317,7 +317,7 @@ key or via a custom ``rule`` in the ``Snakefile``.
 **Default:**
 
 **Example:**
-See `dependency tarballs <custom.html#dependency-tarballs>`_.
+See :ref:`custom_tarballs`.
 
 
 .. _zenodo.dataset.creators:
@@ -335,7 +335,7 @@ with the record DOI.
 **Default:** The GitHub username of the current user
 
 **Example:**
-See `simulation dependencies <custom.html#simulation-dependencies>`_.
+See :ref:`custom_simulation_deps`.
 
 
 .. _zenodo.dataset.description:
@@ -353,7 +353,7 @@ how it should be used, to be displayed on the Zenodo record page.
 **Default:** ``"File uploaded from <repository-name>"``
 
 **Example:**
-See `simulation dependencies <custom.html#simulation-dependencies>`_.
+See :ref:`custom_simulation_deps`.
 
 
 .. _zenodo.dataset.id:
@@ -384,7 +384,7 @@ The following snippet
 tells ``showyourwork`` to download the file ``fibonacci.dat`` from
 the Zenodo deposit at `<https://zenodo.org/record/5187276>`_.
 
-See `dataset dependencies <custom.html#dataset-dependencies>`_.
+See :ref:`custom_dataset_deps`.
 
 
 .. _zenodo.dataset.sandbox:
@@ -405,7 +405,7 @@ is complete.
 **Default:** ``false``
 
 **Example:**
-See `simulation dependencies <custom.html#simulation-dependencies>`_.
+See :ref:`custom_simulation_deps`.
 
 
 .. _zenodo.dataset.script:
@@ -420,14 +420,14 @@ See `simulation dependencies <custom.html#simulation-dependencies>`_.
 Note that this *must* be a ``python`` script, even if custom script instructions
 are provided via the :ref:`scripts <scripts>` key. To define custom rules for
 generating the dataset, see the 
-`dependency tarballs (advanced) <custom.html#dependency-tarballs-advanced>`_ example.
+:ref:`custom_tarballs_advanced` example.
 
 **Required:** yes, unless a custom ``rule`` is provided in the ``Snakefile``
 
 **Default:**
 
 **Example:**
-See `simulation dependencies <custom.html#simulation-dependencies>`_.
+See :ref:`custom_simulation_deps`.
 
 
 .. _zenodo.dataset.title:
@@ -444,7 +444,7 @@ See `simulation dependencies <custom.html#simulation-dependencies>`_.
 **Default:** ``"<repository-name>:<dataset>"``
 
 **Example:**
-See `simulation dependencies <custom.html#simulation-dependencies>`_.
+See :ref:`custom_simulation_deps`.
 
 
 .. _zenodo.dataset.token_name:
@@ -478,4 +478,4 @@ in your GitHub repository with the same name (i.e., ``ZENODO_TOKEN``) and set it
 **Default:** ``ZENODO_TOKEN``
 
 **Example:**
-See `simulation dependencies <custom.html#simulation-dependencies>`_.
+See :ref:`custom_simulation_deps`.

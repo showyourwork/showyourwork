@@ -44,7 +44,7 @@ const { uploadTemporaries } = require("./onerror");
     }
   } catch (error) {
     // Exit gracefully
-    uploadTemporaries();
+    await uploadTemporaries();
     core.setFailed(error.message);
   }
 })();
