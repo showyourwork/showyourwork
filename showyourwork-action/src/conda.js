@@ -48,6 +48,11 @@ async function setupConda() {
       ". ~/.conda/etc/profile.d/conda.sh && conda create -y -p ./envs",
       "Create environment"
     );
+    // NOTE: 2021/11/19 workaround; all builds on CI hang indefinitely
+    // when trying to set up the conda environment for snakemake due to
+    // *something* either in `mamba` or `snakemake`. Downgrading to
+    // `snakemake-minimal`, pinning `mamba` at the previous stable release,
+    // and manually installing `graphviz` (`dot`) temporarily fixes these issues.
     exec(
       "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal jinja2",
       "Install snakemake"
