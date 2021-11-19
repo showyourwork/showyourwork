@@ -41,13 +41,17 @@ def find_deposit(
     # Search for an existing deposit with the given title
     print("Searching for existing deposit...")
 
-    # Search all of Zenodo
+    # Search all of Zenodo. Require exact match for title and all creators
+    query_string = f'+title:"{deposit_title}"'
+    for creator in deposit_creators:
+        query_string += f' +creators.name:"{creator}"'
     r = check_status(
         requests.get(
             f"https://{zenodo_url}/api/records",
             params={
-                "q": deposit_title,
+                "q": query_string,
                 "access_token": access_token,
+                "sort": "bestmatch",
             },
         )
     )
@@ -302,9 +306,9 @@ def download_simulation(
         deposit_title, deposit_creators, sandbox=sandbox, token_name=token_name
     )
     if deposit is None:
-        raise ZenodoError("Cannot find deposit with the given title.")
+        raise ZenodoError("Cannot find deposit with the given title and creators list.")
 
-    # Get the latest *submitted* version
+    # Get the latest published version
     DEPOSIT_ID = deposit["links"]["latest_html"].split("/")[-1]
 
     # Download the file
