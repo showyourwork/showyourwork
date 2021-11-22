@@ -11,6 +11,10 @@ module.exports = { generateReport };
  *
  */
 async function generateReport() {
+  exec(
+    "sudo apt-get install graphviz",
+    "Install graphviz"
+  );
   core.startGroup("Generate article report");
   exec("snakemake ms.pdf --dag | dot -Tpdf > dag.pdf");
   core.endGroup();
