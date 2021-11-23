@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.1.34 (2021-11-22)
++++++++++++++++++++
+
+- Fixed issue with unnecessary downloads of Zenodo datasets on CI.
+- Fixed issue that prevented downloading the Zenodo datasets if the Zenodo API key belonged to someone other than the creator of the deposit.
+- Fixed issue that caused the conda env creation to fail. We are now installing snakemake-minimal and pinning the mamba version; this is only a temporary solution.
+- Changelog: `v0.1.34...v0.1.35 <https://github.com/rodluger/showyourwork/compare/v0.1.34...v0.1.35>`_
+
 0.1.34 (2021-11-18)
 +++++++++++++++++++
 
