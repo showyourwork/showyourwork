@@ -63,6 +63,11 @@ update: snakemake_setup
 	git checkout $(LATEST)
 
 
+# Pre-reserve a Zenodo DOI
+reserve: 
+	@python workflow/scripts/reserve.py
+
+
 # Catch-all target: route all unknown targets to Snakemake
 %: Makefile snakemake_setup
 	@cd $(WORKDIR);\

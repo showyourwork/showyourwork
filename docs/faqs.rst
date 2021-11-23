@@ -109,6 +109,9 @@ can sometimes help identify the cause of the failure. You can also try
 increasing the verbosity in the ``.github/workflows/showyourwork.yml`` file
 (see :ref:`github_action_verbose`.)
 
+Finally, one thing you should routinely do is :doc:`update showyourwork <faqs>`.
+We're constantly fixing issues on your side, so doing this might just fix your problem!
+
 If none of this helps, please check out the 
 `issues <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_
 page for ``showyourwork`` to see if someone has run into the same problem before.

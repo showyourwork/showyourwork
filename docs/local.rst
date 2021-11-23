@@ -40,7 +40,8 @@ or to delete all the output:
 
     make clean
 
-Other commands include generating a directed acyclic graph (DAG) of the build process:
+Other commands include generating a directed acyclic graph (DAG) of the build process
+(you'll need to have `graphviz <https://graphviz.org/download/>`_ installed):
 
 .. code-block:: bash
 
