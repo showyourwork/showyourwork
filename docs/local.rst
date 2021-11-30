@@ -25,8 +25,8 @@ or, even simpler,
 
     make
 
-This will initialize the ``showyourwork`` submodule also install ``snakemake`` 
-if haven't already done these things manually (see below). 
+This will initialize the ``showyourwork`` submodule also install ``snakemake``
+if haven't already done these things manually (see below).
 
 You can also use the ``make`` command to produce individual figures, for example
 
@@ -70,10 +70,32 @@ for instance, to run the workflow on two cores. Type
 for a list of all available options.
 
 
+Using LaTeX Workshop in VSCode
+------------------------------
+
+If you edit and build your articles in VSCode, you will have to specify some
+settings to enable VSCode to find the Makefile in your workspace root directory
+rather then in the same directory as your manuscript file. Also, to view the PDF
+in a parallel tab next to your manuscript file, you also have to tell LaTeX
+Workshop where to find the PDF of the manuscript that ``showyourwork`` produces.
+One solution that has worked for others is to create or edit a
+workspace-specific settings file in ``.vscode/settings.json`` to add some custom
+settings for LaTeX Workshop:
+
+.. code-block:: json
+
+    {
+        "latex-workshop.latex.external.build.command": "make",
+        "latex-workshop.latex.external.build.args": [],
+        "latex-workshop.view.pdf.viewer": "tab",
+        "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%"
+    }
+
+
 Manual builds
 -------------
 
-While convenient, you don't need to use the ``Makefile`` to run 
+While convenient, you don't need to use the ``Makefile`` to run
 ``showyourwork``. If you want to set up the repo manually, you should clone it
 as follows
 
