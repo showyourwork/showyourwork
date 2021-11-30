@@ -91,6 +91,10 @@ settings for LaTeX Workshop:
         "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%"
     }
 
+After this, you can use the ``LaTeX Workshop: Build LaTeX project`` command in
+VSCode to build your manuscript file and have the PDF file auto-update in your
+VSCode window.
+
 
 Manual builds
 -------------
