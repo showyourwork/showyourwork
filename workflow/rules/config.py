@@ -95,6 +95,7 @@ for fd in config["dependencies"]:
 
 #: Zenodo instructions
 config["zenodo"] = config.get("zenodo", {})
+config["zenodo_sandbox"] = config.get("zenodo_sandbox", {})
 
 
 #: Are we on GitHub Actions?

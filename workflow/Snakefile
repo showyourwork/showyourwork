@@ -7,13 +7,17 @@ min_version("6.7.0")
 report: "report/workflow.rst"
 
 
-# Set up custom exception handling
-include: "rules/exceptions.py"
-
-
-# Import config, constants, paths, and error codes used by the rules
-include: "rules/config.py"
+# Figure out absolute and relative paths to everything
 include: "rules/paths.py"
+
+
+# Import our helper functions
+from helpers.exceptions import ShowyourworkException
+from helpers.zenodo import resolve_id
+
+
+# Import config, constants, and error codes used by the rules
+include: "rules/config.py"
 include: "rules/files.py"
 include: "rules/errors.py"
 
@@ -47,17 +51,12 @@ include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
 
 
-# Rules we instantiate only if certain conditions apply
-if len(files.zenodo_files_manual):
-    include: "rules/download_manual.smk"
-if len(files.zenodo_files_auto):
-    if config["CI"]:
-        include: "rules/download_ci.smk"
-    else:
-        include: "rules/generate.smk"
-        include: "rules/upload.smk"
-if config["CI"]:
-    include: "rules/remove_zenodo.smk"
+# Zenodo rules
+# TODO: There may be ambgiuities we need to resolve here
+include: "rules/download.smk" # TODO: Should these be dynamically generated?
+include: "rules/generate.smk"
+include: "rules/upload.smk"
+include: "rules/remove_zenodo.smk" # TODO: rethink this logic
 
 
 # Rule for autogenerating rule documentation

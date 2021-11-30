@@ -10,8 +10,8 @@ from pathlib import Path
 
 
 # Hack to import our custom exception
-sys.path.insert(0, str(Path(__file__).parents[1] / "rules"))
-from exceptions import ShowyourworkException
+sys.path.insert(0, str(Path(__file__).parents[1] / "helpers"))
+from helpers.exceptions import ShowyourworkException
 
 
 # Params defined in `../rules/pdf.smk`

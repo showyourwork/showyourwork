@@ -4,6 +4,7 @@ Sets global constants for the workflow.
 """
 from pathlib import Path, PurePosixPath
 import os
+import sys
 from sphinx_mock import *
 
 
@@ -28,6 +29,10 @@ class abspaths:
         )
     except KeyError:
         workflow = user / "showyourwork" / "workflow"
+
+    #: Path to the showyourwork helper functions
+    helpers = workflow / "helpers"
+    sys.path.insert(0, str(helpers))
 
     #: Path to the temp folder
     temp = user / ".showyourwork"

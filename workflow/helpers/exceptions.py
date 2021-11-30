@@ -90,8 +90,12 @@ class ShowyourworkException(Exception):
             title=title,
             script=script,
             rule_name=rule_name,
-            brief="\n".join(tw.wrap(str(brief), width=width)),
-            context="\n".join(tw.wrap(str(context), width=width)),
+            brief="\n".join(
+                tw.wrap(str(brief), width=width, initial_indent="       ")
+            ).strip(),
+            context="\n".join(
+                tw.wrap(str(context), width=width, initial_indent="         ")
+            ).strip(),
             message="\n".join(tw.wrap(str(message), width=width)),
             color=color,
         )

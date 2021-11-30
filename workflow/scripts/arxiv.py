@@ -81,10 +81,12 @@ for name in other_exclude:
         except (IsADirectoryError, PermissionError):
             shutil.rmtree(file)
 
+
 # Remove datasets
 for file in ZENODO_FILES:
     if os.path.exists(TEMP / "arxiv" / "figures" / file):
         os.remove(TEMP / "arxiv" / "figures" / file)
+
 
 # Tar it up
 with tarfile.open("arxiv.tar.gz", "w:gz") as tar:

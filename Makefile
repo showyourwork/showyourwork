@@ -65,7 +65,8 @@ update: snakemake_setup
 
 # Pre-reserve a Zenodo DOI
 reserve: 
-	@python workflow/scripts/reserve.py
+	@cd workflow; \
+	python -c "import helpers; helpers.zenodo.reserve()"
 
 
 # Catch-all target: route all unknown targets to Snakemake
