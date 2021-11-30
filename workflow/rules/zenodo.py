@@ -79,6 +79,10 @@ repo = "/".join(get_repo_url().split("/")[-2:])
 dynamic_rules = []
 
 
+# TODO: Cache all this stuff!!! Save it in a json file so
+# we don't run into the Zenodo API overhead each time we run `make`
+
+
 # Loop through `zenodo` and `zenodo_sandbox` entries in the yaml file
 for zrepo in [zenodo, zenodo_sandbox]:
 
@@ -125,7 +129,7 @@ for zrepo in [zenodo, zenodo_sandbox]:
 
         # Resolve the provided id into concept, version, and draft ids
         # by querying Zenodo. (This step requires an internet connection!)
-        if dep_props.get_("id", None) is None:
+        if dep_props.get("id", None) is None:
             raise ShowyourworkException(
                 f"Zenodo dependency {dependency} does not have an id.",
                 context=f"Please provide an id for the dependency {dependency} "
@@ -282,29 +286,32 @@ for zrepo in [zenodo, zenodo_sandbox]:
             dynamic_rules.append(compress_rulename)
 
             # Specify a `ruleorder` for each rule to resolve the ambiguity
-            ruleorder_rulename = re.sub("[^0-9a-zA-Z]+", "_", f"ruleorder_{dependency}")
-            with open(abspaths.temp / f"{compress_rulename}.smk", "w") as f:
+            if generate_rulename is not None:
+                ruleorder_rulename = re.sub(
+                    "[^0-9a-zA-Z]+", "_", f"ruleorder_{dependency}"
+                )
+                with open(abspaths.temp / f"{ruleorder_rulename}.smk", "w") as f:
 
-                if config["CI"]:
+                    if config["CI"]:
 
-                    # TODO: More rule order entries?
-                    smk = "\n".join(
-                        [
-                            f"ruleorder: {extract_rulename} > {generate_rulename}",
-                        ]
-                    )
+                        # TODO: More rule order entries?
+                        smk = "\n".join(
+                            [
+                                f"ruleorder: {extract_rulename} > {generate_rulename}",
+                            ]
+                        )
 
-                else:
+                    else:
 
-                    # TODO: More rule order entries?
-                    smk = "\n".join(
-                        [
-                            f"ruleorder: {generate_rulename} > {extract_rulename}",
-                        ]
-                    )
+                        # TODO: More rule order entries?
+                        smk = "\n".join(
+                            [
+                                f"ruleorder: {generate_rulename} > {extract_rulename}",
+                            ]
+                        )
 
-                print(smk, file=f)
-            dynamic_rules.append(ruleorder_rulename)
+                    print(smk, file=f)
+                dynamic_rules.append(ruleorder_rulename)
 
 # Loop over files w/ dependencies
 dependencies = copy.deepcopy(config["dependencies"])
