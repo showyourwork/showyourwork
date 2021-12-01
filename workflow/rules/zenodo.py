@@ -17,11 +17,6 @@ class zenodo:
 
     """
 
-    # Metadata for this class
-    name = "zenodo"
-    default_token_name = "ZENODO_TOKEN"
-    url = "zenodo.org"
-
     #: Script for generating each dataset
     script = {}
 
@@ -30,6 +25,9 @@ class zenodo:
 
     #: Path to each dataset
     file_path = {}
+
+    #: Zenodo url (zenodo.org or sandbox.zenodo.org) for each dataset
+    zenodo_url = {}
 
     #: Zenodo token name (name of an env. var.) for each dataset
     token_name = {}
@@ -47,28 +45,18 @@ class zenodo:
     deposit_contents = {}
 
     #: Zenodo id input by the user
-    deposit_input_id = {}
+    deposit_id = {}
 
-    #: Zenodo deposit concept id
-    deposit_concept_id = {}
-
-    #: Zenodo deposit version id
-    deposit_version_id = {}
-
-    #: Zenodo deposit draft id
-    deposit_draft_id = {}
+    #: Zenodo id type (concept or version)
+    deposit_id_type = {}
 
 
-class zenodo_sandbox(zenodo):
-    """
-    Class containing metadata for all Zenodo Sandbox deposits.
-
-    """
-
-    # Metadata for this class
-    name = "zenodo_sandbox"
-    default_token_name = "ZENODO_SANDBOX_TOKEN"
-    url = "sandbox.zenodo.org"
+# Zenodo/Zenodo sandbox metadata
+default_token_name = {
+    "zenodo": "ZENODO_TOKEN",
+    "zenodo_sandbox": "ZENODO_SANDBOX_TOKEN",
+}
+zenodo_url = {"zenodo": "zenodo.org", "zenodo_sandbox": "sandbox.zenodo.org"}
 
 
 # Get repo name for Zenodo metadata
@@ -80,40 +68,39 @@ dynamic_rules = []
 
 
 # Loop through `zenodo` and `zenodo_sandbox` entries in the yaml file
-for zrepo in [zenodo, zenodo_sandbox]:
+for zrepo in ["zenodo", "zenodo_sandbox"]:
 
     # Loop over datasets
-    for dataset in config[zrepo.name]:
+    for dataset in config[zrepo]:
 
         # Get the dataset name & properties
         if type(dataset) is str:
             dependency = dataset
-            dep_props = config[zrepo.name][dependency]
+            dep_props = config[zrepo][dependency]
         elif type(dataset) is OrderedDict:
             dependency = list(dataset)[0]
             dep_props = dict(dataset[dependency])
         else:
-            raise ValueError(
-                f"Cannot parse `{zrepo.name}` entry in `showyourwork.yml`."
-            )
+            raise ValueError(f"Cannot parse `{zrepo}` entry in `showyourwork.yml`.")
 
         # Settings
-        zrepo.script[dependency] = dep_props.get("script", files.unknown)
-        zrepo.file_name[dependency] = str(Path(dependency).name)
-        zrepo.file_path[dependency] = str(Path(dependency).parent)
-        zrepo.token_name[dependency] = dep_props.get(
-            "token_name", zrepo.default_token_name
+        zenodo.zenodo_url[dependency] = zenodo_url[zrepo]
+        zenodo.script[dependency] = dep_props.get("script", files.unknown)
+        zenodo.file_name[dependency] = str(Path(dependency).name)
+        zenodo.file_path[dependency] = str(Path(dependency).parent)
+        zenodo.token_name[dependency] = dep_props.get(
+            "token_name", default_token_name[zrepo]
         )
-        zrepo.deposit_title[dependency] = dep_props.get(
-            "title", f"{repo}:{zrepo.file_name[dependency]}"
+        zenodo.deposit_title[dependency] = dep_props.get(
+            "title", f"{repo}:{zenodo.file_name[dependency]}"
         )
-        zrepo.deposit_description[dependency] = dep_props.get(
+        zenodo.deposit_description[dependency] = dep_props.get(
             "description", f"File uploaded from {repo}."
         )
-        zrepo.deposit_creators[dependency] = dep_props.get(
+        zenodo.deposit_creators[dependency] = dep_props.get(
             "creators", get_repo_url().split("/")[-2]
         )
-        zrepo.deposit_contents[dependency] = dep_props.get("contents", [])
+        zenodo.deposit_contents[dependency] = dep_props.get("contents", [])
 
         # Name of the dummy file we'll use to track the upload/download
         dot_zenodo_file = posix(f"{dependency}.zenodo")
@@ -127,8 +114,8 @@ for zrepo in [zenodo, zenodo_sandbox]:
         # This step requires an internet connection the first time it is run
         # for a given ID; subsequent runs read the cached info (which should
         # never change!)
-        id = dep_props.get("id", None)
-        if id is None:
+        zenodo.deposit_id[dependency] = int(dep_props.get("id", None))
+        if zenodo.deposit_id[dependency] is None:
             raise ShowyourworkException(
                 f"Zenodo dependency {dependency} does not have an id.",
                 context=f"Please provide an id for the dependency {dependency} "
@@ -137,28 +124,32 @@ for zrepo in [zenodo, zenodo_sandbox]:
                 brief=f"Zenodo dependency {dependency} does not have an id.",
             )
 
-        cache_file = abspaths.temp / f"{id}.{zrepo.url}"
+        cache_file = (
+            abspaths.temp / f"{zenodo.deposit_id[dependency]}.{zenodo.url[dependency]}"
+        )
         if not cache_file.exists():
             # Function defined in `../helpers/zenodo.py`
-            id_type = get_id_type(
-                dep_props.get("id", None), zrepo.url, zrepo.token_name[dependency]
+            zenodo.deposit_id_type[dependency] = get_id_type(
+                zenodo.deposit_id[dependency],
+                zenodo.url[dependency],
+                zenodo.token_name[dependency],
             )
             with open(cache_file, "w") as f:
-                print(id_type, file=f)
+                print(zenodo.deposit_id_type[dependency], file=f)
         else:
             with open(cache_file, "r") as f:
-                id_type = f.readline().replace("\n", "")
+                zenodo.deposit_id_type[dependency] = f.readline().replace("\n", "")
 
         # Require that the user provides either a
         # concept id (for upload/download) or a
         # version id (download only)
-        if id_type == "concept":
+        if zenodo.deposit_id_type[dependency] == "concept":
 
             # Showyourwork manages this dependency
             if not dependency in files.zenodo_files_auto:
                 files.zenodo_files_auto.append(dependency)
 
-        elif id_type == "version":
+        elif zenodo.deposit_id_type[dependency] == "version":
 
             # This dependency was manually uploaded to Zenodo
             # and is static (download only)
@@ -178,7 +169,7 @@ for zrepo in [zenodo, zenodo_sandbox]:
                     "provided for a Zenodo version id.",
                     brief="The `title`, `description`, and `creator` fields cannot be "
                     "provided for a Zenodo version id.",
-                    context=f"The Zenodo id {id_dict['input']} specified in the config "
+                    context=f"The Zenodo id {zenodo.deposit_id[dependency]} specified in the config "
                     f"file for dependency {dependency} is an id tied to a specific version "
                     "of a deposit. As such, there is no need to specify the `title`, "
                     "`description`, or `creators` fields for this deposit, since they "
@@ -193,11 +184,11 @@ for zrepo in [zenodo, zenodo_sandbox]:
         else:
 
             raise ShowyourworkException(
-                f"The Zenodo id {id} specified in the config "
+                f"The Zenodo id {zenodo.deposit_id[dependency]} specified in the config "
                 f"file for dependency {dependency} "
                 "is not a valid concept or version id.",
-                brief=f"The Zenodo id {id} is not a valid concept or version id.",
-                context=f"The Zenodo id {id} specified in the config "
+                brief=f"The Zenodo id {zenodo.deposit_id[dependency]} is not a valid concept or version id.",
+                context=f"The Zenodo id {zenodo.deposit_id[dependency]} specified in the config "
                 f"file for dependency {dependency} "
                 "does not seem to be a valid concept or version id. Zenodo dependencies "
                 "specified in the `showyourwork.yml` config file must include an `id` that "
@@ -217,11 +208,11 @@ for zrepo in [zenodo, zenodo_sandbox]:
             )
 
         # Set up rules to compress and extract the tarballs
-        tf = zrepo.file_name[dependency]
+        tf = zenodo.file_name[dependency]
         if not tf.endswith(".tar.gz"):
 
             # Not a tarball
-            if len(zrepo.deposit_contents[dependency]) > 0:
+            if len(zenodo.deposit_contents[dependency]) > 0:
                 raise ValueError(
                     f"File `{tf}` is not a tarball, so `contents` cannot be specified in `showyourwork.yml`."
                 )
@@ -229,7 +220,7 @@ for zrepo in [zenodo, zenodo_sandbox]:
         else:
 
             # This is a tarball
-            if len(zrepo.deposit_contents[dependency]) == 0:
+            if len(zenodo.deposit_contents[dependency]) == 0:
                 raise ValueError(
                     f"Must specify `contents` for tar file `{tf}` in `showyourwork.yml`."
                 )
@@ -247,19 +238,19 @@ for zrepo in [zenodo, zenodo_sandbox]:
                 smk = env.get_template("extract.smk").render(
                     rulename=extract_rulename,
                     input=dependency,
-                    contents=zrepo.deposit_contents[dependency],
+                    contents=zenodo.deposit_contents[dependency],
                 )
                 print(smk, file=f)
             dynamic_rules.append(extract_rulename)
 
             # Dynamically create a rule to generate the datasets,
             # but only if the user provided a `script`
-            if zrepo.script[dependency] != files.unknown:
+            if zenodo.script[dependency] != files.unknown:
                 generate_rulename = re.sub(
-                    "[^0-9a-zA-Z]+", "_", f"run_{zrepo.script[dependency]}"
+                    "[^0-9a-zA-Z]+", "_", f"run_{zenodo.script[dependency]}"
                 )
-                zenodo_script_name = Path(zrepo.script[dependency]).name
-                zenodo_script_path = Path(zrepo.script[dependency]).parents[0]
+                zenodo_script_name = Path(zenodo.script[dependency]).name
+                zenodo_script_path = Path(zenodo.script[dependency]).parents[0]
 
                 # TODO: Allow non-python scripts here!
                 shell_cmd = f"cd {zenodo_script_path} && python {zenodo_script_name}"
@@ -267,8 +258,8 @@ for zrepo in [zenodo, zenodo_sandbox]:
                 with open(abspaths.temp / f"{generate_rulename}.smk", "w") as f:
                     smk = env.get_template("run.smk").render(
                         rulename=generate_rulename,
-                        input=zrepo.script[dependency],
-                        contents=zrepo.deposit_contents[dependency],
+                        input=zenodo.script[dependency],
+                        contents=zenodo.deposit_contents[dependency],
                         shell_cmd=shell_cmd,
                     )
                     print(smk, file=f)
@@ -282,7 +273,7 @@ for zrepo in [zenodo, zenodo_sandbox]:
                 smk = env.get_template("compress.smk").render(
                     rulename=compress_rulename,
                     output=dependency,
-                    contents=zrepo.deposit_contents[dependency],
+                    contents=zenodo.deposit_contents[dependency],
                 )
                 print(smk, file=f)
             dynamic_rules.append(compress_rulename)

@@ -17,10 +17,9 @@ upload_simulation(
     snakemake.params["deposit_title"],
     snakemake.params["deposit_description"],
     snakemake.params["deposit_creators"],
-    sandbox=snakemake.params["sandbox"],
+    zenodo_url=snakemake.params["zenodo_url"],
     token_name=snakemake.params["token_name"],
-    sandbox_token_name=snakemake.params["sandbox_token_name"],
     file_path=snakemake.params["file_path"],
-    repo_url=snakemake.params["repo_url"],
     script=snakemake.params["script"],
+    repo_url=snakemake.params["repo_url"],
 )

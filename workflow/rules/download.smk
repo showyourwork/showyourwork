@@ -12,12 +12,12 @@ rule download:
         dependency="{}".format("|".join(files.zenodo_files_manual + files.zenodo_files_auto))
     params:
         zenodo_url=lambda w: zenodo.zenodo_url[w.dependency],
-        deposit_version_id=lambda w: zenodo.deposit_version_id[w.dependency],
+        deposit_id=lambda w: zenodo.deposit_id[w.dependency],
         file_name=lambda w: zenodo.file_name[w.dependency],
     shell:
         " && ".join(
             [
-                "curl https://{params.zenodo_url}/record/{params.deposit_version_id}/files/{params.file_name} --output {output[0]}", 
-                "echo 'https://{params.zenodo_url}/record/{params.deposit_version_id}' > {output[1]}"
+                "curl https://{params.zenodo_url}/record/{params.deposit_id}/files/{params.file_name} --output {output[0]}", 
+                "echo 'https://{params.zenodo_url}/record/{params.deposit_id}' > {output[1]}"
             ]
         )

@@ -341,7 +341,7 @@ def get_id_type(
 
 def upload_simulation(
     file_name,
-    draft_id,
+    concept_id,
     deposit_title,
     deposit_description,
     deposit_creators,
@@ -353,6 +353,31 @@ def upload_simulation(
 ):
     # Retrieve the access token
     access_token = get_access_token(token_name)
+
+    # Get the id of the latest draft (and create one if needed)
+    r = check_status(
+        requests.get(
+            f"https://{zenodo_url}/api/deposit/depositions/{concept_id}",
+            params={"access_token": access_token},
+        )
+    )
+    data = r.json()
+    latest_draft = data["links"].get("latest_draft", None)
+    if latest_draft:
+
+        # A draft exists; get its id
+        draft_id = int(latest_draft.split("/")[-1])
+
+    else:
+
+        # There's no draft, so we need to create one
+        r = check_status(
+            requests.post(
+                f"https://{zenodo_url}/api/deposit/depositions/{concept_id}/actions/newversion",
+                params={"access_token": access_token},
+            )
+        )
+        draft_id = int(r.json()["links"]["latest_draft"].split("/")[-1])
 
     # Get the bucket url for this draft so we can upload files
     # Also grab the latest version doi if we need to fall back to it below
