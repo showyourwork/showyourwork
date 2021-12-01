@@ -13,7 +13,7 @@ include: "rules/paths.py"
 
 # Import our helper functions
 from helpers.exceptions import ShowyourworkException
-from helpers.zenodo import resolve_id
+from helpers.zenodo import get_id_type
 
 
 # Import config, constants, and error codes used by the rules

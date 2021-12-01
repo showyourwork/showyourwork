@@ -11,7 +11,7 @@ import requests.packages.urllib3.util.connection as urllib3_cn
 
 
 # Force IPv4 for Zenodo connections. This is a temporary hack
-# that significantly speeds up access to the API;
+# that sometimes greatly speeds up access to the API;
 # TODO: we need investigate what's actually happening here!
 # See https://stackoverflow.com/a/62599037
 # and https://stackoverflow.com/a/46972341
@@ -128,6 +128,7 @@ def resolve_id(
     id, and a draft id (if the user has the correct privileges).
 
     """
+
     # The dict we'll return below
     id_dict = {"input": int(deposit_id)}
 
@@ -142,48 +143,55 @@ def resolve_id(
 
         if "PID is not registered" in data.get("message", ""):
 
-            # There's no public record; let's search for a draft
-            # deposit with this concept or version ID (authentication needed)
-            for page in range(1, max_pages + 1):
-                r = requests.get(
-                    f"https://{zenodo_url}/api/deposit/depositions",
-                    params={
-                        "q": "",
-                        "access_token": access_token,
-                        "status": "draft",
-                        "size": results_per_page,
-                        "page": page,
-                        "sort": "mostrecent",
-                        "all_versions": 1,
-                    },
-                )
-                data = r.json()
-                for deposit in data:
-                    if int(deposit["conceptrecid"]) == deposit_id:
+            try:
 
-                        # We found a deposit draft with this concept id
-                        id_dict["concept"] = int(deposit_id)
-                        id_dict["draft"] = int(deposit["id"])
-                        id_dict["version"] = None  # Doesn't exist yet
-                        return id_dict
-
-                    elif int(deposit["id"]) == deposit_id:
-
-                        # We found a deposit draft with this version id
-                        id_dict["concept"] = int(deposit["conceptrecid"])
-                        id_dict["draft"] = int(deposit_id)
-                        id_dict["version"] = None  # Doesn't exist yet
-                        return id_dict
-
-                if len(data) == 0:
-
-                    # We reached the end and found nothing
-                    raise ShowyourworkException(
-                        f"Record/deposit with id {deposit_id} not found.",
-                        context=f"The provided `id` {deposit_id} does not seem "
-                        "to be a valid Zenodo id.",
-                        brief=f"Invalid Zenodo id {deposit_id}.",
+                # There's no public record; let's search for a draft
+                # deposit with this concept or version ID (authentication needed)
+                for page in range(1, max_pages + 1):
+                    r = requests.get(
+                        f"https://{zenodo_url}/api/deposit/depositions",
+                        params={
+                            "q": "",
+                            "access_token": access_token,
+                            "status": "draft",
+                            "size": results_per_page,
+                            "page": page,
+                            "sort": "mostrecent",
+                            "all_versions": 1,
+                        },
                     )
+                    data = r.json()
+                    for deposit in data:
+                        if int(deposit["conceptrecid"]) == deposit_id:
+
+                            # We found a deposit draft with this concept id
+                            id_dict["concept"] = int(deposit_id)
+                            id_dict["draft"] = int(deposit["id"])
+                            id_dict["version"] = None  # Doesn't exist yet
+                            raise StopIteration
+
+                        elif int(deposit["id"]) == deposit_id:
+
+                            # We found a deposit draft with this version id
+                            id_dict["concept"] = int(deposit["conceptrecid"])
+                            id_dict["draft"] = int(deposit_id)
+                            id_dict["version"] = None  # Doesn't exist yet
+                            raise StopIteration
+
+                    if len(data) == 0:
+
+                        # We reached the end and found nothing
+                        raise ShowyourworkException(
+                            f"Record/deposit with id {deposit_id} not found.",
+                            context=f"The provided `id` {deposit_id} does "
+                            "not seem to be a valid Zenodo id.",
+                            brief=f"Invalid Zenodo id {deposit_id}.",
+                        )
+
+            except StopIteration:
+
+                # We found a record; we're good
+                pass
 
         else:
 
@@ -242,39 +250,115 @@ def resolve_id(
     return id_dict
 
 
+def get_id_type(
+    deposit_id,
+    zenodo_url="zenodo.org",
+    token_name="ZENODO_TOKEN",
+    max_pages=100,
+    results_per_page=10,
+):
+    """
+    Determines whether a given Zenodo `id` corresponds to
+    a concept id or a version id (and raises an error otherwise).
+
+    """
+    # Get the access token
+    access_token = get_access_token(token_name)
+
+    # Try to find a published record (no authentication needed)
+    r = requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
+    data = r.json()
+
+    if r.status_code > 204:
+
+        if "PID is not registered" in data.get("message", ""):
+
+            # There's no public record; let's search for a draft
+            # deposit with this concept or version ID (authentication
+            # needed)
+            for page in range(1, max_pages + 1):
+                r = requests.get(
+                    f"https://{zenodo_url}/api/deposit/depositions",
+                    params={
+                        "q": "",
+                        "access_token": access_token,
+                        "status": "draft",
+                        "size": results_per_page,
+                        "page": page,
+                        "sort": "mostrecent",
+                        "all_versions": 1,
+                    },
+                )
+                data = r.json()
+                for deposit in data:
+                    if int(deposit["conceptrecid"]) == deposit_id:
+
+                        # We found a deposit draft with this concept id
+                        return "concept"
+
+                    elif int(deposit["id"]) == deposit_id:
+
+                        # We found a deposit draft with this version id
+                        return "version"
+
+                if len(data) == 0:
+
+                    # We reached the end and found nothing
+                    raise ShowyourworkException(
+                        f"Record/deposit with id {deposit_id} not found.",
+                        context=f"The provided `id` {deposit_id} does "
+                        "not seem to be a valid concept or version Zenodo id.",
+                        brief=f"Invalid Zenodo id {deposit_id}.",
+                    )
+
+        else:
+
+            # Something unexpected happened...
+            status = data.get("status", "unknown")
+            message = data.get("message", "An error occurred while accessing Zenodo.")
+            context = "Zenodo error {}: {}".format(status, message)
+            raise ShowyourworkException(
+                message,
+                context=context,
+                brief="An error occurred while accessing Zenodo.",
+            )
+
+    else:
+
+        # This is a public record
+        if int(deposit_id) == int(data["conceptrecid"]):
+            return "concept"
+        elif int(deposit_id) == int(data["id"]):
+            return "version"
+        else:
+            raise ShowyourworkException(
+                f"Record/deposit with id {deposit_id} not found.",
+                context=f"The provided `id` {deposit_id} does "
+                "not seem to be a valid concept or version Zenodo id.",
+                brief=f"Invalid Zenodo id {deposit_id}.",
+            )
+
+
 def upload_simulation(
     file_name,
-    deposit_id,
+    draft_id,
     deposit_title,
     deposit_description,
     deposit_creators,
-    sandbox=False,
+    zenodo_url="zenodo.org",
     token_name="ZENODO_TOKEN",
-    sandbox_token_name="ZENODO_SANDBOX_TOKEN",
     file_path=".",
     script="",
     repo_url="",
 ):
-
-    # Upload to sandbox (for testing) or to actual Zenodo?
-    if sandbox:
-        zenodo_url = "sandbox.zenodo.org"
-        token_name = sandbox_token_name
-    else:
-        zenodo_url = "zenodo.org"
-
     # Retrieve the access token
     access_token = get_access_token(token_name)
-
-    # Get the id of the latest draft of the deposit (and create one if needed)
-    print("Locating deposit...")
-    deposit_id = get_latest_draft_id(deposit_id, zenodo_url, access_token)
 
     # Get the bucket url for this draft so we can upload files
     # Also grab the latest version doi if we need to fall back to it below
     r = check_status(
         requests.get(
-            f"https://{zenodo_url}/api/deposit/depositions/{deposit_id}",
+            f"https://{zenodo_url}/api/deposit/depositions/{draft_id}",
             params={"access_token": access_token},
         )
     )
@@ -286,7 +370,7 @@ def upload_simulation(
     print("Deleting old file(s)...")
     r = check_status(
         requests.get(
-            f"https://{zenodo_url}/api/deposit/depositions/{deposit_id}/files",
+            f"https://{zenodo_url}/api/deposit/depositions/{draft_id}/files",
             params={"access_token": access_token},
         )
     )
@@ -295,7 +379,7 @@ def upload_simulation(
             FILE_ID = file["id"]
             r = check_status(
                 requests.delete(
-                    f"https://{zenodo_url}/api/deposit/depositions/{deposit_id}/files/{FILE_ID}",
+                    f"https://{zenodo_url}/api/deposit/depositions/{draft_id}/files/{FILE_ID}",
                     params={"access_token": access_token},
                 )
             )
@@ -315,9 +399,9 @@ def upload_simulation(
     # Add some metadata
     print("Adding metadata...")
     if script == "unknown-script":
-        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>."
+        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>.<br/>"
     else:
-        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command:<br/><pre><code class='language-bash'>cd src/figures && python {script}</code></pre>"
+        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command:<br/><pre><code class='language-bash'>cd src/figures && python {script}</code></pre><br/>"
     data = {
         "metadata": {
             "title": deposit_title,
@@ -328,19 +412,23 @@ def upload_simulation(
     }
     r = check_status(
         requests.put(
-            f"https://{zenodo_url}/api/deposit/depositions/{deposit_id}",
+            f"https://{zenodo_url}/api/deposit/depositions/{draft_id}",
             params={"access_token": access_token},
             data=json.dumps(data),
             headers={"Content-Type": "application/json"},
         )
     )
 
+    # DEBUG
+    # TODO: Remove me
+    breakpoint()
+
     # Publish the deposit
     print("Publishing the deposit...")
     try:
         r = check_status(
             requests.post(
-                f"https://{zenodo_url}/api/deposit/depositions/{deposit_id}/actions/publish",
+                f"https://{zenodo_url}/api/deposit/depositions/{draft_id}/actions/publish",
                 params={"access_token": access_token},
             )
         )
@@ -348,63 +436,11 @@ def upload_simulation(
         if "New version's files must differ from all previous versions" in str(e):
             print("No change in the deposit's files. Aborting.")
             # Revert to the previous deposit (the latest version) ID
-            deposit_id = latest_id
+            draft_id = latest_id
         else:
             raise e
 
     # Store the deposit URL
-    deposit_url = f"https://{zenodo_url}/record/{deposit_id}"
-    with open(f"{file_path}/{file_name}.zenodo", "w") as f:
-        print(deposit_url, file=f)
-
-
-def download_simulation(
-    file_name,
-    deposit_id,
-    sandbox=False,
-    token_name="ZENODO_TOKEN",
-    sandbox_token_name="ZENODO_SANDBOX_TOKEN",
-    file_path=".",
-):
-
-    # Download from sandbox (for testing) or to actual Zenodo?
-    if sandbox:
-        zenodo_url = "sandbox.zenodo.org"
-        token_name = sandbox_token_name
-    else:
-        zenodo_url = "zenodo.org"
-
-    # Retrieve the access token
-    access_token = get_access_token(token_name)
-
-    # Get the id of the latest version of the deposit
-    deposit_id = get_latest_id(deposit_id, zenodo_url, access_token)
-
-    # Download the file
-    print("Downloading file...")
-
-    r = check_status(
-        requests.get(
-            f"https://{zenodo_url}/api/records/{deposit_id}",
-            params={"access_token": access_token},
-        )
-    )
-    for file in r.json()["files"]:
-        if file["key"] == file_name:
-            url = file["links"]["self"]
-            r = check_status(
-                requests.get(
-                    url,
-                    params={"access_token": access_token},
-                )
-            )
-            with open(os.path.join(file_path, file_name), "wb") as f:
-                f.write(r.content)
-            break
-    else:
-        raise ShowyourworkException("Unable to download the file.")
-
-    # Store the deposit URL
-    deposit_url = f"https://{zenodo_url}/record/{deposit_id}"
+    deposit_url = f"https://{zenodo_url}/record/{draft_id}"
     with open(f"{file_path}/{file_name}.zenodo", "w") as f:
         print(deposit_url, file=f)

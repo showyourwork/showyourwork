@@ -14,7 +14,6 @@ rule upload:
     conda:
         posix(abspaths.user / "environment.yml")
     params:
-        action="upload",
         file_name=lambda w: zenodo.file_name[w.dependency],
         file_path=lambda w: zenodo.file_path[w.dependency],
         deposit_title=lambda w: zenodo.deposit_title[w.dependency],
@@ -25,4 +24,4 @@ rule upload:
         script=lambda w: zenodo.script[w.dependency],
         repo_url="{}/tree/{}".format(get_repo_url(), get_repo_sha())
     script:
-        "../scripts/zenodo.py"
+        "../scripts/upload.py"

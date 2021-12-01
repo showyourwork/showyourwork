@@ -79,10 +79,6 @@ repo = "/".join(get_repo_url().split("/")[-2:])
 dynamic_rules = []
 
 
-# TODO: Cache all this stuff!!! Save it in a json file so
-# we don't run into the Zenodo API overhead each time we run `make`
-
-
 # Loop through `zenodo` and `zenodo_sandbox` entries in the yaml file
 for zrepo in [zenodo, zenodo_sandbox]:
 
@@ -127,9 +123,12 @@ for zrepo in [zenodo, zenodo_sandbox]:
         if not dot_zenodo_file in files.dot_zenodo:
             files.dot_zenodo.append(dot_zenodo_file)
 
-        # Resolve the provided id into concept, version, and draft ids
-        # by querying Zenodo. (This step requires an internet connection!)
-        if dep_props.get("id", None) is None:
+        # Determine if `id` is a concept or version Zenodo id.
+        # This step requires an internet connection the first time it is run
+        # for a given ID; subsequent runs read the cached info (which should
+        # never change!)
+        id = dep_props.get("id", None)
+        if id is None:
             raise ShowyourworkException(
                 f"Zenodo dependency {dependency} does not have an id.",
                 context=f"Please provide an id for the dependency {dependency} "
@@ -137,24 +136,29 @@ for zrepo in [zenodo, zenodo_sandbox]:
                 "more information.",
                 brief=f"Zenodo dependency {dependency} does not have an id.",
             )
-        id_dict = resolve_id(
-            dep_props.get("id", None), zrepo.url, zrepo.token_name[dependency]
-        )
-        zrepo.deposit_input_id[dependency] = id_dict["input"]
-        zrepo.deposit_concept_id[dependency] = id_dict["concept"]
-        zrepo.deposit_version_id[dependency] = id_dict["version"]
-        zrepo.deposit_draft_id[dependency] = id_dict["draft"]
+
+        cache_file = abspaths.temp / f"{id}.{zrepo.url}"
+        if not cache_file.exists():
+            # Function defined in `../helpers/zenodo.py`
+            id_type = get_id_type(
+                dep_props.get("id", None), zrepo.url, zrepo.token_name[dependency]
+            )
+            with open(cache_file, "w") as f:
+                print(id_type, file=f)
+        else:
+            with open(cache_file, "r") as f:
+                id_type = f.readline().replace("\n", "")
 
         # Require that the user provides either a
         # concept id (for upload/download) or a
         # version id (download only)
-        if id_dict["input"] == id_dict["concept"]:
+        if id_type == "concept":
 
             # Showyourwork manages this dependency
             if not dependency in files.zenodo_files_auto:
                 files.zenodo_files_auto.append(dependency)
 
-        elif id_dict["input"] == id_dict["version"]:
+        elif id_type == "version":
 
             # This dependency was manually uploaded to Zenodo
             # and is static (download only)
@@ -189,13 +193,11 @@ for zrepo in [zenodo, zenodo_sandbox]:
         else:
 
             raise ShowyourworkException(
-                f"The Zenodo id {id_dict['input']} specified in the config "
+                f"The Zenodo id {id} specified in the config "
                 f"file for dependency {dependency} "
                 "is not a valid concept or version id.",
-                brief="The Zenodo id {} is not a valid concept or version id.".format(
-                    id_dict["input"]
-                ),
-                context=f"The Zenodo id {id_dict['input']} specified in the config "
+                brief=f"The Zenodo id {id} is not a valid concept or version id.",
+                context=f"The Zenodo id {id} specified in the config "
                 f"file for dependency {dependency} "
                 "does not seem to be a valid concept or version id. Zenodo dependencies "
                 "specified in the `showyourwork.yml` config file must include an `id` that "
