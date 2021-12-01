@@ -101,6 +101,7 @@ class ShowyourworkException(Exception):
             message="\n".join(tw.wrap(str(message), width=width)),
             color=color,
         )
+        self.full_message = full_message
 
         if delayed:
 
