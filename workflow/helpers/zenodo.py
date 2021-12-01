@@ -143,17 +143,19 @@ def get_id_type(
             # deposit with this concept or version ID (authentication
             # needed)
             for page in range(1, max_pages + 1):
-                r = requests.get(
-                    f"https://{zenodo_url}/api/deposit/depositions",
-                    params={
-                        "q": "",
-                        "access_token": access_token,
-                        "status": "draft",
-                        "size": results_per_page,
-                        "page": page,
-                        "sort": "mostrecent",
-                        "all_versions": 1,
-                    },
+                r = check_status(
+                    requests.get(
+                        f"https://{zenodo_url}/api/deposit/depositions",
+                        params={
+                            "q": "",
+                            "access_token": access_token,
+                            "status": "draft",
+                            "size": results_per_page,
+                            "page": page,
+                            "sort": "mostrecent",
+                            "all_versions": 1,
+                        },
+                    )
                 )
                 data = r.json()
                 for deposit in data:
@@ -231,17 +233,19 @@ def upload_simulation(
         # deposit with this concept id (authentication needed)
         try:
             for page in range(1, max_pages + 1):
-                r = requests.get(
-                    f"https://{zenodo_url}/api/deposit/depositions",
-                    params={
-                        "q": "",
-                        "access_token": access_token,
-                        "status": "draft",
-                        "size": results_per_page,
-                        "page": page,
-                        "sort": "mostrecent",
-                        "all_versions": 1,
-                    },
+                r = check_status(
+                    requests.get(
+                        f"https://{zenodo_url}/api/deposit/depositions",
+                        params={
+                            "q": "",
+                            "access_token": access_token,
+                            "status": "draft",
+                            "size": results_per_page,
+                            "page": page,
+                            "sort": "mostrecent",
+                            "all_versions": 1,
+                        },
+                    )
                 )
                 data = r.json()
                 for deposit in data:
