@@ -34,9 +34,11 @@ for dynamic_rule in dynamic_rules:
 
 
 # Static Zenodo rules
-include: "rules/download_manual.smk"
+if len(files.zenodo_files_manual):
+    include: "rules/download_manual.smk"
 if config["CI"] or config["download_only"]:
-    include: "rules/download_auto.smk"
+    if len(files.zenodo_files_auto):
+        include: "rules/download_auto.smk"
     include: "rules/remove_zenodo.smk" # TODO: rethink this logic. Currently not deleting tarball contents.
 else:
     include: "rules/generate.smk"
