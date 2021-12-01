@@ -12,7 +12,7 @@ include: "rules/paths.py"
 
 
 # Import our helper functions
-from helpers.exceptions import ShowyourworkException
+from helpers.exceptions import ShowyourworkException, ShowyourworkWarning
 from helpers.zenodo import get_id_type
 
 
@@ -75,4 +75,7 @@ except:
 
 # Attempt to print an informative error message at the end of the build log
 onerror:
-    ShowyourworkException.print()
+    ShowyourworkWarning.print(files.warning)
+    ShowyourworkException.print(files.exception)
+onsuccess:
+    ShowyourworkWarning.print(files.warning)

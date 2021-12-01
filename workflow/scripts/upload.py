@@ -8,7 +8,7 @@ from pathlib import Path
 
 # Hack to import our custom functions
 sys.path.insert(0, str(Path(__file__).parents[1]))
-from helpers.exceptions import ShowyourworkException
+from helpers.exceptions import ShowyourworkException, ShowyourworkWarning
 from helpers.zenodo import upload_simulation
 
 # Go!
@@ -33,7 +33,25 @@ except ShowyourworkException as e:
         file_path = snakemake.params["file_path"]
         with open(f"{file_path}/{file_name}.zenodo", "w") as f:
             print("UNAUTHORIZED", file=f)
-        # Print the error, but don't make it fatal
-        print(e.full_message)
+        # Raise a warning on job completion
+        ShowyourworkWarning(
+            e.message,
+            script=e.script,
+            rule_name=e.rule_name,
+            context="This error occurred because showyourwork tried to "
+            f"upload the file {file_name} to Zenodo under a deposit with id "
+            f"{snakemake.params['deposit_id']}, but the current user does "
+            "not have the correct authentication. The API token for Zenodo "
+            f"should be stored in the environment variable {snakemake.params['token_name']}, "
+            "but this token is either missing or invalid for editing the given "
+            "deposit id. If you are a third-party user (i.e., you cloned someone "
+            "else's repository and are attempting to build the paper locally), you "
+            "can either set `download_only` to `true` in the `showyourwork` config file "
+            "to skip the dataset generation & upload step, or provide a different "
+            "`id` to upload this file to in the config file; to reserve an `id` under "
+            "your authentication, simply type `make reserve`. See the docs for more "
+            "details.",
+            brief=f"Unable to upload {file_name} to Zenodo.",
+        )
     else:
         raise e
