@@ -1,6 +1,6 @@
-rule download:
+rule download_auto:
     """
-    Download a figure dependency from Zenodo.
+    Download a showyourwork-managed figure dependency from Zenodo.
 
     """
     message:
@@ -9,7 +9,7 @@ rule download:
         temp("{dependency}") if config["CI"] else "{dependency}",
         "{dependency}.zenodo"
     wildcard_constraints:
-        dependency="{}".format("|".join(files.zenodo_files_manual + files.zenodo_files_auto))
+        dependency="{}".format("|".join(files.zenodo_files_auto))
     params:
         zenodo_url=lambda w: zenodo.zenodo_url[w.dependency],
         deposit_id=lambda w: zenodo.deposit_id[w.dependency],

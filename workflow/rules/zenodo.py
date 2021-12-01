@@ -233,79 +233,93 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
                 ),
             )
 
-            # Dynamically create a rule to extract the tarball
-            extract_rulename = re.sub("[^0-9a-zA-Z]+", "_", f"extract_{dependency}")
-            with open(abspaths.temp_rules / f"{extract_rulename}.smk", "w") as f:
-                smk = env.get_template("extract.smk").render(
-                    rulename=extract_rulename,
-                    input=dependency,
-                    contents=zenodo.deposit_contents[dependency],
-                )
-                print(smk, file=f)
-            dynamic_rules.append(extract_rulename)
+            # Either we download & extract or generate & upload the tarball
+            # This depends on whether we're on GH Actions & on the user config
+            if config["CI"]:
 
-            # Dynamically create a rule to generate the datasets,
-            # but only if the user provided a `script`
-            if zenodo.script[dependency] != files.unknown:
-                generate_rulename = re.sub(
-                    "[^0-9a-zA-Z]+", "_", f"run_{zenodo.script[dependency]}"
-                )
-                zenodo_script_name = Path(zenodo.script[dependency]).name
-                zenodo_script_path = Path(zenodo.script[dependency]).parents[0]
+                # Note that the rule for downloading the tarball is
+                # specified in the static file `download.smk`
 
-                # TODO: Allow non-python scripts here!
-                shell_cmd = f"cd {zenodo_script_path} && python {zenodo_script_name}"
-
-                with open(abspaths.temp_rules / f"{generate_rulename}.smk", "w") as f:
-                    smk = env.get_template("run.smk").render(
-                        rulename=generate_rulename,
-                        input=zenodo.script[dependency],
+                # Dynamically create a rule to extract the tarball
+                extract_rulename = re.sub("[^0-9a-zA-Z]+", "_", f"extract_{dependency}")
+                with open(abspaths.temp_rules / f"{extract_rulename}.smk", "w") as f:
+                    smk = env.get_template("extract.smk").render(
+                        rulename=extract_rulename,
+                        input=dependency,
                         contents=zenodo.deposit_contents[dependency],
-                        shell_cmd=shell_cmd,
                     )
                     print(smk, file=f)
-                dynamic_rules.append(generate_rulename)
+                dynamic_rules.append(extract_rulename)
+
             else:
-                generate_rulename = None
 
-            # Dynamically create a rule to compress the tarball
-            compress_rulename = re.sub("[^0-9a-zA-Z]+", "_", f"compress_{dependency}")
-            with open(abspaths.temp_rules / f"{compress_rulename}.smk", "w") as f:
-                smk = env.get_template("compress.smk").render(
-                    rulename=compress_rulename,
-                    output=dependency,
-                    contents=zenodo.deposit_contents[dependency],
-                )
-                print(smk, file=f)
-            dynamic_rules.append(compress_rulename)
+                # Dynamically create a rule to generate the datasets,
+                # but only if the user provided a `script`
+                if zenodo.script[dependency] != files.unknown:
+                    generate_rulename = re.sub(
+                        "[^0-9a-zA-Z]+", "_", f"run_{zenodo.script[dependency]}"
+                    )
+                    zenodo_script_name = Path(zenodo.script[dependency]).name
+                    zenodo_script_path = Path(zenodo.script[dependency]).parents[0]
 
-            # Specify a `ruleorder` for each rule to resolve the ambiguity
-            if generate_rulename is not None:
-                ruleorder_rulename = re.sub(
-                    "[^0-9a-zA-Z]+", "_", f"ruleorder_{dependency}"
-                )
-                with open(abspaths.temp_rules / f"{ruleorder_rulename}.smk", "w") as f:
+                    # TODO: Allow non-python scripts here!
+                    shell_cmd = (
+                        f"cd {zenodo_script_path} && python {zenodo_script_name}"
+                    )
 
-                    if config["CI"]:
-
-                        # TODO: More rule order entries?
-                        smk = "\n".join(
-                            [
-                                f"ruleorder: {extract_rulename} > {generate_rulename}",
-                            ]
+                    with open(
+                        abspaths.temp_rules / f"{generate_rulename}.smk", "w"
+                    ) as f:
+                        smk = env.get_template("run.smk").render(
+                            rulename=generate_rulename,
+                            input=zenodo.script[dependency],
+                            contents=zenodo.deposit_contents[dependency],
+                            shell_cmd=shell_cmd,
                         )
+                        print(smk, file=f)
+                    dynamic_rules.append(generate_rulename)
+                else:
+                    generate_rulename = None
 
-                    else:
+                # If the tarball is managed by Zenodo, we'll declare
+                # a rule to compress it...
+                if zenodo.deposit_id_type[dependency] == "concept":
 
-                        # TODO: More rule order entries?
-                        smk = "\n".join(
-                            [
-                                f"ruleorder: {generate_rulename} > {extract_rulename}",
-                            ]
+                    # Dynamically create a rule to compress the tarball
+                    compress_rulename = re.sub(
+                        "[^0-9a-zA-Z]+", "_", f"compress_{dependency}"
+                    )
+                    with open(
+                        abspaths.temp_rules / f"{compress_rulename}.smk", "w"
+                    ) as f:
+                        smk = env.get_template("compress.smk").render(
+                            rulename=compress_rulename,
+                            output=dependency,
+                            contents=zenodo.deposit_contents[dependency],
                         )
+                        print(smk, file=f)
+                    dynamic_rules.append(compress_rulename)
 
-                    print(smk, file=f)
-                dynamic_rules.append(ruleorder_rulename)
+                # ... otherwise, if the file is static, we declare a
+                # rule to extract it. Note that the rule for downloading
+                # the tarball is specified in the static file `download.smk`
+                elif zenodo.deposit_id_type[dependency] == "version":
+
+                    # Dynamically create a rule to extract the tarball
+                    extract_rulename = re.sub(
+                        "[^0-9a-zA-Z]+", "_", f"extract_{dependency}"
+                    )
+                    with open(
+                        abspaths.temp_rules / f"{extract_rulename}.smk", "w"
+                    ) as f:
+                        smk = env.get_template("extract.smk").render(
+                            rulename=extract_rulename,
+                            input=dependency,
+                            contents=zenodo.deposit_contents[dependency],
+                        )
+                        print(smk, file=f)
+                    dynamic_rules.append(extract_rulename)
+
 
 # Loop over files w/ dependencies
 dependencies = copy.deepcopy(config["dependencies"])
