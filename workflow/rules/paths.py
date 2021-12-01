@@ -40,6 +40,18 @@ class abspaths:
         if not temp.exists():
             os.mkdir(str(temp))
 
+    #: Path to the temporary zenodo files
+    temp_zenodo = temp / "zenodo"
+    if _workflow.basedir != "/path/to/repo/":
+        if not temp_zenodo.exists():
+            os.mkdir(str(temp_zenodo))
+
+    #: Path to the temporary rule files
+    temp_rules = temp / "rules"
+    if _workflow.basedir != "/path/to/repo/":
+        if not temp_rules.exists():
+            os.mkdir(str(temp_rules))
+
 
 class relpaths:
     """Relative paths used throughout the workflow."""

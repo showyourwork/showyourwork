@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 # Hack to import our custom functions
-sys.path.insert(0, str(Path(__file__).parents[1] / "helpers"))
+sys.path.insert(0, str(Path(__file__).parents[1]))
 from helpers.zenodo import upload_simulation
 
 # Go!

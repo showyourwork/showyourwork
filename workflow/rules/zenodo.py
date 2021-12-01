@@ -125,13 +125,14 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
             )
 
         cache_file = (
-            abspaths.temp / f"{zenodo.deposit_id[dependency]}.{zenodo.url[dependency]}"
+            abspaths.temp_zenodo
+            / f"{zenodo.deposit_id[dependency]}.{zenodo.zenodo_url[dependency]}"
         )
         if not cache_file.exists():
             # Function defined in `../helpers/zenodo.py`
             zenodo.deposit_id_type[dependency] = get_id_type(
                 zenodo.deposit_id[dependency],
-                zenodo.url[dependency],
+                zenodo.zenodo_url[dependency],
                 zenodo.token_name[dependency],
             )
             with open(cache_file, "w") as f:
@@ -234,7 +235,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
 
             # Dynamically create a rule to extract the tarball
             extract_rulename = re.sub("[^0-9a-zA-Z]+", "_", f"extract_{dependency}")
-            with open(abspaths.temp / f"{extract_rulename}.smk", "w") as f:
+            with open(abspaths.temp_rules / f"{extract_rulename}.smk", "w") as f:
                 smk = env.get_template("extract.smk").render(
                     rulename=extract_rulename,
                     input=dependency,
@@ -255,7 +256,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
                 # TODO: Allow non-python scripts here!
                 shell_cmd = f"cd {zenodo_script_path} && python {zenodo_script_name}"
 
-                with open(abspaths.temp / f"{generate_rulename}.smk", "w") as f:
+                with open(abspaths.temp_rules / f"{generate_rulename}.smk", "w") as f:
                     smk = env.get_template("run.smk").render(
                         rulename=generate_rulename,
                         input=zenodo.script[dependency],
@@ -269,7 +270,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
 
             # Dynamically create a rule to compress the tarball
             compress_rulename = re.sub("[^0-9a-zA-Z]+", "_", f"compress_{dependency}")
-            with open(abspaths.temp / f"{compress_rulename}.smk", "w") as f:
+            with open(abspaths.temp_rules / f"{compress_rulename}.smk", "w") as f:
                 smk = env.get_template("compress.smk").render(
                     rulename=compress_rulename,
                     output=dependency,
@@ -283,7 +284,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
                 ruleorder_rulename = re.sub(
                     "[^0-9a-zA-Z]+", "_", f"ruleorder_{dependency}"
                 )
-                with open(abspaths.temp / f"{ruleorder_rulename}.smk", "w") as f:
+                with open(abspaths.temp_rules / f"{ruleorder_rulename}.smk", "w") as f:
 
                     if config["CI"]:
 

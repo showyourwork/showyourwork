@@ -49,6 +49,8 @@ class ShowyourworkException(Exception):
         *args,
         **kwargs,
     ):
+        # Store the raw message for exception catching
+        self.message = message
 
         # We only need to provide `exception_file` if we're not
         # inside the main Snakemake workflow run

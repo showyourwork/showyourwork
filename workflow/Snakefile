@@ -31,7 +31,20 @@ include: "rules/functions.py"
 # generate rules to upload/download them dynamically
 include: "rules/zenodo.py"
 for dynamic_rule in dynamic_rules:
-    include: posix(abspaths.temp / f"{dynamic_rule}.smk")
+    include: posix(abspaths.temp_rules / f"{dynamic_rule}.smk")
+
+# Generic Zenodo rules
+include: "rules/download.smk"
+include: "rules/generate.smk"
+include: "rules/upload.smk"
+include: "rules/remove_zenodo.smk" # TODO: rethink this logic
+
+if config["CI"]:
+    ruleorder: download > generate
+    ruleorder: download > upload
+else:
+    ruleorder: generate > download
+    ruleorder: upload > download
 
 
 # Define all the rules
@@ -49,15 +62,6 @@ include: "rules/texfile.smk"
 include: "rules/stylesheet.smk"
 include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
-
-
-# Zenodo rules
-# TODO: There may be ambgiuities we need to resolve here
-include: "rules/download.smk" # TODO: Should these be dynamically generated?
-include: "rules/generate.smk"
-include: "rules/upload.smk"
-include: "rules/remove_zenodo.smk" # TODO: rethink this logic
-
 
 # Rule for autogenerating rule documentation
 include: "rules/docstrings.smk"

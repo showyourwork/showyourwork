@@ -350,37 +350,95 @@ def upload_simulation(
     file_path=".",
     script="",
     repo_url="",
+    max_pages=100,
+    results_per_page=10,
 ):
     # Retrieve the access token
     access_token = get_access_token(token_name)
 
-    # Get the id of the latest draft (and create one if needed)
-    r = check_status(
-        requests.get(
-            f"https://{zenodo_url}/api/deposit/depositions/{concept_id}",
-            params={"access_token": access_token},
-        )
-    )
-    data = r.json()
-    latest_draft = data["links"].get("latest_draft", None)
-    if latest_draft:
+    # Search for a public record with the correct concept id
+    r = requests.get(f"https://{zenodo_url}/api/records/{concept_id}")
 
-        # A draft exists; get its id
-        draft_id = int(latest_draft.split("/")[-1])
+    if r.status_code > 204 and "PID is not registered" in r.json().get("message", ""):
+
+        # There's no public record; let's search for a draft
+        # deposit with this concept id (authentication needed)
+        try:
+            for page in range(1, max_pages + 1):
+                r = requests.get(
+                    f"https://{zenodo_url}/api/deposit/depositions",
+                    params={
+                        "q": "",
+                        "access_token": access_token,
+                        "status": "draft",
+                        "size": results_per_page,
+                        "page": page,
+                        "sort": "mostrecent",
+                        "all_versions": 1,
+                    },
+                )
+                data = r.json()
+                for deposit in data:
+                    if int(deposit["conceptrecid"]) == concept_id:
+                        draft_id = int(deposit["id"])
+                        raise StopIteration
+
+                if len(data) == 0:
+                    # We reached the end and found nothing
+                    raise ShowyourworkException(
+                        f"Record/deposit with concept id {concept_id} not found.",
+                        context=f"The provided `id` {concept_id} does "
+                        "not seem to be a valid Zenodo concept id.",
+                        brief=f"Invalid Zenodo concept id {concept_id}.",
+                    )
+
+        except StopIteration:
+
+            # We're good!
+            pass
+
+        else:
+
+            # We reached the end and found nothing
+            raise ShowyourworkException(
+                f"Record/deposit with concept id {concept_id} not found.",
+                context=f"The provided `id` {concept_id} does "
+                "not seem to be a valid Zenodo concept id.",
+                brief=f"Invalid Zenodo concept id {concept_id}.",
+            )
+
+    elif r.status_code <= 204:
+
+        # There's a public record; let's search for an existing draft
+        data = r.json()
+        latest_draft = data["links"].get("latest_draft", None)
+        if latest_draft:
+
+            # A draft exists; get its id
+            draft_id = int(latest_draft.split("/")[-1])
+
+        else:
+
+            # There's no draft, so we need to create one
+            latest_id = data["id"]
+            r = check_status(
+                requests.post(
+                    f"https://{zenodo_url}/api/deposit/depositions/{latest_id}/actions/newversion",
+                    params={"access_token": access_token},
+                )
+            )
+            draft_id = int(r.json()["links"]["latest_draft"].split("/")[-1])
 
     else:
 
-        # There's no draft, so we need to create one
-        r = check_status(
-            requests.post(
-                f"https://{zenodo_url}/api/deposit/depositions/{concept_id}/actions/newversion",
-                params={"access_token": access_token},
-            )
+        raise ShowyourworkException(
+            f"Record/deposit with concept id {concept_id} not found.",
+            context=f"The provided `id` {concept_id} does "
+            "not seem to be a valid Zenodo concept id.",
+            brief=f"Invalid Zenodo concept id {concept_id}.",
         )
-        draft_id = int(r.json()["links"]["latest_draft"].split("/")[-1])
 
     # Get the bucket url for this draft so we can upload files
-    # Also grab the latest version doi if we need to fall back to it below
     r = check_status(
         requests.get(
             f"https://{zenodo_url}/api/deposit/depositions/{draft_id}",
@@ -388,7 +446,13 @@ def upload_simulation(
         )
     )
     bucket_url = r.json()["links"]["bucket"]
-    latest_id = r.json()["links"]["latest_html"].split("/")[-1]
+
+    # Grab the latest version doi if we need to fall back to it below
+    try:
+        latest_id = r.json()["links"]["latest_html"].split("/")[-1]
+    except KeyError:
+        # There are no published versions; that's fine!
+        latest_id = None
 
     # Get the ID of the previously uploaded file (if it exists),
     # then delete it so we can upload a new version.
@@ -426,7 +490,7 @@ def upload_simulation(
     if script == "unknown-script":
         description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>.<br/>"
     else:
-        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command:<br/><pre><code class='language-bash'>cd src/figures && python {script}</code></pre><br/>"
+        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command:<br/><br/><pre><code class='language-bash'>cd src/figures && python {script}</code></pre><br/>"
     data = {
         "metadata": {
             "title": deposit_title,
@@ -444,10 +508,6 @@ def upload_simulation(
         )
     )
 
-    # DEBUG
-    # TODO: Remove me
-    breakpoint()
-
     # Publish the deposit
     print("Publishing the deposit...")
     try:
@@ -458,7 +518,8 @@ def upload_simulation(
             )
         )
     except ShowyourworkException as e:
-        if "New version's files must differ from all previous versions" in str(e):
+
+        if "New version's files must differ from all previous versions" in e.message:
             print("No change in the deposit's files. Aborting.")
             # Revert to the previous deposit (the latest version) ID
             draft_id = latest_id
