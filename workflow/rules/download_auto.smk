@@ -17,7 +17,9 @@ rule download_auto:
     shell:
         " && ".join(
             [
-                "curl https://{params.zenodo_url}/record/{params.deposit_id}/files/{params.file_name} --output {output[0]}", 
+                "REDIRECT_URL=$(curl -Ls -o /dev/null -w %{{url_effective}} https://{params.zenodo_url}/record/{params.deposit_id})",
+                "VERSION_ID=${{REDIRECT_URL#*record/}}",
+                "curl https://{params.zenodo_url}/record/${{VERSION_ID}}/files/{params.file_name} --output {output[0]}", 
                 "echo 'https://{params.zenodo_url}/record/{params.deposit_id}' > {output[1]}"
             ]
         )
