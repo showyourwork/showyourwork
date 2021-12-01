@@ -39,7 +39,6 @@ class ShowyourworkException(Exception):
     def __init__(
         self,
         message,
-        exception_file=None,
         script=None,
         rule_name=None,
         context=None,
@@ -55,13 +54,8 @@ class ShowyourworkException(Exception):
         self.context = context
         self.brief = brief
 
-        # We only need to provide `exception_file` if we're not
-        # inside the main Snakemake workflow run
-        if exception_file is None:
-            try:
-                exception_file = files.exception
-            except:
-                exception_file = Path(".showyourwork/exception.log")
+        # Where we log to
+        exception_file = Path(".showyourwork/exception.log")
 
         # Format the info
         if script is None:
@@ -120,15 +114,10 @@ class ShowyourworkException(Exception):
             super().__init__("\n\n" + message, *args, **kwargs)
 
     @staticmethod
-    def print(exception_file=None):
+    def print():
 
-        # We only need to provide `exception_file` if we're not
-        # inside the main Snakemake workflow run
-        if exception_file is None:
-            try:
-                exception_file = files.exception
-            except:
-                exception_file = Path(".showyourwork/exception.log")
+        # Where we log to
+        exception_file = Path(".showyourwork/exception.log")
 
         # Print any existing exceptions
         if exception_file.exists():
@@ -162,13 +151,8 @@ class ShowyourworkWarning:
         self.context = context
         self.brief = brief
 
-        # We only need to provide `exception_file` if we're not
-        # inside the main Snakemake workflow run
-        if exception_file is None:
-            try:
-                exception_file = files.warning
-            except:
-                exception_file = Path(".showyourwork/warning.log")
+        # Where we log to
+        exception_file = Path(".showyourwork/warning.log")
 
         # Format the info
         if script is None:
@@ -218,15 +202,10 @@ class ShowyourworkWarning:
             print(full_message, file=f)
 
     @staticmethod
-    def print(exception_file=None):
+    def print():
 
-        # We only need to provide `exception_file` if we're not
-        # inside the main Snakemake workflow run
-        if exception_file is None:
-            try:
-                exception_file = files.warning
-            except:
-                exception_file = Path(".showyourwork/warning.log")
+        # Where we log to
+        exception_file = Path(".showyourwork/warning.log")
 
         # Print any existing exceptions
         if exception_file.exists():

@@ -20,7 +20,6 @@ TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
 SYWTEXFILE = snakemake.params["SYWTEXFILE"]
 TECTONIC = snakemake.params["TECTONIC"]
-EXCEPTIONFILE = snakemake.params["EXCEPTIONFILE"]
 
 # Generate the PDF
 tectonic_args = ["-o", TEMP]
@@ -36,7 +35,6 @@ result = subprocess.run(
 if result.returncode > 0:
     raise ShowyourworkException(
         result.stderr.decode("utf-8"),
-        exception_file=EXCEPTIONFILE,
         script="pdf.py",
         rule_name="pdf",
         brief="An error occurred during the final build of your TeX file.",

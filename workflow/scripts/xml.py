@@ -19,7 +19,6 @@ TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
 TMPTEXFILE = snakemake.params["TMPTEXFILE"]
 TECTONIC = snakemake.params["TECTONIC"]
-EXCEPTIONFILE = snakemake.params["EXCEPTIONFILE"]
 
 
 # Build the LaTeX document to get the XML tree
@@ -36,7 +35,6 @@ result = subprocess.run(
 if result.returncode > 0:
     raise ShowyourworkException(
         result.stderr.decode("utf-8"),
-        exception_file=EXCEPTIONFILE,
         script="xml.py",
         rule_name="xml",
         brief="An error occurred during the initial build of your TeX file.",

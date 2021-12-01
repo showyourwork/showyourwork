@@ -23,8 +23,7 @@ rule pdf:
         TEMP=relpaths.temp,
         TEX=relpaths.tex,
         SYWTEXFILE=files.tmp_syw,
-        TECTONIC=config["tectonic_cmd"],
-        EXCEPTIONFILE=files.exception
+        TECTONIC=config["tectonic_cmd"]
     conda:
         "../envs/environment.yml"
     script:
