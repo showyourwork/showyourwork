@@ -113,6 +113,29 @@ dependencies of the manuscript file are also allowed:
 See :ref:`custom_ms_deps`.
 
 
+``download_only``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** If set to ``true``, will never attempt to generate figure
+dependencies if they are hosted on Zenodo (instead, showyourwork downloads them). 
+This behavior is similar to setting ``CI`` to ``true`` and is especially
+useful for third-party users who have cloned the repository and don't want
+to re-run expensive simulation steps, or don't have the authorization to
+upload files to the Zenodo deposit.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  download_only: true
+
+
 ``figexts``
 ^^^^^^^^^^^
 

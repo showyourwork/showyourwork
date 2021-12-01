@@ -34,13 +34,13 @@ def check_status(r):
     return r
 
 
-def get_access_token(token_name):
+def get_access_token(token_name, error_if_missing=False):
     """
     Return the access token stored in the environment variable `token_name`.
 
     """
     access_token = os.getenv(token_name, None)
-    if access_token is None:
+    if error_if_missing and access_token is None:
         raise ValueError(
             f"Zenodo access token `{token_name}` not found. "
             "This should be set as an environment variable "
@@ -53,6 +53,7 @@ def reserve():
     """
     Pre-reserve a concept DOI on Zenodo.
     This is a user-facing command line utility called from the Makefile.
+    Not to be run on GitHub Actions!
 
     """
     # Zenodo Sandbox (for testing) or Zenodo?
@@ -88,10 +89,9 @@ def reserve():
             return
         if token_name == "":
             token_name = default_token_name
-        try:
-            access_token = get_access_token(token_name)
-        except Exception as e:
-            print(str(e))
+        access_token = get_access_token(token_name, error_if_missing=False)
+        if access_token is None:
+            print(f"Access token {token_name} not found.")
         else:
             break
 
@@ -128,9 +128,6 @@ def get_id_type(
     a concept id or a version id (and raises an error otherwise).
 
     """
-    # Get the access token
-    access_token = get_access_token(token_name)
-
     # Try to find a published record (no authentication needed)
     r = requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
     data = r.json()
@@ -138,6 +135,9 @@ def get_id_type(
     if r.status_code > 204:
 
         if "PID is not registered" in data.get("message", ""):
+
+            # Get the access token
+            access_token = get_access_token(token_name, error_if_missing=True)
 
             # There's no public record; let's search for a draft
             # deposit with this concept or version ID (authentication
@@ -220,7 +220,7 @@ def upload_simulation(
     results_per_page=10,
 ):
     # Retrieve the access token
-    access_token = get_access_token(token_name)
+    access_token = get_access_token(token_name, error_if_missing=True)
 
     # Search for a public record with the correct concept id
     r = requests.get(f"https://{zenodo_url}/api/records/{concept_id}")

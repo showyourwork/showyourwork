@@ -15,6 +15,14 @@ rule download_auto:
         deposit_id=lambda w: zenodo.deposit_id[w.dependency],
         file_name=lambda w: zenodo.file_name[w.dependency],
     shell:
+        # Note that the `deposit_id` variable is always a *concept* id
+        # for showyourwork-managed figure dependencies.
+        # To download the files, we need to resolve it to the latest
+        # version id, which we can do by using `curl` to tell us what
+        # URL we get redirected to when we access the webpage for the
+        # concept id (REDIRECT_URL); the latest version id is then just
+        # the last bit of the url (VERSION_ID).
+        # We could do this a bit more elegantly using the REST API, though.
         " && ".join(
             [
                 "REDIRECT_URL=$(curl -Ls -o /dev/null -w %{{url_effective}} https://{params.zenodo_url}/record/{params.deposit_id})",

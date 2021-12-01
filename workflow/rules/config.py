@@ -27,6 +27,9 @@ values if none are provided. Current config options are
 
 - ``zenodo`` (*dict*): Rules for how to upload/download dependencies.
 
+- ``download_only`` (*bool*): Only download Zenodo dependencies (never try
+    to generate and/or upload them). Default False.
+
 """
 from pathlib import Path
 import platform
@@ -46,6 +49,9 @@ except NameError:
 
 #: Verbosity
 config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
+
+#: Zenodo behavior
+config["download_only"] = str(config.get("download_only", "false")).lower() == "true"
 
 #: Recognized figure extensions
 config["figexts"] = config.get(

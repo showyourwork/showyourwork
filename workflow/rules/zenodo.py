@@ -235,7 +235,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
 
             # Either we download & extract or generate & upload the tarball
             # This depends on whether we're on GH Actions & on the user config
-            if config["CI"]:
+            if config["CI"] or config["download_only"]:
 
                 # Note that the rule for downloading the tarball is
                 # specified in the static file `download.smk`
