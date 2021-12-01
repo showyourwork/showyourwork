@@ -75,7 +75,7 @@ except:
 
 # Attempt to print an informative error message at the end of the build log
 onerror:
-    ShowyourworkWarning.print(files.warning)
-    ShowyourworkException.print(files.exception)
+    ShowyourworkWarning.print()
+    ShowyourworkException.print()
 onsuccess:
-    ShowyourworkWarning.print(files.warning)
+    ShowyourworkWarning.print()

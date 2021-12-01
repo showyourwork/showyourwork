@@ -32,7 +32,7 @@ result = subprocess.run(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
 )
-if result.returncode > 0:
+if result.returncode != 0:
     raise ShowyourworkException(
         result.stderr.decode("utf-8"),
         script="xml.py",
