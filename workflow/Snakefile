@@ -13,7 +13,7 @@ include: "rules/paths.py"
 
 # Import our helper functions
 from helpers.exceptions import ShowyourworkException, ShowyourworkWarning
-from helpers.zenodo import get_id_type
+from helpers.zenodo import get_id_type, remove_bad_dotzenodo_files
 
 
 # Import config, constants, and error codes used by the rules
@@ -36,14 +36,13 @@ for dynamic_rule in dynamic_rules:
 # Static Zenodo rules
 if len(files.zenodo_files_manual):
     include: "rules/download_manual.smk"
-if config["CI"] or config["download_only"]:
-    if len(files.zenodo_files_auto):
+if len(files.zenodo_files_auto):
+    if config["CI"] or config["download_only"]:
         include: "rules/download_auto.smk"
-    include: "rules/remove_zenodo.smk"
-else:
-    include: "rules/generate.smk"
-    include: "rules/upload.smk"
-
+    else:
+        include: "rules/generate.smk"
+        include: "rules/upload.smk"
+include: "rules/remove_zenodo.smk"
 
 # Define all the rules
 include: "rules/repo.smk"
@@ -77,7 +76,9 @@ except:
 
 # Attempt to print an informative error message at the end of the build log
 onerror:
+    remove_bad_dotzenodo_files(files.dot_zenodo)
     ShowyourworkWarning.print()
     ShowyourworkException.print()
 onsuccess:
+    remove_bad_dotzenodo_files(files.dot_zenodo)
     ShowyourworkWarning.print()

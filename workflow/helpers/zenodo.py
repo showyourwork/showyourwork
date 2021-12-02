@@ -3,6 +3,7 @@ Main Zenodo interface.
 
 """
 from .exceptions import ShowyourworkException
+from pathlib import Path
 import requests
 import os
 import json
@@ -400,3 +401,19 @@ def upload_simulation(
     deposit_url = f"https://{zenodo_url}/record/{draft_id}"
     with open(f"{file_path}/{file_name}.zenodo", "w") as f:
         print(deposit_url, file=f)
+
+
+def remove_bad_dotzenodo_files(files):
+    """
+    If an upload failed b/c of missing authorization, let's
+    delete the `.zenodo` file we use for bookkeeping to
+    force a reupload attempt the next time we build the
+    article.
+
+    """
+    for file in files:
+        if Path(file).exists():
+            with open(file, "r") as f:
+                contents = f.readline()
+            if "UNAUTHORIZED" in contents:
+                Path(file).unlink()
