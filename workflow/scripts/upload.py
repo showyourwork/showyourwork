@@ -47,8 +47,11 @@ except ShowyourworkException as e:
             "deposit id. If you are a third-party user (i.e., you cloned someone "
             "else's repository and are attempting to build the paper locally), you "
             "can either run ``make fast`` "
-            "to skip the dataset generation & upload step, or provide a different "
-            "`id` to upload this file to in the config file; to reserve an `id` under "
+            "to skip the dataset generation & upload step, "
+            "change the relevant `id` key in the config file to a specific *version* id "
+            "for the deposit, "
+            "or provide a concept id which you are authorized to edit; "
+            "to reserve an id under "
             "your authentication, simply type `make reserve`. See the docs for more "
             "details.",
             brief=f"Unable to upload {file_name} to Zenodo.",
