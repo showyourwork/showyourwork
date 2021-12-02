@@ -133,13 +133,13 @@ If you don't have the right authentication, and a workflow attempts to
 publish a deposit to Zenodo under a certain ``id``, you will get a warning
 saying something along the lines of 
 
-.. code-block:: bash
+.. code-block::
 
     Error: Unable to upload <file-name> to Zenodo.
 
 and
 
-.. code-block:: bash
+.. code-block::
 
     Zenodo error 401: The server could not verify that you are authorized to access the URL requested. You either supplied the
     wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.
@@ -154,7 +154,7 @@ results locally. In the latter case, the easiest workaround is to run
     make fast
 
 which will skip the generation & upload step for any file that can instead be
-downloaded from Zenodo. Alternatively, you can change the relevant ``id``s in the
+downloaded from Zenodo. Alternatively, you can change the relevant ids in the
 ``shoyourwork.yml`` config file to *version* ids, which correspond to static
 (download-only) entries (:ref:`read more about that here <zenodo.dataset.id>`),
 or change them to concept ids that you have access to (you can obtain one
