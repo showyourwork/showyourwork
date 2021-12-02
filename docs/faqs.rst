@@ -124,3 +124,38 @@ You won't get the snazzy ``showyourwork`` logo at the top of the page, but
 everything else should still work. We're planning on adding explicit support for
 other templates, so please check back soon for more or open 
 `an issue <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_.
+
+
+I get a warning saying the Zenodo upload failed.
+------------------------------------------------
+
+If you don't have the right authentication, and a workflow attempts to 
+publish a deposit to Zenodo under a certain ``id``, you will get a warning
+saying something along the lines of 
+
+.. code-block:: bash
+
+    Error: Unable to upload <file-name> to Zenodo.
+
+and
+
+.. code-block:: bash
+
+    Zenodo error 401: The server could not verify that you are authorized to access the URL requested. You either supplied the
+    wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.
+
+This can happen if you forgot to set your Zenodo API token environment variable
+(see the :ref:`token_name <zenodo.dataset.token_name>` config setting for details)
+or if you've cloned a third-party repository and are trying to reproduce their 
+results locally. In the latter case, the easiest workaround is to run
+
+.. code-block:: bash
+
+    make fast
+
+which will skip the generation & upload step for any file that can instead be
+downloaded from Zenodo. Alternatively, you can change the relevant ``id``s in the
+``shoyourwork.yml`` config file to *version* ids, which correspond to static
+(download-only) entries (:ref:`read more about that here <zenodo.dataset.id>`),
+or change them to concept ids that you have access to (you can obtain one
+by running ``make reserve``).

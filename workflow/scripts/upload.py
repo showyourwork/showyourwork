@@ -46,7 +46,7 @@ except ShowyourworkException as e:
             "but this token is either missing or invalid for editing the given "
             "deposit id. If you are a third-party user (i.e., you cloned someone "
             "else's repository and are attempting to build the paper locally), you "
-            "can either set `download_only` to `true` in the `showyourwork` config file "
+            "can either run ``make fast`` "
             "to skip the dataset generation & upload step, or provide a different "
             "`id` to upload this file to in the config file; to reserve an `id` under "
             "your authentication, simply type `make reserve`. See the docs for more "
