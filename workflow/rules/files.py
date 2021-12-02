@@ -67,8 +67,9 @@ class files:
 
     #: Store temporary exception messages
     exception = relpaths.temp / "exception.log"
-    if exception.exists():
-        exception.unlink()
+
+    #: Store temporary warning messages
+    warning = relpaths.temp / "warning.log"
 
     #: Recognized figure script extensions
     script_extensions = []

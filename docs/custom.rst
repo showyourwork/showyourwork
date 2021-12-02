@@ -247,7 +247,7 @@ Dataset dependencies
 
 If you have a dataset hosted on `Zenodo <https://zenodo.org>`_, ``showyourwork`` can automatically
 download it for you and link to it in the corresponding figure caption in the article PDF.
-All you have to do is specify the name of the dataset and its Zenodo record ID in the config
+All you have to do is specify the name of the dataset and its Zenodo version ID in the config
 file ``showyourwork.yml``:
 
 .. code-block:: yaml
@@ -266,7 +266,7 @@ file ``showyourwork.yml``:
 The YAML snippet above tells ``showyourwork`` that the script ``src/figures/fibonacci.py``
 requires the dataset ``src/data/fibonacci.dat`` in order to run.
 It also tells ``showyourwork`` that this dataset can be downloaded from Zenodo, and that
-it has the record ID ``5187276``. Specifically, that means the file lives at the URL
+it has the version ID ``5187276``. Specifically, that means the file lives at the URL
 `<https://zenodo.org/record/5187276>`_ and can be downloaded by running
 
 .. code-block:: bash
@@ -275,6 +275,20 @@ it has the record ID ``5187276``. Specifically, that means the file lives at the
 
 Note that if this dataset is a tarball, you'll have to untar it within ``fibonacci.py``, or
 specify a custom rule in the ``Snakefile`` (see below).
+
+.. note::
+
+    In the example above, ``5187276`` is a **version** id, tied to a specific,
+    static version of the deposit on Zenodo. This is distinct from a **concept**
+    id, which one would use to cite *all versions* of a deposit, and which always
+    resolves to the latest one. If a dataset already exists on Zenodo (i.e., you
+    or someone else manually uploaded it), you should always specify an exact
+    **version** id. If you specify a **concept** id, ``showyourwork`` will
+    attempt to take over management of the deposit: it will try to re-generate
+    the dataset when needed (if instructions are available) and upload a new 
+    version to Zenodo under that concept id. See :ref:`zenodo.dataset.id <zenodo.dataset.id>` or
+    refer to the `Zenodo docs <https://help.zenodo.org/#versioning>`_ for
+    more information.
 
 Alternatively, you can manually specify how to download a dataset dependency.
 This is useful if, e.g., it's hosted somewhere other than Zenodo, or if you
@@ -322,7 +336,7 @@ Simulation dependencies
 Quite often you may have a figure that is very computationally expensive to run. 
 An example is a posterior distribution plot for an MCMC run, or a plot of an expensive fluid dynamical simulation. 
 If the runtime is more than a few tens of minutes (on a single machine), you probably don’t want to run it on 
-GitHub Actions, even if you rely on showyourwork caching. One way around this is to run the simulation,
+GitHub Actions, even if you rely on ``showyourwork`` caching. One way around this is to run the simulation,
 upload the results to Zenodo (via the workflow discussed above), and treat that as a static "dataset" on which
 your figure depends. The downside, however, is that your workflow is no longer fully reproducible, since
 it depends on the result of a black-box simulation.
@@ -340,9 +354,8 @@ running on GitHub Actions). This can be achieved by specifying additional instru
 
     zenodo:
         - src/data/simulation.dat:
-            script: src/figures/run_simulation.py
-            sandbox: false
-            token_name: ZENODO_TOKEN
+            id: 5573042
+            script: src/analysis/run_simulation.py
             title: Simulation results
             description: >-
                 This is the result of a very expensive simulation.
@@ -354,8 +367,24 @@ running on GitHub Actions). This can be achieved by specifying additional instru
 There's a lot going on in this example, so let's break it down piece by piece.
 First, we're telling ``showyourwork`` that the figure script ``src/figures/my_figure.py``
 requires the result of some expensive simulation, stored in the data file ``src/data/simulation.dat``.
-Then, under ``zenodo:``, instead of specifying the ``id:`` of the dataset, we instead explicitly tell
-``showyourwork`` how to generate it with a ``script`` key. Specifically, we specify the Python
+Then, under ``zenodo:``, we specify the ``id`` of the deposit, as in the `previous example <custom_dataset_deps>`_,
+but this time it's a **concept** id (:ref:`read more about that here <zenodo.dataset.id>`).
+This id corresponds to *all versions* of a Zenodo record. This allows ``showyourwork`` to upload new versions 
+of the dataset when the dependencies change,
+each with their own **version** id, while maintaining the same **concept** id for all of them.
+If you already have a Zenodo deposit for this file, you can simply specify its concept id
+here (:ref:`see here for details <zenodo.dataset.id>`). But if this is your first time running
+the workflow, you can request a brand new concept id by running
+
+.. code-block:: bash
+
+    make reserve
+
+which will ask you about your API key and whether you want to reserve the id on Zenodo or Zenodo
+Sandbox. The pre-reserved concept id will then be displayed in the terminal.
+
+Returning to our ``yaml`` example, we next tell
+``showyourwork`` how to generate the data file with a ``script`` key. Specifically, we specify the Python
 ``script`` that runs the simulation.
 
 .. note::
@@ -368,12 +397,9 @@ Then, under ``zenodo:``, instead of specifying the ``id:`` of the dataset, we in
 The next several instructions tell ``showyourwork`` how to upload the results of the simulation
 to Zenodo. The ``title``, ``description``, and ``creators`` keys should be self-explanatory: they
 will show up in the metadata section of the Zenodo deposit.
-The ``sandbox`` key is a boolean flag telling ``showyourwork`` whether to use the ``Zenodo Sandbox``
-service (the default is False); this is useful for testing and debugging, and should be disabled
-once you release your code/paper.
 
 Finally, since ``showyourwork`` will upload the results of the simulation to Zenodo, it needs your
-credentials to access the API. So, in order for this all to work, you need to do three things:
+credentials to access the API. So, in order for this all to work, you need to do two things:
 
 1. If you haven't done this already, create a `Zenodo account <https://zenodo.org/signup>`_ and 
    generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
@@ -383,9 +409,6 @@ credentials to access the API. So, in order for this all to work, you need to do
 2. To give ``showyourwork`` access to Zenodo from your local machine, assign your token to an environment variable
    called ``ZENODO_TOKEN``. I export mine from within my
    ``.zshrc`` or ``.bashrc`` config file so that it's always available in all terminals.
-
-3. To give ``showyourwork`` access to Zenodo from GitHub Actions, create a `repository secret <https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository>`_
-   in your GitHub repository called ``ZENODO_TOKEN`` and set its value equal to your Zenodo token.
 
 .. warning::
 
@@ -434,9 +457,8 @@ Dependency tarballs
 
     zenodo:
         - src/data/results.tar.gz:
-            script: src/data/run_simulation.py
-            sandbox: false
-            token_name: ZENODO_TOKEN
+            id: 5662426
+            script: src/analysis/run_simulation.py
             title: Random numbers
             description: >-
                 This is a collection of ten datasets, each containing
@@ -490,9 +512,8 @@ We can use the anchor/alias syntax to re-write the YAML file above as
 
     zenodo:
         - src/data/results.tar.gz:
+            id: 5662426
             script: src/data/run_simulation.py
-            sandbox: false
-            token_name: ZENODO_TOKEN
             title: Random numbers
             description: >-
                 This is a collection of ten datasets, each containing
@@ -555,8 +576,7 @@ example, but this time **omit** the ``script`` key:
 
     zenodo:
         - src/data/results.tar.gz:
-            sandbox: false
-            token_name: ZENODO_TOKEN
+            id: 5662426
             title: Random numbers
             description: >-
                 This is a collection of ten datasets, each containing
@@ -775,8 +795,6 @@ If, however, you really do need a TeX installation, you can request it in the
       uses: ./showyourwork/showyourwork-action
       with:
         install-tex: true
-      env:
-        ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
 
 This will install `TinyTex <https://yihui.org/tinytex/>`_, a very lightweight
 TeX distribution, on the GitHub Actions runner. Note that TeX rendering in ``matplotlib``
@@ -795,8 +813,6 @@ a package called ``<package>`` to be installed as follows:
           type1cm 
           cm-super
           <package>
-      env:
-        ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
 
 .. _custom_graphicspath:
 

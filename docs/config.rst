@@ -113,6 +113,29 @@ dependencies of the manuscript file are also allowed:
 See :ref:`custom_ms_deps`.
 
 
+``download_only``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** If set to ``true``, will never attempt to generate figure
+dependencies if they are hosted on Zenodo (instead, showyourwork downloads them). 
+This behavior is similar to setting ``CI`` to ``true`` and is especially
+useful for third-party users who have cloned the repository and don't want
+to re-run expensive simulation steps, or don't have the authorization to
+upload files to the Zenodo deposit.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  download_only: true
+
+
 ``figexts``
 ^^^^^^^^^^^
 
@@ -250,6 +273,7 @@ or ``x86_64-pc-windows-msvc``.
 
   verbose: true
 
+.. _zenodo_key:
 
 ``zenodo``
 ^^^^^^^^^^
@@ -260,27 +284,27 @@ or ``x86_64-pc-windows-msvc``.
 Zenodo. Each entry should be the path to a dataset, followed by keys
 specifying information about the Zenodo deposit. These keys depend on the use
 case. If the deposit already exists (i.e., it was uploaded manually), then
-users need only specify the deposit :ref:`id <zenodo.dataset.id>`. If the
-deposit does not exist, and users would like ``showyourwork`` to upload it/download
-it from Zenodo, they should specify the following keys (most of which are optional):
-:ref:`script <zenodo.dataset.script>`,
+users should only specify the deposit *version* :ref:`id <zenodo.dataset.id>`. 
+If the deposit does not exist, and users would like ``showyourwork`` to upload 
+it/download it from Zenodo, they should specify the deposit *concept*
+:ref:`id <zenodo.dataset.id>` instead (see :ref:`id <zenodo.dataset.id>` below for
+more details).
+Additionally, users should specify the following keys 
+(most of which are optional): :ref:`script <zenodo.dataset.script>`,
 :ref:`title <zenodo.dataset.title>`,
 :ref:`description <zenodo.dataset.description>`,
 and :ref:`creators <zenodo.dataset.creators>`.
 Finally, if the deposit is a tarball consisting of many datasets, users should
 also specify the tarball :ref:`contents <zenodo.dataset.contents>`.
-In all cases, a :ref:`sandbox <zenodo.dataset.sandbox>` and a 
-:ref:`token_name <zenodo.dataset.token_name>` key are also accepted.
+In both cases (manually uploaded and ``showyourwork``-managed datasets),
+a :ref:`token_name <zenodo.dataset.token_name>` key is also accepted.
 
 .. note::
 
-    If an ``id`` is not provided, ``showyourwork`` will attempt to generate
-    the dataset by executing the ``script``, but only when running locally. 
-    If successful, it will upload
-    the file to Zenodo. As long as the ``script`` generating the dataset does
-    not change (and the dataset is not deleted), the ``script`` will not be
-    re-run.
-    When running on GitHub Actions, however, the script will **never** be
+    For ``showyourwork``-managed datasets, the ``script`` that generates the
+    dataset will be executed when running the workflow locally (but only if there
+    are changes to the dataset's dependencies).
+    When running on GitHub Actions, on the other hand, the script will **never** be
     executed; instead, ``showyourwork`` will always download the dataset from
     Zenodo. The idea here is to prevent the workflow from executing expensive
     operations on the cloud. In order for this to work, however, a deposit must
@@ -363,12 +387,50 @@ See :ref:`custom_simulation_deps`.
 
 **Type:** ``int``
 
-**Description:** The ID of a pre-existing Zenodo deposit. This ID is the
-number in the URL of a Zenodo record, i.e., ``5187276`` for
-`<https://zenodo.org/record/5187276>`_. ``showyourwork`` will attempt to
-download the dataset ``<dataset>`` from this record using ``curl``.
+**Description:** A Zenodo ``id`` for a given deposit is the last part of its DOI. For example,
+a deposit with DOI ``10.5281/zenodo.5749987`` has ``id`` equal to ``5749987``.
+This is also the last part of the url for the corresponding record
+(`<https://zenodo.org/record/5749987>`_). Importantly, Zenodo makes a distinction 
+between *version* DOIs and *concept* DOIs. Version DOIs are static, and tied
+to a specific version of a deposit (the way you'd expect a DOI to behave).
+This is the type of ``id`` you should provide if you manually uploaded a dataset
+to Zenodo and only ever want ``showyourwork`` to download it.
+Concept DOIs, on the other hand, point to *all* versions of a given record,
+and always resolve to the *latest* version. If you want ``showyourwork``
+to manage the dataset for you by generating it, uploading it, and downloading
+it, this is the kind of ``id`` you should provide.
+Check out the sidebar on the 
+`web page for the deposit in the example above <https://zenodo.org/record/5749987>`_:
 
-**Required:** yes, but only if the record exists already
+.. raw:: html
+
+    <div align="center" style="margin-bottom: 17.25px;">
+        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/dois.png" width="40%"/>
+    </div>
+
+You can see that the ``id`` ``5749987`` corresponds to a specific version (``19``)
+of the deposit, while the ``id`` ``5662426`` corresponds to *all* versions of
+the deposit (it's listed under "Cite all versions?"). 
+The former is a "version" id, while the latter is a "concept" id.
+You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
+
+.. note::
+
+  If you're just getting started and want a concept ``id`` for a fresh draft
+  of a new Zenodo deposit, run
+
+  .. code-block:: bash
+
+    make reserve
+
+  .. raw:: html
+
+    <br>
+
+  from the top level of your repo. This will pre-reserve a concept ``id`` for
+  you (assuming you're properly authenticated) and print it to the terminal.
+
+**Required:** yes
 
 **Default:** 
 
@@ -378,34 +440,39 @@ The following snippet
 .. code-block:: yaml
 
   zenodo:
-    - src/data/fibonacci.dat:
-        id: 5187276
+    - src/data/results.tar.gz:
+        id: 5749987
 
-tells ``showyourwork`` to download the file ``fibonacci.dat`` from
-the Zenodo deposit at `<https://zenodo.org/record/5187276>`_.
+tells ``showyourwork`` to download the file ``results.tar.gz`` from
+the static Zenodo deposit at `<https://zenodo.org/record/5749987>`_ 
+(version 19 of the deposit, as mentioned above). This file must already
+exist, and ``showyourwork`` won't ever attempt to re-generate it or
+re-upload it to Zenodo because it recognizes ``5749987`` as a *version* id.
 
-See :ref:`custom_dataset_deps`.
+.. raw:: html
 
+    <br>
 
-.. _zenodo.dataset.sandbox:
+Alternatively, we could specify the following:
 
-``zenodo.<dataset>.sandbox``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: yaml
 
-**Type:** ``bool``
+  zenodo:
+    - src/data/results.tar.gz:
+        id: 5662426
+        script: src/analysis/generate_results.py
 
-**Description:** A flag telling ``showyourwork`` whether to use the Zenodo 
-Sandbox service. This service behaves identically to Zenodo, but files hosted
-here are wiped on a random basis, so it is intended only for debugging and
-development purposes. This flag should be set to ``false`` when development
-is complete.
-
-**Required:** no
-
-**Default:** ``false``
-
-**Example:**
-See :ref:`custom_simulation_deps`.
+In this case, the ``id`` is a *concept* id, corresponding to all versions of
+the deposit, and ``showyourwork`` will take over management of the deposit.
+Note that we also provided a ``script`` instructing ``showyourwork`` how to
+generate new versions of the deposit. Whenever ``generate_results.py`` or
+any of its dependencies are modified, ``showyourwork`` will re-generate 
+``results.tar.gz`` **and re-upload it to Zenodo under the same concept id**
+when running the workflow locally.
+This will create a new version DOI under the same concept DOI.
+Note that in order for this to work, you must be properly authenticated;
+see :ref:`token_name <zenodo.dataset.token_name>` below.
+For a more detailed example, see :ref:`custom_dataset_deps`.
 
 
 .. _zenodo.dataset.script:
@@ -455,8 +522,7 @@ See :ref:`custom_simulation_deps`.
 **Type:** ``str``
 
 **Description:** The name of the environment variable containing the
-Zenodo access token (or the Zenodo sandbox access token, if 
-:ref:`sandbox <zenodo.dataset.sandbox>` is ``true``).
+Zenodo access token.
 To obtain this token, create a `Zenodo account <https://zenodo.org/signup>`_ 
 (if you don't have one already) and
 generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
@@ -464,9 +530,6 @@ Make sure to give it at least ``deposit:actions`` and ``deposit:write`` scopes, 
 safe. Then, assign your token to an environment variable called ``ZENODO_TOKEN`` (or whatever
 you set ``token_name`` to). I export mine from within my ``.zshrc`` or ``.bashrc`` config file so that 
 it's always available in all terminals.
-Finally, to give ``showyourwork`` access to Zenodo from GitHub Actions, create a 
-`repository secret <https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository>`_
-in your GitHub repository with the same name (i.e., ``ZENODO_TOKEN``) and set its value equal to your Zenodo token.
 
 .. warning::
 
@@ -479,3 +542,29 @@ in your GitHub repository with the same name (i.e., ``ZENODO_TOKEN``) and set it
 
 **Example:**
 See :ref:`custom_simulation_deps`.
+
+
+``zenodo_sandbox``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``list``
+
+**Description:** A list of datasets to be download from and/or uploaded to
+Zenodo Sandbox. This key behaves in the same way and accepts all the same
+arguments as the :ref:`zenodo <zenodo_key>` key above, but it interfaces with
+`<sandbox.zenodo.org>`_ (instead of `<zenodo.org>`_). Zenodo Sandbox works in
+the same way as Zenodo, but is meant for testing purposes only: deposits hosted
+in the Sandbox may be deleted at any time. Hosting datasets here is useful
+during development of your project; just make sure to switch over to
+``zenodo`` when you're ready to publish your paper!
+
+**Required:** no
+
+**Default:** ``[]``
+
+**Example:**
+See :ref:`custom_dataset_deps`,
+:ref:`custom_simulation_deps`,
+:ref:`custom_tarballs`,
+and
+:ref:`custom_tarballs_advanced`.

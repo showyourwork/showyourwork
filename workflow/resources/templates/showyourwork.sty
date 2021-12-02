@@ -159,28 +159,46 @@
     }{%
       \stackon[3pt]{%
         \IfEq*{\usevalue{\sywCurrentLabelName_datasetOne}}{KEYNOTFOUND}{}{%
-        \raisebox{0pt}[5pt][5pt]{%
-          \href{\usevalue{\sywCurrentLabelName_datasetOne}}{%
-          \color{sywBlue}\faDatabase%
-        }%
-        }%
+          \IfEq*{\usevalue{\sywCurrentLabelName_datasetOne}}{UNAUTHORIZED}{%
+            \raisebox{0pt}[5pt][5pt]{%
+              \color{sywRed}\faDatabase%
+            }%
+          }{%
+            \raisebox{0pt}[5pt][5pt]{%
+              \href{\usevalue{\sywCurrentLabelName_datasetOne}}{%
+                \color{sywBlue}\faDatabase%
+              }%
+            }%
+          }%
         }%
       }{%
         \stackon[3pt]{%
           \IfEq*{\usevalue{\sywCurrentLabelName_datasetTwo}}{KEYNOTFOUND}{}{%
-          \raisebox{0pt}[5pt][5pt]{%
-            \href{\usevalue{\sywCurrentLabelName_datasetTwo}}{%
-            \color{sywBlue}\faDatabase%
-          }%
-          }%
+            \IfEq*{\usevalue{\sywCurrentLabelName_datasetTwo}}{UNAUTHORIZED}{%
+              \raisebox{0pt}[5pt][5pt]{%
+                \color{sywRed}\faDatabase%
+              }%
+            }{%
+              \raisebox{0pt}[5pt][5pt]{%
+                \href{\usevalue{\sywCurrentLabelName_datasetTwo}}{%
+                  \color{sywBlue}\faDatabase%
+                }%
+              }%
+            }%
           }%
         }{%
           \IfEq*{\usevalue{\sywCurrentLabelName_datasetThree}}{KEYNOTFOUND}{}{%
-          \raisebox{0pt}[5pt][5pt]{%
-            \href{\usevalue{\sywCurrentLabelName_datasetThree}}{%
-            \color{sywBlue}\faDatabase%
-          }%
-          }%
+            \IfEq*{\usevalue{\sywCurrentLabelName_datasetThree}}{UNAUTHORIZED}{%
+              \raisebox{0pt}[5pt][5pt]{%
+                \color{sywRed}\faDatabase%
+              }%
+            }{%
+              \raisebox{0pt}[5pt][5pt]{%
+                \href{\usevalue{\sywCurrentLabelName_datasetThree}}{%
+                  \color{sywBlue}\faDatabase%
+                }%
+              }%
+            }%
           }%
         }%
       }%

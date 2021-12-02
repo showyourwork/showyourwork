@@ -64,8 +64,15 @@ update: snakemake_setup
 
 
 # Pre-reserve a Zenodo DOI
-reserve: 
-	@python workflow/scripts/reserve.py
+reserve: snakemake_setup
+	@cd workflow; \
+	python -c "import helpers; helpers.zenodo.reserve()"
+
+
+# Fast build (never re-generate dependencies available on Zenodo)
+fast: snakemake_setup
+	@cd $(WORKDIR);\
+	snakemake $(FORCE_OPTIONS) $(OPTIONS) --config="download_only=true" ms.pdf
 
 
 # Catch-all target: route all unknown targets to Snakemake

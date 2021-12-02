@@ -9,8 +9,8 @@ from pathlib import Path
 
 
 # Hack to import our custom exception
-sys.path.insert(0, str(Path(__file__).parents[1] / "rules"))
-from exceptions import ShowyourworkException
+sys.path.insert(0, str(Path(__file__).parents[1]))
+from helpers.exceptions import ShowyourworkException
 
 
 # Params defined in `../rules/xml.smk`
@@ -19,7 +19,6 @@ TEMP = snakemake.params["TEMP"]
 TEX = snakemake.params["TEX"]
 TMPTEXFILE = snakemake.params["TMPTEXFILE"]
 TECTONIC = snakemake.params["TECTONIC"]
-EXCEPTIONFILE = snakemake.params["EXCEPTIONFILE"]
 
 
 # Build the LaTeX document to get the XML tree
@@ -33,10 +32,9 @@ result = subprocess.run(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
 )
-if result.returncode > 0:
+if result.returncode != 0:
     raise ShowyourworkException(
         result.stderr.decode("utf-8"),
-        exception_file=EXCEPTIONFILE,
         script="xml.py",
         rule_name="xml",
         brief="An error occurred during the initial build of your TeX file.",

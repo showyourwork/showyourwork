@@ -4,6 +4,7 @@ Sets global constants for the workflow.
 """
 from pathlib import Path, PurePosixPath
 import os
+import sys
 from sphinx_mock import *
 
 
@@ -29,11 +30,27 @@ class abspaths:
     except KeyError:
         workflow = user / "showyourwork" / "workflow"
 
+    #: Path to the showyourwork helper functions
+    helpers = workflow / "helpers"
+    sys.path.insert(0, str(helpers))
+
     #: Path to the temp folder
     temp = user / ".showyourwork"
     if _workflow.basedir != "/path/to/repo/":
         if not temp.exists():
             os.mkdir(str(temp))
+
+    #: Path to the temporary zenodo files
+    temp_zenodo = temp / "zenodo"
+    if _workflow.basedir != "/path/to/repo/":
+        if not temp_zenodo.exists():
+            os.mkdir(str(temp_zenodo))
+
+    #: Path to the temporary rule files
+    temp_rules = temp / "rules"
+    if _workflow.basedir != "/path/to/repo/":
+        if not temp_rules.exists():
+            os.mkdir(str(temp_rules))
 
 
 class relpaths:

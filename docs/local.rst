@@ -17,16 +17,21 @@ and run
 
 .. code-block:: bash
 
-    make ms.pdf
+    make
 
-or, even simpler,
+This will initialize the ``showyourwork`` submodule and also install ``snakemake``
+if you haven't already done these things manually (see below).
+
+Note that if you cloned a third-party repository, and are looking to reproduce
+their results, you may instead want to run
 
 .. code-block:: bash
 
-    make
+    make fast
 
-This will initialize the ``showyourwork`` submodule also install ``snakemake``
-if haven't already done these things manually (see below).
+which skips the generation step for any file that can instead be downloaded from
+Zenodo. This can be useful if the paper depends on computationally expensive
+steps whose output has been stored on Zenodo for quicker re-runs of the workflow.
 
 You can also use the ``make`` command to produce individual figures, for example
 
@@ -117,11 +122,11 @@ or run
 
 to ensure the ``showyourwork`` submodule is downloaded and set up properly.
 
-Next, if you don't already have it, install ``snakemake``:
+Next, if you don't already have them, install ``snakemake`` and ``jinja``:
 
 .. code-block:: bash
 
-    conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake
+    conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake jinja
 
 This step requires you to have the ``conda`` package manager
 (click `here <https://www.anaconda.com/products/individual>`_ to download it).

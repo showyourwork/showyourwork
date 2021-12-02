@@ -27,9 +27,9 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     .replace(/(\r\n|\n|\r)/gm, "");
   const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
   const randomId = makeId(8);
-  const article_key = `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_key = `article-v0.1.35-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
   const article_restoreKeys = [
-    `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
+    `article-v0.1.35-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
   const article_paths = [
     ".snakemake",

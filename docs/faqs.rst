@@ -88,17 +88,12 @@ of the build cache. You can also try running ``make clean``, although that will
 delete all your build output.
 
 If your local build is passing but the remote (GitHub Actions) build
-is failing, this is usually due to one of the following:
-
-- Missing files on the remote. This can happen if you forgot to ``git add``
-  and push the file to the remote repository. Some files are not tracked by
-  default (like things in the ``data`` directory, non-Python scripts in the
-  ``figures`` directory, or anything other than ``tex`` and ``bib`` files
-  in the ``src`` directory), so you'll have to ``git add -f`` (force add) them.
-- Missing environment variables. If you're using the Zenodo upload/download
-  feature, you'll need to specify an `encrypted repository secret <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_
-  called ``ZENODO_TOKEN`` containing your API access key. See
-  :ref:`custom_simulation_dependencies` for details.
+is failing, this could be due to missing files on the remote. This can 
+happen if you forgot to ``git add`` and push one or more 
+files to the remote repository. Some files are not tracked by
+default (like things in the ``data`` directory, non-Python scripts in the
+``figures`` directory, or anything other than ``tex`` and ``bib`` files
+in the ``src`` directory), so you'll have to ``git add -f`` (force add) them.
 
 When a remote build fails, an artifact is uploaded called ``showyourwork-output``
 (see `the docs <https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts>`_ 
@@ -129,3 +124,38 @@ You won't get the snazzy ``showyourwork`` logo at the top of the page, but
 everything else should still work. We're planning on adding explicit support for
 other templates, so please check back soon for more or open 
 `an issue <https://github.com/rodluger/showyourwork/issues?q=is%3Aissue>`_.
+
+
+I get a warning saying the Zenodo upload failed.
+------------------------------------------------
+
+If you don't have the right authentication, and a workflow attempts to 
+publish a deposit to Zenodo under a certain ``id``, you will get a warning
+saying something along the lines of 
+
+.. code-block::
+
+    Error: Unable to upload <file-name> to Zenodo.
+
+and
+
+.. code-block::
+
+    Zenodo error 401: The server could not verify that you are authorized to access the URL requested. You either supplied the
+    wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.
+
+This can happen if you forgot to set your Zenodo API token environment variable
+(see the :ref:`token_name <zenodo.dataset.token_name>` config setting for details)
+or if you've cloned a third-party repository and are trying to reproduce their 
+results locally. In the latter case, the easiest workaround is to run
+
+.. code-block:: bash
+
+    make fast
+
+which will skip the generation & upload step for any file that can instead be
+downloaded from Zenodo. Alternatively, you can change the relevant ids in the
+``showyourwork.yml`` config file to *version* ids, which correspond to static
+(download-only) entries (:ref:`read more about that here <zenodo.dataset.id>`),
+or change them to concept ids that you have access to (you can obtain one
+by running ``make reserve``).
