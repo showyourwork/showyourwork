@@ -20,7 +20,14 @@ rule arxiv:
         verbose=config["verbose"],
         figexts=config["figexts"],
         arxiv_tarball_exclude=config["arxiv_tarball_exclude"],
-        ZENODO_FILES=files.zenodo_files_manual + files.zenodo_files_auto,
+        ZENODO_FILES=(
+            files.zenodo_files_manual + 
+            files.zenodo_files_auto + 
+            [
+                item for sublist in zenodo.deposit_contents.values() 
+                for item in sublist
+            ]
+        ),
         TEMP=relpaths.temp,
         FIGURES=relpaths.figures,
         SRC=relpaths.src,

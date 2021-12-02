@@ -73,6 +73,7 @@ other_exclude = [
     "**/__latexindent_temp.tex",
     "**/sywxml.sty",
     "**/*.zenodo",
+    "data",
 ]
 for name in other_exclude:
     for file in (TEMP / "arxiv").glob(name):
@@ -84,8 +85,15 @@ for name in other_exclude:
 
 # Remove datasets
 for file in ZENODO_FILES:
-    if os.path.exists(TEMP / "arxiv" / "figures" / file):
-        os.remove(TEMP / "arxiv" / "figures" / file)
+    try:
+        arxiv_file = TEMP / "arxiv" / Path(file).relative_to(SRC)
+    except ValueError:
+        continue
+    if arxiv_file.exists():
+        if arxiv_file.is_dir():
+            shutil.rmtree(arxiv_file)
+        else:
+            os.remove(arxiv_file)
 
 
 # Tar it up
