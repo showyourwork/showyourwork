@@ -17,16 +17,21 @@ and run
 
 .. code-block:: bash
 
-    make ms.pdf
+    make
 
-or, even simpler,
+This will initialize the ``showyourwork`` submodule and also install ``snakemake``
+if you haven't already done these things manually (see below).
+
+Note that if you cloned a third-party repository, and are looking to reproduce
+their results, you may instead want to run
 
 .. code-block:: bash
 
-    make
+    make fast
 
-This will initialize the ``showyourwork`` submodule also install ``snakemake``
-if haven't already done these things manually (see below).
+which skips the generation step for any file that can instead be downloaded from
+Zenodo. This can be useful if the paper depends on computationally expensive
+steps whose output has been stored on Zenodo for quicker re-runs of the workflow.
 
 You can also use the ``make`` command to produce individual figures, for example
 

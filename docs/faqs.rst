@@ -155,7 +155,7 @@ results locally. In the latter case, the easiest workaround is to run
 
 which will skip the generation & upload step for any file that can instead be
 downloaded from Zenodo. Alternatively, you can change the relevant ids in the
-``shoyourwork.yml`` config file to *version* ids, which correspond to static
+``showyourwork.yml`` config file to *version* ids, which correspond to static
 (download-only) entries (:ref:`read more about that here <zenodo.dataset.id>`),
 or change them to concept ids that you have access to (you can obtain one
 by running ``make reserve``).

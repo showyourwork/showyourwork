@@ -273,6 +273,7 @@ or ``x86_64-pc-windows-msvc``.
 
   verbose: true
 
+.. _zenodo_key:
 
 ``zenodo``
 ^^^^^^^^^^
@@ -541,3 +542,29 @@ it's always available in all terminals.
 
 **Example:**
 See :ref:`custom_simulation_deps`.
+
+
+``zenodo_sandbox``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``list``
+
+**Description:** A list of datasets to be download from and/or uploaded to
+Zenodo Sandbox. This key behaves in the same way and accepts all the same
+arguments as the :ref:`zenodo <zenodo_key>` key above, but it interfaces with
+`<sandbox.zenodo.org>`_ (instead of `<zenodo.org>`_). Zenodo Sandbox works in
+the same way as Zenodo, but is meant for testing purposes only: deposits hosted
+in the Sandbox may be deleted at any time. Hosting datasets here is useful
+during development of your project; just make sure to switch over to
+``zenodo`` when you're ready to publish your paper!
+
+**Required:** no
+
+**Default:** ``[]``
+
+**Example:**
+See :ref:`custom_dataset_deps`,
+:ref:`custom_simulation_deps`,
+:ref:`custom_tarballs`,
+and
+:ref:`custom_tarballs_advanced`.
