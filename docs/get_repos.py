@@ -50,6 +50,8 @@ def get_repos(
     # Get curated list of projects that use showyourwork
     with open("projects.json", "r") as f:
         projects = json.load(f)
+    for project in projects:
+        projects[project]["date"] = projects[project].get("date", "")
 
     # Get all the showyourwork tags (versions)
     API_KEY = os.getenv("GH_API_KEY", None)

@@ -23,10 +23,6 @@ errors.py
 ^^^^^^^^^
 .. automodule:: rules.errors
 
-exceptions.py
-^^^^^^^^^^^^^
-.. automodule:: rules.exceptions
-
 files.py
 ^^^^^^^^
 .. automodule:: rules.files

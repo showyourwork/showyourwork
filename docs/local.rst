@@ -117,11 +117,11 @@ or run
 
 to ensure the ``showyourwork`` submodule is downloaded and set up properly.
 
-Next, if you don't already have it, install ``snakemake``:
+Next, if you don't already have them, install ``snakemake`` and ``jinja``:
 
 .. code-block:: bash
 
-    conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake
+    conda install -y -c defaults -c conda-forge -c bioconda mamba snakemake jinja
 
 This step requires you to have the ``conda`` package manager
 (click `here <https://www.anaconda.com/products/individual>`_ to download it).

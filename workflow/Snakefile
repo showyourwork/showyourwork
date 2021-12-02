@@ -39,7 +39,7 @@ if len(files.zenodo_files_manual):
 if config["CI"] or config["download_only"]:
     if len(files.zenodo_files_auto):
         include: "rules/download_auto.smk"
-    include: "rules/remove_zenodo.smk" # TODO: rethink this logic. Currently not deleting tarball contents.
+    include: "rules/remove_zenodo.smk"
 else:
     include: "rules/generate.smk"
     include: "rules/upload.smk"
@@ -68,7 +68,7 @@ try:
     # Always include conditional rules when building the docs
     assert __sphinx_docs_build__
     include: "rules/download_manual.smk"
-    include: "rules/download_ci.smk"
+    include: "rules/download_auto.smk"
     include: "rules/generate.smk"
     include: "rules/upload.smk"
 except:

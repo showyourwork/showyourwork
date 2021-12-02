@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 
 
 rule remove_zenodo:
@@ -9,6 +10,17 @@ rule remove_zenodo:
     
     """
     run:
-        for file in files.zenodo_files_auto:
+    
+        # Direct dependencies
+        for file in files.zenodo_files_auto + files.zenodo_files_manual:
             if Path(file).exists():
                 Path(file).unlink()
+
+        # Contents of tarball dependencies
+        for contents in zenodo.deposit_contents.values():
+            for file in contents:
+                if Path(file).exists():
+                    if Path(file).is_dir():
+                        shutil.rmtree(file)
+                    else:
+                        Path(file).unlink()

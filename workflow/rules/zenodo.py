@@ -4,7 +4,6 @@ Collect information about all the datasets we'll need to upload to/download from
 """
 from pathlib import Path
 import copy
-from showyourwork.workflow.helpers.exceptions import ShowyourworkException
 from sphinx_mock import *
 from collections import OrderedDict
 import jinja2

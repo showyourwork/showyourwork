@@ -1,3 +1,19 @@
+rule generate
+^^^^^^^^^^^^^
+
+Generate a figure dependency.
+
+
+
+
+rule upload
+^^^^^^^^^^^
+
+Upload a figure dependency to Zenodo.
+
+
+
+
 rule repo
 ^^^^^^^^^
 
