@@ -1,12 +1,12 @@
 .. :changelog:
 
-0.1.36 (2021-12-02)
+0.2.0 (imminent)
 +++++++++++++++++++
 
 - Major changes to the Zenodo interface! Please read the Zenodo section of the documentation on the
   `showyourwork.yml file <https://showyourwork.readthedocs.io/en/v0.1.36/config/>`_
   for details on what changed.
-- Changelog: `v0.1.35...v0.1.36 <https://github.com/rodluger/showyourwork/compare/v0.1.35...v0.1.36>`_
+- Changelog: `v0.1.35...v0.2.0 <https://github.com/rodluger/showyourwork/compare/v0.1.35...v0.2.0>`_
 
 0.1.35 (2021-11-22)
 +++++++++++++++++++
