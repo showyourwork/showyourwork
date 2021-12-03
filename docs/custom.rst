@@ -17,8 +17,8 @@ Default figure generation
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Asimple-figure">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=simple-figure" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/simple-figure">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/simple-figure">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/simple-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -74,8 +74,8 @@ Multi-panel figures
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amulti-panel-figure">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=multi-panel-figure" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/multi-panel-figure">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/multi-panel-figure">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/multi-panel-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -113,8 +113,8 @@ One script, multiple figures
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Amultiple-figures">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=multiple-figures" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/multiple-figures">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/multiple-figures">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/multiple-figures-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -169,8 +169,8 @@ Static figures
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Astatic-figure">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=static-figure" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/static-figure">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/static-figure">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/static-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -204,8 +204,8 @@ Script dependencies
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Afigure-deps">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=figure-deps" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/figure-deps">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/figure-deps">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/figure-deps-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -237,8 +237,8 @@ Dataset dependencies
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Afigure-dataset">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=figure-dataset" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/figure-dataset">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/figure-dataset">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/figure-dataset-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -325,8 +325,8 @@ Simulation dependencies
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Aexpensive-figure">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=expensive-figure" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/expensive-figure">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/expensive-figure">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/expensive-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -430,8 +430,8 @@ Dependency tarballs
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Azenodo-tarball">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=zenodo-tarball" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/zenodo-tarball">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/zenodo-tarball">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -540,8 +540,8 @@ Dependency tarballs (advanced)
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Azenodo-tarball-manual">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=zenodo-tarball-manual" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/zenodo-tarball-manual">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/zenodo-tarball-manual">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-manual-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -625,8 +625,8 @@ Many, many dependencies
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Ajinja-yaml">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=jinja-yaml" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/jinja-yaml">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/jinja-yaml">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/jinja-yaml-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -714,8 +714,8 @@ Custom figure scripts
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-figure-rule">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-figure-rule" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/custom-figure-rule">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-rule-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -771,8 +771,8 @@ Figures that require LaTeX
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Alatex-figure">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=latex-figure" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/latex-figure">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/latex-figure">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/latex-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -824,8 +824,8 @@ Using graphicspath
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Agraphicspath">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=graphicspath" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/graphicspath">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/graphicspath">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/graphicspath-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -884,8 +884,8 @@ don't see what you're looking for here, please
                 </a>
             </td>
             <td style="padding-right: 15px;">
-                <a href="https://github.com/rodluger/showyourwork-example/blob/mnras">
-                    <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+                <a href="https://github.com/rodluger/showyourwork-example/tree/mnras">
+                    <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
                 </a>
             </td>
             <td style="padding-right: 15px;">
@@ -905,8 +905,8 @@ don't see what you're looking for here, please
                 </a>
             </td>
             <td style="padding-right: 15px;">
-                <a href="https://github.com/rodluger/showyourwork-example/blob/aa">
-                    <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+                <a href="https://github.com/rodluger/showyourwork-example/tree/aa">
+                    <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
                 </a>
             </td>
             <td style="padding-right: 15px;">
@@ -928,8 +928,8 @@ Custom manuscript name
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-ms-name">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-ms-name" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/custom-ms-name">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/custom-ms-name">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/custom-ms-name-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -957,8 +957,8 @@ Custom manuscript dependencies
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Ams-deps">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=ms-deps" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/ms-deps">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/ms-deps">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/ms-deps-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -1003,8 +1003,8 @@ Non-Python figure scripts
     <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Anon-python">
         <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=non-python" alt="test status"/>
     </a>
-    <a href="https://github.com/rodluger/showyourwork-example/blob/non-python">
-        <img src="https://img.shields.io/badge/article-tex-blue.svg?style=flat" alt="Repository"/>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/non-python">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/non-python-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -1048,3 +1048,65 @@ is another special variable that gets expanded to the name of the output figure 
 Note that because ``showyourwork`` expects scripts to have the ``.py`` extension
 by default, you might have to force-add (i.e., ``git add -f script.gv``) scripts
 with other extensions in order to actually commit them!
+
+
+.. _custom_margin_icons:
+
+Custom margin icons
+-------------------
+
+.. raw:: html
+
+    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Acustom-figure-link">
+        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=custom-figure-link" alt="test status"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-link">
+        <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-link-pdf/ms.pdf">
+        <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
+    </a>
+    <br/><br/>
+
+You can include custom margin icons next to figures or override the ones generated
+by ``showyourwork`` by using the ``\marginicon`` LaTeX command:
+
+.. code-block:: TeX
+
+    \begin{figure}[ht!]
+        \begin{centering}
+            \includegraphics[width=0.4\linewidth]{static/broccoli.pdf}
+            \caption{
+                A static figure with a custom link, provided using the
+                \texttt{marginicon} command within the \texttt{figure}
+                environment.
+            }
+            \marginicon{\href{https://github.com}{\color{pink}\faGrinStars}}
+            \label{fig:broccoli}
+        \end{centering}
+    \end{figure}
+
+You can also stack icons using the ``stackengine`` package (loaded by default):
+
+.. code-block:: TeX
+
+    \begin{figure}[ht!]
+        \begin{centering}
+            \includegraphics[width=0.4\linewidth]{figures/mandelbrot_light.pdf}
+            \caption{
+                An auto-generated figure with two vertically-stacked custom links.
+                Any calls to the \texttt{marginicon} command supersede the auto-generated icons.
+            }
+            \marginicon{%
+                \stackon[3pt]{%
+                    \href{https://github.com}{\color{blue}\faCat}%
+                }{%
+                    \href{https://github.com}{\color{red}\faDog}%
+                }%
+            }
+            \label{fig:mandelbrot_light}
+        \end{centering}
+    \end{figure}
+
+The icons in the example above are from the `fontawesome5 package <https://ctan.org/pkg/fontawesome5?lang=en>`_
+(also loaded by default).

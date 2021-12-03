@@ -20,6 +20,7 @@ Documentation
    config
    Snakefile
    action
+   latex
    local
    custom
    faqs
