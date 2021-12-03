@@ -215,6 +215,7 @@ def check_figure_format(figure):
             )
 
     # The label must always come after the figure caption
+    # Any marginicons must always come before the label
     if len(captions):
 
         # Index of last caption
@@ -231,10 +232,22 @@ def check_figure_format(figure):
                     break
 
             if label_idx < caption_idx:
-                raise ValueError(
+                raise ShowyourworkException(
                     "Figure label `{}` must come after the caption.".format(
                         (labels)[0].text
                     )
+                )
+
+            # Index of last marginicon
+            for marginicon_idx, element in enumerate(elements):
+                if element.tag == "MARGINICON":
+                    break
+            else:
+                marginicon_idx = 0
+
+            if marginicon_idx > label_idx:
+                raise ShowyourworkException(
+                    "Command \marginicon must come before the figure label."
                 )
 
     # Check that there is exactly one label

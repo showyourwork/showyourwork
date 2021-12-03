@@ -70,15 +70,20 @@
 }{}
 
 % Logging
-\newwrite\sywLogFile
-\immediate\openout\sywLogFile=showyourwork.log
-\newcommand\sywLogMessage[1]{%
+\newwrite\syw@LogFile
+\immediate\openout\syw@LogFile=showyourwork.log
+\newcommand\syw@LogMessage[1]{%
   \protected@write
-  \sywLogFile
+  \syw@LogFile
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
 }
-\sywLogMessage{This is showyourwork ((- version -)).}
+\syw@LogMessage{This is showyourwork ((- version -)).}
+
+% Custom margin icon
+\newcommand\marginicon[1]{
+  \renewcommand\showkeyslabelformat[1]{#1}%
+}
 
 % Define custom colors
 \definecolor{sywRed}{rgb}{0.80,0.14,0.19}
@@ -145,27 +150,27 @@
 % Hack `showkeys' to show margin links for figures
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
-  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\sywCurrentLabelName]%
-    \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
+  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\syw@CurrentLabelName]%
+    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
     \normalfont%
     \stackon[3pt]{%
-      \IfEq*{\usevalue{\sywCurrentLabelName_status}}{KEYNOTFOUND}{}{%
+      \IfEq*{\usevalue{\syw@CurrentLabelName_status}}{KEYNOTFOUND}{}{%
       \raisebox{0pt}[5pt][5pt]{%
-        \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\sywCurrentLabelName_script}}{%
-        \color{\usevalue{\sywCurrentLabelName_status}}\faGithub%
+        \href{((- repo.url -))/blob/((- repo.sha -))/\usevalue{\syw@CurrentLabelName_script}}{%
+        \color{\usevalue{\syw@CurrentLabelName_status}}\faGithub%
       }%
       }%
       }%
     }{%
       \stackon[3pt]{%
-        \IfEq*{\usevalue{\sywCurrentLabelName_datasetOne}}{KEYNOTFOUND}{}{%
-          \IfEq*{\usevalue{\sywCurrentLabelName_datasetOne}}{UNAUTHORIZED}{%
+        \IfEq*{\usevalue{\syw@CurrentLabelName_datasetOne}}{KEYNOTFOUND}{}{%
+          \IfEq*{\usevalue{\syw@CurrentLabelName_datasetOne}}{UNAUTHORIZED}{%
             \raisebox{0pt}[5pt][5pt]{%
               \color{sywRed}\faDatabase%
             }%
           }{%
             \raisebox{0pt}[5pt][5pt]{%
-              \href{\usevalue{\sywCurrentLabelName_datasetOne}}{%
+              \href{\usevalue{\syw@CurrentLabelName_datasetOne}}{%
                 \color{sywBlue}\faDatabase%
               }%
             }%
@@ -173,28 +178,28 @@
         }%
       }{%
         \stackon[3pt]{%
-          \IfEq*{\usevalue{\sywCurrentLabelName_datasetTwo}}{KEYNOTFOUND}{}{%
-            \IfEq*{\usevalue{\sywCurrentLabelName_datasetTwo}}{UNAUTHORIZED}{%
+          \IfEq*{\usevalue{\syw@CurrentLabelName_datasetTwo}}{KEYNOTFOUND}{}{%
+            \IfEq*{\usevalue{\syw@CurrentLabelName_datasetTwo}}{UNAUTHORIZED}{%
               \raisebox{0pt}[5pt][5pt]{%
                 \color{sywRed}\faDatabase%
               }%
             }{%
               \raisebox{0pt}[5pt][5pt]{%
-                \href{\usevalue{\sywCurrentLabelName_datasetTwo}}{%
+                \href{\usevalue{\syw@CurrentLabelName_datasetTwo}}{%
                   \color{sywBlue}\faDatabase%
                 }%
               }%
             }%
           }%
         }{%
-          \IfEq*{\usevalue{\sywCurrentLabelName_datasetThree}}{KEYNOTFOUND}{}{%
-            \IfEq*{\usevalue{\sywCurrentLabelName_datasetThree}}{UNAUTHORIZED}{%
+          \IfEq*{\usevalue{\syw@CurrentLabelName_datasetThree}}{KEYNOTFOUND}{}{%
+            \IfEq*{\usevalue{\syw@CurrentLabelName_datasetThree}}{UNAUTHORIZED}{%
               \raisebox{0pt}[5pt][5pt]{%
                 \color{sywRed}\faDatabase%
               }%
             }{%
               \raisebox{0pt}[5pt][5pt]{%
-                \href{\usevalue{\sywCurrentLabelName_datasetThree}}{%
+                \href{\usevalue{\syw@CurrentLabelName_datasetThree}}{%
                   \color{sywBlue}\faDatabase%
                 }%
               }%

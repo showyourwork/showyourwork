@@ -23,27 +23,32 @@
 \RequirePackage{graphicx} % includegraphics
 
 % Logging
-\newwrite\sywLogFile
-\immediate\openout\sywLogFile=showyourwork.xml
-\newcommand\sywLogMessage[1]{%
+\newwrite\syw@LogFile
+\immediate\openout\syw@LogFile=showyourwork.xml
+\newcommand\syw@LogMessage[1]{%
   \protected@write
-  \sywLogFile
+  \syw@LogFile
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
+}
+
+% Log custom figure links
+\newcommand\marginicon[1]{%
+  \syw@LogMessage{<MARGINICON />}%
 }
 
 % Log all figure and equation labels
 \renewcommand\showkeyslabelformat[1]{%
   \IfBeginWith*{#1}{eq:}{%
     % Equation label
-    \StrBehind*{#1}{eq:}[\sywCurrentLabelName]
-    \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
+    \StrBehind*{#1}{eq:}[\syw@CurrentLabelName]
+    \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
   }{}
   \IfBeginWith*{#1}{fig:}{%
     % Figure label
-    \StrBehind*{#1}{fig:}[\sywCurrentLabelName]
-    \StrBefore*{\sywCurrentLabelName:}{:}[\sywCurrentLabelName]% remove label :suffix
-    \sywLogMessage{<LABEL>\sywCurrentLabelName</LABEL>}%
+    \StrBehind*{#1}{fig:}[\syw@CurrentLabelName]
+    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
+    \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
   }{}
 }
 
@@ -51,51 +56,51 @@
 \let\oldfigure\figure
 \let\oldendfigure\endfigure
 \renewenvironment{figure}{%
-  \sywLogMessage{<FIGURE>}%
+  \syw@LogMessage{<FIGURE>}%
   \oldfigure%
 }{%
   \oldendfigure%
-  \sywLogMessage{</FIGURE>}%
+  \syw@LogMessage{</FIGURE>}%
 }
 \renewenvironment{figure*}{%
-  \sywLogMessage{<FIGURE>}%
+  \syw@LogMessage{<FIGURE>}%
   \oldfigure%
 }{%
   \oldendfigure%
-  \sywLogMessage{</FIGURE>}%
+  \syw@LogMessage{</FIGURE>}%
 }
 
 % Log equations
 \let\oldalign\align
 \let\oldendalign\endalign
 \renewenvironment{align}{%
-  \sywLogMessage{<ALIGN>}%
+  \syw@LogMessage{<ALIGN>}%
   \oldalign%
 }{%
   \oldendalign%
-  \sywLogMessage{</ALIGN>}%
+  \syw@LogMessage{</ALIGN>}%
 }
 \renewenvironment{align*}{%
-  \sywLogMessage{<ALIGN>}%
+  \syw@LogMessage{<ALIGN>}%
   \oldalign%
 }{%
   \oldendalign%
-  \sywLogMessage{</ALIGN>}%
+  \syw@LogMessage{</ALIGN>}%
 }
 
 % Log figure captions
 \renewcommand{\caption}{%
-  \sywLogMessage{<CAPTION />}%
+  \syw@LogMessage{<CAPTION />}%
 }
 
 % Log graphics
 \renewcommand{\includegraphics}[2][]{%
-  \sywLogMessage{<GRAPHICS>#2</GRAPHICS>}%
+  \syw@LogMessage{<GRAPHICS>#2</GRAPHICS>}%
 }
 
 % Log graphicspath
 \renewcommand{\graphicspath}[1]{%
-  \sywLogMessage{<GRAPHICSPATH>#1</GRAPHICSPATH>}%
+  \syw@LogMessage{<GRAPHICSPATH>#1</GRAPHICSPATH>}%
 }
 
 % Disable bibliography
