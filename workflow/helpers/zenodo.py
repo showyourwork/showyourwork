@@ -8,6 +8,9 @@ import requests
 import os
 import json
 import socket
+import subprocess
+import sys
+from contextlib import contextmanager
 import requests.packages.urllib3.util.connection as urllib3_cn
 
 
@@ -17,6 +20,26 @@ import requests.packages.urllib3.util.connection as urllib3_cn
 # See https://stackoverflow.com/a/62599037
 # and https://stackoverflow.com/a/46972341
 urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
+
+
+@contextmanager
+def no_traceback():
+    """
+    Sets a custom exception handler for the scope of a 'with' block.
+
+    https://stackoverflow.com/a/40347369
+    """
+    sys.excepthook = no_traceback_excepthook
+    yield
+    sys.excepthook = sys.__excepthook__
+
+
+def no_traceback_excepthook(type, value, traceback):
+    """
+    Print an exception message without the traceback.
+
+    """
+    print(": ".join([str(type.__name__), str(value)]))
 
 
 def check_status(r):
@@ -347,6 +370,27 @@ def upload_simulation(
 
     # Upload the new version of the file
     print("Uploading the file...")
+    try:
+        subprocess.check_output(
+            [
+                "curl",
+                "--progress-bar",
+                "--upload-file",
+                os.path.join(file_path, file_name),
+                "--request",
+                "PUT",
+                f"{bucket_url}/{file_name}?access_token={access_token}",
+            ]
+        )
+    except Exception as e:
+        msg = str(e).replace(access_token, "*" * len(access_token))
+        with no_traceback():
+            # Don't display the traceback, which will usually show
+            # the command we invoked containing the access token.
+            # Hide the access token from the error message.
+            raise Exception(msg)
+    """
+    # Old method using requests (no progress bar):
     with open(os.path.join(file_path, file_name), "rb") as fp:
         r = check_status(
             requests.put(
@@ -355,6 +399,7 @@ def upload_simulation(
                 params={"access_token": access_token},
             )
         )
+    """
 
     # Add some metadata
     print("Adding metadata...")

@@ -44,17 +44,6 @@ on how to produce figures from the corresponding figure scripts. See the :doc:`c
 page for details on how to get ``showyourwork`` to recognize non-Python scripts.
 
 
-What if I don't use ``includegraphics`` calls?
-----------------------------------------------
-
-``showyourwork`` inspects calls to ``includegraphics`` and ``label`` within ``figure``
-environments to infer figure dependencies in the workflow. However,
-many people use commands like ``plotone`` and ``plottwo`` or user-defined shorthand for
-including figures in LaTeX. **This should still work!** As long as these shortcuts
-call ``includegraphics`` somewhere along the line (which they do), ``showyourwork``
-should work just fine. Just remember to always label your figures!
-
-
 Can I nest figure scripts inside folders?
 -----------------------------------------
 
