@@ -9,7 +9,7 @@ module.exports = { publishOutput };
 // Get repo info
 const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
 const GITHUB_BRANCH = shell
-  .exec("echo ${GITHUB_REF##*/}")
+  .exec("echo ${GITHUB_REF##*/}", {silent:true})
   .replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
 const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
