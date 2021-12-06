@@ -28,7 +28,7 @@ const { uploadTemporaries } = require("./onerror");
       }
 
       // Get the current showyourwork version
-      const SHOWYOURWORK_VERSION = shell.exec("make version").stdout.replace("\n", "");
+      const SHOWYOURWORK_VERSION = shell.exec("grep 'tag/' showyourwork/README.md").stdout.split("tag/")[1].split('"')[0];
 
       // Setup conda or restore from cache
       await setupConda(SHOWYOURWORK_VERSION);
