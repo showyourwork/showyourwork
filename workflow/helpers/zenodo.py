@@ -97,7 +97,7 @@ def reserve():
             print("Please enter either 'y' or 'n'.")
 
     # Default token name
-    if sandbox:
+    if sandbox == "y":
         default_token_name = "ZENODO_SANDBOX_TOKEN"
     else:
         default_token_name = "ZENODO_TOKEN"
