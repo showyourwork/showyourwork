@@ -27,11 +27,14 @@ const { uploadTemporaries } = require("./onerror");
         installTeX();
       }
 
+      // Get the current showyourwork version
+      const SHOWYOURWORK_VERSION = shell.exec("make version").stdout.replace("\n", "");
+
       // Setup conda or restore from cache
-      await setupConda();
+      await setupConda(SHOWYOURWORK_VERSION);
 
       // Build the article
-      var output = await buildArticle();
+      var output = await buildArticle(SHOWYOURWORK_VERSION);
 
       // Generate the report
       var report = await generateReport();

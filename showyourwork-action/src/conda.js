@@ -7,18 +7,20 @@ const { makeId, exec, getInputAsArray } = require("./utils");
 // Exports
 module.exports = { setupConda };
 
-// Cache settings
-const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
-const RUNNER_OS = shell.env["RUNNER_OS"];
-const conda_key = `conda-v0.1.35-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
-const conda_restoreKeys = [];
-const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
 
 /**
  * Setup a conda distribution or restore it from cache.
  *
  */
-async function setupConda() {
+async function setupConda(SHOWYOURWORK_VERSION) {
+
+  // Cache settings
+  const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
+  const RUNNER_OS = shell.env["RUNNER_OS"];
+  const conda_key = `conda-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
+  const conda_restoreKeys = [];
+  const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
+
   // Restore conda cache
   core.startGroup("Restore conda cache");
   const conda_cacheKey = await cache.restoreCache(

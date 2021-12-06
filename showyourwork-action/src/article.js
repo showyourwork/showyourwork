@@ -11,7 +11,7 @@ module.exports = { buildArticle };
  * Build the article.
  *
  */
-async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
+async function buildArticle(SHOWYOURWORK_VERSION, ARTICLE_CACHE_NUMBER = null) {
   // Article cache settings. We're caching pretty much everything
   // in the repo, but overriding it with any files that changed since
   // the commit at which we cached everything
@@ -27,9 +27,9 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     .replace(/(\r\n|\n|\r)/gm, "");
   const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
   const randomId = makeId(8);
-  const article_key = `article-v0.1.35-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_key = `article-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
   const article_restoreKeys = [
-    `article-v0.1.35-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
+    `article-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
   const article_paths = [
     ".snakemake",

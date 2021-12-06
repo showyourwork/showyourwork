@@ -75,6 +75,11 @@ fast: snakemake_setup
 	snakemake $(FORCE_OPTIONS) $(OPTIONS) --config="download_only=true" ms.pdf
 
 
+# Print the showyourwork version
+version: snakemake_setup
+	@python -c "import re; print(re.search('tag/(.*?)\"', open('README.md', 'r').read()).groups()[0])"
+
+
 # Catch-all target: route all unknown targets to Snakemake
 %: Makefile snakemake_setup
 	@cd $(WORKDIR);\
