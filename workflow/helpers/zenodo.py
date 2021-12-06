@@ -390,7 +390,11 @@ def upload_simulation(
             # Hide the access token from the error message.
             raise Exception(msg)
     """
-    # Old method using requests (no progress bar):
+    # Old method using requests.
+    # This is safer (no chance of the access token getting printed
+    # to the logs) but AFAIK there's no way to add a progress bar.
+    # There are lots of solutions online that use `requests_toolbelt`,
+    # but those all require us to use the POST (not PUT) method.
     with open(os.path.join(file_path, file_name), "rb") as fp:
         r = check_status(
             requests.put(
