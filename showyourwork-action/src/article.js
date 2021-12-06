@@ -97,7 +97,6 @@ async function buildArticle(SHOWYOURWORK_VERSION, ARTICLE_CACHE_NUMBER = null) {
   if (CACHE_ARTICLE) {
     try {
       core.startGroup("Update article cache");
-      exec("make remove_zenodo");
       exec(`python ${ACTION_PATH}/src/cache.py --update`);
       const article_cacheId = await cache.saveCache(article_paths, article_key);
       core.endGroup();

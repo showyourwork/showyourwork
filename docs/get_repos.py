@@ -41,6 +41,7 @@ def get_repos(
         "rodluger/showyourwork-sandbox",
         "rodluger/showyourwork-example-dev",
         "gusbeane/fdbk_eos-temp",
+        "LBJ-Wade/showyourwork-template",
     ],
 ):
     """

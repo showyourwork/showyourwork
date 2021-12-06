@@ -446,7 +446,7 @@ def upload_simulation(
         else:
             raise e
 
-    # Store the deposit URL
+    # Store the deposit URL; this points to the VERSION id of the record
     deposit_url = f"https://{zenodo_url}/record/{draft_id}"
     with open(f"{file_path}/{file_name}.zenodo", "w") as f:
         print(deposit_url, file=f)

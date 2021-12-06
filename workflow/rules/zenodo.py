@@ -6,6 +6,7 @@ from pathlib import Path
 import copy
 from sphinx_mock import *
 from collections import OrderedDict
+import subprocess
 import jinja2
 import re
 
@@ -334,3 +335,63 @@ for file in dependencies:
         if dot_zenodo_file in files.dot_zenodo:
             if not f"{dependency}.zenodo" in config["dependencies"][file]:
                 config["dependencies"][file].append(f"{dependency}.zenodo")
+
+
+# If we have cached Zenodo downloads, and are running on CI (or
+# running locally but with the `download_only` flag), check to see
+# if the dataset is up to date. If there's a newer version, delete
+# it to force a re-download.
+if config["CI"] or config["download_only"]:
+
+    # Loop over files w/ dependencies
+    for file in config["dependencies"]:
+
+        # Loop over dependencies for this file
+        for dependency in config["dependencies"][file]:
+
+            # Name of the dummy file we'll use to track the upload/download
+            dot_zenodo_file = posix(f"{dependency}.zenodo")
+
+            if Path(dot_zenodo_file).exists():
+
+                # Grab the version id of the downloaded file
+                with open(dot_zenodo_file, "r") as f:
+                    url = f.readlines()[0].replace("\n", "")
+                    deposit_id = int(url.split("record/")[1])
+
+                # If we're tracking a version deposit, require the cached
+                # version to match the input version
+                if zenodo.deposit_id_type[dependency] == "version":
+                    if deposit_id == zenodo.deposit_id[dependency]:
+                        # We have the correct version downloaded
+                        pass
+                    else:
+                        # We have the wrong version
+                        print(f"Removing stale downloaded file `{dependency}`...")
+                        Path(dot_zenodo_file).unlink()
+
+                # If we're tracking a concept deposit, require the cached
+                # version to be the latest one
+                elif zenodo.deposit_id_type[dependency] == "concept":
+
+                    # Infer the latest version id by inspecting the curl redirect
+                    redirect_url = subprocess.check_output(
+                        [
+                            "curl",
+                            "-Ls",
+                            "-o",
+                            "/dev/null",
+                            "-w",
+                            "%{url_effective}",
+                            f"https://{zenodo.zenodo_url[dependency]}/record/{zenodo.deposit_id[dependency]}",
+                        ]
+                    ).decode("utf-8")
+                    latest_version_id = int(redirect_url.split("record/")[1])
+
+                    if deposit_id == latest_version_id:
+                        # We have the latest version downloaded
+                        pass
+                    else:
+                        # Our version is stale
+                        print(f"Removing stale downloaded file `{dependency}`...")
+                        Path(dot_zenodo_file).unlink()
