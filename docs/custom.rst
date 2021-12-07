@@ -1024,27 +1024,29 @@ For example, the default configuration for ``Python`` scripts looks like this:
 
     scripts:
         py:
-            python {script}
+            cd {script.path} && python {script.name}
 
 This tells ``showyourwork`` that to generate a figure from a ``Python`` script, all it
-needs to do is run the ``python`` shell command followed by the script name, which we
-provide as ``{script}`` (this special variable gets automatically expanded at runtime to
-the name--not the path--of the script file).
+needs to do is ``cd`` into the path containing the script (represented by the ``{script.path}``
+placeholder) and 
+run the ``python`` shell command followed by the script name (represented by the ``{script.name}``
+placeholder). See :ref:`config_scripts` for more information on the placeholder syntax.
 
 Users don't need to specify this, however, as ``Python`` is the default language.
 The example linked to above shows a more realistic use case: generating a directed
 acyclic graph (DAG) from a Graphviz ``.gv`` file:
 
-
 .. code-block:: yaml
 
     scripts:
         gv:
-            dot -Tpdf {script} > {figure}
+            dot -Tpdf {script} > {output}
 
 Here, we tell ``showyourwork`` that we need to run the ``dot`` command to generate
-the figure ``{figure}`` from the Graphviz script ``{script}``. Note that ``{figure}``
-is another special variable that gets expanded to the name of the output figure file.
+the figure ``{output}`` from the Graphviz script ``{script}``. Note that ``{output}``
+is another special placeholder that gets expanded to the output file
+(including the full path; ``{output.path}`` and ``{output.name}`` are also
+accepted placeholders).
 Note that because ``showyourwork`` expects scripts to have the ``.py`` extension
 by default, you might have to force-add (i.e., ``git add -f script.gv``) scripts
 with other extensions in order to actually commit them!

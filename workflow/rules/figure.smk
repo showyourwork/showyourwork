@@ -10,7 +10,7 @@ rule figure:
         "Generating figure `{output}`..."
     input:
         figure_script,
-        figure_script_dependencies,
+        script_dependencies,
         ancient(relpaths.temp / "scripts.json"),
         "environment.yml",
     output:
@@ -19,7 +19,7 @@ rule figure:
         figure="src/figures/(.*?)\.{}".format("|".join(config["figexts"])),
     params:
         script_name=script_name,
-        script_cmd=script_cmd,
+        shell_cmd=shell_cmd,
         FIGURES=relpaths.figures,
         TEMP=relpaths.temp
     conda:

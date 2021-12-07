@@ -115,6 +115,12 @@ exist a script called ``fractals.py`` in the ``src/figures`` directory.
 Executing this script with Python will produce a file called ``mandelbrot.pdf`` in the
 same directory.
 
+.. important::
+
+    Figure scripts are always executed from the directory containing them.
+    It's important to keep that in mind if you have relative paths inside 
+    these scripts!
+
 There are several caveats to and variations on this, many of which we cover
 in the :doc:`custom` page (such as how to :ref:`include multiple figures in the same
 figure environment <custom_multi>`, how to :ref:`have several different figure environments,

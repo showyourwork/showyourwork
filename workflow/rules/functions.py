@@ -8,6 +8,23 @@ import warnings
 from sphinx_mock import *
 
 
+class File:
+    """
+    Object used to resolve placeholder strings in shell commands.
+
+    """
+
+    def __init__(self, file, **kwargs):
+        self.file = file
+        self.path = str(Path(file).parents[0])
+        self.name = Path(file).name
+        self.extension = Path(file).suffix.split(".")[-1]
+        self.__dict__.update(**kwargs)
+
+    def __repr__(self):
+        return str(self.file)
+
+
 def input_class_file(wildcards):
     """
     Return the path to the LaTeX document class file.
@@ -32,10 +49,10 @@ def class_files(wildcards):
 
 def script_name(wildcards, input):
     """
-    Returns the name of the figure script for the `figure` rule.
+    Returns the name of the script for the `figure` rule.
 
-    Assumes the first python file in the `input` is the one that
-    generates the script.
+    Assumes the first *script* in the `input` is the one that
+    generates the output.
 
     """
     # Get all files with these extensions
@@ -47,28 +64,56 @@ def script_name(wildcards, input):
     return str(Path(scripts[0]).relative_to(Path("src") / "figures"))
 
 
-def script_cmd(wildcards, input):
+def shell_cmd(wildcards, input, output):
     """
-    Returns the shell command to produce a figure output from its script.
+    Returns the shell command to produce an output from a script.
 
     """
+    # Get the full path to the output file
+    output_file = output[0]
+
+    # Get the full path to the input script
     if hasattr(wildcards, "figure"):
-        figscript = figure_script(wildcards)
+        # If this is being run from the `figure` rule, the
+        # name of the script can be automatically inferred
+        input_script = figure_script(wildcards)
+    elif hasattr(wildcards, "dependency"):
+        # If this is being run from the `upload` rule, we
+        # can also easily infer the name of the script
+        input_script = zenodo.script[wildcards.dependency]
     else:
-        figscript = input[0]
-    ext = Path(figscript).suffix.split(".")[-1]
+        # Assume the script that generates the output is the
+        # first script in the list of inputs
+        try:
+            for file in input:
+                for ext in files.script_extensions:
+                    if file.endswith(ext):
+                        input_script = file
+                        raise StopIteration
+        except StopIteration:
+            pass
+        else:
+            raise ShowyourworkException(
+                f"Cannot determine input script for output file {output_file}.",
+                brief=f"Unable to determine input script.",
+                delayed=False,
+            )
+
+    # Get the command to run this kind of script
+    ext = Path(input_script).suffix.split(".")[-1]
     cmd = config["scripts"].get(ext, None)
     if cmd is None:
         raise ShowyourworkException(
-            f"Unknown figure script extension: `{ext}`.",
-            rule_name="figure",
-            brief=f"Unknown figure script extension: `{ext}`.",
-            context="showyourwork does not know how to generate figures from "
-            f"figure scripts ending in `{ext}`. Please provide instructions "
+            f"Unknown script extension: `{ext}`.",
+            brief=f"Unknown script extension: `{ext}`.",
+            context="showyourwork does not know how to generate output from "
+            f"scripts ending in `{ext}`. Please provide instructions "
             "in the `showyourwork.yml` config file; see the docs for details.",
             delayed=False,
         )
-    return cmd
+
+    # Fill in the placeholders
+    return cmd.format(script=File(input_script), output=File(output_file))
 
 
 def figure_script(wildcards):
@@ -141,27 +186,20 @@ def figure_script(wildcards):
     )
 
 
-def figure_script_dependencies(wildcards):
-    """
-    Return user-specified dependencies of the current figure script.
-
-    """
-    script = Path(figure_script(wildcards)).name
-    deps = []
-    for dep in config["dependencies"].get(str(relpaths.figures / script), []):
-        if type(dep) is OrderedDict:
-            dep = list(dep)[0]
-        deps.append(str(dep))
-    return deps
-
-
 def script_dependencies(wildcards):
     """
-    Return user-specified dependencies of the current script.
+    Return user-specified dependencies of a figure or a Zenodo dataset.
 
     """
-    script = zenodo.script[wildcards.dependency]
-    deps = [str(script)]
+    # Get the full path to the input script
+    if hasattr(wildcards, "figure"):
+        # This is a figure dependency
+        script = figure_script(wildcards)
+        deps = []
+    else:
+        # This is a Zenodo dependency
+        script = zenodo.script[wildcards.dependency]
+        deps = [str(script)]  # this is the script that generates the dataset
     for dep in config["dependencies"].get(script, []):
         if type(dep) is OrderedDict:
             dep = list(dep)[0]

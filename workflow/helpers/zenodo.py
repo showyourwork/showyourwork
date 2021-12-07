@@ -240,7 +240,7 @@ def upload_simulation(
     zenodo_url="zenodo.org",
     token_name="ZENODO_TOKEN",
     file_path=".",
-    script="",
+    shell_cmd="",
     repo_url="",
     max_pages=100,
     results_per_page=10,
@@ -407,10 +407,10 @@ def upload_simulation(
 
     # Add some metadata
     print("Adding metadata...")
-    if script == "unknown-script":
+    if shell_cmd == "":
         description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a>.<br/>"
     else:
-        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command:<br/><br/><pre><code class='language-bash'>cd src/figures && python {script}</code></pre><br/>"
+        description = f"{deposit_description}<br/><br/>Created using <a href='https://github.com/rodluger/showyourwork'>showyourwork</a> from <a href='{repo_url}'>this GitHub repo</a> using the following command:<br/><br/><pre><code class='language-bash'>{shell_cmd}</code></pre><br/>"
     data = {
         "metadata": {
             "title": deposit_title,
@@ -428,23 +428,31 @@ def upload_simulation(
         )
     )
 
-    # Publish the deposit
-    print("Publishing the deposit...")
-    try:
-        r = check_status(
-            requests.post(
-                f"https://{zenodo_url}/api/deposit/depositions/{draft_id}/actions/publish",
-                params={"access_token": access_token},
+    if os.getenv("SHOWYOURWORK_DISABLE_UPLOAD", "false") == "true":
+        # Don't publish deposits if we're in development mode
+        print("NOTE: Not publishing deposit (SHOWYOURWORK_DISABLE_UPLOAD).")
+        pass
+    else:
+        # Publish the deposit
+        print("Publishing the deposit...")
+        try:
+            r = check_status(
+                requests.post(
+                    f"https://{zenodo_url}/api/deposit/depositions/{draft_id}/actions/publish",
+                    params={"access_token": access_token},
+                )
             )
-        )
-    except ShowyourworkException as e:
+        except ShowyourworkException as e:
 
-        if "New version's files must differ from all previous versions" in e.message:
-            print("No change in the deposit's files. Aborting.")
-            # Revert to the previous deposit (the latest version) ID
-            draft_id = latest_id
-        else:
-            raise e
+            if (
+                "New version's files must differ from all previous versions"
+                in e.message
+            ):
+                print("No change in the deposit's files. Aborting.")
+                # Revert to the previous deposit (the latest version) ID
+                draft_id = latest_id
+            else:
+                raise e
 
     # Store the deposit URL; this points to the VERSION id of the record
     deposit_url = f"https://{zenodo_url}/record/{draft_id}"

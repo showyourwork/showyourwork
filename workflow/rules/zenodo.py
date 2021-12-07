@@ -259,12 +259,21 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
                     generate_rulename = re.sub(
                         "[^0-9a-zA-Z]+", "_", f"run_{zenodo.script[dependency]}"
                     )
-                    zenodo_script_name = Path(zenodo.script[dependency]).name
-                    zenodo_script_path = Path(zenodo.script[dependency]).parents[0]
 
-                    # TODO: Allow non-python scripts here!
-                    shell_cmd = (
-                        f"cd {zenodo_script_path} && python {zenodo_script_name}"
+                    # Get the command to run this kind of script
+                    ext = Path(zenodo.script[dependency]).suffix.split(".")[-1]
+                    cmd = config["scripts"].get(ext, None)
+                    if cmd is None:
+                        raise ShowyourworkException(
+                            f"Unknown script extension: `{ext}`.",
+                            brief=f"Unknown script extension: `{ext}`.",
+                            context="showyourwork does not know how to generate output from "
+                            f"scripts ending in `{ext}`. Please provide instructions "
+                            "in the `showyourwork.yml` config file; see the docs for details.",
+                            delayed=False,
+                        )
+                    cmd = cmd.format(
+                        script=File(zenodo.script[dependency]), output=dependency
                     )
 
                     with open(
@@ -274,7 +283,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
                             rulename=generate_rulename,
                             input=zenodo.script[dependency],
                             contents=zenodo.deposit_contents[dependency],
-                            shell_cmd=shell_cmd,
+                            shell_cmd=cmd,
                         )
                         print(smk, file=f)
                     dynamic_rules.append(generate_rulename)

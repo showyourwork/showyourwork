@@ -45,19 +45,6 @@ or to delete all the output:
 
     make clean
 
-Other commands include generating a directed acyclic graph (DAG) of the build process
-(you'll need to have `graphviz <https://graphviz.org/download/>`_ installed):
-
-.. code-block:: bash
-
-    make dag
-
-and generating an HTML build report for the workflow:
-
-.. code-block:: bash
-
-    make report
-
 Under the hood, the ``Makefile`` calls ``Snakemake``, asking for one core by
 default. You can change this behavior by providing a string of ``OPTIONS``, which
 get passed to ``snakemake``:
@@ -73,6 +60,53 @@ for instance, to run the workflow on two cores. Type
     snakemake --help
 
 for a list of all available options.
+
+There are several other custom commands accessible via ``make``. Here's the full
+list:
+
+``make``
+^^^^^^^^
+Default behavior; runs all steps needed to build ``ms.pdf`` from scratch.
+
+``make arxiv``
+^^^^^^^^^^^^^^
+Builds a tarball of your LaTeX source and figure files for easy upload to
+the `arXiv <http://arxiv.org/>`_.
+
+``make clean``
+^^^^^^^^^^^^^^
+Deletes all output for the default rule.
+
+``make dag``
+^^^^^^^^^^^^
+Generates a directed acyclic graph (DAG) of the build process
+(you'll need to have `graphviz <https://graphviz.org/download/>`_ installed).
+
+``make fast``
+^^^^^^^^^^^^^
+Builds your article PDF, but downloads everything it can from Zenodo, even
+if there's a rule to generate something from scratch. Useful to reproduce
+a third-party result without running expensive simulations.
+
+``make report``
+^^^^^^^^^^^^^^^
+Generates an HTML build report for the workflow.
+
+``make reserve``
+^^^^^^^^^^^^^^^^
+Reserves a fresh concept DOI on Zenodo or Zenodo sandbox, and prints it
+to the terminal. Read more about that at :ref:`id <zenodo.dataset.id>`.
+
+``make update``
+^^^^^^^^^^^^^^^
+Updates ``showyourwork`` to the latest release. Remember to check the
+`changelog <https://showyourwork.readthedocs.io/en/stable/changelog/>`_ for
+information on what's changed!
+
+``make version``
+^^^^^^^^^^^^^^^^
+Prints the current version of ``showyourwork``.
+
 
 
 Using LaTeX Workshop in VSCode

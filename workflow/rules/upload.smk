@@ -22,7 +22,7 @@ rule upload:
         deposit_creators=lambda w: zenodo.deposit_creators[w.dependency],
         zenodo_url=lambda w: zenodo.zenodo_url[w.dependency],
         token_name=lambda w: zenodo.token_name[w.dependency],
-        script=lambda w: zenodo.script[w.dependency],
+        shell_cmd=shell_cmd,
         repo_url="{}/tree/{}".format(get_repo_url(), get_repo_sha())
     script:
         "../scripts/upload.py"

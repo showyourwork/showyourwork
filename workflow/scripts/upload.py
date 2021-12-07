@@ -1,5 +1,5 @@
 """
-This script is executed from within the ``zenodo`` rule
+This script is executed from within the ``upload`` rule
 to upload files to Zenodo.
 
 """
@@ -22,7 +22,7 @@ try:
         zenodo_url=snakemake.params["zenodo_url"],
         token_name=snakemake.params["token_name"],
         file_path=snakemake.params["file_path"],
-        script=snakemake.params["script"],
+        shell_cmd=snakemake.params["shell_cmd"],
         repo_url=snakemake.params["repo_url"],
     )
 except ShowyourworkException as e:

@@ -14,7 +14,6 @@ rule generate:
     conda:
         posix(abspaths.user / "environment.yml")
     params:
-        path=lambda w: str(Path(zenodo.script[w.dependency]).parent),
-        script=lambda w: str(Path(zenodo.script[w.dependency]).name)
+        shell_cmd=shell_cmd
     shell:
-        "cd {params.path} && python {params.script}"
+        "{params.shell_cmd}"

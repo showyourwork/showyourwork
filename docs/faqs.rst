@@ -41,7 +41,8 @@ What if I don't use Python?
 By default, ``showyourwork`` expects figure scripts to be Python ``.py`` scripts.
 Other languages are also supported, but users must provide explicit instructions
 on how to produce figures from the corresponding figure scripts. See the :doc:`custom`
-page for details on how to get ``showyourwork`` to recognize non-Python scripts.
+page and the :ref:`config_scripts` keyword for details on how to get ``showyourwork`` 
+to recognize non-Python scripts.
 
 
 Can I nest figure scripts inside folders?

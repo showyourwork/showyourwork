@@ -18,7 +18,7 @@ from helpers.exceptions import ShowyourworkException
 
 # Params defined in `../rules/figure.smk`
 script_name = snakemake.params["script_name"]
-script_cmd = snakemake.params["script_cmd"]
+shell_cmd = snakemake.params["shell_cmd"]
 this_figure = snakemake.output[0]
 this_figure_name = Path(this_figure).name
 FIGURES = snakemake.params["FIGURES"]
@@ -82,8 +82,7 @@ if len(other_figures) != 0 and len(snakemake.output) == 1:
         # We need to run the script
         try:
             subprocess.check_call(
-                script_cmd.format(script=script_name, figure=this_figure_name),
-                cwd=FIGURES,
+                shell_cmd,
                 shell=True,
                 env=env,
             )
@@ -110,8 +109,7 @@ else:
     # This script has only one output, so no need for caching
     try:
         subprocess.check_call(
-            script_cmd.format(script=script_name, figure=this_figure_name),
-            cwd=FIGURES,
+            shell_cmd,
             shell=True,
             env=env,
         )

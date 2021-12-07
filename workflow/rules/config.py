@@ -110,7 +110,9 @@ config["CI"] = config.get("CI", (os.getenv("CI", "false") == "true"))
 
 #: Figure script extensions & executing instructions
 config["scripts"] = config.get("scripts", {})
-config["scripts"]["py"] = config["scripts"].get("py", "python {script}")
+config["scripts"]["py"] = config["scripts"].get(
+    "py", "cd {script.path} && python {script.name}"
+)
 
 
 #: Article name

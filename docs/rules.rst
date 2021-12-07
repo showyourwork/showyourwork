@@ -1,13 +1,3 @@
-rule remove_zenodo
-^^^^^^^^^^^^^^^^^^
-
-On CI, we delete all datasets at the end so we don't cache them;
-this ensures we're always generating the figures based on the
-latest version of the deposit.
-
-
-
-
 rule repo
 ^^^^^^^^^
 
