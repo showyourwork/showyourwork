@@ -80,6 +80,7 @@ consider citing <a href="https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L">
 in which we first introduced <code>showyourwork</code>:
 </p>
 
+{% raw %}
 ```
 @ARTICLE{Luger2021,
        author = {{Luger}, Rodrigo and {Bedell}, Megan and {Foreman-Mackey}, Daniel and {Crossfield}, Ian J.~M. and {Zhao}, Lily L. and {Hogg}, David W.},
@@ -97,6 +98,7 @@ archivePrefix = {arXiv},
       adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 ```
+{% endraw %}
 
 <p align="justify">
 We'd also appreciate it if you'd let us know about your project so we can showcase it
