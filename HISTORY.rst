@@ -1,11 +1,22 @@
 .. :changelog:
 
-0.2.0 (imminent)
-+++++++++++++++++++
+0.2.0 (2021-12-07)
+++++++++++++++++++
 
 - Major changes to the Zenodo interface! Please read the Zenodo section of the documentation on the
-  `showyourwork.yml file <https://showyourwork.readthedocs.io/en/v0.1.36/config/>`_
-  for details on what changed.
+  `showyourwork.yml file <https://showyourwork.readthedocs.io/en/v0.2.0/config/>`_
+  for details on what changed. The tl;dr is that all deposits now require either a **concept** or
+  a **version** id (read more about that here: https://help.zenodo.org/#versioning); this id
+  now uniquely identifies the deposit (previously, we relied on the uniqueness of the deposit
+  title & creators).
+- Added support for non-Python scripts to generate datasets and other dependencies
+- Fixed issue with large datasets lingering in the arxiv tarball
+- Added a ``make fast`` option to reproduce the results locally w/out running expensive steps
+- Signficiant improvements to the documentation, now with detailed info on LaTeX features
+- Added a ``marginicon`` command for custom margin icons next to figures
+- Added a progress bar to Zenodo uploads
+- Now re-downloading datasets on GitHub Actions if a newer version is available
+- Better path resolution when extracting tarballs
 - Changelog: `v0.1.35...v0.2.0 <https://github.com/rodluger/showyourwork/compare/v0.1.35...v0.2.0>`_
 
 0.1.35 (2021-11-22)
