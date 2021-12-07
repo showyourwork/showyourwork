@@ -57,7 +57,7 @@ If you already have an existing repository that you'd like to use, please check 
     </div>
 
     <p>
-        Once you're repository is created, it should look something like this:
+        Once your repository is created, it should look something like this:
     </p>
 
     <div align="center" style="margin-bottom: 17.25px;">

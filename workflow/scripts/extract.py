@@ -37,7 +37,7 @@ with tarfile.open(tarball) as f:
             # The file exists at the root
             actual_file = file.name
             print(f"Extracting {tarball}/{actual_file} -> {file}...")
-            f.extract(file.name, file.parents[0])
+            f.extract(actual_file, file.parents[0])
 
         elif file.relative_to(Path("src") / "data") in actual_contents:
 
@@ -56,5 +56,6 @@ with tarfile.open(tarball) as f:
                 context=f"The file `{file}` specified under the contents of the "
                 f"tarball `{tarball}` in the `showyourwork.yml` config file could "
                 "not be located within the tarball. Please check that the full path "
-                "to the file is correct. See the docs for more information.",
+                "to the file is correct. See the docs page on the `showyourwork.yml` "
+                "file for more information.",
             )
