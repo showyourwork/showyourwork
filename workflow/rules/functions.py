@@ -99,9 +99,15 @@ def shell_cmd(wildcards, input, output):
                 delayed=False,
             )
 
+    # If the user specifies a custom Snakemake rule, there may not
+    # be a script and that's ok
+    if input_script == files.unknown:
+        return ""
+
     # Get the command to run this kind of script
     ext = Path(input_script).suffix.split(".")[-1]
     cmd = config["scripts"].get(ext, None)
+
     if cmd is None:
         raise ShowyourworkException(
             f"Unknown script extension: `{ext}`.",

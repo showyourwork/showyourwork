@@ -23,7 +23,7 @@ async function buildArticle(SHOWYOURWORK_VERSION, ARTICLE_CACHE_NUMBER = null) {
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const GITHUB_REF = shell.env["GITHUB_REF"];
   const GITHUB_BRANCH = shell
-    .exec("echo ${GITHUB_REF##*/}")
+    .exec("echo ${GITHUB_REF##*/}", {silent: true})
     .replace(/(\r\n|\n|\r)/gm, "");
   const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
   const randomId = makeId(8);

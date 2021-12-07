@@ -9,5 +9,5 @@ rule {{ rulename }}:
         {% endfor %}
     conda:
         posix(abspaths.user / "environment.yml")
-    shell:
-        "tar -xzvf {input}"
+    script:
+        posix(abspaths.workflow / "scripts" / "extract.py")
