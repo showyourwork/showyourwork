@@ -72,3 +72,36 @@ Please check out <a href="https://showyourwork.readthedocs.io/en/stable/custom/"
   </tr>
   {% endfor %}
 </table>
+
+<h2>Attribution</h2>
+<p align="justify">
+We're working on writing up a citeable paper on <code>showyourwork</code>, but in the meantime, please
+consider citing <a href="https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L">this paper</a>,
+in which we first introduced <code>showyourwork</code>:
+</p>
+
+```
+@ARTICLE{Luger2021,
+       author = {{Luger}, Rodrigo and {Bedell}, Megan and {Foreman-Mackey}, Daniel and {Crossfield}, Ian J.~M. and {Zhao}, Lily L. and {Hogg}, David W.},
+        title = "{Mapping stellar surfaces III: An Efficient, Scalable, and Open-Source Doppler Imaging Model}",
+      journal = {arXiv e-prints},
+     keywords = {Astrophysics - Solar and Stellar Astrophysics, Astrophysics - Earth and Planetary Astrophysics, Astrophysics - Instrumentation and Methods for Astrophysics},
+         year = 2021,
+        month = oct,
+          eid = {arXiv:2110.06271},
+        pages = {arXiv:2110.06271},
+archivePrefix = {arXiv},
+       eprint = {2110.06271},
+ primaryClass = {astro-ph.SR},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+```
+
+<p align="justify">
+We'd also appreciate it if you'd let us know about your project so we can showcase it
+as an example on the documentation; consider adding your project to our
+<a href="https://github.com/rodluger/showyourwork/edit/main/docs/projects.json">list of curated repos</a>.
+And if you're interested in contributing to <code>showyourwork</code>, please consider
+opening a pull request to tackle one of the many <a href="https://github.com/rodluger/showyourwork/issues?q=is%3Aissue+is%3Aopen+">open issues</a> or open a new issue with requests/suggestions for new functionality.
+</p>
