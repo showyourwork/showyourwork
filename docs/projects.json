@@ -8,5 +8,10 @@
         "title": "Further Evidence for Modified Spin-down in Sun-like Stars: Pile-ups in the Temperature–Period Distribution",
         "authors": ["Trevor David"],
         "field": "Astronomy"
+    },
+    "TeamLEGWORK/LEGWORK-paper": {
+        "title": "LEGWORK: A python package for computing the evolution and detectability of stellar-origin gravitational-wave sources with space-based detectors",
+        "authors": ["Tom Wagg", "Katie Breivik", "Selma de Mink"],
+        "field": "Astronomy"
     }
 }
