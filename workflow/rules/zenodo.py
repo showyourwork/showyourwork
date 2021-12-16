@@ -165,7 +165,7 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
                 or "description" in dep_props
                 or "creators" in dep_props
             ):
-                raise ShowyourworkException(
+                raise ShowyourworkWarning(
                     "The `title`, `description`, and `creator` fields cannot be "
                     "provided for a Zenodo version id.",
                     brief="The `title`, `description`, and `creator` fields cannot be "
