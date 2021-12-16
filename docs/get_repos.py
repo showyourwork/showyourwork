@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import re
+import time
 
 
 def get_commit_count(repo, API_KEY):
@@ -36,6 +37,8 @@ def get_repos(
     filename="showyourwork.yml",
     path=".github/workflows",
     maxpages=10,
+    maxtries=5,
+    sleep_time=3.0,
     exclude_repos=[
         "rodluger/showyourwork-template",
         "rodluger/showyourwork-sandbox",
@@ -62,6 +65,7 @@ def get_repos(
     req = Request(f"https://api.github.com/repos/rodluger/showyourwork/tags")
     req.add_header("Accept", "application/vnd.github.v3+json")
     req.add_header("Authorization", f"token {API_KEY}")
+    req.add_header("User-Agent", "request")
     content = urlopen(req).read()
     content = json.loads(content)
     versions = {version["commit"]["sha"]: version["name"] for version in content}
@@ -69,14 +73,25 @@ def get_repos(
     # Now do an API search for all repos that use showyourwork
     for page in range(1, maxpages + 1):
         req = Request(
-            f"https://api.github.com/search/code?q=path:{path}+filename:{filename}&per_page=100&page={page}"
+            f"https://api.github.com/search/code?q=path:{path}+filename:{filename}&per_page=10&page={page}"
         )
         req.add_header("Accept", "application/vnd.github.v3+json")
         req.add_header("Authorization", f"token {API_KEY}")
-        try:
-            content = urlopen(req).read()
-        except urllib.error.HTTPError as e:
+        req.add_header("User-Agent", "request")
+
+        # API search requests sometimes fail with `HTTP Error 403: Forbidden``
+        # Not sure why! Let's try a few times before giving up.
+        for j in range(maxtries):
+            try:
+                content = urlopen(req).read()
+                break
+            except urllib.error.HTTPError as e:
+                print(f"Attempt {j+1}/{maxtries}: {e}")
+                time.sleep(sleep_time)
+        else:
+            print("Error populating the projects page.")
             break
+
         content = json.loads(content)
         if len(content["items"]) == 0:
             break
@@ -88,6 +103,7 @@ def get_repos(
                 req = Request(f"https://api.github.com/repos/{repo}")
                 req.add_header("Accept", "application/vnd.github.v3+json")
                 req.add_header("Authorization", f"token {API_KEY}")
+                req.add_header("User-Agent", "request")
                 content = urlopen(req).read()
                 content = json.loads(content)
                 date = content["pushed_at"]
@@ -96,6 +112,7 @@ def get_repos(
                 req = Request(f"https://api.github.com/repos/{repo}/git/trees/main")
                 req.add_header("Accept", "application/vnd.github.v3+json")
                 req.add_header("Authorization", f"token {API_KEY}")
+                req.add_header("User-Agent", "request")
                 content = urlopen(req).read()
                 content = json.loads(content)
                 try:
