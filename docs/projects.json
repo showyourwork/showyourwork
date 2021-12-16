@@ -4,11 +4,6 @@
         "authors": ["Rodrigo Luger"],
         "field": "Astronomy"
     },
-    "TeamLEGWORK/LEGWORK": {
-        "title": "A python package for computing the evolution and detectability of stellar-origin gravitational-wave sources with space-based detectors",
-        "authors": ["Tom Wagg, Katelyn Breivik, Selma E. De Mink"],
-        "field": "Astronomy"
-    },
     "katiebreivik/hush": {
         "title": "Applying the metallicity-dependent binary fraction to double white dwarf formation: Implications for LISA",
         "authors": ["Sarah Thiele, Katelyn Breivik, Robyn E. Sanderson"],
@@ -21,7 +16,7 @@
     },
     "TeamLEGWORK/LEGWORK-paper": {
         "title": "LEGWORK: A python package for computing the evolution and detectability of stellar-origin gravitational-wave sources with space-based detectors",
-        "authors": ["Tom Wagg", "Katie Breivik", "Selma de Mink"],
+        "authors": ["Tom Wagg", "Katelyn Breivik", "Selma de Mink"],
         "field": "Astronomy"
     }
 }
