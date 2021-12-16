@@ -69,6 +69,12 @@ reserve: snakemake_setup
 	python -c "import helpers; helpers.zenodo.reserve()"
 
 
+# Lint the user's repository
+lint: snakemake_setup
+	@cd workflow; \
+	python -c "import helpers; helpers.linter.lint()"
+
+
 # Fast build (never re-generate dependencies available on Zenodo)
 fast: snakemake_setup
 	@cd $(WORKDIR);\
