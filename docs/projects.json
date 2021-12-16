@@ -4,18 +4,17 @@
         "authors": ["Rodrigo Luger"],
         "field": "Astronomy"
     },
-
     "TeamLEGWORK/LEGWORK": {
         "title": "A python package for computing the evolution and detectability of stellar-origin gravitational-wave sources with space-based detectors",
         "authors": ["Tom Wagg, Katelyn Breivik, Selma E. De Mink"],
         "field": "Astronomy"
     },
-
     "katiebreivik/hush": {
         "title": "Applying the metallicity-dependent binary fraction to double white dwarf formation: Implications for LISA",
         "authors": ["Sarah Thiele, Katelyn Breivik, Robyn E. Sanderson"],
-    
-   "trevordavid/rossby-ridge": {
+        "field": "Astronomy"
+    },
+    "trevordavid/rossby-ridge": {
         "title": "Further Evidence for Modified Spin-down in Sun-like Stars: Pile-ups in the Temperature–Period Distribution",
         "authors": ["Trevor David"],
         "field": "Astronomy"
