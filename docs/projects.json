@@ -14,6 +14,10 @@
     "katiebreivik/hush": {
         "title": "Applying the metallicity-dependent binary fraction to double white dwarf formation: Implications for LISA",
         "authors": ["Sarah Thiele, Katelyn Breivik, Robyn E. Sanderson"],
+    
+   "trevordavid/rossby-ridge": {
+        "title": "Further Evidence for Modified Spin-down in Sun-like Stars: Pile-ups in the Temperature–Period Distribution",
+        "authors": ["Trevor David"],
         "field": "Astronomy"
     }
 }
