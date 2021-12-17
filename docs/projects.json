@@ -26,5 +26,12 @@
         "doi": "arXiv:2111.08717",
         "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211108717W",
         "field": "Astronomy"
+    },
+    "afeinstein20/v1298tau_tess": {
+        "title": "V1298 Tau with TESS: Updated Ephemerides, Radii, and Period Constraints from a Second Transit of V1298 Tau e",
+        "authors": ["Adina Feinstein", "Trevor David", "Benjamin Montet", "Daniel Foreman-Mackey", "John Livingston", "Andrew Mann"],
+        "doi": "arXiv:2111.08660",
+        "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211108660F/abstract",
+        "field": "Astronomy"
     }
 }
