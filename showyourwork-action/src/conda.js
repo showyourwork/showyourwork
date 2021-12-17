@@ -20,7 +20,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
   const conda_key = `conda-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
   const conda_restoreKeys = [];
   const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
-  const CACHE_CONDA = !(CONDA_CACHE_NUMBER == null);
+  const CACHE_CONDA = !(CONDA_CACHE_NUMBER == null || CONDA_CACHE_NUMBER == "");
 
   // Restore conda cache
   if (CACHE_CONDA) {
