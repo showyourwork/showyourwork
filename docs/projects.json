@@ -1,7 +1,7 @@
 {
     "rodluger/paparazzi": {
         "title": "An Efficient, Scalable, and Open-Source Doppler Imaging Model",
-        "authors": ["Rodrigo Luger"],
+        "authors": ["Rodrigo Luger", "Megan Bedell", "Daniel Foreman-Mackey", "Ian J. M. Crossfield", "Lily L. Zhao", "David W. Hogg"],
         "doi": "arXiv:2110.06271",
         "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L",
         "field": "Astronomy"
