@@ -114,8 +114,8 @@ for zrepo in ["zenodo", "zenodo_sandbox"]:
         # This step requires an internet connection the first time it is run
         # for a given ID; subsequent runs read the cached info (which should
         # never change!)
-        zenodo.deposit_id[dependency] = int(dep_props.get("id", None))
-        if zenodo.deposit_id[dependency] is None:
+        zenodo.deposit_id[dependency] = int(dep_props.get("id", 0))
+        if zenodo.deposit_id[dependency] == 0:
             raise ShowyourworkException(
                 f"Zenodo dependency {dependency} does not have an id.",
                 context=f"Please provide an id for the dependency {dependency} "
