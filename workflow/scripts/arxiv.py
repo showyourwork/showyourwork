@@ -22,6 +22,22 @@ ZENODO_FILES = snakemake.params["ZENODO_FILES"]
 arxiv_tarball_exclude = snakemake.params["arxiv_tarball_exclude"]
 
 
+# Paths that are ALWAYS excluded from the tarball
+SHOWYOURWORK_EXCLUDE = [
+    "src/**/*.py",
+    "src/**/*.ipynb",
+    "src/**/matplotlibrc",
+    "src/**/.gitignore",
+    "src/**/__pycache__",
+    "src/**/.ipynb_checkpoints",
+    "src/**/__latexindent_temp.tex",
+    "src/**/sywxml.sty",
+    "src/**/*.zenodo",
+    "src/**/.DS_Store",
+    "src/data",
+]
+
+
 # Run tectonic to get the .bbl file
 tectonic_args = ["--keep-intermediates"]
 if verbose:
@@ -37,63 +53,30 @@ for file in SRC.glob(".showyourwork-ms.*"):
         os.remove(file)
 
 
-# Copy the `src` folder over to a temporary location
+# Files to be excluded
+exclude = []
+for name in arxiv_tarball_exclude + SHOWYOURWORK_EXCLUDE + ZENODO_FILES:
+    for file in Path(".").glob(name):
+        if file.is_dir():
+            exclude.extend(file.rglob("*"))
+        else:
+            exclude.append(file)
+
+
+# Recursively find all files and copy over everything
+# (with the above exclusions) to `.showyourwork/arxiv`
 if (TEMP / "arxiv").exists():
     shutil.rmtree(TEMP / "arxiv")
-shutil.copytree(SRC, TEMP / "arxiv")
+for file in Path(SRC).rglob("*"):
+    if (not file.is_dir()) and (not file in exclude):
+        dest = TEMP / "arxiv" / file.relative_to(SRC)
+        os.makedirs(dest.parents[0], exist_ok=True)
+        shutil.copy(file, dest)
 
 
 # Rename our temporary files to `ms.*`
 for file in (TEMP / "arxiv").glob(".showyourwork-ms.*"):
     os.rename(file, str(file).replace(".showyourwork-ms", "ms"))
-
-
-# Remove user-defined files.
-# Note that these are relative to the repo root!
-for name in arxiv_tarball_exclude:
-    for file in Path(".").glob(name):
-        # Get path to the version of the file in `arxiv`
-        try:
-            arxiv_file = TEMP / "arxiv" / file.relative_to(SRC)
-        except ValueError:
-            continue
-        if arxiv_file.exists():
-            if arxiv_file.is_dir():
-                shutil.rmtree(arxiv_file)
-            else:
-                os.remove(arxiv_file)
-
-
-# Remove additional unnecessary files
-other_exclude = [
-    "**/*.py",
-    "**/matplotlibrc",
-    "**/.gitignore",
-    "**/__pycache__",
-    "**/__latexindent_temp.tex",
-    "**/sywxml.sty",
-    "**/*.zenodo",
-    "data",
-]
-for name in other_exclude:
-    for file in (TEMP / "arxiv").glob(name):
-        try:
-            os.remove(file)
-        except (IsADirectoryError, PermissionError):
-            shutil.rmtree(file)
-
-
-# Remove datasets
-for file in ZENODO_FILES:
-    try:
-        arxiv_file = TEMP / "arxiv" / Path(file).relative_to(SRC)
-    except ValueError:
-        continue
-    if arxiv_file.exists():
-        if arxiv_file.is_dir():
-            shutil.rmtree(arxiv_file)
-        else:
-            os.remove(arxiv_file)
 
 
 # Tar it up

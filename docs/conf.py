@@ -24,13 +24,17 @@ fields = list(
     set([projects[project]["field"] for project in projects]) - set(["Uncategorized"])
 )
 repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[::-1]
+count = {field: 0 for field in fields}
+count["Uncategorized"] = 0
+for project in projects:
+    count[projects[project]["field"]] += 1
 
 # Generate the `projects.rst` page
 env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
 with open("projects.rst", "w") as f:
     print(
         env.get_template("projects.rst.jinja").render(
-            projects=projects, fields=fields, repos=repos
+            projects=projects, fields=fields, repos=repos, count=count
         ),
         file=f,
     )

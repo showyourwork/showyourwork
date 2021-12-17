@@ -138,7 +138,6 @@ class ShowyourworkWarning:
     def __init__(
         self,
         message,
-        exception_file=None,
         script=None,
         rule_name=None,
         context=None,

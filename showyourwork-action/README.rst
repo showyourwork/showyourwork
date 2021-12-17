@@ -19,7 +19,7 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 :code:`article-cache-number`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Optional** The **showyourwork-action** caches everything in your repository to speed up future builds. Sometimes, however, it's useful to clear the cache, such as when something breaks. This can be done by incrementing this number, which tells the action which version of the cache to load. Default: :code:`0`.
+**Optional** The **showyourwork-action** caches everything in your repository to speed up future builds. Sometimes, however, it's useful to clear the cache, such as when something breaks. This can be done by incrementing this number, which tells the action which version of the cache to load. Default: :code:`0`. Note that you can disable article caching by setting this variable to `null` or to an empty value.
 
 :code:`arxiv-tarball`
 ~~~~~~~~~~~~~~~~~~~~~
@@ -29,7 +29,7 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 :code:`conda-cache-number`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Optional** Bump this number to reset the :code:`conda` cache. The behavior is similar to that of ``article-cache-number`` above. Default: :code:`0`.
+**Optional** Bump this number to reset the :code:`conda` cache. The behavior is similar to that of ``article-cache-number`` above. Default: :code:`0`. Note that you can disable conda caching by setting this variable to `null` or to an empty value.
 
 :code:`conda-url`
 ~~~~~~~~~~~~~~~~~
