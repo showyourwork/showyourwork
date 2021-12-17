@@ -46,6 +46,12 @@ async function buildArticle(SHOWYOURWORK_VERSION, ARTICLE_CACHE_NUMBER = null) {
     (GITHUB_SLUG == "rodluger/showyourwork-example-dev")
   );
 
+  // DEBUG
+  core.info("ARTICLE_CACHE_NUMBER:");
+  core.info(ARTICLE_CACHE_NUMBER);
+  core.info("ARTICLE_CACHE_NUMBER == null:");
+  core.info(ARTICLE_CACHE_NUMBER == null);
+
   // We'll cache the article unless it's a unit test run
   // or if the user set the cache number to `null` (or empty).
   // But for good measure, we test the caching feature on 
