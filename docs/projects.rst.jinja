@@ -29,7 +29,7 @@ on a project based on ``showyourwork``, please add it to this list by
 
 {% for field in fields %}
 
-{{ field }} articles
+{{ field }} articles ({{ count[field] }})
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 {% for repo in repos %}
@@ -37,6 +37,11 @@ on a project based on ``showyourwork``, please add it to this list by
 - `{{ repo }} <https://github.com/{{ repo }}>`_
     - **Title:** {{ projects[repo]["title"] }}
     - **Authors:** {{ ", ".join(projects[repo]["authors"]) }}
+{% if projects[repo]["doi"] == "N/A" %}
+    - **DOI:** N/A
+{% else %}
+    - **DOI:** `{{ projects[repo]["doi"] }} <{{ projects[repo]["url"] }}>`_
+{% endif %}
     - **Version:** ``{{ projects[repo]["version"] }}``
     - **Commits:** ``{{ projects[repo]["commits"] }}``
     - **Last updated:** ``{{ projects[repo]["date"].split("T")[0] }}``
@@ -45,8 +50,8 @@ on a project based on ``showyourwork``, please add it to this list by
 
 {% endfor %}
 
-Uncategorized
-^^^^^^^^^^^^^
+Uncategorized ({{ count["Uncategorized"] }})
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These were found via a quick search on GitHub, and are listed in order of the
 timestamp of the latest commit. If you would like to showcase one of

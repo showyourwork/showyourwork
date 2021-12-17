@@ -2,21 +2,29 @@
     "rodluger/paparazzi": {
         "title": "An Efficient, Scalable, and Open-Source Doppler Imaging Model",
         "authors": ["Rodrigo Luger"],
+        "doi": "arXiv:2110.06271",
+        "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L",
         "field": "Astronomy"
     },
     "katiebreivik/hush": {
         "title": "Applying the metallicity-dependent binary fraction to double white dwarf formation: Implications for LISA",
         "authors": ["Sarah Thiele, Katelyn Breivik, Robyn E. Sanderson"],
+        "doi": "arXiv:2111.13700",
+        "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211113700T",
         "field": "Astronomy"
     },
     "trevordavid/rossby-ridge": {
         "title": "Further Evidence for Modified Spin-down in Sun-like Stars: Pile-ups in the Temperature–Period Distribution",
         "authors": ["Trevor David"],
+        "doi": "N/A",
+        "url": "",
         "field": "Astronomy"
     },
     "TeamLEGWORK/LEGWORK-paper": {
         "title": "LEGWORK: A python package for computing the evolution and detectability of stellar-origin gravitational-wave sources with space-based detectors",
         "authors": ["Tom Wagg", "Katelyn Breivik", "Selma de Mink"],
+        "doi": "arXiv:2111.08717",
+        "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211108717W",
         "field": "Astronomy"
     }
 }
