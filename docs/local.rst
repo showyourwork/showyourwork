@@ -88,6 +88,11 @@ Builds your article PDF, but downloads everything it can from Zenodo, even
 if there's a rule to generate something from scratch. Useful to reproduce
 a third-party result without running expensive simulations.
 
+``make lint``
+^^^^^^^^^^^^^
+Inspects your repository for missing files or improper directory structure
+and makes suggestions about best practices for reproducible articles.
+
 ``make report``
 ^^^^^^^^^^^^^^^
 Generates an HTML build report for the workflow.

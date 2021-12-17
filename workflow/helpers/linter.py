@@ -66,6 +66,9 @@ class lint:
         # Check the README.md
         self.check_readme()
 
+        # Check the CITATION.cff
+        self.check_citation()
+
         # Print errors
         if len(self.errors):
             for error in self.errors:
@@ -125,6 +128,9 @@ class lint:
         Checks the content of the README.
 
         """
+        if not (ROOT / "README.md").exists():
+            return
+
         with open(ROOT / "README.md", "r") as f:
             contents = f.read()
 
@@ -159,6 +165,27 @@ class lint:
                 Error(
                     "It looks like you still have the `showyourwork` logo in your README.",
                     "While we are flattered, consider adding a header or logo showcasing your paper instead!",
+                    level="suggestion",
+                )
+            )
+
+    def check_citation(self):
+        """
+        Checks the content of the CITATION file.
+
+        """
+        if not (ROOT / "CITATION.cff").exists():
+            return
+
+        with open(ROOT / "CITATION.cff", "r") as f:
+            contents = f.read()
+
+        # Check that the user at least filled in their names
+        if "Last Name" in contents:
+            self.errors.append(
+                Error(
+                    "It looks like you haven't edited the CITATION.cff file.",
+                    "Please take a moment to add the relevant info so others can cite your work.",
                     level="suggestion",
                 )
             )
