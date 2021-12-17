@@ -51,12 +51,23 @@ async function buildArticle(SHOWYOURWORK_VERSION, ARTICLE_CACHE_NUMBER = null) {
   core.info(ARTICLE_CACHE_NUMBER);
   core.info("ARTICLE_CACHE_NUMBER == null:");
   core.info(ARTICLE_CACHE_NUMBER == null);
+  core.info("ARTICLE_CACHE_NUMBER == '':");
+  core.info(ARTICLE_CACHE_NUMBER == "");
 
   // We'll cache the article unless it's a unit test run
   // or if the user set the cache number to `null` (or empty).
   // But for good measure, we test the caching feature on 
   // the ``simple-figure`` branch when running unit tests
-  const CACHE_ARTICLE = (!(UNIT_TEST || ARTICLE_CACHE_NUMBER == null) || (GITHUB_BRANCH == "simple-figure"));
+  const CACHE_ARTICLE = (
+    !(
+      UNIT_TEST || 
+      ARTICLE_CACHE_NUMBER == null || 
+      ARTICLE_CACHE_NUMBER == ""
+    ) || 
+    (
+      GITHUB_BRANCH == "simple-figure"
+    )
+  );
 
   // Restore the article cache
   if (CACHE_ARTICLE) {
