@@ -7,7 +7,6 @@ OPTIONS         ?= -c1
 FORCE_OPTIONS   := -c1 --use-conda
 TEMPORARIES     := .showyourwork src/ms.pdf src/__latexindent*.tex
 CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
-GRAPHVIZ        := $(shell dot -V 2&> /dev/null && echo 1 || echo 0)
 JINJA2          := $(shell conda list jinja2 | grep "jinja2 " && echo 1 || echo 0)
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 WORKDIR         := ..
