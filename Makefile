@@ -7,6 +7,8 @@ OPTIONS         ?= -c1
 FORCE_OPTIONS   := -c1 --use-conda
 TEMPORARIES     := .showyourwork src/ms.pdf src/__latexindent*.tex
 CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
+GRAPHVIZ        := $(shell dot -V 2&> /dev/null && echo 1 || echo 0)
+JINJA2          := $(shell conda list jinja2 | grep "jinja2 " && echo 1 || echo 0)
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 WORKDIR         := ..
 CLEAN_SYW       := rm -rf $(TEMPORARIES)
@@ -29,12 +31,27 @@ conda_setup:
 	fi
 
 
+# Ensure jinja2 is installed
+jinja2_setup: conda_setup
+	@if [ "$(JINJA2)" = "0" ]; then \
+		echo "Jinja2 not found. Installing it using conda...";\
+		conda install -c conda-forge jinja2==2.11.3; \
+	fi
+
+
 # Ensure Snakemake is setup
-# If we're on an M1 mac, we install snakemake-minimal for better compatibility
-snakemake_setup: conda_setup
+snakemake_setup: conda_setup jinja2_setup
 	@if [ "$(SNAKEMAKE)" = "0" ]; then \
 		echo "Snakemake not found. Installing it using conda...";\
-		conda install -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal jinja2; \
+		conda install -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3; \
+	fi
+
+
+# Ensure Graphviz is setup
+graphviz_setup: conda_setup
+	@if [ "$(GRAPHVIZ)" = "0" ]; then \
+		echo "Graphviz not found. Installing it using conda...";\
+		conda install graphviz==2.40.1; \
 	fi
 
 
@@ -51,7 +68,7 @@ report: snakemake_setup
 
 
 # Generate a workflow directed acyclic graph (DAG)
-dag: snakemake_setup
+dag: graphviz_setup
 	@cd $(WORKDIR);\
 	snakemake $(FORCE_OPTIONS) $(OPTIONS) ms.pdf --dag | dot -Tpdf > dag.pdf
 
