@@ -13,7 +13,7 @@ WORKDIR         := ..
 CLEAN_SYW       := rm -rf $(TEMPORARIES)
 CLEAN_SM        := snakemake $(OPTIONS) $(FORCE_OPTIONS) ms.pdf --delete-all-output
 
-.PHONY:  ms.pdf clean report dag update snakemake_setup conda_setup Makefile
+.PHONY:  ms.pdf clean report reserve lint fast version update snakemake_setup conda_setup jinja2_setup Makefile
 
 
 # Default target: generate the article
