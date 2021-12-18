@@ -59,7 +59,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
     // `snakemake-minimal`, pinning `mamba` at the previous stable release,
     // and manually installing `graphviz` (`dot`) temporarily fixes these issues.
     exec(
-      "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal jinja2",
+      "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal jinja2 graphviz",
       "Install snakemake"
     );
   }
