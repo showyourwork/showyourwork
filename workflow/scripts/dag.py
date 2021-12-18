@@ -23,6 +23,19 @@ FIGURES = snakemake.params.get("FIGURES", "src/figures")
 with open(".showyourwork/scripts.json", "r") as f:
     script_info = json.load(f)
 
+# Normalize the entries the user provides them as an OrderedDict
+# in the YAML file (i.e., as list `-` entries)
+if type(zenodo) is list:
+    zz = {}
+    for z in zenodo:
+        zz.update(dict(z))
+    zenodo = zz
+if type(sandbox) is list:
+    zz = {}
+    for z in sandbox:
+        zz.update(dict(z))
+    sandbox = zz
+
 # Instantiate the graph
 dot = graphviz.Digraph("dag", node_attr={"shape": "box", "penwidth": "2", "width": "1"})
 
