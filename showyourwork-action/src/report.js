@@ -11,8 +11,13 @@ module.exports = { generateReport };
  *
  */
 async function generateReport() {
-  core.startGroup("Generate article report");
-  exec("make dag && cp src/figures/dag.pdf dag.pdf");
-  core.endGroup();
-  return ["dag.pdf"];
+  try {
+    core.startGroup("Generate article report");
+    exec("make src/figures/dag.pdf && cp src/figures/dag.pdf dag.pdf");
+    core.endGroup();
+    return ["dag.pdf"];
+  } catch (error) {
+    core.warning(error.message);
+    return [];
+  }
 }
