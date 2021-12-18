@@ -63,7 +63,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
       "Install snakemake"
     );
     exec(
-      "conda install -y -c conda-forge jinja2==2.10",
+      "conda install -y -c conda-forge jinja2==2.11.3",
       "Install jinja2"
     );
     exec(
