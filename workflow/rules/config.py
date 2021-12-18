@@ -4,6 +4,8 @@ values if none are provided. Current config options are
 
 - ``verbose`` (*bool*): Enable verbose output? Default False.
 
+- ``dag`` (*bool*): Generate a DAG of the build process? Default False.
+
 - ``figexts`` (*list*): List of recognized figure extensions. Default
   is ``["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]``
 
@@ -49,6 +51,9 @@ except NameError:
 
 #: Verbosity
 config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
+
+#: DAG generation
+config["dag"] = str(config.get("dag", "false")).lower() == "true"
 
 #: Zenodo behavior
 config["download_only"] = str(config.get("download_only", "false")).lower() == "true"

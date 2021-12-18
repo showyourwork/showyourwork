@@ -12,7 +12,7 @@ module.exports = { generateReport };
  */
 async function generateReport() {
   core.startGroup("Generate article report");
-  exec("snakemake ms.pdf --dag | dot -Tpdf > dag.pdf");
+  exec("make dag && cp src/figures/dag.pdf dag.pdf");
   core.endGroup();
   return ["dag.pdf"];
 }

@@ -16,6 +16,7 @@ rule pdf:
         files.tectonic,
         class_files,
         figures,
+        rules.dag.output if config["dag"] else []
     output:
         report("ms.pdf", category="Article")
     params:

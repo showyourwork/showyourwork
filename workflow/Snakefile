@@ -57,6 +57,7 @@ include: "rules/metadata.smk"
 include: "rules/figure.smk"
 include: "rules/texfile.smk"
 include: "rules/stylesheet.smk"
+include: "rules/dag.smk"
 include: "rules/pdf.smk"
 include: "rules/arxiv.smk"
 

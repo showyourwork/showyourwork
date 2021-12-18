@@ -17,7 +17,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
   // Cache settings
   const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
-  const conda_key = `conda-dev2-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
+  const conda_key = `conda-dev3-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
   const conda_restoreKeys = [];
   const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
   const CACHE_CONDA = !(CONDA_CACHE_NUMBER == null || CONDA_CACHE_NUMBER == "");
@@ -47,28 +47,15 @@ async function setupConda(SHOWYOURWORK_VERSION) {
   // Display some info
   exec(". ~/.conda/etc/profile.d/conda.sh && conda info", "Conda info");
 
-  // Create environment & install snakemake
+  // Create environment
   if (!shell.test("-d", "./envs")) {
     exec(
       ". ~/.conda/etc/profile.d/conda.sh && conda create -y -p ./envs",
       "Create environment"
     );
-    // NOTE: 2021/11/19 workaround; all builds on CI hang indefinitely
-    // when trying to set up the conda environment for snakemake due to
-    // *something* either in `mamba` or `snakemake`. Downgrading to
-    // `snakemake-minimal`, pinning `mamba` at the previous stable release,
-    // and manually installing `graphviz` (`dot`) temporarily fixes these issues.
     exec(
-      "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3",
-      "Install snakemake"
-    );
-    exec(
-      "conda install -y -c conda-forge jinja2==2.11.3",
-      "Install jinja2"
-    );
-    exec(
-      "conda install -y graphviz==2.40.1",
-      "Install graphviz"
+      "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3 jinja2==2.11.3",
+      "Install mamba, snakemake-minimal, and jinja2"
     );
   }
 

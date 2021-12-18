@@ -45,15 +45,7 @@ snakemake_setup: conda_setup jinja2_setup
 		echo "Snakemake not found. Installing it using conda...";\
 		conda install -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3; \
 	fi
-
-
-# Ensure Graphviz is setup
-graphviz_setup: conda_setup
-	@if [ "$(GRAPHVIZ)" = "0" ]; then \
-		echo "Graphviz not found. Installing it using conda...";\
-		conda install graphviz==2.40.1; \
-	fi
-
+	
 
 # Remove all intermediates, outputs, and temporaries
 clean: snakemake_setup
@@ -65,12 +57,6 @@ clean: snakemake_setup
 report: snakemake_setup
 	@cd $(WORKDIR);\
 	snakemake $(FORCE_OPTIONS) $(OPTIONS) ms.pdf --report
-
-
-# Generate a workflow directed acyclic graph (DAG)
-dag: graphviz_setup
-	@cd $(WORKDIR);\
-	snakemake $(FORCE_OPTIONS) $(OPTIONS) ms.pdf --dag | dot -Tpdf > dag.pdf
 
 
 # Update to the latest version of showyourwork
