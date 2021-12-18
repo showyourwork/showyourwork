@@ -9,6 +9,8 @@ rule dotgraph:
         figures
     output:
         temp("src/figures/dag.gv")
+    params:
+        FIGURES=relpaths.figures
     conda:
         "../envs/dag.yml"
     script:
