@@ -208,3 +208,15 @@ to a figure caption. This can be used to include custom margin icons or to
 override the ``showyourwork``-generated icons. It should be included after
 any calls to ``\caption`` and before any calls to ``\label``. See
 :ref:`custom_margin_icons`.
+
+``\GitHubURL``
+^^^^^^^^^^^^^^^
+
+A macro that resolves to the current repository URL 
+(i.e., `https://github.com/user/repo`).
+
+``\GitHubSHA``
+^^^^^^^^^^^^^^^
+
+A macro that resolves to the current commit SHA
+(i.e., `31860f2f558b05d8c941d8f73c64f5dbf5ee79db`).

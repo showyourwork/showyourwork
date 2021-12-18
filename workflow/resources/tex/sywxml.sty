@@ -50,6 +50,12 @@
     \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
     \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
   }{}
+  \IfBeginWith*{#1}{fig*:}{%
+    % Figure label
+    \StrBehind*{#1}{fig*:}[\syw@CurrentLabelName]
+    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
+    \syw@LogMessage{<LABELSTAR>\syw@CurrentLabelName</LABELSTAR>}%
+  }{}
 }
 
 % Log figures
@@ -107,6 +113,7 @@
 \renewcommand{\bibliography}[1]{}
 
 % Disable user-facing commands
+\newcommand\GitHubURL{}
 \newcommand\GitHubSHA{}
 \newcommand\GitHubIcon{}
 \newcommand\GitHubIconRed{}

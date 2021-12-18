@@ -303,4 +303,6 @@ def check_figure_format(figure):
         )
     elif len(labels) == 0:
         # Unable to infer script
-        warnings.warn("There is a figure without a label.")
+        # Only warn the user if they didn't provide a \label{fig*:...}
+        if len(figure.findall("LABELSTAR")) == 0:
+            warnings.warn("There is a figure without a label.")
