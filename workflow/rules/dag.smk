@@ -1,7 +1,10 @@
 rule dotgraph:
     """
-    
+    Generate a .gv graph of the build process in the DOT language.
+
     """
+    message:
+        "Generating a DOT graph of the build process..."
     input:
         figures
     output:
@@ -16,8 +19,11 @@ for ext in config["figexts"]:
     if ext.lower() != "png":
         rule:
             """
-    
+            Convert a figure file to a PNG thumbnail.
+
             """
+            message:
+                "Generating PNG thumnail for figure `{input}`..."
             input:
                 "{figure}." + ext
             output:
@@ -25,13 +31,16 @@ for ext in config["figexts"]:
             conda:
                 "../envs/dag.yml"
             shell:
-                "convert {input} {output}"
+                "convert -resize 500x500 {input} {output}"
 
 
 rule dag:
     """
-    
+    Generate a DAG (directed acyclic graph) of the build process.
+
     """
+    message:
+        "Generating the DAG of the build process..."
     input:
         "src/figures/dag.gv",
         lambda w: [fig[: -len(Path(fig).suffix)] + ".png" for fig in figures(w)]

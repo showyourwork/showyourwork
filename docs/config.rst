@@ -62,6 +62,28 @@ for debugging purposes.
   CI: false
 
 
+``dag``
+^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Set to ``true`` to turn on DAG (directed acyclic graph) generation.
+The DAG is a graph showing the dependencies among the inputs and outputs of
+your project. While ``Snakemake`` generates a complete DAG of the build process
+(see :doc:`local`), setting this flag to ``true`` will generate a custom, compact
+graph showing the dependencies among ``showyourwork``-managed figures and datasets.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  dag: true
+
+
 ``dependencies``
 ^^^^^^^^^^^^^^^^
 

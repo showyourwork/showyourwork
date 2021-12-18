@@ -1,4 +1,5 @@
 import graphviz
+from PyPDF2 import PdfFileReader
 from pathlib import Path
 import json
 
@@ -103,6 +104,16 @@ for figure in script_info.get("figures", []):
 
         # DOT can't render PDF images, so we'll convert them to PNG later
         file_png = file[: -len(Path(file).suffix)] + ".png"
+
+        # If the file is a PDF, let's infer its aspect ratio
+        # TODO: We could do this for other figure types as well... PR anyone?
+        if Path(file).suffix.lower() == ".pdf":
+            with open(file, "rb") as f:
+                w, h = PdfFileReader(f).getPage(0).mediaBox[2:]
+            aspect = float(w / h)
+        else:
+            aspect = 2
+
         dot.node(
             file,
             label="",
@@ -110,7 +121,7 @@ for figure in script_info.get("figures", []):
             penwidth="4",
             fixedsize="true",
             imagescale="false",
-            width="2",
+            width=f"{aspect}",
             height="1",
             color=colors["figure"],
         )

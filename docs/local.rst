@@ -79,8 +79,11 @@ Deletes all output for the default rule.
 
 ``make dag``
 ^^^^^^^^^^^^
-Generates a directed acyclic graph (DAG) of the build process
-(you'll need to have `graphviz <https://graphviz.org/download/>`_ installed).
+Generates a directed acyclic graph (DAG) of the build process. This is a custom
+DAG showing the dependencies among ``showyourwork``-managed files. If you've
+defined custom rules in your ``Snakefile``, those won't show up here; see
+below under Manual builds for details on how to generate a complete DAG
+using ``Snakemake``.
 
 ``make fast``
 ^^^^^^^^^^^^^

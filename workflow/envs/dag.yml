@@ -8,3 +8,4 @@ dependencies:
   - graphviz
   - pip:
       - graphviz==0.19.1
+      - PyPDF2==1.26.0
