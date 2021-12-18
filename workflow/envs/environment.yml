@@ -5,6 +5,7 @@ dependencies:
   - pip>=20.3.3
   - python=3.9
   - tectonic>=0.8.0
+  - graphviz>=2.40.1
   - pip:
       - jinja2>=2.11.3
       - requests
