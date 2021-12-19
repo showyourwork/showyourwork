@@ -3,10 +3,10 @@
 <img width = "450" src="https://raw.githubusercontent.com/rodluger/showyourwork/img/showyourwork.png" alt="showyourwork"/>
 <br>
 <br>
-<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.2.0">
-    <img src="https://img.shields.io/static/v1?label=version&message=0.2.0&color=blue"/>
+<a href="https://github.com/rodluger/showyourwork/releases/tag/v0.2.1">
+    <img src="https://img.shields.io/static/v1?label=version&message=0.2.1&color=blue"/>
 </a>
-<a href="https://showyourwork.readthedocs.io/en/v0.2.0">
+<a href="https://showyourwork.readthedocs.io/en/v0.2.1">
     <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue"/>
 </a>
 <a href="https://github.com/rodluger/showyourwork-template/generate">
@@ -66,22 +66,6 @@ Please check out <a href="https://showyourwork.readthedocs.io/en/stable/custom/"
     </td>
     <td>
     <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/ms.pdf">
-    <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
-    </a>
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-        <a href="https://github.com/rodluger/showyourwork-example/tree/better-zenodo">better-zenodo</a>
-    </td>
-    <td>
-    <a href="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml?query=branch%3Abetter-zenodo">
-        <img src="https://github.com/rodluger/showyourwork-example/actions/workflows/showyourwork.yml/badge.svg?branch=better-zenodo" alt="test status"/>
-    </a>
-    </td>
-    <td>
-    <a href="https://github.com/rodluger/showyourwork-example/raw/better-zenodo-pdf/ms.pdf">
     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
     </a>
     </td>
