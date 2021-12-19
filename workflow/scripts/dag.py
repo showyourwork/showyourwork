@@ -1,3 +1,8 @@
+"""
+Generates a directed acyclic graph (DAG) of the build process.
+Called from the ``dotgraph`` rule.
+
+"""
 import graphviz
 from PyPDF2 import PdfFileReader
 from pathlib import Path

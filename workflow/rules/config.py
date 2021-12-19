@@ -30,7 +30,7 @@ values if none are provided. Current config options are
 - ``zenodo`` (*dict*): Rules for how to upload/download dependencies.
 
 - ``download_only`` (*bool*): Only download Zenodo dependencies (never try
-    to generate and/or upload them). Default False.
+  to generate and/or upload them). Default False.
 
 """
 from pathlib import Path

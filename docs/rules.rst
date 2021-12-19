@@ -124,62 +124,6 @@ Generate a .gv graph of the build process in the DOT language.
 
 
 
-rule 14
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
-rule 15
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
-rule 16
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
-rule 17
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
-rule 18
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
-rule 19
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
-rule 20
-^^^^^^^
-
-Convert a figure file to a PNG thumbnail.
-
-
-
-
 rule dag
 ^^^^^^^^
 

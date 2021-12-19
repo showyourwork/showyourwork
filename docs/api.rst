@@ -31,6 +31,10 @@ functions.py
 ^^^^^^^^^^^^
 .. automodule:: rules.functions
 
+git.py
+^^^^^^
+.. automodule:: rules.git
+
 paths.py
 ^^^^^^^^
 .. automodule:: rules.paths
@@ -58,3 +62,25 @@ These scripts are located in ``showyourwork/workflow/scripts`` and are
 called from some of the rules defined above.
 
 .. include:: scripts.rst
+
+
+The ``helpers`` module
+----------------------
+
+The ``helpers`` module is located in ``showyourwork/workflow/helpers`` and
+contains additional utility functions and classes used throughout the code.
+
+helpers.exceptions
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: helpers.exceptions
+
+helpers.linter
+^^^^^^^^^^^^^^
+
+.. automodule:: helpers.linter
+
+helpers.zenodo
+^^^^^^^^^^^^^^
+
+.. automodule:: helpers.zenodo

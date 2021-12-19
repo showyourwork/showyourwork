@@ -16,6 +16,15 @@ rule docstrings:
             raise ValueError("Can't find `docs/rules.rst`.")
         with open(rules_rst, "w") as f:
             for rule in workflow.rules:
+                try:
+                    int(rule.name)
+                except ValueError:
+                    # We're good
+                    pass
+                else:
+                    # This is an anonymous rule (its name is
+                    # a number), so let's skip it
+                    continue
                 header = "rule {}".format(rule.name)
                 print(header, file=f)
                 print("^" * len(header), file=f)

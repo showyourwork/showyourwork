@@ -115,7 +115,10 @@ class ShowyourworkException(Exception):
 
     @staticmethod
     def print():
+        """
+        Print the error message to the terminal.
 
+        """
         # Where we log to
         exception_file = Path(".showyourwork/exception.log")
 
@@ -202,7 +205,10 @@ class ShowyourworkWarning:
 
     @staticmethod
     def print():
+        """
+        Print the warning message to the terminal.
 
+        """
         # Where we log to
         exception_file = Path(".showyourwork/warning.log")
 
