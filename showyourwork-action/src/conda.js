@@ -17,7 +17,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
   // Cache settings
   const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
-  const conda_key = `conda-dev3-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
+  const conda_key = `conda-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
   const conda_restoreKeys = [];
   const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
   const CACHE_CONDA = !(CONDA_CACHE_NUMBER == null || CONDA_CACHE_NUMBER == "");
