@@ -20,6 +20,9 @@ Default figure generation
     <a href="https://github.com/rodluger/showyourwork-example/tree/simple-figure">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/simple-figure-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/simple-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -77,6 +80,9 @@ Multi-panel figures
     <a href="https://github.com/rodluger/showyourwork-example/tree/multi-panel-figure">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/multi-panel-figure-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/multi-panel-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -115,6 +121,9 @@ One script, multiple figures
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/multiple-figures">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/multiple-figures-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/multiple-figures-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -172,6 +181,9 @@ Static figures
     <a href="https://github.com/rodluger/showyourwork-example/tree/static-figure">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/static-figure-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/static-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -207,6 +219,9 @@ Script dependencies
     <a href="https://github.com/rodluger/showyourwork-example/tree/figure-deps">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/figure-deps-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/figure-deps-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -239,6 +254,9 @@ Dataset dependencies
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/figure-dataset">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/figure-dataset-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/figure-dataset-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -327,6 +345,9 @@ Simulation dependencies
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/expensive-figure">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/expensive-figure-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/expensive-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -432,6 +453,9 @@ Dependency tarballs
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/zenodo-tarball">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -543,6 +567,9 @@ Dependency tarballs (advanced)
     <a href="https://github.com/rodluger/showyourwork-example/tree/zenodo-tarball-manual">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-manual-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/zenodo-tarball-manual-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -627,6 +654,9 @@ Many, many dependencies
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/jinja-yaml">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/jinja-yaml-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/jinja-yaml-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -717,6 +747,9 @@ Custom figure scripts
     <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-rule">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-rule-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-rule-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -774,6 +807,9 @@ Figures that require LaTeX
     <a href="https://github.com/rodluger/showyourwork-example/tree/latex-figure">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
     </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/latex-figure-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+    </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/latex-figure-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
     </a>
@@ -826,6 +862,9 @@ Using graphicspath
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/graphicspath">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/graphicspath-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/graphicspath-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -889,6 +928,11 @@ don't see what you're looking for here, please
                 </a>
             </td>
             <td style="padding-right: 15px;">
+                <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/dag.pdf">
+                    <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
+                </a>
+            </td>
+            <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/raw/mnras-pdf/ms.pdf">
                     <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
                 </a>
@@ -907,6 +951,11 @@ don't see what you're looking for here, please
             <td style="padding-right: 15px;">
                 <a href="https://github.com/rodluger/showyourwork-example/tree/aa">
                     <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+                </a>
+            </td>
+            <td style="padding-right: 15px;">
+                <a href="https://github.com/rodluger/showyourwork-example/raw/aa-pdf/dag.pdf">
+                    <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
                 </a>
             </td>
             <td style="padding-right: 15px;">
@@ -930,6 +979,9 @@ Custom manuscript name
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/custom-ms-name">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-ms-name-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/custom-ms-name-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -959,6 +1011,9 @@ Custom manuscript dependencies
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/ms-deps">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/ms-deps-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/ms-deps-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -1005,6 +1060,9 @@ Non-Python figure scripts
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/non-python">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/non-python-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/non-python-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>
@@ -1064,6 +1122,9 @@ Custom margin icons
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/tree/custom-figure-link">
         <img src="https://img.shields.io/badge/article-source-blue.svg?style=flat" alt="Repository"/>
+    </a>
+    <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-link-pdf/dag.pdf">
+        <img src="https://img.shields.io/badge/article-dag-blue.svg?style=flat" alt="Article DAG"/>
     </a>
     <a href="https://github.com/rodluger/showyourwork-example/raw/custom-figure-link-pdf/ms.pdf">
         <img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Article PDF"/>

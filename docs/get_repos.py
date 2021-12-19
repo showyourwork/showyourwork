@@ -63,9 +63,9 @@ def get_version(repo, versions, API_KEY):
     req.add_header("Accept", "application/vnd.github.v3+json")
     req.add_header("Authorization", f"token {API_KEY}")
     req.add_header("User-Agent", "request")
-    content = urlopen(req).read()
-    content = json.loads(content)
     try:
+        content = urlopen(req).read()
+        content = json.loads(content)
         sha = [c for c in content["tree"] if c["path"] == "showyourwork"][0]["sha"]
         version = versions.get(sha, sha[:7])
     except:
@@ -77,8 +77,8 @@ def get_repos(
     filename="showyourwork.yml",
     path=".github/workflows",
     maxpages=10,
-    maxtries=5,
-    sleep_time=10.0,
+    maxtries=3,
+    sleep_time=5.0,
     exclude_repos=[
         "rodluger/showyourwork-template",
         "rodluger/showyourwork-sandbox",
