@@ -54,8 +54,23 @@ for figure in script_info.get("figures", []):
     for dependency in dependencies.get(script, []):
         if not dependency.endswith(".zenodo"):
 
+            # Find the relevant Zenodo or Zenodo tarball entry
+            # (if this is a Zenodo-hosted dependency)
+            zenodo_entry = zenodo.get(dependency, {})
+            if not zenodo_entry:
+                for entry in zenodo:
+                    if dependency in zenodo[entry].get("contents", []):
+                        zenodo_entry = zenodo[entry]
+                        break
+            sandbox_entry = sandbox.get(dependency, {})
+            if not sandbox_entry:
+                for entry in sandbox:
+                    if dependency in sandbox[entry].get("contents", []):
+                        sandbox_entry = sandbox[entry]
+                        break
+
             # Dependency node
-            if zenodo.get(dependency, {}) or sandbox.get(dependency, {}):
+            if zenodo_entry or sandbox_entry:
                 dot.node(
                     dependency,
                     label=dependency.replace("src/", ""),
@@ -72,7 +87,7 @@ for figure in script_info.get("figures", []):
 
             # Zenodo metadata for this dependency
             for zenodo_info, zenodo_stem in zip(
-                [zenodo.get(dependency, {}), sandbox.get(dependency, {})],
+                [zenodo_entry, sandbox_entry],
                 ["10.5281", "10.5072"],
             ):
                 if zenodo_info:
@@ -101,6 +116,9 @@ for figure in script_info.get("figures", []):
                         dot.edge(
                             zenodo_script, doi, color=colors["edge"], style="dashed"
                         )
+
+                        breakpoint()
+
                         dot.edge(
                             zenodo_script,
                             dependency,
