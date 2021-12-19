@@ -1,5 +1,17 @@
 .. :changelog:
 
+0.2.1 (2021-12-18)
+++++++++++++++++++
+
+- Implemented custom DAG generation (cleaner, prettier)
+- Added several entries to the Projects page on the docs
+- Streamlined arXiv tarball generation step
+- Added a basic `make lint` command to check for repo issues
+- Users can now disable caching on CI by setting the cache number to `null`
+- Switch to installing `graphviz` with `conda`
+- Pinned all `conda` dependencies to specific versions
+- Changelog: `v0.2.0...v0.2.1 <https://github.com/rodluger/showyourwork/compare/v0.2.0...v0.2.1>`_
+
 0.2.0 (2021-12-07)
 ++++++++++++++++++
 
