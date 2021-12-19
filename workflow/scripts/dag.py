@@ -116,9 +116,6 @@ for figure in script_info.get("figures", []):
                         dot.edge(
                             zenodo_script, doi, color=colors["edge"], style="dashed"
                         )
-
-                        breakpoint()
-
                         dot.edge(
                             zenodo_script,
                             dependency,
