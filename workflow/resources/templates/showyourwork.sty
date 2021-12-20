@@ -8,10 +8,8 @@
 \RequirePackage{hyperref} % url links
 \RequirePackage{suffix} % allows definition of starred commmands
 \RequirePackage{ifxetex}
-\ifxetex
-  \RequirePackage{fontspec}
-  \defaultfontfeatures{Extension = .otf}
-\fi
+\RequirePackage{fontspec}
+\defaultfontfeatures{Extension = .otf}
 \RequirePackage{fontawesome5} % FontAwesome symbols
 \RequirePackage{letltxmacro} % command redefinitions
 \RequirePackage{xstring} % string manipulation
@@ -23,16 +21,18 @@
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
 
+
+% Showyourwork logo
+\newfontfamily\Show@Your@Work@Font{showyourwork.otf}
 \newcommand{\showyourwork}{%
-    \href{https://github.com/rodluger/showyourwork}%
-    {\raisebox{-1.3ex}{\includegraphics[width=7em]{showyourwork.pdf}}}\hspace{0.2em}%
+   {\Show@Your@Work@Font\color{red}\smash{show your work!}\xspace}
 }
 
 % Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
 \let\oldmaketitle\maketitle
 \def\maketitle{%
     \let\oldLaTeX\LaTeX
-    \def\LaTeX{\oldLaTeX/\showyourwork}
+    \def\LaTeX{\oldLaTeX/\href{https://github.com/rodluger/showyourwork}{\showyourwork}}
     \oldmaketitle
     \let\LaTeX\oldLaTeX
 }
