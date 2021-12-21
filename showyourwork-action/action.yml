@@ -13,6 +13,10 @@ inputs:
     description: "Bump this number to reset the article cache"
     required: false
     default: "0"
+  article-cache-exclude:
+    description: "Files, folders, or globs to exclude from the article cache"
+    required: false
+    default: ""
   conda-url:
     description: "Exact url pointing to the conda install script"
     required: false

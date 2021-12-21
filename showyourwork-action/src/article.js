@@ -39,6 +39,11 @@ async function buildArticle(SHOWYOURWORK_VERSION, ARTICLE_CACHE_NUMBER = null) {
     "ms.pdf",
     "src",
   ];
+  const exclude = getInputAsArray("article-cache-exclude");
+  for (var i = 0; i < exclude.length; i++) {
+    var exc = exclude[i];
+    article_paths.push(`!${exc}`);
+  }
 
   // Is this a unit test run?
   const UNIT_TEST = (

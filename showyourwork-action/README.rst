@@ -21,6 +21,11 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 
 **Optional** The **showyourwork-action** caches everything in your repository to speed up future builds. Sometimes, however, it's useful to clear the cache, such as when something breaks. This can be done by incrementing this number, which tells the action which version of the cache to load. Default: :code:`0`. Note that you can disable article caching by setting this variable to `null` or to an empty value.
 
+:code:`article-cache-exclude`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Optional** Files, folders, or globs to exclude from the article cache. One item per line. Default is to cache everything in the ``src/`` directory. If you're running into memory errors on GitHub Actions, it may be worth adding your largest datasets to this list.
+
 :code:`arxiv-tarball`
 ~~~~~~~~~~~~~~~~~~~~~
 
