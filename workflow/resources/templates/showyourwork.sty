@@ -8,8 +8,6 @@
 \RequirePackage{hyperref} % url links
 \RequirePackage{suffix} % allows definition of starred commmands
 \RequirePackage{ifxetex}
-\RequirePackage{fontspec}
-\defaultfontfeatures{Extension = .otf}
 \RequirePackage{fontawesome5} % FontAwesome symbols
 \RequirePackage{letltxmacro} % command redefinitions
 \RequirePackage{xstring} % string manipulation
@@ -23,10 +21,19 @@
 
 
 % Showyourwork logo
-\newfontfamily\Show@Your@Work@Font{showyourwork.otf}
-\newcommand{\showyourwork}{%
-   {\Show@Your@Work@Font\color{red}\smash{show your work!}}\xspace
-}
+% We can only use our custom font if running XeTeX / LuaTeX
+\ifxetex
+  \usepackage{fontspec}
+  \defaultfontfeatures{Extension = .otf}
+  \newfontfamily\ShowYourWorkFont{showyourwork.otf}
+  \newcommand{\showyourwork}{%
+    {\ShowYourWorkFont\color{red}\smash{show your work!}}\xspace
+  }
+\else
+  \newcommand{\showyourwork}{%
+      \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork.pdf}}}\xspace%
+  }
+\fi
 
 % Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
 \let\oldmaketitle\maketitle

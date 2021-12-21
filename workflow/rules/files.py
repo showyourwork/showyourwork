@@ -63,7 +63,7 @@ class files:
         tectonic = []
 
     #: Figures that are allowed directly in the ``src/`` directory
-    special_figures = ["orcid-id.png", "orcid-ID.png"]
+    special_figures = ["orcid-id.png", "orcid-ID.png", "showyourwork.pdf"]
 
     #: Store temporary exception messages
     exception = relpaths.temp / "exception.log"
