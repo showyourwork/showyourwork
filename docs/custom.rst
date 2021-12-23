@@ -736,8 +736,8 @@ this file is programmatically generated every time you run your workflow).
 
 .. _custom_custom_scripts:
 
-Custom figure scripts
----------------------
+Custom figure rules
+-------------------
 
 .. raw:: html
 
@@ -755,9 +755,24 @@ Custom figure scripts
     </a>
     <br/><br/>
 
-``showyourwork`` allows you to specify custom scripts for figures. This is useful when ``showyourwork`` can't
+``showyourwork`` allows you to specify custom rules for generating figures. This is useful when ``showyourwork`` can't
 automatically determine the figure script, such as when a figure is
-included outside of a ``figure`` environment. The easiest way is to subclass the
+included outside of a ``figure`` environment, or if producing a figure entails more than just running
+a single script. In either case, to let ``showyourwork`` not to try to generate the figure on its own,
+label the figure with an asterisk in your TeX file, e.g.,
+
+.. code-block:: LaTeX
+
+    \begin{figure}
+        \begin{centering}
+            \includegraphics{figures/custom_figure.pdf}
+            \caption{...}
+            \label{fig*:custom_figure}
+        \end{centering}
+    \end{figure}
+
+To specify a custom rule for generating the figure, you'll have to add instructions
+to the ``Snakefile``. One way to do this is to subclass the
 ``figure`` rule defined in the ``showyourwork`` module:
 
 .. code-block:: python
@@ -773,7 +788,8 @@ included outside of a ``figure`` environment. The easiest way is to subclass the
             "src/figures/custom_figure.pdf"
 
 
-Alternatively, you may override the internal ``figure`` rule completely:
+Alternatively, you may override the internal ``figure`` rule completely; this
+is useful if you want to directly specify the commands for generating the figure:
 
 .. code-block:: python
 
@@ -788,11 +804,12 @@ Alternatively, you may override the internal ``figure`` rule completely:
         shell:
             "cd src/figures && python custom_script.py"
 
-This can be used to execute arbitrary commands for generating figures, such
+This snippet accomplishes the same as the previous example, but custom
+rules can be used to execute arbitrary commands for generating figures, such
 as producing a figure via a language other than Python, or producing a figure
 from a Jupyter notebook. Note that in both cases, ``showyourwork`` expects that
 the first file listed under ``input`` is the main script associated with the
-figure, and this is what the link in the figure caption will point to on GitHub.
+figure.
 
 .. _custom_latex:
 

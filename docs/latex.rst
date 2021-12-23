@@ -150,6 +150,16 @@ you provided specific instructions in the ``Snakefile``
 (see :ref:`custom figure scripts <custom_custom_scripts>`). If you haven't, and
 the file ``mandelbrot.pdf`` doesn't already exist, an error will be raised.
 
+.. important::
+
+    If a figure is labeled with the ``fig*:`` prefix, ``showyourwork`` will automatically
+    make it a dependency of the PDF; i.e., it will look for any possible way to
+    generate it from the rules defined in the workflow (and raise an error if it's
+    unable to). If neither the ``fig:`` or ``fig*:`` prefixes are present, users need
+    to manually make the figure a dependency of the article (via the ``dependencies``
+    key in the ``showyourwork.yml`` config file); otherwise, you'll probably get a LaTeX error
+    saying the figure can't be found at build time.
+
 The other way to disable this functionality, recommended in cases where the
 figure can't be programmatically generated (such as a photograph, a drawing, 
 or a manually-created diagram), is to simply place the figure in the ``src/static``

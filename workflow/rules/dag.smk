@@ -45,7 +45,7 @@ rule dag:
         "Generating the DAG of the build process..."
     input:
         "src/figures/dag.gv",
-        lambda w: [fig[: -len(Path(fig).suffix)] + ".png" for fig in figures(w)]
+        lambda w: [fig[: -len(Path(fig).suffix)] + ".png" for fig in figures(w) if Path(fig).name != "dag.pdf"]
     output:
         "src/figures/dag.pdf"
     conda:

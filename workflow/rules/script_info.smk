@@ -38,7 +38,7 @@ checkpoint script_info:
             warnings.warn("Unable to parse the `graphicspath` command. Ignoring...")
             graphicspath = Path(".")
 
-        # Parse graphics inside `figure` environments
+        # Parse labeled graphics inside `figure` environments
         figures = {}
         for figure in root.findall("FIGURE"):
             check_figure_format(figure)
@@ -57,7 +57,9 @@ checkpoint script_info:
                     for graphic in figure.findall("GRAPHICS"):
                         src = relpaths.src.absolute()
                         path = (src / graphicspath / graphic.text).resolve().relative_to(src)
-                        if path.parts[0] == "figures":
+                        if str(path) == "figures/dag.pdf":
+                            continue
+                        elif path.parts[0] == "figures":
                             filenames.append(str(relpaths.src / path))
                         elif path.parts[0] == "static":
                             continue
@@ -101,13 +103,39 @@ checkpoint script_info:
                                 "datasets": datasets
                             }
 
+        # Other figures
+        other_filenames = []
+
+        # Parse graphics labeled with fig* inside `figure` environments
+        # These won't be automatically generated, but we still
+        # need to make them dependencies of the PDF
+        for figure in root.findall("FIGURE"):
+            labels = figure.findall("LABELSTAR")
+            if len(labels) and labels[0].text is not None:
+                for graphic in figure.findall("GRAPHICS"):
+                    src = relpaths.src.absolute()
+                    path = (src / graphicspath / graphic.text).resolve().relative_to(src)
+                    if str(path) == "figures/dag.pdf":
+                            continue
+                    elif path.parts[0] == "figures":
+                        other_filenames.append(str(relpaths.src / path))
+                    elif path.parts[0] == "static":
+                        continue
+                    elif path.name in files.special_figures:
+                        continue
+                    else:
+                        warnings.warn(
+                            f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders."
+                        )
+
         # Parse free-floating graphics
-        filenames = []
         for graphic in root.findall("GRAPHICS"):
             src = relpaths.src.absolute()
             path = (src / graphicspath / graphic.text).resolve().relative_to(src)
-            if path.parts[0] == "figures":
-                filenames.append(str(relpaths.src / path))
+            if str(path) == "figures/dag.pdf":
+                continue
+            elif path.parts[0] == "figures":
+                other_filenames.append(str(relpaths.src / path))
             elif path.parts[0] == "static":
                 continue
             elif path.name in files.special_figures:
@@ -116,10 +144,11 @@ checkpoint script_info:
                 warnings.warn(
                     f"Figure `{graphic.text}` must be in either the `src/figures` or `src/static` folders."
                 )
-        if len(filenames):
+
+        if len(other_filenames):
             figures["unknown"] = {
                 "script": files.unknown,
-                "files": filenames,
+                "files": other_filenames,
                 "datasets": []
             }
 
