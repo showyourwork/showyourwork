@@ -53,7 +53,10 @@ for figure in script_info.get("figures", []):
     files = script_info["figures"][figure]["files"]
 
     # Figure node
-    dot.node(script, label=script.replace("src/", ""), color=colors["script"])
+    if script == "unknown-script":
+        dot.node(script, label="custom rule", color=colors["script"], style="dashed")
+    else:
+        dot.node(script, label=script.replace("src/", ""), color=colors["script"])
 
     # Loop through figure dependencies
     for dependency in dependencies.get(script, []):
@@ -151,7 +154,7 @@ for figure in script_info.get("figures", []):
             file,
             label="",
             image=file_png,
-            penwidth="4",
+            penwidth="0",
             fixedsize="true",
             imagescale="false",
             width=f"{aspect}",
