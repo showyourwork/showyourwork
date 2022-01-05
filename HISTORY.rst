@@ -1,5 +1,13 @@
 .. :changelog:
 
+0.2.2 (2022-01-05)
+++++++++++++++++++
+
+- Tweaks to the logo (now an actual font!)
+- Added option to exclude files from article cache on CI
+- Fixed behavior of figures labeled with an asterisk (e.g., `\label{fig*:...}`)
+- Changelog: `v0.2.1...v0.2.2 <https://github.com/rodluger/showyourwork/compare/v0.2.1...v0.2.2>`_
+
 0.2.1 (2021-12-18)
 ++++++++++++++++++
 
