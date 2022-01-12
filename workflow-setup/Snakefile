@@ -1,0 +1,34 @@
+import snakemake
+from pathlib import Path
+import sys
+
+
+# Hack to import showyourwork
+HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
+sys.path.insert(1, str(HERE.parents[0]))
+from utils import paths
+
+
+# Require Snakemake >= this version
+snakemake.utils.min_version("6.7.0")
+
+
+# Workflow report template
+report: "report/workflow.rst"
+
+
+# Include all rules
+rule_files = [f"rules/{file.name}" for file in paths.rules.glob("*.smk")]
+for rule_file in rule_files:
+    include: rule_file
+
+
+# Include all checkpoints
+checkpoint_files = [f"checkpoints/{file.name}" for file in paths.checkpoints.glob("*.smk")]
+for checkpoint_file in checkpoint_files:
+    include: checkpoint_file
+
+
+rule setup:
+    output:
+        touch("setup.foo")

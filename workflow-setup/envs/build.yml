@@ -1,0 +1,11 @@
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - pip=21.0.1
+  - python=3.9
+  - tectonic=0.8.0
+  - pip:
+      - jinja2==2.11.3
+      - requests==2.25.1
+      - -e ./../../showyourwork
