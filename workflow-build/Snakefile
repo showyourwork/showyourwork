@@ -1,5 +1,0 @@
-rule pdf:
-    output:
-        "ms.pdf"
-    shell:
-        "touch ms.pdf"

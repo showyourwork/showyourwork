@@ -2,11 +2,15 @@ import snakemake
 from pathlib import Path
 import sys
 
-
-# Hack to import showyourwork
+# Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths
+from utils import paths, parse_config
+
+
+# User config
+configfile: "showyourwork.yml"
+parse_config()
 
 
 # Require Snakemake >= this version
@@ -27,8 +31,3 @@ for rule_file in rule_files:
 checkpoint_files = [f"checkpoints/{file.name}" for file in paths.checkpoints.glob("*.smk")]
 for checkpoint_file in checkpoint_files:
     include: checkpoint_file
-
-
-rule setup:
-    output:
-        touch("setup.foo")

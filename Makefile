@@ -1,8 +1,11 @@
+.PHONY: pdf workflow_setup snakemake_setup conda_setup Makefile
+
+
 # PATHS
 HERE            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 USER 			:= $(realpath $(dir $(HERE)))
-SETUPFILE       := $(realpath $(HERE)/workflow-setup/Snakefile)
-BUILDFILE       := $(realpath $(HERE)/workflow-build/Snakefile)
+SETUPFILE       := $(realpath $(HERE)/workflow/setup.smk)
+BUILDFILE       := $(realpath $(HERE)/workflow/build.smk)
 
 # Default Snakemake options (user can override)
 OPTIONS         ?=
@@ -15,9 +18,6 @@ CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
 
 # Boolean flag: is snakemake installed?
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
-
-
-.PHONY: pdf workflow_setup snakemake_setup conda_setup Makefile
 
 
 # Default target: generate the article
@@ -41,7 +41,7 @@ snakemake_setup: conda_setup
 	fi
 
 
-# 
+# Setup stage of the workflow
 workflow_setup: snakemake_setup
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(SETUPFILE) setup
 
