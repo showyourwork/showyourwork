@@ -104,6 +104,7 @@ def get_xml_tree():
     )
     if result.returncode != 0:
         # TODO: Log these
+        # TODO: Keep all logs
         print(result.stdout.decode("utf-8"))
         print(result.stderr.decode("utf-8"))
         raise ValueError

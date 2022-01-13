@@ -17,7 +17,7 @@ from utils import paths, parse_config
 workdir: paths.user.as_posix()
 
 
-# User config
+# User config, with a little parsing
 configfile: (paths.user / "showyourwork.yml").as_posix()
 parse_config()
 

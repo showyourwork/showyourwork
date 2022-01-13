@@ -64,7 +64,5 @@ def parse_config():
         for file in (paths.resources / "classes" / config["class_name"]).glob("*")
     ]
     config["tex_files_out"] = [
-        f"src/tex/{Path(file).name}"
-        for file in config["tex_files_in"]
-        # if not Path(f"src/tex/{Path(file).name}").exists()
+        f"src/tex/{Path(file).name}" for file in config["tex_files_in"]
     ]
