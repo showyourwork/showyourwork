@@ -15,3 +15,9 @@ figure_scripts = src / "figure-scripts"
 
 temp = user / ".showyourwork"
 temp.mkdir(exist_ok=True)
+
+preprocess = temp / "preprocess"
+preprocess.mkdir(exist_ok=True)
+
+build = temp / "build"
+build.mkdir(exist_ok=True)

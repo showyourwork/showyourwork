@@ -27,7 +27,7 @@ report: "report/preprocess.rst"
 
 
 # This workflow only has a single rule
-rule config:
+rule preprocess:
     """
     Generate a `config.json` file for the main build.
     
@@ -50,10 +50,9 @@ rule config:
         "showyourwork.yml"
     output:
         (paths.temp / "config.json").relative_to(paths.user).as_posix(),
-        temp((paths.temp / "showyourwork.xml").relative_to(paths.user).as_posix()),
-        temp((paths.temp / f"{config['ms_name']}.pdf").relative_to(paths.user).as_posix()),
-        temp(config["tex_files_out"])
+        temp(config["tex_files_out"]),
+        temp((paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix())
     conda:
-        "envs/preprocess.yml"
+        "envs/main.yml"
     script:
         "scripts/preprocess.py"

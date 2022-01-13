@@ -1,5 +1,3 @@
-import subprocess
-import shutil
 import sys
 import json
 import re
@@ -9,7 +7,7 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 
 # Import utils
 sys.path.insert(1, snakemake.config["workflow_path"])
-from utils import paths
+from utils import paths, compile_tex
 
 
 def check_figure_format(figure):
@@ -84,30 +82,23 @@ def check_figure_format(figure):
 def get_xml_tree():
     """"""
     # Parameters
-    tex_files_in = snakemake.config["tex_files_in"]
-    ms_name = snakemake.config["ms_name"]
-    ms = paths.tex / f"{ms_name}.tex"
-    xmlfile = paths.temp / "showyourwork.xml"
+    xmlfile = paths.preprocess / "showyourwork.xml"
 
-    # Copy over TeX auxiliaries
-    for file in tex_files_in:
-        src = Path(file)
-        dst = paths.tex / src.name
-        if not dst.exists():
-            shutil.copy(str(src), str(dst))
-
-    # Run tectonic
-    result = subprocess.run(
-        ["tectonic", "--chatter", "minimal", "-r", "0", "-o", str(paths.temp), ms],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+    # Build the paper to get the XML file
+    compile_tex(
+        args=[
+            "--chatter",
+            "minimal",
+            "--keep-logs",
+            "--keep-intermediates",
+            "-r",
+            "0",
+            "-o",
+            str(paths.preprocess),
+        ],
+        stylesheet=paths.resources / "styles" / "preprocess.tex",
+        config=snakemake.config,
     )
-    if result.returncode != 0:
-        # TODO: Log these
-        # TODO: Keep all logs
-        print(result.stdout.decode("utf-8"))
-        print(result.stderr.decode("utf-8"))
-        raise ValueError
 
     # Add <HTML></HTML> tags to the XML file
     try:
@@ -120,11 +111,14 @@ def get_xml_tree():
         print(contents, file=f)
 
     # Load the XML tree
-    return ParseXMLTree(paths.temp / "showyourwork.xml").getroot()
+    return ParseXMLTree(paths.preprocess / "showyourwork.xml").getroot()
 
 
-def get_json_tree(xml_tree):
+def get_json_tree():
     """"""
+    # Get the XML article tree
+    xml_tree = get_xml_tree()
+
     # Parse the \graphicspath command
     # Note that if there are multiple graphicspath calls, only the first one
     # is read. Same for multiple directories within a graphicspath call.
@@ -211,8 +205,7 @@ def get_json_tree(xml_tree):
 
 
 # Get the article tree
-xml_tree = get_xml_tree()
-snakemake.config["tree"] = get_json_tree(xml_tree)
+snakemake.config["tree"] = get_json_tree()
 
 
 # Save the config file
