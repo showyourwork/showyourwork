@@ -1,0 +1,59 @@
+import snakemake
+from pathlib import Path
+import sys
+
+
+# Require Snakemake >= this version
+snakemake.utils.min_version("6.7.0")
+
+
+# Add our utils module to the path
+HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
+sys.path.insert(1, str(HERE.parents[0]))
+from utils import paths, parse_config
+
+
+# Working directory is the top level of the user repo
+workdir: paths.user.as_posix()
+
+
+# User config
+configfile: (paths.user / "showyourwork.yml").as_posix()
+parse_config()
+
+
+# Report template
+report: "report/preprocess.rst"
+
+
+# This workflow only has a single rule
+rule config:
+    """
+    Generate a `config.json` file for the main build.
+    
+    This rule builds the article using ``tectonic``, but re-defines ``figure``, 
+    ``caption``, and ``label`` commands to print XML tags to a special log file. 
+    This way, we can use TeX to construct a full XML tree of the document for us, 
+    without any need for parsing the TeX file ourselves. This XML tree is then 
+    used to determine relationships between the figure scripts and the figure 
+    files.
+
+    This rule also assembles information about the datasets and other script
+    dependencies, as well as metadata about the git repo. It then packages
+    all this up alongside the user's config settings into the file
+    `config.json`, which is used as input to the main `showyourwork`
+    workflow.
+    
+    """
+    input:
+        f"src/tex/{config['ms_name']}.tex",
+        "showyourwork.yml"
+    output:
+        (paths.temp / "config.json").relative_to(paths.user).as_posix(),
+        temp((paths.temp / "showyourwork.xml").relative_to(paths.user).as_posix()),
+        temp((paths.temp / f"{config['ms_name']}.pdf").relative_to(paths.user).as_posix()),
+        temp(config["tex_files_out"])
+    conda:
+        "envs/preprocess.yml"
+    script:
+        "scripts/preprocess.py"

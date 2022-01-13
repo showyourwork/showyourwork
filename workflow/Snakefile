@@ -2,19 +2,27 @@ import snakemake
 from pathlib import Path
 import sys
 
-# Add our utils module to the path
-HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
-sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, parse_config
-
-
-# User config
-configfile: "showyourwork.yml"
-parse_config()
-
 
 # Require Snakemake >= this version
 snakemake.utils.min_version("6.7.0")
+
+
+# Add our utils module to the path
+HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
+sys.path.insert(1, str(HERE.parents[0]))
+from utils import paths
+
+
+# Working directory is the top level of the user repo
+workdir: paths.user.as_posix()
+
+
+# Infer the repository structure in a preprocessing step
+subworkflow preprocess:
+    workdir:
+        paths.user.as_posix()
+    snakefile:
+        "preprocess.smk"
 
 
 # Workflow report template

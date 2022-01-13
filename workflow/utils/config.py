@@ -1,4 +1,5 @@
 from . import paths, git
+from pathlib import Path
 import snakemake
 import re
 
@@ -55,10 +56,15 @@ def parse_config():
     config["class_name"] = get_class_name(config["ms_name"])
 
     # TeX auxiliary files
-    config["tex_files"] = [
+    config["tex_files_in"] = [
         file.as_posix() for file in (paths.resources / "tex").glob("*")
     ]
-    config["tex_files"] += [
+    config["tex_files_in"] += [
         file.as_posix()
         for file in (paths.resources / "classes" / config["class_name"]).glob("*")
+    ]
+    config["tex_files_out"] = [
+        f"src/tex/{Path(file).name}"
+        for file in config["tex_files_in"]
+        # if not Path(f"src/tex/{Path(file).name}").exists()
     ]
