@@ -1,8 +1,9 @@
 import sys
 import shutil
 
+
 # Import utils
-sys.path.insert(1, snakemake.config["workflow_path"])
+sys.path.insert(1, snakemake.config["workflow_abspath"])
 from utils import paths, compile_tex
 
 compile_tex(
@@ -18,4 +19,7 @@ compile_tex(
     config=snakemake.config,
 )
 
-shutil.copy(str(paths.build / f"{snakemake.config['ms_name']}.pdf"), str(paths.user))
+shutil.copy(
+    str(paths.build / (snakemake.config["ms_name"] + ".pdf")),
+    str(snakemake.config["ms_pdf"]),
+)

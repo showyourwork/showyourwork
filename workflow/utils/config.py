@@ -44,25 +44,52 @@ def parse_config():
     # Script extensions (TODO)
     config["script_extensions"] = ["py"]
 
+    # Commands (TODO)
+    config["scripts"] = {"py": "python {script}"}
+
     # Git info for the repo
     config["git_sha"] = git.get_repo_sha()
     config["git_url"] = git.get_repo_url()
     config["git_branch"] = git.get_repo_branch()
 
+    # Path to the user repo
+    config["user_abspath"] = paths.user.as_posix()
+
     # Path to the workflow
-    config["workflow_path"] = paths.workflow.as_posix()
+    config["workflow_abspath"] = paths.workflow.as_posix()
 
     # TeX class name
     config["class_name"] = get_class_name(config["ms_name"])
 
     # TeX auxiliary files
     config["tex_files_in"] = [
-        file.as_posix() for file in (paths.resources / "tex").glob("*")
+        file.relative_to(paths.user).as_posix()
+        for file in (paths.resources / "tex").glob("*")
     ]
     config["tex_files_in"] += [
-        file.as_posix()
+        file.relative_to(paths.user).as_posix()
         for file in (paths.resources / "classes" / config["class_name"]).glob("*")
     ]
     config["tex_files_out"] = [
-        f"src/tex/{Path(file).name}" for file in config["tex_files_in"]
+        (paths.tex.relative_to(paths.user) / Path(file).name).as_posix()
+        for file in config["tex_files_in"]
     ]
+
+    # The main tex file and the compiled pdf
+    config["ms_tex"] = (
+        paths.tex.relative_to(paths.user) / (config["ms_name"] + ".tex")
+    ).as_posix()
+    config["ms_pdf"] = config["ms_name"] + ".pdf"
+
+    #
+    config["config_json"] = (
+        (paths.temp / "config.json").relative_to(paths.user).as_posix()
+    )
+
+    config["stylesheet"] = (
+        (paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix()
+    )
+
+    # Overridden in the `preprocess` rule
+    config["tree"] = {"figures": {}}
+    config["pdf_dependencies"] = []

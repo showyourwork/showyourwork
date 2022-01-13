@@ -19,7 +19,7 @@ def compile_tex(args=[], stylesheet=None, config=None):
 
     # Copy over TeX auxiliaries
     for file in config["tex_files_in"]:
-        src = Path(file)
+        src = paths.user / file
         dst = paths.tex / src.name
         if not dst.exists():
             shutil.copy(str(src), str(dst))
@@ -30,7 +30,7 @@ def compile_tex(args=[], stylesheet=None, config=None):
 
     # Run tectonic
     result = subprocess.run(
-        ["tectonic"] + args + [paths.tex / (config["ms_name"] + ".tex")],
+        ["tectonic"] + args + [paths.user / config["ms_tex"]],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )

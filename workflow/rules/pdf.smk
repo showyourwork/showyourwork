@@ -1,9 +1,14 @@
 rule pdf:
+    """
+    Compile the manuscript into the article PDF.
+
+    """
     input:
-        f"src/tex/{config['ms_name']}.tex",
+        config["ms_tex"],
+        config["pdf_dependencies"],
         "showyourwork.yml"
     output:
-        f"{config['ms_name']}.pdf",
+        config["ms_pdf"],
         temp(config["tex_files_out"])
     conda:
         "../envs/main.yml"

@@ -12,6 +12,9 @@ user = showyourwork.parents[0]
 src = user / "src"
 tex = src / "tex"
 figure_scripts = src / "figure-scripts"
+static_figures = src / "static-figures"
+figures = tex / "figures"
+
 
 temp = user / ".showyourwork"
 temp.mkdir(exist_ok=True)

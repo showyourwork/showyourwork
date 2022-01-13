@@ -6,7 +6,7 @@ from pathlib import Path
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 # Import utils
-sys.path.insert(1, snakemake.config["workflow_path"])
+sys.path.insert(1, snakemake.config["workflow_abspath"])
 from utils import paths, compile_tex
 
 
@@ -140,6 +140,25 @@ def get_json_tree():
         # Ensure the figure environment conforms to the standard
         check_figure_format(figure)
 
+        # Find all graphics included in this figure environment
+        graphics = [
+            str(
+                (paths.tex / graphicspath / graphic.text)
+                .resolve()
+                .relative_to(paths.user)
+            )
+            for graphic in figure.findall("GRAPHICS")
+        ]
+
+        # Are these static figures?
+        static = all(
+            [
+                (paths.user / graphic).parents[0] == paths.figures
+                and (paths.static_figures / Path(graphic).name).exists()
+                for graphic in graphics
+            ]
+        )
+
         # Get the figure \label
         labels = figure.findall("LABEL")
         label_stars = figure.findall("LABELSTAR")
@@ -157,12 +176,25 @@ def get_json_tree():
                 script = paths.figure_scripts / f"{label}.{ext}"
                 if script.exists():
                     script = str(script.relative_to(paths.user))
+                    command = snakemake.config["scripts"][ext]
                     break
             else:
-                # Fallback to ".py"; we'll catch the error later!
-                script = str(
-                    (paths.figure_scripts / f"{label}.py").relative_to(paths.user)
-                )
+                script = None
+                if static:
+                    srcs = " ".join(
+                        [
+                            str(
+                                (paths.static_figures / Path(graphic).name).relative_to(
+                                    paths.user
+                                )
+                            )
+                            for graphic in graphics
+                        ]
+                    )
+                    dest = paths.figures.relative_to(paths.user)
+                    command = f"cp {srcs} {dest}"
+                else:
+                    command = None
 
         elif len(label_stars) and label_stars[0].text is not None:
 
@@ -172,31 +204,82 @@ def get_json_tree():
             # There is no script associated with this figure
             script = None
 
+            # But we may need to copy it over from the static dir
+            if static:
+                srcs = " ".join(
+                    [
+                        str(
+                            (paths.static_figures / Path(graphic).name).relative_to(
+                                paths.user
+                            )
+                        )
+                        for graphic in graphics
+                    ]
+                )
+                dest = paths.figures.relative_to(paths.user)
+                command = f"cp {srcs} {dest}"
+            else:
+                command = None
+
         else:
 
             raise ValueError("There is a figure without a label.")
 
-        # Find all graphics included in this figure environment
-        graphics = [
-            str(
-                (paths.tex / graphicspath / graphic.text)
-                .resolve()
-                .relative_to(paths.user)
-            )
-            for graphic in figure.findall("GRAPHICS")
-        ]
-
         # TODO: Collect associated datasets
         datasets = []
 
-        figures[label] = {"script": script, "graphics": graphics, "datasets": datasets}
+        # TODO: Collect dependencies
+        dependencies = []
+
+        # Format the command by replacing placeholders
+        if command is not None:
+            command = command.format(
+                script=script,
+                output=graphics,
+                datasets=datasets,
+                dependencies=dependencies,
+            )
+
+        # Add an entry to the tree
+        figures[label] = {
+            "script": script,
+            "graphics": graphics,
+            "datasets": datasets,
+            "dependencies": dependencies,
+            "command": command,
+        }
+
+        # Make the figures dependencies of the build
+        snakemake.config["pdf_dependencies"].extend(
+            [Path(graphic).as_posix() for graphic in graphics]
+        )
 
     # Parse free-floating graphics
     graphics = [
         str((paths.tex / graphicspath / graphic.text).resolve().relative_to(paths.user))
         for graphic in xml_tree.findall("GRAPHICS")
     ]
-    figures["free-floating"] = {"script": None, "graphics": graphics, "datasets": []}
+
+    # Ignore graphics that are dependencies of the texfile (such as orcid-ID.png)
+    graphics = [
+        graphic
+        for graphic in graphics
+        if graphic not in snakemake.config["tex_files_out"]
+    ]
+
+    # Add an entry to the tree
+    figures["free-floating"] = {
+        "script": None,
+        "graphics": graphics,
+        "datasets": [],
+        "dependencies": [],
+        "command": None,
+    }
+
+    # Make the figures dependencies of the build
+    snakemake.config["pdf_dependencies"].extend(
+        [Path(graphic).as_posix() for graphic in graphics]
+    )
 
     # The full tree (someday we'll have equations in here, too)
     tree = {"figures": figures}
@@ -209,5 +292,5 @@ snakemake.config["tree"] = get_json_tree()
 
 
 # Save the config file
-with open(paths.temp / "config.json", "w") as f:
+with open(snakemake.config["config_json"], "w") as f:
     print(json.dumps(snakemake.config, indent=4), file=f)

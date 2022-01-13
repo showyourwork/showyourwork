@@ -46,12 +46,12 @@ rule preprocess:
     
     """
     input:
-        f"src/tex/{config['ms_name']}.tex",
+        config["ms_tex"],
         "showyourwork.yml"
     output:
-        (paths.temp / "config.json").relative_to(paths.user).as_posix(),
+        config["config_json"],
         temp(config["tex_files_out"]),
-        temp((paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix())
+        temp(config["stylesheet"])
     conda:
         "envs/main.yml"
     script:
