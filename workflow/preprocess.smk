@@ -10,7 +10,11 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, parse_config
+from utils import paths, parse_config, customize_logging
+
+
+#
+customize_logging(paths.temp / "preprocess.log")
 
 
 # Working directory is the top level of the user repo

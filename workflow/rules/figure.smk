@@ -1,4 +1,5 @@
 figures = config["tree"]["figures"]
+fignum = 1
 for figure_name in figures:
 
     figscript = figures[figure_name]["script"]
@@ -13,11 +14,16 @@ for figure_name in figures:
     if figscript is None:
         figscript = []
 
+    rulename = f"fig{fignum}"
+    fignum += 1
+
     rule:
         """
         Generate a figure given a figure script and optional dependencies.
 
         """
+        name:
+            rulename
         input:
             figscript,
             datasets,

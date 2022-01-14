@@ -7,7 +7,7 @@ USER 			:= $(realpath $(dir $(HERE)))
 
 
 # Default Snakemake options (user can override)
-OPTIONS         ?=
+OPTIONS         ?= 
 
 # Always enforce these Snakemake options
 FORCE_OPTIONS   := -c1 --use-conda -d $(USER)
@@ -47,7 +47,7 @@ preprocess: snakemake_setup
 
 # Clean
 clean: snakemake_setup
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --delete-all-output 2>/dev/null || :
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --delete-all-output
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS) --delete-all-output
 
 
