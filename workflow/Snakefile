@@ -25,35 +25,12 @@ configfile: (paths.temp / "config.json").as_posix()
 report: "report/workflow.rst"
 
 
-# The main rule for this workflow
-rule pdf:
-    """
-    Compile the manuscript into the article PDF.
-
-    """
+# Hack to make the pdf generation the default rule
+rule main:
     input:
-        config["ms_tex"],
-        config["pdf_dependencies"],
-        "showyourwork.yml"
-    output:
-        config["ms_pdf"],
-        temp(config["tex_files_out"]),
-        temp(config["stylesheet"]),
-        temp(config["stylesheet_meta_file"]),
-        temp(directory(paths.compile.as_posix()))
-    conda:
-        "envs/main.yml"
-    script:
-        "scripts/pdf.py"
+        config["ms_pdf"]
 
 
 # Include all other rules
-rule_files = [f"rules/{file.name}" for file in paths.rules.glob("*.smk")]
-for rule_file in rule_files:
-    include: rule_file
-
-
-# Include all checkpoints
-checkpoint_files = [f"checkpoints/{file.name}" for file in paths.checkpoints.glob("*.smk")]
-for checkpoint_file in checkpoint_files:
-    include: checkpoint_file
+include: "rules/pdf.smk"
+include: "rules/figure.smk"

@@ -5,6 +5,7 @@ HERE            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 PREPROCESS      := $(realpath $(HERE)/workflow/preprocess.smk)
 USER 			:= $(realpath $(dir $(HERE)))
 
+
 # Default Snakemake options (user can override)
 OPTIONS         ?=
 
