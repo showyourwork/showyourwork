@@ -9,6 +9,7 @@ rule pdf:
         "showyourwork.yml"
     output:
         config["ms_pdf"],
+        temp(config["stylesheet_meta_file"]),
         temp(config["tex_files_out"])
     conda:
         "../envs/main.yml"

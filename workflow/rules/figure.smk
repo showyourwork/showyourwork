@@ -18,9 +18,6 @@ for figure_name in figures:
         """
         Generate a figure given a figure script and optional dependencies.
 
-        This is the workhorse of ``showyourwork``, which generates all the
-        figures in the article.
-
         """
         input:
             figscript,

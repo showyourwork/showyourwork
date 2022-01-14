@@ -4,10 +4,6 @@
 \RequirePackage{hyperref} % url links
 \RequirePackage{suffix} % allows definition of starred commmands
 \RequirePackage{ifxetex}
-\ifxetex
-  \RequirePackage{fontspec}
-  \defaultfontfeatures{Extension = .otf}
-\fi
 \RequirePackage{fontawesome5} % FontAwesome symbols
 \RequirePackage{letltxmacro} % command redefinitions
 \RequirePackage{xstring} % string manipulation
@@ -17,105 +13,163 @@
 \RequirePackage{marginnote} % margin notes
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
+\RequirePackage{stackengine} % stacking figure links
+
+% Is this running on GitHub Actions?
+\newif\ifOnGithubActions
+
+% Key-value pairs used to assemble the hyperlinks for figures
+% See https://tex.stackexchange.com/a/48931
+\def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{#2}}
+\def\usevalue#1{%
+\ifcsname syw@data@#1\endcsname%
+  \csname syw@data@#1\expandafter\endcsname%
+\else%
+  KEYNOTFOUND%
+\fi%
+}
+
+% Import metadata
+\IfFileExists{./.showyourwork-metadata.tex}{
+    \input{.showyourwork-metadata.tex}
+}{
+  \OnGithubActionsfalse
+  \def\syw@url{https://github.com/rodluger/showyourwork-paper}
+  \def\syw@sha{dev}
+  \def\syw@runid{0}
+  \def\syw@version{0.3.0}
+}
+
+% Showyourwork logo
+% We can only use our custom font if running XeTeX / LuaTeX
+\ifxetex
+  \usepackage{fontspec}
+  \defaultfontfeatures{Extension = .otf}
+  \newfontfamily\ShowYourWorkFont{showyourwork.otf}
+  \newcommand{\showyourwork}{%
+    {\ShowYourWorkFont\color{red}\smash{show your work!}}\xspace
+  }
+\else
+  \newcommand{\showyourwork}{%
+      \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork.pdf}}}\xspace%
+  }
+\fi
+
+% Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
+\let\oldmaketitle\maketitle
+\def\maketitle{%
+    \let\oldLaTeX\LaTeX
+    \def\LaTeX{\oldLaTeX/\href{https://github.com/rodluger/showyourwork}{\showyourwork}}
+    \oldmaketitle
+    \let\LaTeX\oldLaTeX
+}
+
+% MNRAS hack for displaying showyourwork logo
+\@ifclassloaded{mnras}{
+  \ifx\CUP@mtlplain@loaded\undefined
+    \def\@printed{Preprint \tod@y\
+      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version}
+  \else
+    \def\@printed{}
+  \fi
+}{}
+
+% A&A hack for displaying showyourwork logo + abstract links
+\@ifclassloaded{aa}{
+  \renewcommand*\aa@manuscriptname{%
+    \LaTeX
+    \hspace{\stretch{1}}%
+    \smash{\stackunder[0.5em]{\copyright ESO \the\year}{%
+        \href{\syw@url/tree/\syw@sha/}{%
+          \color{sywBlue}%
+          \faGithub%
+        }%
+        \ifOnGithubActions
+          \hspace{3pt}%
+          \href{\syw@url/actions/runs/\syw@runid/}{%
+            \color{sywGreen}%
+            \faCheckCircle%
+          }%
+        \fi
+      }
+    }
+  }
+}{}
 
 % Logging
 \newwrite\syw@LogFile
-\immediate\openout\syw@LogFile=showyourwork.xml
+\immediate\openout\syw@LogFile=showyourwork.log
 \newcommand\syw@LogMessage[1]{%
   \protected@write
   \syw@LogFile
   {\let\tmp\write\def\write{\immediate\tmp}}%
   {#1}%
 }
+\syw@LogMessage{This is showyourwork \syw@version.}
 
-% Log custom figure links
-\newcommand\marginicon[1]{%
-  \syw@LogMessage{<MARGINICON />}%
+% Custom margin icon
+\newcommand\marginicon[1]{
+  \renewcommand\showkeyslabelformat[1]{#1}%
 }
 
-% Log all figure and equation labels
+% Define custom colors
+\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
+\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
+\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
+\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
+
+% User-facing commands
+\newcommand\GitHubURL{\syw@url}
+\newcommand\GitHubSHA{\syw@sha}
+\newcommand\GitHubIcon{\faGithub\xspace}
+
+% Add a GitHub link to the end of the abstract
+\let\oldabstract\abstract
+\let\oldendabstract\endabstract
+\renewenvironment{abstract}{%
+  \oldabstract%
+}{%
+  % AASTex631 hack to reduce margin separation
+  % in the abstract of a two-column document
+  %\ifcsname if@two@col\endcsname%
+  %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
+  %\fi%
+  \marginnote{%
+    \href{\syw@url/tree/\syw@sha/}{%
+      \color{sywBlue}%
+      \faGithub%
+    }%
+    \ifOnGithubActions
+      \hspace{3pt}%
+      \href{\syw@url/actions/runs/\syw@runid/}{%
+        \color{sywGreen}%
+        \faCheckCircle%
+      }%
+    \fi
+  }
+  \oldendabstract%
+}
+
+% Hack `showkeys' to show margin links for figures
+% See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
-  \IfBeginWith*{#1}{eq:}{%
-    % Equation label
-    \StrBehind*{#1}{eq:}[\syw@CurrentLabelName]
-    \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
-  }{}
-  \IfBeginWith*{#1}{fig:}{%
-    % Figure label
-    \StrBehind*{#1}{fig:}[\syw@CurrentLabelName]
+  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\syw@CurrentLabelName]%
     \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
-    \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
-  }{}
-  \IfBeginWith*{#1}{fig*:}{%
-    % Figure label
-    \StrBehind*{#1}{fig*:}[\syw@CurrentLabelName]
-    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
-    \syw@LogMessage{<LABELSTAR>\syw@CurrentLabelName</LABELSTAR>}%
-  }{}
+    \normalfont%
+    \stackon[3pt]{%
+      \IfEq*{\usevalue{\syw@CurrentLabelName_script}}{KEYNOTFOUND}{}{%
+        \raisebox{0pt}[5pt][5pt]{%
+          \href{\syw@url/blob/\syw@sha/\usevalue{\syw@CurrentLabelName_script}}{%
+            \color{sywBlue}\faGithub%
+          }%
+        }%
+      }%
+    }{%
+      % TODO: Datasets
+    }%
+  }{}%
 }
 
-% Log figures
-\let\oldfigure\figure
-\let\oldendfigure\endfigure
-\renewenvironment{figure}{%
-  \syw@LogMessage{<FIGURE>}%
-  \oldfigure%
-}{%
-  \oldendfigure%
-  \syw@LogMessage{</FIGURE>}%
-}
-\renewenvironment{figure*}{%
-  \syw@LogMessage{<FIGURE>}%
-  \oldfigure%
-}{%
-  \oldendfigure%
-  \syw@LogMessage{</FIGURE>}%
-}
-
-% Log equations
-\let\oldalign\align
-\let\oldendalign\endalign
-\renewenvironment{align}{%
-  \syw@LogMessage{<ALIGN>}%
-  \oldalign%
-}{%
-  \oldendalign%
-  \syw@LogMessage{</ALIGN>}%
-}
-\renewenvironment{align*}{%
-  \syw@LogMessage{<ALIGN>}%
-  \oldalign%
-}{%
-  \oldendalign%
-  \syw@LogMessage{</ALIGN>}%
-}
-
-% Log figure captions
-\renewcommand{\caption}{%
-  \syw@LogMessage{<CAPTION />}%
-}
-
-% Log graphics
-\renewcommand{\includegraphics}[2][]{%
-  \syw@LogMessage{<GRAPHICS>#2</GRAPHICS>}%
-}
-
-% Log graphicspath
-\renewcommand{\graphicspath}[1]{%
-  \syw@LogMessage{<GRAPHICSPATH>#1</GRAPHICSPATH>}%
-}
-
-% Disable bibliography
-\renewcommand{\bibliography}[1]{}
-
-% Disable user-facing commands
-\newcommand\GitHubURL{}
-\newcommand\GitHubSHA{}
-\newcommand\GitHubIcon{}
-\newcommand\GitHubIconRed{}
-\newcommand\GitHubIconOrange{}
-\newcommand\GitHubIconYellow{}
-\newcommand\GitHubIconBlue{}
-\newcommand\TestPassIcon{}
-\newcommand\TestFailIcon{}
-\newcommand\showyourwork{}
+% Set the graphics path for all figures
+\graphicspath{{./}{./figures/}}

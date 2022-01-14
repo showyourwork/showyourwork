@@ -1,5 +1,6 @@
 from . import paths, git
 from pathlib import Path
+import os
 import snakemake
 import re
 
@@ -41,16 +42,16 @@ def parse_config():
 
     # -- Internal settings --
 
-    # Script extensions (TODO)
-    config["script_extensions"] = ["py"]
-
-    # Commands (TODO)
-    config["scripts"] = {"py": "python {script}"}
-
     # Git info for the repo
     config["git_sha"] = git.get_repo_sha()
     config["git_url"] = git.get_repo_url()
     config["git_branch"] = git.get_repo_branch()
+    config["github_actions"] = os.getenv("CI", "false") == "true"
+    config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
+
+    # showyourwork version
+    with open(paths.showyourwork / "VERSION", "r") as f:
+        config["showyourwork_version"] = f.read().replace("\n", "")
 
     # Path to the user repo
     config["user_abspath"] = paths.user.as_posix()
@@ -90,6 +91,17 @@ def parse_config():
         (paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix()
     )
 
+    config["stylesheet_meta_file"] = (
+        (paths.tex / ".showyourwork-metadata.tex").relative_to(paths.user).as_posix()
+    )
+
+    # Script extensions (TODO)
+    config["script_extensions"] = ["py"]
+
+    # Commands (TODO)
+    config["scripts"] = {"py": "python {script}"}
+
     # Overridden in the `preprocess` rule
     config["tree"] = {"figures": {}}
     config["pdf_dependencies"] = []
+    config["labels"] = {}

@@ -249,11 +249,6 @@ def get_json_tree():
             "command": command,
         }
 
-        # Make the figures dependencies of the build
-        snakemake.config["pdf_dependencies"].extend(
-            [Path(graphic).as_posix() for graphic in graphics]
-        )
-
     # Parse free-floating graphics
     graphics = [
         str((paths.tex / graphicspath / graphic.text).resolve().relative_to(paths.user))
@@ -276,11 +271,6 @@ def get_json_tree():
         "command": None,
     }
 
-    # Make the figures dependencies of the build
-    snakemake.config["pdf_dependencies"].extend(
-        [Path(graphic).as_posix() for graphic in graphics]
-    )
-
     # The full tree (someday we'll have equations in here, too)
     tree = {"figures": figures}
 
@@ -289,6 +279,23 @@ def get_json_tree():
 
 # Get the article tree
 snakemake.config["tree"] = get_json_tree()
+
+
+# Make all of the graphics dependencies of the PDF
+snakemake.config["pdf_dependencies"] = []
+for figure_name in snakemake.config["tree"]["figures"]:
+    graphics = snakemake.config["tree"]["figures"][figure_name]["graphics"]
+    snakemake.config["pdf_dependencies"].extend(
+        [Path(graphic).as_posix() for graphic in graphics]
+    )
+
+
+# Gather the figure script info so we can access it on the TeX side
+snakemake.config["labels"] = {}
+for label, value in snakemake.config["tree"]["figures"].items():
+    script = value["script"]
+    if script is not None:
+        snakemake.config["labels"]["{}_script".format(label)] = script
 
 
 # Save the config file
