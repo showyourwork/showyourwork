@@ -37,7 +37,6 @@
   \def\syw@url{https://github.com/rodluger/showyourwork-paper}
   \def\syw@sha{dev}
   \def\syw@runid{0}
-  \def\syw@version{0.3.0}
 }
 
 % Showyourwork logo
@@ -95,17 +94,6 @@
     }
   }
 }{}
-
-% Logging
-\newwrite\syw@LogFile
-\immediate\openout\syw@LogFile=showyourwork.log
-\newcommand\syw@LogMessage[1]{%
-  \protected@write
-  \syw@LogFile
-  {\let\tmp\write\def\write{\immediate\tmp}}%
-  {#1}%
-}
-\syw@LogMessage{This is showyourwork \syw@version.}
 
 % Custom margin icon
 \newcommand\marginicon[1]{

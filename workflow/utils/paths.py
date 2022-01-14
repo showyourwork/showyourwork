@@ -22,5 +22,5 @@ temp.mkdir(exist_ok=True)
 preprocess = temp / "preprocess"
 preprocess.mkdir(exist_ok=True)
 
-build = temp / "build"
-build.mkdir(exist_ok=True)
+compile = temp / "compile"
+compile.mkdir(exist_ok=True)

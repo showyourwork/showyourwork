@@ -49,10 +49,6 @@ def parse_config():
     config["github_actions"] = os.getenv("CI", "false") == "true"
     config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
 
-    # showyourwork version
-    with open(paths.showyourwork / "VERSION", "r") as f:
-        config["showyourwork_version"] = f.read().replace("\n", "")
-
     # Path to the user repo
     config["user_abspath"] = paths.user.as_posix()
 

@@ -1,4 +1,3 @@
-
 figures = config["tree"]["figures"]
 for figure_name in figures:
 

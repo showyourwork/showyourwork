@@ -101,11 +101,14 @@ def get_xml_tree():
     )
 
     # Add <HTML></HTML> tags to the XML file
-    try:
+    if xmlfile.exists():
         with open(xmlfile, "r") as f:
             contents = f.read()
-    except FileNotFoundError:
-        contents = ""
+    else:
+        raise ValueError(
+            r"Article parsing failed. Did you forget to `\usepackage{showyourwork}`?"
+        )
+
     contents = "<HTML>\n" + contents + "</HTML>"
     with open(xmlfile, "w") as f:
         print(contents, file=f)

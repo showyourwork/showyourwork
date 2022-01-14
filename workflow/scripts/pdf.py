@@ -19,7 +19,6 @@ TEMPLATE = r"""
 \def\syw@url{((- git_url -))}
 \def\syw@sha{((- git_sha-))}
 \def\syw@runid{((- github_runid-))}
-\def\syw@version{((- showyourwork_version-))}
 
 ((* for key, value in labels.items() *))
 \addvalue{((- key -))}{((- value -))}
@@ -55,7 +54,7 @@ compile_tex(
         "--keep-logs",
         "--keep-intermediates",
         "-o",
-        str(paths.build),
+        str(paths.compile),
     ],
     stylesheet=paths.resources / "styles" / "build.tex",
     config=snakemake.config,
@@ -64,6 +63,6 @@ compile_tex(
 
 # Copy the PDF to the user dir
 shutil.copy(
-    str(paths.build / (snakemake.config["ms_name"] + ".pdf")),
+    str(paths.compile / (snakemake.config["ms_name"] + ".pdf")),
     str(Path(snakemake.config["ms_pdf"])),
 )

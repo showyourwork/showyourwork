@@ -2,7 +2,7 @@ from . import paths
 import snakemake
 import subprocess
 import shutil
-from pathlib import Path
+import re
 
 
 __all__ = ["compile_tex"]

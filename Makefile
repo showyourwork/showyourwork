@@ -1,4 +1,4 @@
-.PHONY: pdf preprocess snakemake_setup conda_setup Makefile
+.PHONY: pdf clean preprocess snakemake_setup conda_setup Makefile
 
 # PATHS
 HERE            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -20,7 +20,7 @@ SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 
 # Default target: generate the article
 pdf: preprocess
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS) pdf
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS)
 
 
 # Ensure conda is setup
@@ -42,6 +42,12 @@ snakemake_setup: conda_setup
 # Pre-processing step
 preprocess: snakemake_setup
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS)
+
+
+# Clean
+clean: snakemake_setup
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --delete-all-output 2>/dev/null || :
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS) --delete-all-output
 
 
 # Catch-all target: route all unknown targets to Snakemake
