@@ -1,22 +1,16 @@
-from . import paths
-import snakemake
+from . import paths, exceptions
 import subprocess
 import shutil
-import re
 
 
 __all__ = ["compile_tex"]
 
 
-def compile_tex(args=[], stylesheet=None, config=None):
+def compile_tex(config, args=[], stylesheet=None):
     """
     Compile the TeX document using `tectonic`.
 
     """
-    # Get config
-    if config is None:
-        config = snakemake.config
-
     # Copy over TeX auxiliaries
     for file in config["tex_files_in"]:
         src = paths.user / file
@@ -39,4 +33,5 @@ def compile_tex(args=[], stylesheet=None, config=None):
         # TODO: Keep all logs
         print(result.stdout.decode("utf-8"))
         print(result.stderr.decode("utf-8"))
-        raise ValueError
+        # TODO
+        raise exceptions.TectonicError()

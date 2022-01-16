@@ -49,6 +49,7 @@ preprocess: snakemake_setup
 clean: snakemake_setup
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --delete-all-output
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS) --delete-all-output
+	@rm -rf .showyourwork
 
 
 # Catch-all target: route all unknown targets to Snakemake

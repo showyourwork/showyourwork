@@ -10,11 +10,7 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, customize_logging
-
-
-# 
-customize_logging(paths.temp / "compile.log")
+from utils import paths, setup_logging, get_snakemake_variable
 
 
 # Working directory is the top level of the user repo
@@ -29,8 +25,20 @@ if (paths.temp / "config.json").exists():
     configfile: (paths.temp / "config.json").as_posix()
 
 
+    # Get the values of some internal snakemake variables
+    # so we can mimic snakemake functionality
+    config["latency_wait"] = get_snakemake_variable("latency_wait", default=5)
+    config["assume_shared_fs"] = get_snakemake_variable(
+        "assume_shared_fs", default=True
+    )
+
+
     # Workflow report template
     report: "report/workflow.rst"
+
+
+    # Set up custom logging
+    setup_logging(verbose=config["verbose"], logfile=paths.logs / "compile.log")
 
 
     # Hack to make the pdf generation the default rule

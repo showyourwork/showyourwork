@@ -48,6 +48,7 @@ with open(str(Path(snakemake.config["stylesheet_meta_file"])), "w") as f:
 
 # Build the paper
 compile_tex(
+    snakemake.config,
     args=[
         "--chatter",
         "minimal",
@@ -57,7 +58,6 @@ compile_tex(
         str(paths.compile),
     ],
     stylesheet=paths.resources / "styles" / "build.tex",
-    config=snakemake.config,
 )
 
 

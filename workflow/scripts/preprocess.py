@@ -1,13 +1,12 @@
 import sys
 import json
 import re
-import warnings
 from pathlib import Path
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 # Import utils
 sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import paths, compile_tex
+from utils import paths, compile_tex, exceptions
 
 
 def check_figure_format(figure):
@@ -25,7 +24,8 @@ def check_figure_format(figure):
     for caption in captions:
         caption_labels = caption.findall("LABEL")
         if len(caption_labels):
-            raise ValueError(
+            # TODO
+            raise exceptions.FigureFormatError(
                 "Label `{}` should not be nested within the figure caption".format(
                     caption_labels[0].text
                 )
@@ -49,7 +49,8 @@ def check_figure_format(figure):
                     break
 
             if label_idx < caption_idx:
-                raise ValueError(
+                # TODO
+                raise exceptions.FigureFormatError(
                     "Figure label `{}` must come after the caption.".format(
                         (labels)[0].text
                     )
@@ -63,20 +64,23 @@ def check_figure_format(figure):
                 marginicon_idx = 0
 
             if marginicon_idx > label_idx:
-                raise ValueError(
+                # TODO
+                raise exceptions.FigureFormatError(
                     "Command \marginicon must always come before the figure label."
                 )
 
     # Check that there is exactly one label
     if len(labels) >= 2:
-        raise ValueError(
+        # TODO
+        raise exceptions.FigureFormatError(
             "A figure has multiple labels: `{}`".format(
                 ", ".join(label.text for label in labels)
             )
         )
     elif len(labels) == 0:
         if len(figure.findall("LABELSTAR")) == 0:
-            raise ValueError("There is a figure without a label.")
+            # TODO
+            raise exceptions.FigureFormatError("There is a figure without a label.")
 
 
 def get_xml_tree():
@@ -86,6 +90,7 @@ def get_xml_tree():
 
     # Build the paper to get the XML file
     compile_tex(
+        snakemake.config,
         args=[
             "--chatter",
             "minimal",
@@ -97,7 +102,6 @@ def get_xml_tree():
             str(paths.preprocess),
         ],
         stylesheet=paths.resources / "styles" / "preprocess.tex",
-        config=snakemake.config,
     )
 
     # Add <HTML></HTML> tags to the XML file
@@ -105,7 +109,7 @@ def get_xml_tree():
         with open(xmlfile, "r") as f:
             contents = f.read()
     else:
-        raise ValueError(
+        raise exceptions.MissingXMLFile(
             r"Article parsing failed. Did you forget to `\usepackage{showyourwork}`?"
         )
 
@@ -133,8 +137,7 @@ def get_json_tree():
             graphicspath = re.findall("\{(.*?)\}", graphicspath[-1].text)[0]
             graphicspath = Path(graphicspath)
     except:
-        warnings.warn("Unable to parse the `graphicspath` command. Ignoring...")
-        graphicspath = Path(".")
+        raise exceptions.GraphicsPathError()
 
     # Parse labeled graphics inside `figure` environments
     figures = {}
@@ -226,7 +229,7 @@ def get_json_tree():
 
         else:
 
-            raise ValueError("There is a figure without a label.")
+            raise exceptions.FigureFormatError("There is a figure without a label.")
 
         # TODO: Collect associated datasets
         datasets = []

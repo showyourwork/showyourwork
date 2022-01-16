@@ -1,4 +1,4 @@
-from . import config, git, paths, tex, customize
-from .config import parse_config
-from .tex import compile_tex
-from .customize import customize_logging
+from . import config, git, paths, tex, hacks, exceptions
+from .config import *
+from .tex import *
+from .hacks import *

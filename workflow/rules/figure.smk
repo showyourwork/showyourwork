@@ -35,5 +35,5 @@ for figure_name in figures:
             (paths.user / "environment.yml").as_posix()
         params:
             command=command
-        shell:
-            "{params.command}"
+        script:
+            "../scripts/figure.py"
