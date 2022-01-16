@@ -1,8 +1,9 @@
 from pathlib import Path
+from os.path import realpath
 
 
 # Workflow paths
-workflow = Path(__file__).absolute().parents[1]
+workflow = Path(realpath(__file__)).absolute().parents[1]
 rules = workflow / "rules"
 checkpoints = workflow / "checkpoints"
 resources = workflow / "resources"
