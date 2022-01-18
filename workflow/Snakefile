@@ -10,7 +10,7 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, setup_logging, get_snakemake_variable
+from utils import paths, setup_logging, add_snakemake_settings_to_config, clear_errors, get_logger
 
 
 # Working directory is the top level of the user repo
@@ -25,20 +25,25 @@ if (paths.temp / "config.json").exists():
     configfile: (paths.temp / "config.json").as_posix()
 
 
-    # Get the values of some internal snakemake variables
-    # so we can mimic snakemake functionality
-    config["latency_wait"] = get_snakemake_variable("latency_wait", default=5)
-    config["assume_shared_fs"] = get_snakemake_variable(
-        "assume_shared_fs", default=True
-    )
-
-
     # Workflow report template
     report: "report/workflow.rst"
 
 
+    # Clear errors from past builds
+    clear_errors()
+
+
+    # Add select command line options to the config dict
+    # so we can mimic some of the Snakemake behavior
+    add_snakemake_settings_to_config()
+
+
     # Set up custom logging
-    setup_logging(verbose=config["verbose"], logfile=paths.logs / "compile.log")
+    setup_logging(
+        debug=config["debug"], 
+        verbose=config["verbose"], 
+        logfile=paths.logs / "compile.log"
+    )
 
 
     # Hack to make the pdf generation the default rule
@@ -50,3 +55,7 @@ if (paths.temp / "config.json").exists():
     # Include all other rules
     include: "rules/pdf.smk"
     include: "rules/figure.smk"
+
+
+onsuccess:
+    get_logger().info("Done!")

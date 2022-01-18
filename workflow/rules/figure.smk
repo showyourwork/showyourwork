@@ -2,18 +2,22 @@ figures = config["tree"]["figures"]
 fignum = 1
 for figure_name in figures:
 
+    # Get figure metadata
     figscript = figures[figure_name]["script"]
     graphics = figures[figure_name]["graphics"]
     datasets = figures[figure_name]["datasets"]
     dependencies = figures[figure_name]["dependencies"]
     command = figures[figure_name]["command"]
 
+    # If there's no command to generate this figure, skip it
     if command is None:
         continue
 
+    # Static figures don't have scripts
     if figscript is None:
         figscript = []
 
+    # User-friendly rule name
     rulename = f"fig{fignum}"
     fignum += 1
 
@@ -24,11 +28,13 @@ for figure_name in figures:
         """
         name:
             rulename
+        message:
+            "Generating figure output: {output}..."
         input:
             figscript,
             datasets,
             dependencies,
-            "environment.yml",
+            "environment.yml"
         output:
             report(graphics, category="Figure")
         conda:

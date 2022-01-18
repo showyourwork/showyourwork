@@ -1,8 +1,10 @@
-__all__ = ["ShowyourworkException", "MissingOutputError"]
+from .logging import get_logger
 
 
 class ShowyourworkException(Exception):
-    pass
+    def __init__(self, message="An error occurred while executing the workflow."):
+        get_logger().error(message)
+        super().__init__(message)
 
 
 class MissingFigureOutputError(ShowyourworkException):

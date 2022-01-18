@@ -1,11 +1,16 @@
 import subprocess
 import sys
-from snakemake.io import wait_for_files
+from pathlib import Path
+import time
 
 
 # Import utils
 sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import exceptions
+from utils import exceptions, get_logger
+
+
+# Initialize the logger
+logger = get_logger()
 
 
 # Run the command
@@ -17,13 +22,14 @@ if result.returncode != 0:
 
 # Preempt the snakemake "Missing files after X seconds"
 # error by checking for them ourselves
-try:
-    wait_for_files(
-        snakemake.output,
-        latency_wait=snakemake.config["latency_wait"],
-        force_stay_on_remote=not snakemake.config["assume_shared_fs"],
-        ignore_pipe=True,
-    )
-except IOError as e:
+latency_wait = snakemake.config["latency_wait"]
+get_missing = lambda: [f for f in snakemake.output if not Path(f).exists()]
+missing = get_missing()
+if missing:
+    logger.info("Waiting at most {} seconds for missing files.".format(latency_wait))
+    for _ in range(latency_wait):
+        if not get_missing():
+            break
+        time.sleep(1)
     # TODO
     raise exceptions.MissingFigureOutputError()

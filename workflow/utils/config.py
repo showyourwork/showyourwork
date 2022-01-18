@@ -1,10 +1,11 @@
 from . import paths, git
 from pathlib import Path
+import inspect
 import os
 import snakemake
 import re
 
-__all__ = ["parse_config"]
+__all__ = ["parse_config", "add_snakemake_settings_to_config", "get_snakemake_variable"]
 
 
 def get_class_name(ms_name):
@@ -28,6 +29,8 @@ def parse_config():
     """
     Parse the current config and fill in defaults.
 
+    This step is only run in the preprocessing stage.
+
     """
     # Get current config
     config = snakemake.workflow.config
@@ -36,6 +39,9 @@ def parse_config():
 
     #: Verbosity
     config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
+
+    #: Debug mode
+    config["debug"] = str(config.get("debug", "false")).lower() == "true"
 
     #: Manuscript name
     config["ms_name"] = config.get("ms_name", "ms")
@@ -101,3 +107,40 @@ def parse_config():
     config["tree"] = {"figures": {}}
     config["pdf_dependencies"] = []
     config["labels"] = {}
+
+    # Record additional Snakemake settings
+    add_snakemake_settings_to_config()
+
+
+def get_snakemake_variable(name, default=None):
+    """
+    Infer the value of a variable within snakemake.
+
+    This is extremely hacky.
+    """
+    for level in inspect.stack():
+        value = level.frame.f_locals.get(name, None)
+        if value is not None:
+            return value
+    return default
+
+
+def add_snakemake_settings_to_config():
+    """
+    Add some useful Snakemake command-line settings to the config dict.
+
+    This step is run in both the preprocessing stage and before the main build.
+    If we ran it only during preprocessing, passing different command line
+    flags to `snakemake` on the next build might have no effect if the
+    preprocess workflow is not triggered.
+
+    """
+    # Get current config
+    config = snakemake.workflow.config
+
+    # Get the values of some internal snakemake variables
+    # so we can mimic snakemake functionality
+    config["latency_wait"] = get_snakemake_variable("latency_wait", default=5)
+    config["assume_shared_fs"] = get_snakemake_variable(
+        "assume_shared_fs", default=True
+    )

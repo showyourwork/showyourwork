@@ -16,6 +16,8 @@ rule preprocess:
     workflow.
     
     """
+    message:
+        "Setting up the workflow..."
     input:
         config["ms_tex"],
         "showyourwork.yml"

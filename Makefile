@@ -5,7 +5,6 @@ HERE            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 PREPROCESS      := $(realpath $(HERE)/workflow/preprocess.smk)
 USER 			:= $(realpath $(dir $(HERE)))
 
-
 # Default Snakemake options (user can override)
 OPTIONS         ?= 
 
@@ -18,10 +17,13 @@ CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
 # Boolean flag: is snakemake installed?
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 
+# Error handlers
+ERROR_HANDLER    = python workflow/utils/error_handler.py $$?
+
 
 # Default target: generate the article
 pdf: preprocess
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS)
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS); $(ERROR_HANDLER)
 
 
 # Ensure conda is setup
@@ -42,16 +44,16 @@ snakemake_setup: conda_setup
 
 # Pre-processing step
 preprocess: snakemake_setup
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS)
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS); $(ERROR_HANDLER)
 
 
 # Clean
 clean: snakemake_setup
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --delete-all-output
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS) -s $(PREPROCESS) --delete-all-output
-	@rm -rf .showyourwork
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --config debug=true --delete-all-output
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --config debug=true -s $(PREPROCESS) --delete-all-output
+	@rm -rf $(USER)/.showyourwork
 
 
 # Catch-all target: route all unknown targets to Snakemake
 %: Makefile preprocess
-	@snakemake $(FORCE_OPTIONS) $(OPTIONS) $@
+	@snakemake $(FORCE_OPTIONS) $(OPTIONS) $@; $(ERROR_HANDLER)

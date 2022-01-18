@@ -10,7 +10,7 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, parse_config, setup_logging
+from utils import paths, parse_config, setup_logging, clear_errors
 
 
 # Working directory is the top level of the user repo
@@ -25,13 +25,20 @@ configfile: (paths.user / "showyourwork.yml").as_posix()
 report: "report/preprocess.rst"
 
 
+# Clear errors from past builds
+clear_errors()
+
+
 # Parse the config file
 parse_config()
 
 
 # Set up custom logging
-setup_logging(verbose=config["verbose"], logfile=paths.logs / "preprocess.log")
-
+setup_logging(
+    debug=config["debug"], 
+    verbose=config["verbose"], 
+    logfile=paths.logs / "preprocess.log"
+)
 
 
 # Hack to make the configfile generation the default rule

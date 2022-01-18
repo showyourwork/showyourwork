@@ -3,6 +3,8 @@ rule pdf:
     Compile the manuscript into the article PDF.
 
     """
+    message:
+        "Generating the article PDF..."
     input:
         config["ms_tex"],
         config["pdf_dependencies"],
