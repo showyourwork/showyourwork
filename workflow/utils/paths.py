@@ -31,3 +31,5 @@ compile = temp / "compile"
 compile.mkdir(exist_ok=True)
 logs = temp / "logs"
 logs.mkdir(exist_ok=True)
+zenodo = temp / "zenodo"
+zenodo.mkdir(exist_ok=True)

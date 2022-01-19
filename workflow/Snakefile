@@ -10,7 +10,7 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, setup_logging, add_snakemake_settings_to_config, clear_errors, get_logger
+from utils import paths, setup_logging, finalize_config, clear_errors, get_logger, exceptions, zenodo
 
 
 # Working directory is the top level of the user repo
@@ -33,9 +33,8 @@ if (paths.temp / "config.json").exists():
     clear_errors()
 
 
-    # Add select command line options to the config dict
-    # so we can mimic some of the Snakemake behavior
-    add_snakemake_settings_to_config()
+    # Add some extra info to the config
+    finalize_config()
 
 
     # Set up custom logging
@@ -54,6 +53,7 @@ if (paths.temp / "config.json").exists():
 
     # Include all other rules
     include: "rules/pdf.smk"
+    include: "rules/zenodo.smk"
     include: "rules/figure.smk"
 
 
@@ -76,6 +76,12 @@ if (paths.temp / "config.json").exists():
             workflow.ruleorder(ur.name, sr.name)
         if not ur.message:
             ur.message = f"Running user rule {ur.name}..."
+
+else:
+
+    # TODO
+    raise exceptions.MissingConfigFile()
+
 
 onsuccess:
     get_logger().info("Done!")

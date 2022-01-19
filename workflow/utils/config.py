@@ -6,7 +6,7 @@ import os
 import snakemake
 import re
 
-__all__ = ["parse_config", "add_snakemake_settings_to_config", "get_snakemake_variable"]
+__all__ = ["parse_config", "finalize_config", "get_snakemake_variable"]
 
 
 def get_class_name(ms_name):
@@ -34,9 +34,12 @@ def as_dict(x, depth=0, maxdepth=5):
     inconsistent use of `-`s.
 
     """
-    if depth > maxdepth:
+    if depth == 0 and not x:
+        return {}
+    elif depth > maxdepth:
         # TODO
         raise exceptions.ConfigError()
+
     if type(x) is list:
         y = dict(ChainMap(*[dict(xi) for xi in x if type(xi) is OrderedDict]))
         z = [xi for xi in x if type(xi) is not OrderedDict]
@@ -48,11 +51,13 @@ def as_dict(x, depth=0, maxdepth=5):
             x.extend(z)
         else:
             x = y
+    elif type(x) is OrderedDict:
+        x = dict(x)
+
     if type(x) is dict:
         for key, value in x.items():
             x[key] = as_dict(value, depth + 1)
-    if depth == 0 and not x:
-        return {}
+
     return x
 
 
@@ -66,7 +71,9 @@ def parse_config():
     # Get current config
     config = snakemake.workflow.config
 
+    #
     # -- User settings --
+    #
 
     #: Verbosity
     config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
@@ -88,14 +95,9 @@ def parse_config():
     config["zenodo"] = as_dict(config.get("zenodo", {}))
     config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
 
+    #
     # -- Internal settings --
-
-    # Git info for the repo
-    config["git_sha"] = git.get_repo_sha()
-    config["git_url"] = git.get_repo_url()
-    config["git_branch"] = git.get_repo_branch()
-    config["github_actions"] = os.getenv("CI", "false") == "true"
-    config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
+    #
 
     # Path to the user repo
     config["user_abspath"] = paths.user.as_posix()
@@ -126,15 +128,15 @@ def parse_config():
     ).as_posix()
     config["ms_pdf"] = config["ms_name"] + ".pdf"
 
-    #
+    # The parsed config file
     config["config_json"] = (
         (paths.temp / "config.json").relative_to(paths.user).as_posix()
     )
 
+    # Paths to the TeX stylesheets
     config["stylesheet"] = (
         (paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix()
     )
-
     config["stylesheet_meta_file"] = (
         (paths.tex / ".showyourwork-metadata.tex").relative_to(paths.user).as_posix()
     )
@@ -146,8 +148,8 @@ def parse_config():
     config["tree"] = {"figures": {}}
     config["labels"] = {}
 
-    # Record additional Snakemake settings
-    add_snakemake_settings_to_config()
+    # Record additional settings
+    finalize_config()
 
 
 def get_snakemake_variable(name, default=None):
@@ -163,18 +165,26 @@ def get_snakemake_variable(name, default=None):
     return default
 
 
-def add_snakemake_settings_to_config():
+def finalize_config():
     """
-    Add some useful Snakemake command-line settings to the config dict.
+    Add some extra settings to the config dict.
 
     This step is run in both the preprocessing stage and before the main build.
     If we ran it only during preprocessing, passing different command line
     flags to `snakemake` on the next build might have no effect if the
-    preprocess workflow is not triggered.
+    preprocess workflow is cached & not triggered. The same would be true if
+    the user git-committed or changed branches in between builds.
 
     """
     # Get current config
     config = snakemake.workflow.config
+
+    # Git info for the repo
+    config["git_sha"] = git.get_repo_sha()
+    config["git_url"] = git.get_repo_url()
+    config["git_branch"] = git.get_repo_branch()
+    config["github_actions"] = os.getenv("CI", "false") == "true"
+    config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
 
     # Get the values of some internal snakemake variables
     # so we can mimic snakemake functionality

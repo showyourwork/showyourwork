@@ -1,4 +1,4 @@
-.PHONY: pdf clean preprocess snakemake_setup conda_setup Makefile
+.PHONY: pdf reserve clean preprocess snakemake_setup conda_setup Makefile
 
 # PATHS
 HERE            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -22,7 +22,7 @@ CONDA           := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
 SNAKEMAKE       := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 
 # Error handlers
-ERROR_HANDLER    = python workflow/utils/error_handler.py $$?
+ERROR_HANDLER    = python workflow/utils/scripts/error_handler.py $$?
 
 
 # Default target: generate the article
@@ -56,6 +56,11 @@ clean: snakemake_setup
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --config debug=true --delete-all-output
 	@snakemake $(FORCE_OPTIONS) $(OPTIONS) --config debug=true -s $(PREPROCESS) --delete-all-output
 	@rm -rf $(USER)/.showyourwork
+
+
+# Pre-reserve a Zenodo DOI
+reserve: snakemake_setup
+	@python workflow/utils/scripts/reserve.py
 
 
 # Catch-all target: route all unknown targets to Snakemake

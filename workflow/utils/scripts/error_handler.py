@@ -1,9 +1,13 @@
-import paths
 import platform
 import os
 import shutil
 import sys
 from pathlib import Path
+
+
+WORKFLOW = Path(__file__).absolute().parents[2]
+sys.path.insert(1, str(WORKFLOW))
+from utils import paths
 
 
 def colorize(message, color="red"):

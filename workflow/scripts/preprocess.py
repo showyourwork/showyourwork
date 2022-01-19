@@ -4,9 +4,74 @@ import re
 from pathlib import Path
 from xml.etree.ElementTree import parse as ParseXMLTree
 
+
+# Snakemake config (available automagically)
+config = snakemake.config  # type:ignore
+
+
 # Import utils
-sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import paths, compile_tex, exceptions
+sys.path.insert(1, config["workflow_abspath"])
+from utils import paths, compile_tex, exceptions, zenodo
+from utils.git import get_repo_url
+
+
+def parse_zenodo_datasets():
+    """
+    Checks the `zenodo` key in the config file and populates entries
+    with some metadata, like the type of record (version or concept).
+
+    """
+    repo_url = get_repo_url()
+    repo = "/".join(repo_url.split("/")[-2:])
+    user = repo_url.split("/")[-2]
+
+    for host in ["zenodo", "zenodo_sandbox"]:
+        entry = config[host]
+        for dataset in entry:
+
+            # Ensure an ID was provided
+            deposit_id = entry[dataset].get("id", None)
+            if deposit_id is None:
+                raise exceptions.MissingZenodoID(dataset)
+
+            # Zenodo access token environment variable
+            entry[dataset]["token_name"] = entry[dataset].get(
+                "token_name", zenodo.default_token_name[host]
+            )
+
+            # Infer if this is a version or concept ID
+            entry[dataset]["id_type"] = zenodo.get_id_type(
+                deposit_id=deposit_id,
+                zenodo_url=zenodo.zenodo_url[host],
+                token_name=entry[dataset]["token_name"],
+            )
+
+            # File name and path
+            entry[dataset]["file_name"] = str(Path(dataset).name)
+            entry[dataset]["file_path"] = str(Path(dataset).parent)
+
+            # If a script was provided, make it a dependency of the dataset
+            # TODO: Propagate this logic to the rule that generates the dataset
+            entry[dataset]["script"] = entry[dataset].get("script", None)
+            config["dependencies"][dataset] = config["dependencies"].get(dataset, [])
+            config["dependencies"][dataset].extend(entry[dataset]["script"])
+
+            # Deposit title
+            file = entry[dataset]["file_name"]
+            entry[dataset]["title"] = entry[dataset].get("title", f"{repo}:{file}")
+
+            # Deposit description
+            entry[dataset]["description"] = entry[dataset].get(
+                "description", f"File uploaded from {repo}."
+            )
+
+            # Creator name(s)
+            entry[dataset]["creators"] = entry[dataset].get("creators", user)
+
+            # Deposit contents (if a tarball)
+            entry[dataset]["contents"] = entry[dataset].get("contents", [])
+
+            # TODO: Implement tarball logic here
 
 
 def check_figure_format(figure):
@@ -90,7 +155,7 @@ def get_xml_tree():
 
     # Build the paper to get the XML file
     compile_tex(
-        snakemake.config,
+        config,
         args=[
             "--chatter",
             "minimal",
@@ -178,11 +243,11 @@ def get_json_tree():
             # Infer the full path to the script, searching for
             # files with any of the user-defined extensions
             # (and settling on the first match)
-            for ext in snakemake.config["script_extensions"]:
+            for ext in config["script_extensions"]:
                 script = paths.figure_scripts / f"{label}.{ext}"
                 if script.exists():
                     script = str(script.relative_to(paths.user))
-                    command = snakemake.config["scripts"][ext]
+                    command = config["scripts"][ext]
                     break
             else:
                 script = None
@@ -235,7 +300,7 @@ def get_json_tree():
         datasets = []
 
         # Collect user-defined dependencies
-        dependencies = snakemake.config["dependencies"].get(script, [])
+        dependencies = config["dependencies"].get(script, [])
 
         # Format the command by replacing placeholders
         if command is not None:
@@ -263,9 +328,7 @@ def get_json_tree():
 
     # Ignore graphics that are dependencies of the texfile (such as orcid-ID.png)
     graphics = [
-        graphic
-        for graphic in graphics
-        if graphic not in snakemake.config["tex_files_out"]
+        graphic for graphic in graphics if graphic not in config["tex_files_out"]
     ]
 
     # Add an entry to the tree
@@ -283,29 +346,33 @@ def get_json_tree():
     return tree
 
 
+# Parse the `zenodo` key in the config
+parse_zenodo_datasets()
+
+
 # Get the article tree
-snakemake.config["tree"] = get_json_tree()
+config["tree"] = get_json_tree()
 
 
 # Make all of the graphics dependencies of the article
-snakemake.config["dependencies"][snakemake.config["ms_tex"]] = snakemake.config[
-    "dependencies"
-].get(snakemake.config["ms_tex"], [])
-for figure_name in snakemake.config["tree"]["figures"]:
-    graphics = snakemake.config["tree"]["figures"][figure_name]["graphics"]
-    snakemake.config["dependencies"][snakemake.config["ms_tex"]].extend(
+config["dependencies"][config["ms_tex"]] = config["dependencies"].get(
+    config["ms_tex"], []
+)
+for figure_name in config["tree"]["figures"]:
+    graphics = config["tree"]["figures"][figure_name]["graphics"]
+    config["dependencies"][config["ms_tex"]].extend(
         [Path(graphic).as_posix() for graphic in graphics]
     )
 
 
 # Gather the figure script info so we can access it on the TeX side
-snakemake.config["labels"] = {}
-for label, value in snakemake.config["tree"]["figures"].items():
+config["labels"] = {}
+for label, value in config["tree"]["figures"].items():
     script = value["script"]
     if script is not None:
-        snakemake.config["labels"]["{}_script".format(label)] = script
+        config["labels"]["{}_script".format(label)] = script
 
 
 # Save the config file
-with open(snakemake.config["config_json"], "w") as f:
-    print(json.dumps(snakemake.config, indent=4), file=f)
+with open(config["config_json"], "w") as f:
+    print(json.dumps(config, indent=4), file=f)
