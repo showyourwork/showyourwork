@@ -1,5 +1,6 @@
-from . import paths, git
+from . import paths, git, exceptions
 from pathlib import Path
+from collections import OrderedDict, ChainMap
 import inspect
 import os
 import snakemake
@@ -25,6 +26,36 @@ def get_class_name(ms_name):
         return name
 
 
+def as_dict(x, depth=0, maxdepth=5):
+    """
+    Replaces nested instances of OrderedDicts with regular dicts in a dictionary.
+
+    This is useful when parsing a config generated from a YAML file with
+    inconsistent use of `-`s.
+
+    """
+    if depth > maxdepth:
+        # TODO
+        raise exceptions.ConfigError()
+    if type(x) is list:
+        y = dict(ChainMap(*[dict(xi) for xi in x if type(xi) is OrderedDict]))
+        z = [xi for xi in x if type(xi) is not OrderedDict]
+        if len(z):
+            if y:
+                x = [y]
+            else:
+                x = []
+            x.extend(z)
+        else:
+            x = y
+    if type(x) is dict:
+        for key, value in x.items():
+            x[key] = as_dict(value, depth + 1)
+    if depth == 0 and not x:
+        return {}
+    return x
+
+
 def parse_config():
     """
     Parse the current config and fill in defaults.
@@ -45,6 +76,17 @@ def parse_config():
 
     #: Manuscript name
     config["ms_name"] = config.get("ms_name", "ms")
+
+    #: Custom script execution rules
+    config["scripts"] = as_dict(config.get("scripts", {}))
+    config["scripts"]["py"] = config["scripts"].get("py", "python {script}")
+
+    #: Custom script dependencies
+    config["dependencies"] = as_dict(config.get("dependencies", {}))
+
+    #: Zenodo datasets
+    config["zenodo"] = as_dict(config.get("zenodo", {}))
+    config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
 
     # -- Internal settings --
 
@@ -97,15 +139,11 @@ def parse_config():
         (paths.tex / ".showyourwork-metadata.tex").relative_to(paths.user).as_posix()
     )
 
-    # Script extensions (TODO)
-    config["script_extensions"] = ["py"]
-
-    # Commands (TODO)
-    config["scripts"] = {"py": "python {script}"}
+    # Script extensions
+    config["script_extensions"] = list(config["scripts"].keys())
 
     # Overridden in the `preprocess` rule
     config["tree"] = {"figures": {}}
-    config["pdf_dependencies"] = []
     config["labels"] = {}
 
     # Record additional Snakemake settings

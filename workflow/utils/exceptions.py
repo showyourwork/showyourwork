@@ -29,3 +29,7 @@ class MissingXMLFile(ShowyourworkException):
 
 class GraphicsPathError(ShowyourworkException):
     pass
+
+
+class ConfigError(ShowyourworkException):
+    pass

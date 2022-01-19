@@ -8,6 +8,10 @@ USER 			:= $(realpath $(dir $(HERE)))
 # Default Snakemake options (user can override)
 OPTIONS         ?= 
 
+# Pinned package versions
+MAMBA_VERSION   	:= 0.17.0
+SNAKEMAKE_VERSION 	:= 6.12.3
+
 # Always enforce these Snakemake options
 FORCE_OPTIONS   := -c1 --use-conda -d $(USER)
 
@@ -38,7 +42,7 @@ conda_setup:
 snakemake_setup: conda_setup
 	@if [ "$(SNAKEMAKE)" = "0" ]; then \
 		echo "Snakemake not found. Installing it using conda..."; \
-		conda install -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3; \
+		conda install -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION); \
 	fi
 
 

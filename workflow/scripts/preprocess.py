@@ -234,8 +234,8 @@ def get_json_tree():
         # TODO: Collect associated datasets
         datasets = []
 
-        # TODO: Collect dependencies
-        dependencies = []
+        # Collect user-defined dependencies
+        dependencies = snakemake.config["dependencies"].get(script, [])
 
         # Format the command by replacing placeholders
         if command is not None:
@@ -287,11 +287,13 @@ def get_json_tree():
 snakemake.config["tree"] = get_json_tree()
 
 
-# Make all of the graphics dependencies of the PDF
-snakemake.config["pdf_dependencies"] = []
+# Make all of the graphics dependencies of the article
+snakemake.config["dependencies"][snakemake.config["ms_tex"]] = snakemake.config[
+    "dependencies"
+].get(snakemake.config["ms_tex"], [])
 for figure_name in snakemake.config["tree"]["figures"]:
     graphics = snakemake.config["tree"]["figures"][figure_name]["graphics"]
-    snakemake.config["pdf_dependencies"].extend(
+    snakemake.config["dependencies"][snakemake.config["ms_tex"]].extend(
         [Path(graphic).as_posix() for graphic in graphics]
     )
 

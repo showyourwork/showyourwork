@@ -7,7 +7,7 @@ rule pdf:
         "Generating the article PDF..."
     input:
         config["ms_tex"],
-        config["pdf_dependencies"],
+        config["dependencies"][config["ms_tex"]],
         "showyourwork.yml"
     output:
         config["ms_pdf"],
