@@ -132,7 +132,12 @@ def get_id_type(deposit_id, zenodo_url="zenodo.org", **kwargs):
     Caches the result locally.
 
     """
-    cache_file = paths.zenodo / f"{deposit_id}.{zenodo_url}"
+    if "sandbox" in zenodo_url:
+        tmp = paths.zenodo_sandbox
+    else:
+        tmp = paths.zenodo
+    cache_file = tmp / f"{deposit_id}" / "id_type.txt"
+
     if cache_file.exists():
 
         with open(cache_file, "r") as f:
@@ -140,6 +145,7 @@ def get_id_type(deposit_id, zenodo_url="zenodo.org", **kwargs):
 
     else:
 
+        cache_file.parents[0].mkdir(exist_ok=True)
         id_type = _get_id_type(deposit_id, zenodo_url=zenodo_url, **kwargs)
         with open(cache_file, "w") as f:
             print(id_type, file=f)

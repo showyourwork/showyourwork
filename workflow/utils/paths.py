@@ -34,3 +34,5 @@ logs = temp / "logs"
 logs.mkdir(exist_ok=True)
 zenodo = temp / "zenodo"
 zenodo.mkdir(exist_ok=True)
+zenodo_sandbox = temp / "zenodo_sandbox"
+zenodo_sandbox.mkdir(exist_ok=True)

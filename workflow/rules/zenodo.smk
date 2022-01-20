@@ -64,13 +64,8 @@ for host in ["zenodo", "zenodo_sandbox"]:
                             report(extracted_file, category="Dataset")
                         params:
                             compressed_file=compressed_file
-                        shell:
-                            " && ".join([
-                                "tmp_dir=$(mktemp -d)",
-                                "tar -xz -C $tmp_dir -f {input[0]} {params.compressed_file}",
-                                "mv $tmp_dir/{params.compressed_file} {output[0]}",
-                                "rm -r $tmp_dir"
-                            ])
+                        script:
+                            "../scripts/extract.py"
                             
 
 

@@ -93,5 +93,9 @@ class ZenodoUploadError(ShowyourworkException):
     pass
 
 
-class NestedZipFileError(ShowyourworkException):
+class NotImplementedError(ShowyourworkException):
+    pass
+
+
+class TarballExtractionError(ShowyourworkException):
     pass

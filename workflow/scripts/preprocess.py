@@ -103,11 +103,11 @@ def parse_zenodo_datasets():
                     del contents[source]
 
                     # We'll download the entire zipfile to a temporary directory
-                    contents[zip_file] = (
-                        paths.zenodo.relative_to(paths.user)
-                        / str(deposit_id)
-                        / zip_file
-                    ).as_posix()
+                    if host == "zenodo":
+                        tmp = paths.zenodo.relative_to(paths.user)
+                    else:
+                        tmp = paths.zenodo_sandbox.relative_to(paths.user)
+                    contents[zip_file] = (tmp / str(deposit_id) / zip_file).as_posix()
 
             entry["contents"] = contents
 
