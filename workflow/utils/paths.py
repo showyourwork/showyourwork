@@ -17,6 +17,7 @@ showyourwork = workflow.parents[0]
 user = showyourwork.parents[0]
 src = user / "src"
 tex = src / "tex"
+data = src / "data"
 figure_scripts = src / "figure-scripts"
 static_figures = src / "static-figures"
 figures = tex / "figures"

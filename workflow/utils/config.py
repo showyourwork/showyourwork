@@ -5,8 +5,9 @@ import inspect
 import os
 import snakemake
 import re
+import sys
 
-__all__ = ["parse_config", "finalize_config", "get_snakemake_variable"]
+__all__ = ["parse_config", "finalize_config", "get_snakemake_variable", "is_make_clean"]
 
 
 def get_class_name(ms_name):
@@ -26,7 +27,7 @@ def get_class_name(ms_name):
         return name
 
 
-def as_dict(x, depth=0, maxdepth=5):
+def as_dict(x, depth=0, maxdepth=30):
     """
     Replaces nested instances of OrderedDicts with regular dicts in a dictionary.
 
@@ -37,8 +38,9 @@ def as_dict(x, depth=0, maxdepth=5):
     if depth == 0 and not x:
         return {}
     elif depth > maxdepth:
-        # TODO
-        raise exceptions.ConfigError()
+        with exceptions.no_traceback():
+            # TODO: Our custom excepthook isn't working
+            raise exceptions.ConfigError()
 
     if type(x) is list:
         y = dict(ChainMap(*[dict(xi) for xi in x if type(xi) is OrderedDict]))
@@ -163,6 +165,17 @@ def get_snakemake_variable(name, default=None):
         if value is not None:
             return value
     return default
+
+
+def is_make_clean():
+    """
+    Returns True if the current workflow was triggered by `make clean`
+
+    """
+    if "--delete-all-output" in sys.argv:
+        return True
+    else:
+        return False
 
 
 def finalize_config():

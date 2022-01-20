@@ -2,6 +2,7 @@ import sys
 import json
 import re
 from pathlib import Path
+from collections.abc import MutableMapping
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 
@@ -15,9 +16,37 @@ from utils import paths, compile_tex, exceptions, zenodo
 from utils.git import get_repo_url
 
 
+def flatten_zenodo_contents(
+    d, parent_key="", default_path=paths.data.relative_to(paths.user)
+):
+    """
+    Flatten the `contents` dictionary of a Zenodo entry, filling
+    in default mappings and removing zipfiles from the target path.
+
+    Adapted from https://stackoverflow.com/a/6027615
+
+    """
+    items = []
+    for k, v in d.items():
+        new_key = (Path(parent_key) / k).as_posix() if parent_key else k
+        if isinstance(v, MutableMapping):
+            items.extend(flatten_zenodo_contents(v, new_key).items())
+        else:
+            if v is None:
+                # Use the default path
+                # If inside a zipfile, remove the zipfile from the target path
+                zip_file = Path(new_key).parts[0]
+                if any([zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]):
+                    v = (default_path / Path(*Path(new_key).parts[1:])).as_posix()
+                else:
+                    v = (default_path / new_key).as_posix()
+            items.append((new_key, v))
+    return dict(items)
+
+
 def parse_zenodo_datasets():
     """
-    Checks the `zenodo` key in the config file and populates entries
+    Parse the `zenodo` key in the config file and populate entries
     with some metadata, like the type of record (version or concept).
 
     """
@@ -26,53 +55,61 @@ def parse_zenodo_datasets():
     user = repo_url.split("/")[-2]
 
     for host in ["zenodo", "zenodo_sandbox"]:
-        entry = config[host]
-        for dataset in entry:
+        for deposit_id, entry in config[host].items():
 
-            # Ensure an ID was provided
-            deposit_id = entry[dataset].get("id", None)
-            if deposit_id is None:
-                raise exceptions.MissingZenodoID(dataset)
+            try:
+                deposit_id = int(deposit_id)
+            except:
+                raise exceptions.ZenodoRecordNotFound(deposit_id)
 
             # Zenodo access token environment variable
-            entry[dataset]["token_name"] = entry[dataset].get(
+            entry["token_name"] = entry.get(
                 "token_name", zenodo.default_token_name[host]
             )
 
             # Infer if this is a version or concept ID
-            entry[dataset]["id_type"] = zenodo.get_id_type(
+            entry["id_type"] = zenodo.get_id_type(
                 deposit_id=deposit_id,
                 zenodo_url=zenodo.zenodo_url[host],
-                token_name=entry[dataset]["token_name"],
+                token_name=entry["token_name"],
             )
 
-            # File name and path
-            entry[dataset]["file_name"] = str(Path(dataset).name)
-            entry[dataset]["file_path"] = str(Path(dataset).parent)
+            # Deposit upload metadata (only relevant if id_type == `concept`)
+            if entry["id_type"] == "concept":
+                entry["title"] = entry.get("title", f"Dataset for {repo}")
+                entry["description"] = entry.get(
+                    "description", f"File uploaded from {repo}."
+                )
+                entry["creators"] = entry.get("creators", user)
 
-            # If a script was provided, make it a dependency of the dataset
-            # TODO: Propagate this logic to the rule that generates the dataset
-            entry[dataset]["script"] = entry[dataset].get("script", None)
-            config["dependencies"][dataset] = config["dependencies"].get(dataset, [])
-            if entry[dataset]["script"]:
-                config["dependencies"][dataset].extend(entry[dataset]["script"])
+            # Deposit contents
+            contents = flatten_zenodo_contents(entry.get("contents", {}))
 
-            # Deposit title
-            file = entry[dataset]["file_name"]
-            entry[dataset]["title"] = entry[dataset].get("title", f"{repo}:{file}")
+            # Handle files inside zipfiles, tarballs, etc.
+            entry["zip_files"] = {}
+            for source in list(contents.keys()):
+                target = contents[source]
+                zip_file = Path(source).parts[0]
 
-            # Deposit description
-            entry[dataset]["description"] = entry[dataset].get(
-                "description", f"File uploaded from {repo}."
-            )
+                # If it's a zipfile, add it to a separate entry in the config
+                if any([zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]):
+                    new_source = Path(*Path(source).parts[1:]).as_posix()
+                    if zip_file in entry["zip_files"].keys():
+                        entry["zip_files"][zip_file].update({new_source: target})
+                    else:
+                        entry["zip_files"][zip_file] = {new_source: target}
 
-            # Creator name(s)
-            entry[dataset]["creators"] = entry[dataset].get("creators", user)
+                    # Remove it from the `contents` entry
+                    del contents[source]
 
-            # Deposit contents (if a tarball)
-            entry[dataset]["contents"] = entry[dataset].get("contents", [])
+                    # We'll download the entire zipfile to a temporary directory
+                    contents[zip_file] = (
+                        paths.zenodo.relative_to(paths.user)
+                        / str(deposit_id)
+                        / zip_file
+                    ).as_posix()
 
-            # TODO: Implement tarball logic here
+            entry["contents"] = contents
 
 
 def check_figure_format(figure):

@@ -93,7 +93,5 @@ class ZenodoUploadError(ShowyourworkException):
     pass
 
 
-class MissingZenodoID(ShowyourworkException):
-    def __init__(self, dataset):
-        message = f"Missing Zenodo ID for dataset `{dataset}`."
-        super().__init__(message)
+class NestedZipFileError(ShowyourworkException):
+    pass

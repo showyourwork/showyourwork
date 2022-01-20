@@ -10,7 +10,7 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, setup_logging, finalize_config, clear_errors, get_logger, exceptions, zenodo
+from utils import paths, setup_logging, finalize_config, clear_errors, get_logger, exceptions, zenodo, is_make_clean
 
 
 # Working directory is the top level of the user repo
@@ -79,8 +79,8 @@ if (paths.temp / "config.json").exists():
 
 else:
 
-    # TODO
-    raise exceptions.MissingConfigFile()
+    if not is_make_clean():
+        raise exceptions.MissingConfigFile()
 
 
 onsuccess:

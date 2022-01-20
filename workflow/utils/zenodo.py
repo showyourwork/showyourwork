@@ -21,6 +21,10 @@ default_token_name = {
 zenodo_url = {"zenodo": "zenodo.org", "zenodo_sandbox": "sandbox.zenodo.org"}
 
 
+# Supported tarball extensions
+zip_exts = ["tar.gz"]
+
+
 def check_status(r):
     """
     Parse a requests return object and raise a custom exception
