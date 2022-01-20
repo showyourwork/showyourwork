@@ -54,7 +54,8 @@ def parse_zenodo_datasets():
             # TODO: Propagate this logic to the rule that generates the dataset
             entry[dataset]["script"] = entry[dataset].get("script", None)
             config["dependencies"][dataset] = config["dependencies"].get(dataset, [])
-            config["dependencies"][dataset].extend(entry[dataset]["script"])
+            if entry[dataset]["script"]:
+                config["dependencies"][dataset].extend(entry[dataset]["script"])
 
             # Deposit title
             file = entry[dataset]["file_name"]

@@ -36,7 +36,7 @@ for host in ["zenodo", "zenodo_sandbox"]:
                 name:
                     rulename
                 message:
-                    "Downloading `{output}` from Zenodo..."
+                    "Downloading {output} from Zenodo..."
                 output:
                     report(dataset, category="Dataset")
                 params:
