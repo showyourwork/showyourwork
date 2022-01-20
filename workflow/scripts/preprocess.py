@@ -88,10 +88,15 @@ def parse_zenodo_datasets():
             # Handle files inside zipfiles, tarballs, etc.
             entry["zip_files"] = {}
             for source in list(contents.keys()):
+
+                # Ensure the target is not a list
                 target = contents[source]
-                zip_file = Path(source).parts[0]
+                if type(target) is list:
+                    # TODO
+                    raise exceptions.ZenodoContentsError()
 
                 # If it's a zipfile, add it to a separate entry in the config
+                zip_file = Path(source).parts[0]
                 if any([zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]):
                     new_source = Path(*Path(source).parts[1:]).as_posix()
                     if zip_file in entry["zip_files"].keys():

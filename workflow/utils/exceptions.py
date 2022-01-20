@@ -97,5 +97,9 @@ class NotImplementedError(ShowyourworkException):
     pass
 
 
+class ZenodoContentsError(ShowyourworkException):
+    pass
+
+
 class TarballExtractionError(ShowyourworkException):
     pass
