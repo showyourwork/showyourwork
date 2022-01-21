@@ -9,6 +9,7 @@ import requests
 import os
 import json
 import subprocess
+import hashlib
 
 
 # Default evironment variable names
@@ -50,16 +51,117 @@ def get_access_token(token_name, error_if_missing=False):
     return access_token
 
 
-def _get_id_type(
+def _get_user_id(zenodo_url="zenodo.org", token_name="ZENODO_TOKEN"):
+    """
+    Return the internal user ID associated with a Zenodo API token.
+
+    """
+    # Get the access token
+    try:
+        access_token = get_access_token(token_name, error_if_missing=True)
+    except exceptions.MissingZenodoAccessToken:
+        return None
+
+    # Create a new deposit so we can grab the user ID
+    try:
+        r = check_status(
+            requests.post(
+                f"https://{zenodo_url}/api/deposit/depositions",
+                params={"access_token": access_token},
+                data="{}",
+                headers={"Content-Type": "application/json"},
+            )
+        )
+    except exceptions.ZenodoError:
+        return None
+
+    data = r.json()
+    deposit_id = data.get("id", None)
+    user_id = data.get("owner", None)
+    if user_id:
+        user_id = int(user_id)
+
+    # Delete the deposit
+    if deposit_id:
+        try:
+            r = check_status(
+                requests.delete(
+                    f"https://{zenodo_url}/api/deposit/depositions/{deposit_id}",
+                    params={"access_token": access_token},
+                )
+            )
+        except exceptions.ZenodoError:
+            # It's... probably fine
+            pass
+
+    return user_id
+
+
+def get_user_id(zenodo_url="zenodo.org", token_name="ZENODO_TOKEN"):
+    """
+    Return the internal user ID associated with a Zenodo API token.
+
+    Caches the result locally if successful. Note that we DO NOT
+    store the API token on disk, but instead its SHA-256 hash.
+
+    """
+    if "sandbox" in zenodo_url:
+        tmp = paths.zenodo_sandbox
+    else:
+        tmp = paths.zenodo
+
+    # Get the access token
+    try:
+        access_token = get_access_token(token_name, error_if_missing=True)
+    except exceptions.MissingZenodoAccessToken:
+        return None
+
+    # Unique (but secure) cache file for the provided access token
+    access_token_hash = hashlib.sha256(access_token.encode()).hexdigest()
+    cache_file = tmp / f"{access_token_hash}.txt"
+
+    if cache_file.exists():
+
+        with open(cache_file, "r") as f:
+            user_id = int(f.readline().replace("\n", ""))
+
+    else:
+
+        user_id = _get_user_id(zenodo_url=zenodo_url, token_name=token_name)
+        if user_id:
+            with open(cache_file, "w") as f:
+                print(user_id, file=f)
+
+    return user_id
+
+
+def _get_owner_ids(data):
+    """
+    Infer the owner IDs given a data dict returned by a GET deposition request.
+
+    """
+    if "owner" in data:
+        return [int(data["owner"])]
+    elif "owners" in data:
+        return [int(i) for i in data["owners"]]
+    else:
+        # TODO
+        raise exceptions.ZenodoError()
+
+
+def _get_id_info(
     deposit_id,
     zenodo_url="zenodo.org",
     token_name="ZENODO_TOKEN",
+    search_drafts=True,
     max_pages=100,
     results_per_page=10,
 ):
     """
     Determines whether a given Zenodo `id` corresponds to
     a concept id or a version id (and raises an error otherwise).
+
+    Returns a tuple: the record id type and the ID(s) of the owner(s).
 
     """
     # Try to find a published record (no authentication needed)
@@ -70,12 +172,15 @@ def _get_id_type(
 
         if "PID is not registered" in data.get("message", ""):
 
+            # No published records found
+            if not search_drafts:
+                raise exceptions.ZenodoRecordNotFound(deposit_id)
+
             # Get the access token
             access_token = get_access_token(token_name, error_if_missing=True)
 
-            # There's no public record; let's search for a draft
-            # deposit with this concept or version ID (authentication
-            # needed)
+            # Search for a draft deposit with this concept or
+            # version ID (authentication needed)
             for page in range(1, max_pages + 1):
                 r = check_status(
                     requests.get(
@@ -93,15 +198,16 @@ def _get_id_type(
                 )
                 data = r.json()
                 for deposit in data:
+
                     if int(deposit["conceptrecid"]) == deposit_id:
 
                         # We found a deposit draft with this concept id
-                        return "concept"
+                        return "concept", _get_owner_ids(deposit)
 
                     elif int(deposit["id"]) == deposit_id:
 
                         # We found a deposit draft with this version id
-                        return "version"
+                        return "version", _get_owner_ids(deposit)
 
                 if len(data) == 0:
 
@@ -117,17 +223,19 @@ def _get_id_type(
 
         # This is a public record
         if int(deposit_id) == int(data["conceptrecid"]):
-            return "concept"
+            return "concept", _get_owner_ids(data)
         elif int(deposit_id) == int(data["id"]):
-            return "version"
+            return "version", _get_owner_ids(data)
         else:
             raise exceptions.ZenodoRecordNotFound(deposit_id)
 
 
-def get_id_type(deposit_id, zenodo_url="zenodo.org", **kwargs):
+def get_id_info(deposit_id, zenodo_url="zenodo.org", **kwargs):
     """
     Determines whether a given Zenodo `id` corresponds to
     a concept id or a version id (and raises an error otherwise).
+
+    Returns a tuple: the record id type and a list of owner IDs.
 
     Caches the result locally.
 
@@ -136,21 +244,23 @@ def get_id_type(deposit_id, zenodo_url="zenodo.org", **kwargs):
         tmp = paths.zenodo_sandbox
     else:
         tmp = paths.zenodo
-    cache_file = tmp / f"{deposit_id}" / "id_type.txt"
+    cache_file = tmp / f"{deposit_id}" / "info.txt"
 
     if cache_file.exists():
 
         with open(cache_file, "r") as f:
-            id_type = f.readline().replace("\n", "")
+            id_type, owner_ids = f.readline().replace("\n", "").split(":")
+            owner_ids = [int(i) for i in owner_ids.split(",")]
 
     else:
 
         cache_file.parents[0].mkdir(exist_ok=True)
-        id_type = _get_id_type(deposit_id, zenodo_url=zenodo_url, **kwargs)
+        id_type, owner_ids = _get_id_info(deposit_id, zenodo_url=zenodo_url, **kwargs)
+        owner_ids_string = ",".join([str(i) for i in owner_ids])
         with open(cache_file, "w") as f:
-            print(id_type, file=f)
+            print(f"{id_type}:{owner_ids_string}", file=f)
 
-    return id_type
+    return id_type, owner_ids
 
 
 def upload_simulation(

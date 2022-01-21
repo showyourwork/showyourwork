@@ -46,8 +46,8 @@ def flatten_zenodo_contents(
 
 def parse_zenodo_datasets():
     """
-    Parse the `zenodo` key in the config file and populate entries
-    with some metadata, like the type of record (version or concept).
+    Parse the `zenodo` and `zenodo_sandbox` keys in the config file and
+    populate entries with custom metadata.
 
     """
     repo_url = get_repo_url()
@@ -67,14 +67,20 @@ def parse_zenodo_datasets():
                 "token_name", zenodo.default_token_name[host]
             )
 
-            # Infer if this is a version or concept ID
-            entry["id_type"] = zenodo.get_id_type(
+            # Infer the ID of the user associated with the API token
+            entry["user_id"] = zenodo.get_user_id(
+                zenodo_url=zenodo.zenodo_url[host],
+                token_name=entry["token_name"],
+            )
+
+            # Infer if this is a version or concept ID, and its owner IDs
+            entry["id_type"], entry["owner_ids"] = zenodo.get_id_info(
                 deposit_id=deposit_id,
                 zenodo_url=zenodo.zenodo_url[host],
                 token_name=entry["token_name"],
             )
 
-            # Deposit upload metadata (only relevant if id_type == `concept`)
+            # Deposit upload metadata (if applicable)
             if entry["id_type"] == "concept":
                 entry["title"] = entry.get("title", f"Dataset for {repo}")
                 entry["description"] = entry.get(

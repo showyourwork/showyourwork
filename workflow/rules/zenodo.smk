@@ -71,5 +71,6 @@ for host in ["zenodo", "zenodo_sandbox"]:
 
         # TODO: Implement logic to re-download a dataset if the local
         # one is from a different version (track it in the config.json file)
+        # Concept ids only.
 
         # TODO: Implement logic to handle upload/download of concept id datasets
