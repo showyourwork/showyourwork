@@ -47,6 +47,10 @@ def clear_errors():
     clear_snakemake_errors()
     clear_showyourwork_errors()
 
+    # Remove temp files
+    for file in paths.temptemp.glob("*"):
+        file.unlink()
+
 
 def setup_logging(debug=False, verbose=False, logfile=None):
     """
@@ -88,6 +92,12 @@ def setup_logging(debug=False, verbose=False, logfile=None):
     # At the end of the build, we'll copy the contents over to this same file.
     if logfile is not None:
         smlogfile = snakemake_logger.get_logfile()
-        smlogfile = str(Path(smlogfile))
-        with open(Path(logfile), "w") as f:
-            print(smlogfile, file=f)
+        if smlogfile:
+            smlogfile = str(Path(smlogfile))
+            with open(Path(logfile), "w") as f:
+                print(smlogfile, file=f)
+        else:
+            # TODO: I've encountered cases where the logfile is None;
+            # happened once when I had checkpoints in the workflow.
+            # Investigate this, and whether we should change the logic here.
+            pass

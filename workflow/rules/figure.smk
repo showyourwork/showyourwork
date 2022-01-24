@@ -1,3 +1,6 @@
+from utils import paths
+
+
 figures = config["tree"]["figures"]
 fignum = 1
 for figure_name in figures:

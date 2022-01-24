@@ -62,16 +62,8 @@ class MissingConfigFile(ShowyourworkException):
 
 
 class ZenodoError(ShowyourworkException):
-    def __init__(self, data=None):
-        if data:
-            data["status"] = data.get("status", "unknown")
-            data["message"] = data.get(
-                "message", "An error occurred while accessing Zenodo."
-            )
-            message = "Zenodo error {}: {}".format(data["status"], data["message"])
-        else:
-            message = "An error occurred while accessing Zenodo."
-        super().__init__(message)
+    def __init__(self, status="", message="An error occurred while accessing Zenodo."):
+        super().__init__(f"Zenodo error {status}: {message}")
 
 
 class MissingZenodoAccessToken(ShowyourworkException):

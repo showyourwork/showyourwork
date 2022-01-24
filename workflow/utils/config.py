@@ -7,7 +7,7 @@ import snakemake
 import re
 import sys
 
-__all__ = ["parse_config", "finalize_config", "get_snakemake_variable", "is_make_clean"]
+__all__ = ["parse_config", "get_snakemake_variable", "is_make_clean"]
 
 
 def get_class_name(ms_name):
@@ -63,97 +63,6 @@ def as_dict(x, depth=0, maxdepth=30):
     return x
 
 
-def parse_config():
-    """
-    Parse the current config and fill in defaults.
-
-    This step is only run in the preprocessing stage.
-
-    """
-    # Get current config
-    config = snakemake.workflow.config
-
-    #
-    # -- User settings --
-    #
-
-    #: Verbosity
-    config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
-
-    #: Debug mode
-    config["debug"] = str(config.get("debug", "false")).lower() == "true"
-
-    #: Manuscript name
-    config["ms_name"] = config.get("ms_name", "ms")
-
-    #: Custom script execution rules
-    config["scripts"] = as_dict(config.get("scripts", {}))
-    config["scripts"]["py"] = config["scripts"].get("py", "python {script}")
-
-    #: Custom script dependencies
-    config["dependencies"] = as_dict(config.get("dependencies", {}))
-
-    #: Zenodo datasets
-    config["zenodo"] = as_dict(config.get("zenodo", {}))
-    config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
-
-    #
-    # -- Internal settings --
-    #
-
-    # Path to the user repo
-    config["user_abspath"] = paths.user.as_posix()
-
-    # Path to the workflow
-    config["workflow_abspath"] = paths.workflow.as_posix()
-
-    # TeX class name
-    config["class_name"] = get_class_name(config["ms_name"])
-
-    # TeX auxiliary files
-    config["tex_files_in"] = [
-        file.relative_to(paths.user).as_posix()
-        for file in (paths.resources / "tex").glob("*")
-    ]
-    config["tex_files_in"] += [
-        file.relative_to(paths.user).as_posix()
-        for file in (paths.resources / "classes" / config["class_name"]).glob("*")
-    ]
-    config["tex_files_out"] = [
-        (paths.tex.relative_to(paths.user) / Path(file).name).as_posix()
-        for file in config["tex_files_in"]
-    ]
-
-    # The main tex file and the compiled pdf
-    config["ms_tex"] = (
-        paths.tex.relative_to(paths.user) / (config["ms_name"] + ".tex")
-    ).as_posix()
-    config["ms_pdf"] = config["ms_name"] + ".pdf"
-
-    # The parsed config file
-    config["config_json"] = (
-        (paths.temp / "config.json").relative_to(paths.user).as_posix()
-    )
-
-    # Paths to the TeX stylesheets
-    config["stylesheet"] = (
-        (paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix()
-    )
-    config["stylesheet_meta_file"] = (
-        (paths.tex / ".showyourwork-metadata.tex").relative_to(paths.user).as_posix()
-    )
-
-    # Script extensions
-    config["script_extensions"] = list(config["scripts"].keys())
-
-    # Overridden in the `preprocess` rule
-    config["tree"] = {"figures": {}}
-    config["labels"] = {}
-
-    # Record additional settings
-    finalize_config()
-
-
 def get_snakemake_variable(name, default=None):
     """
     Infer the value of a variable within snakemake.
@@ -178,19 +87,106 @@ def is_make_clean():
         return False
 
 
-def finalize_config():
+def parse_config():
     """
-    Add some extra settings to the config dict.
+    Parse the current config and fill in defaults.
 
-    This step is run in both the preprocessing stage and before the main build.
-    If we ran it only during preprocessing, passing different command line
-    flags to `snakemake` on the next build might have no effect if the
-    preprocess workflow is cached & not triggered. The same would be true if
-    the user git-committed or changed branches in between builds.
 
     """
     # Get current config
     config = snakemake.workflow.config
+
+    # During the preprocessing stage, we import user settings,
+    # set defaults, and record additional internal settings
+    if Path(snakemake.workflow.workflow.main_snakefile).name == "preprocess.smk":
+
+        #
+        # -- User settings --
+        #
+
+        #: Verbosity
+        config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
+
+        #: Debug mode
+        config["debug"] = str(config.get("debug", "false")).lower() == "true"
+
+        #: Fast mode
+        config["fast"] = str(config.get("fast", "false")).lower() == "true"
+
+        #: Manuscript name
+        config["ms_name"] = config.get("ms_name", "ms")
+
+        #: Custom script execution rules
+        config["scripts"] = as_dict(config.get("scripts", {}))
+        config["scripts"]["py"] = config["scripts"].get("py", "python {script}")
+
+        #: Custom script dependencies
+        config["dependencies"] = as_dict(config.get("dependencies", {}))
+
+        #: Zenodo datasets
+        config["zenodo"] = as_dict(config.get("zenodo", {}))
+        config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
+
+        #
+        # -- Internal settings --
+        #
+
+        # Path to the user repo
+        config["user_abspath"] = paths.user.as_posix()
+
+        # Path to the workflow
+        config["workflow_abspath"] = paths.workflow.as_posix()
+
+        # TeX class name
+        config["class_name"] = get_class_name(config["ms_name"])
+
+        # TeX auxiliary files
+        config["tex_files_in"] = [
+            file.relative_to(paths.user).as_posix()
+            for file in (paths.resources / "tex").glob("*")
+        ]
+        config["tex_files_in"] += [
+            file.relative_to(paths.user).as_posix()
+            for file in (paths.resources / "classes" / config["class_name"]).glob("*")
+        ]
+        config["tex_files_out"] = [
+            (paths.tex.relative_to(paths.user) / Path(file).name).as_posix()
+            for file in config["tex_files_in"]
+        ]
+
+        # The main tex file and the compiled pdf
+        config["ms_tex"] = (
+            paths.tex.relative_to(paths.user) / (config["ms_name"] + ".tex")
+        ).as_posix()
+        config["ms_pdf"] = config["ms_name"] + ".pdf"
+
+        # The parsed config file
+        config["config_json"] = (
+            (paths.temp / "config.json").relative_to(paths.user).as_posix()
+        )
+
+        # Paths to the TeX stylesheets
+        config["stylesheet"] = (
+            (paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix()
+        )
+        config["stylesheet_meta_file"] = (
+            (paths.tex / ".showyourwork-metadata.tex")
+            .relative_to(paths.user)
+            .as_posix()
+        )
+
+        # Script extensions
+        config["script_extensions"] = list(config["scripts"].keys())
+
+        # Overridden in the `preprocess` rule
+        config["tree"] = {"figures": {}}
+        config["labels"] = {}
+
+    # The following is run in both the preprocessing stage and the main build.
+    # If we ran it only during preprocessing, passing different command line
+    # flags to `snakemake` on the next build might have no effect if the
+    # preprocess workflow is cached & not triggered. The same would be true if
+    # the user git-committed or changed branches in between builds.
 
     # Git info for the repo
     config["git_sha"] = git.get_repo_sha()

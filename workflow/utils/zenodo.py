@@ -33,10 +33,13 @@ def check_status(r):
 
     """
     if r.status_code > 204:
-        data = r.json()
+        try:
+            data = r.json()
+        except:
+            raise exceptions.ZenodoError(status=r.status_code)
         for error in data.get("errors", []):
             data["message"] += " " + error["message"]
-        raise exceptions.ZenodoError(data)
+        raise exceptions.ZenodoError(status=data["status"], message=data["message"])
     return r
 
 
@@ -101,14 +104,19 @@ def get_user_id(zenodo_url="zenodo.org", token_name="ZENODO_TOKEN"):
     """
     Return the internal user ID associated with a Zenodo API token.
 
-    Caches the result locally if successful. Note that we DO NOT
-    store the API token on disk, but instead its SHA-256 hash.
+    A few notes:
+
+        - Caches the result locally if successful.
+        - We DO NOT store the API token on disk, but instead its
+          SHA-256 hash.
+        - If the user is not authenticated (missing or bad API token),
+          returns `None`.
 
     """
     if "sandbox" in zenodo_url:
-        tmp = paths.zenodo_sandbox
+        tmp = paths.zenodo_sandbox_ids
     else:
-        tmp = paths.zenodo
+        tmp = paths.zenodo_ids
 
     # Get the access token
     try:
@@ -217,7 +225,7 @@ def _get_id_info(
         else:
 
             # Something unexpected happened...
-            raise exceptions.ZenodoError(data)
+            raise exceptions.ZenodoError(status=data["status"], message=data["message"])
 
     else:
 
@@ -244,21 +252,22 @@ def get_id_info(deposit_id, zenodo_url="zenodo.org", **kwargs):
         tmp = paths.zenodo_sandbox
     else:
         tmp = paths.zenodo
-    cache_file = tmp / f"{deposit_id}" / "info.txt"
+    cache_file = tmp / f"{deposit_id}" / "info.json"
 
     if cache_file.exists():
 
         with open(cache_file, "r") as f:
-            id_type, owner_ids = f.readline().replace("\n", "").split(":")
-            owner_ids = [int(i) for i in owner_ids.split(",")]
+            data = json.load(f)
+            id_type = data["id_type"]
+            owner_ids = data["owner_ids"]
 
     else:
 
         cache_file.parents[0].mkdir(exist_ok=True)
         id_type, owner_ids = _get_id_info(deposit_id, zenodo_url=zenodo_url, **kwargs)
-        owner_ids_string = ",".join([str(i) for i in owner_ids])
+        data = {"id_type": id_type, "owner_ids": owner_ids}
         with open(cache_file, "w") as f:
-            print(f"{id_type}:{owner_ids_string}", file=f)
+            json.dump(data, f)
 
     return id_type, owner_ids
 

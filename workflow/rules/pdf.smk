@@ -1,3 +1,6 @@
+from utils import paths
+
+
 rule pdf:
     """
     Compile the manuscript into the article PDF.

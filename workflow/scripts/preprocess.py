@@ -55,6 +55,12 @@ def parse_zenodo_datasets():
     user = repo_url.split("/")[-2]
 
     for host in ["zenodo", "zenodo_sandbox"]:
+
+        if host == "zenodo":
+            tmp_path = paths.zenodo.relative_to(paths.user)
+        else:
+            tmp_path = paths.zenodo_sandbox.relative_to(paths.user)
+
         for deposit_id, entry in config[host].items():
 
             try:
@@ -113,14 +119,17 @@ def parse_zenodo_datasets():
                     # Remove it from the `contents` entry
                     del contents[source]
 
-                    # We'll download the entire zipfile to a temporary directory
-                    if host == "zenodo":
-                        tmp = paths.zenodo.relative_to(paths.user)
-                    else:
-                        tmp = paths.zenodo_sandbox.relative_to(paths.user)
-                    contents[zip_file] = (tmp / str(deposit_id) / zip_file).as_posix()
+                    # We'll host the zipfile in a temporary directory
+                    contents[zip_file] = (
+                        tmp_path / str(deposit_id) / zip_file
+                    ).as_posix()
 
             entry["contents"] = contents
+
+            # Flag file signaling the deposit was uploaded
+            entry["upload_complete"] = (
+                tmp_path / str(deposit_id) / "upload_complete"
+            ).as_posix()
 
 
 def check_figure_format(figure):

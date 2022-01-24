@@ -1,3 +1,6 @@
+from utils import paths
+
+
 rule preprocess:
     """
     Generate a `config.json` file for the main build.

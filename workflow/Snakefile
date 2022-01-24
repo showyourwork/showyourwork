@@ -10,7 +10,17 @@ snakemake.utils.min_version("6.7.0")
 # Add our utils module to the path
 HERE = Path(snakemake.workflow.workflow.current_basedir).absolute()
 sys.path.insert(1, str(HERE.parents[0]))
-from utils import paths, setup_logging, finalize_config, clear_errors, get_logger, exceptions, zenodo, is_make_clean
+from utils import (
+    paths,
+    setup_logging,
+    parse_config,
+    clear_errors,
+    get_logger,
+    exceptions,
+    is_make_clean,
+    get_deps_hash,
+    process_user_rules,
+)
 
 
 # Working directory is the top level of the user repo
@@ -33,8 +43,8 @@ if (paths.temp / "config.json").exists():
     clear_errors()
 
 
-    # Add some extra info to the config
-    finalize_config()
+    # Parse the config file
+    parse_config()
 
 
     # Set up custom logging
@@ -52,36 +62,26 @@ if (paths.temp / "config.json").exists():
 
 
     # Include all other rules
+    include: "checkpoints/blocking.smk"
     include: "rules/pdf.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
 
 
     # Include custom rules defined by the user
-    usr_snakefile = (paths.user / "Snakefile").as_posix()
-    include: usr_snakefile
+    user_snakefile = (paths.user / "Snakefile").as_posix()
+    include: user_snakefile
+    process_user_rules(user_snakefile)
 
-
-    # Give all user rules higher priority than showyourwork rules
-    # and add a message if they don't have one
-    syw_rules = []
-    usr_rules = []
-    for r in workflow.rules:
-        if r.snakefile == usr_snakefile:
-            usr_rules.append(r)
-        else:
-            syw_rules.append(r)
-    for ur in usr_rules:
-        for sr in syw_rules:
-            workflow.ruleorder(ur.name, sr.name)
-        if not ur.message:
-            ur.message = f"Running user rule {ur.name}..."
 
 else:
+
 
     if not is_make_clean():
         raise exceptions.MissingConfigFile()
 
 
 onsuccess:
+
+
     get_logger().info("Done!")
