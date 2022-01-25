@@ -21,7 +21,7 @@ for figure_name in figures:
         figscript = []
 
     # User-friendly rule name
-    rulename = f"fig{fignum}"
+    rulename = f"syw__fig{fignum}"
     fignum += 1
 
     rule:

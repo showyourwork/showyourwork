@@ -1,11 +1,13 @@
 from utils import paths
 
 
-rule pdf:
+rule:
     """
     Compile the manuscript into the article PDF.
 
     """
+    name:
+        "syw__compile"
     message:
         "Generating the article PDF..."
     input:

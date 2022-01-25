@@ -47,8 +47,8 @@ def clear_errors():
     clear_snakemake_errors()
     clear_showyourwork_errors()
 
-    # Remove temp files
-    for file in paths.temptemp.glob("*"):
+    # Remove temp checkpoint files
+    for file in paths.checkpoints.glob("*"):
         file.unlink()
 
 

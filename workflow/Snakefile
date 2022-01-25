@@ -18,8 +18,7 @@ from utils import (
     get_logger,
     exceptions,
     is_make_clean,
-    get_deps_hash,
-    process_user_rules,
+    process_user_rules
 )
 
 
@@ -56,22 +55,21 @@ if (paths.temp / "config.json").exists():
 
 
     # Hack to make the pdf generation the default rule
-    rule main:
+    rule syw__main:
         input:
             config["ms_pdf"]
 
 
     # Include all other rules
-    include: "checkpoints/blocking.smk"
-    include: "rules/pdf.smk"
+    include: "checkpoints/dag.smk"
+    include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
 
 
     # Include custom rules defined by the user
-    user_snakefile = (paths.user / "Snakefile").as_posix()
-    include: user_snakefile
-    process_user_rules(user_snakefile)
+    include: (paths.user / "Snakefile").as_posix()
+    process_user_rules()
 
 
 else:

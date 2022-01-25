@@ -24,14 +24,8 @@ for host in ["zenodo", "zenodo_sandbox"]:
         zip_files = entry["zip_files"]
 
 
-        # Keep track of rules for this entry
-        # so we can use `ruleorder` on them later
-        entry["rules"] = []
-
-
         # Rule to upload all files in the deposit
-        rulename = f"upload{unum}"
-        entry["rules"].append(rulename)
+        rulename = f"syw__upload{unum}"
         unum += 1
         rule:
             """
@@ -54,8 +48,7 @@ for host in ["zenodo", "zenodo_sandbox"]:
 
         # Rules to download files individually
         for remote_file, local_file in contents.items():
-            rulename = f"download{dnum}"
-            entry["rules"].append(rulename)
+            rulename = f"syw__download{dnum}"
             dnum += 1
             rule:
                 """
@@ -66,6 +59,8 @@ for host in ["zenodo", "zenodo_sandbox"]:
                     rulename
                 message:
                     "Downloading {output} from Zenodo..."
+                input:
+                    "showyourwork.yml"
                 output:
                     report(local_file, category="Dataset")
                 params:
@@ -85,8 +80,7 @@ for host in ["zenodo", "zenodo_sandbox"]:
 
 
             # Rule to compress the files
-            rulename = f"compress{cnum}"
-            entry["rules"].append(rulename)
+            rulename = f"syw__compress{cnum}"
             cnum += 1
             rule:
                 """
@@ -111,8 +105,7 @@ for host in ["zenodo", "zenodo_sandbox"]:
 
             # Rules to extract files individually
             for compressed_file, extracted_file in zip_contents.items():
-                rulename = f"extract{xnum}"
-                entry["rules"].append(rulename)
+                rulename = f"syw__extract{xnum}"
                 xnum += 1
                 rule:
                     """

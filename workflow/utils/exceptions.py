@@ -98,3 +98,11 @@ class ZenodoContentsError(ShowyourworkException):
 
 class TarballExtractionError(ShowyourworkException):
     pass
+
+
+class MissingCondaEnvironmentInUserRule(ShowyourworkException):
+    pass
+
+
+class RunDirectiveNotAllowedInUserRules(ShowyourworkException):
+    pass

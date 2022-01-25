@@ -1,7 +1,7 @@
 from utils import paths
 
 
-rule preprocess:
+rule:
     """
     Generate a `config.json` file for the main build.
     
@@ -19,6 +19,8 @@ rule preprocess:
     workflow.
     
     """
+    name:
+        "syw__preprocess"
     message:
         "Setting up the workflow..."
     input:

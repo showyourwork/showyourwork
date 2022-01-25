@@ -42,7 +42,7 @@ setup_logging(
 
 
 # Hack to make the configfile generation the default rule
-rule main:
+rule syw__main:
     input:
         config["config_json"]
 
