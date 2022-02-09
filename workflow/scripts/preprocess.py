@@ -13,7 +13,6 @@ config = snakemake.config  # type:ignore
 # Import utils
 sys.path.insert(1, config["workflow_abspath"])
 from utils import paths, compile_tex, exceptions, zenodo
-from utils.git import get_repo_url
 
 
 def flatten_zenodo_contents(
@@ -50,10 +49,6 @@ def parse_zenodo_datasets():
     populate entries with custom metadata.
 
     """
-    repo_url = get_repo_url()
-    repo = "/".join(repo_url.split("/")[-2:])
-    user = repo_url.split("/")[-2]
-
     for host in ["zenodo", "zenodo_sandbox"]:
 
         if host == "zenodo":
@@ -68,31 +63,13 @@ def parse_zenodo_datasets():
             except:
                 raise exceptions.ZenodoRecordNotFound(deposit_id)
 
-            # Zenodo access token environment variable
-            entry["token_name"] = entry.get(
-                "token_name", zenodo.default_token_name[host]
+            # Require that this is a static *version* ID
+            entry["id_type"] = zenodo.get_id_type(
+                deposit_id=deposit_id, zenodo_url=zenodo.zenodo_url[host]
             )
-
-            # Infer the ID of the user associated with the API token
-            entry["user_id"] = zenodo.get_user_id(
-                zenodo_url=zenodo.zenodo_url[host],
-                token_name=entry["token_name"],
-            )
-
-            # Infer if this is a version or concept ID, and its owner IDs
-            entry["id_type"], entry["owner_ids"] = zenodo.get_id_info(
-                deposit_id=deposit_id,
-                zenodo_url=zenodo.zenodo_url[host],
-                token_name=entry["token_name"],
-            )
-
-            # Deposit upload metadata (if applicable)
-            if entry["id_type"] == "concept":
-                entry["title"] = entry.get("title", f"Dataset for {repo}")
-                entry["description"] = entry.get(
-                    "description", f"File uploaded from {repo}."
-                )
-                entry["creators"] = entry.get("creators", user)
+            if entry["id_type"] != "version":
+                # TODO
+                raise exceptions.InvalidZenodoIdType()
 
             # Deposit contents
             contents = flatten_zenodo_contents(entry.get("contents", {}))
@@ -125,11 +102,6 @@ def parse_zenodo_datasets():
                     ).as_posix()
 
             entry["contents"] = contents
-
-            # Flag file signaling the deposit was uploaded
-            entry["upload_complete"] = (
-                tmp_path / str(deposit_id) / "upload_complete"
-            ).as_posix()
 
 
 def check_figure_format(figure):

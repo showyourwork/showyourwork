@@ -26,6 +26,8 @@ figures = tex / "figures"
 # Temporary paths
 temp = user / ".showyourwork"
 temp.mkdir(exist_ok=True)
+cache = temp / "cache"
+cache.mkdir(exist_ok=True)
 preprocess = temp / "preprocess"
 preprocess.mkdir(exist_ok=True)
 compile = temp / "compile"

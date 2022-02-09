@@ -31,7 +31,7 @@ def process_user_rules():
         if not ur.message:
             ur.message = f"Running user rule {ur.name}..."
 
-        # Add script as an input
+        # Add script as an explicit input
         if ur.script:
             ur.set_input(ur.script)
         elif ur.notebook:
@@ -44,12 +44,18 @@ def process_user_rules():
         if ur.conda_env:
             ur.set_input(ur.conda_env)
         else:
-            # TODO
             # All users rules should run in conda envs!
+            # TODO
             raise exceptions.MissingCondaEnvironmentInUserRule()
 
         # Add the user Snakefile as an input
         ur.set_input(ur.snakefile)
 
-        # Add the magic input function
-        ur.set_input(zenodo.disable_if_downloadable(ur))
+        # Make the rule cacheable
+        ur.ruleinfo.cache = True
+        snakemake.workflow.workflow.cache_rules.add(ur.name)
+        try:
+            ur.check_caching()
+        except snakemake.exceptions.RuleException:
+            ur.ruleinfo.cache = False
+            snakemake.workflow.workflow.cache_rules.remove(ur.name)

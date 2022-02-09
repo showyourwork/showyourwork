@@ -96,6 +96,10 @@ class ZenodoContentsError(ShowyourworkException):
     pass
 
 
+class InvalidZenodoIdType(ShowyourworkException):
+    pass
+
+
 class TarballExtractionError(ShowyourworkException):
     pass
 

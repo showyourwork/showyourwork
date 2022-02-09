@@ -1,35 +1,34 @@
-- [ ] If the user changes, say, the ID of a Zenodo deposit that provides a certain
-      file, and that file already exists locally, the workflow currently does NOT
-      re-download it. Think about how to make this happen automatically.
+PLAN
+----
 
-- [ ] Use the following `yaml` to test our Zenodo interface:
+Clone all user rules. Clones should be identical, except 
 
-      ```yaml
-      dependencies:
-          src/figure-scripts/sample_figure.py: 
-              - src/data/A.dat
-              - src/data/baz/B.dat
-              - src/data/foo/C.dat
-              - src/data/foo/bar/H.dat
-              - src/data/G.dat
-              - src/data/C.dat
-              - src/data/bar/H.dat
-              - src/data/G_copy.dat
+- Their names have a `syw__zenodo_` prefix.
 
-      zenodo_sandbox:
-          976786:
-              contents:
-                  A.dat:                                    # auto mapping to src/data/A.dat
-                  B.dat: src/data/baz/B.dat                 # explicit mapping to local subfolder (create if needed)
-                  foo.tar.gz:                               # remote tarfiles behave like folders
-                      foo:                                  # files are nested inside `foo` in this tarball
-                          C.dat:                            # auto mapping to src/data/foo/C.dat
-                          bar:                              # subfolder
-                              H.dat:                        # auto mapping to src/data/foo/bar/H.dat
-                              G.dat: src/data/G.dat         # change location
-                  foo2.tar.gz:                              # same as `foo.tar.gz`, but no top-level `foo` folder
-                      C.dat:                                # auto mapping to src/data/C.dat
-                      bar:                                  # subfolder
-                          H.dat:                            # auto mapping to src/data/bar/H.dat
-                          G.dat: src/data/G_copy.dat        # rename
-      ```
+- They precede the corresponding user rule in `ruleorder`.
+
+- Their `script` points to a script that downloads the 
+output from Zenodo (and `shell` and `notebook` are set to `None`).
+
+- They have an extra `input` entry: a function that calls the
+`dag` checkpoint (which blocks until the DAG is built) and returns
+`[]` if and only if all of the rule's outputs exist on Zenodo and
+the hash of the current rule matches the hash of the rule that generated
+those outputs. Otherwise, returns a string corresponding to an 
+unsatisfiable dependency (which causes the rule to be ignored).
+
+- They have an extra `parameter` entry encoding all the information needed
+to download the rule outputs from Zenodo in the `script`. This entry 
+is a function that, like the input function above, blocks until the DAG 
+is built, at which point we can calculate the rule hash and resolve the
+outputs.
+
+Then, to each user rule, add a dummy `input` entry that again blocks until
+the DAG is built, and records the rule's resolved output and hash into global variables
+if the job producing the output is actually run (we can query `dag.needrun(job)`
+for this). Create a rule that is always run at the end of the workflow to
+upload those outputs to Zenodo.
+
+
+
+Also, figure out how to ensure the re-downloading of datasets if their Zenodo ID changes.

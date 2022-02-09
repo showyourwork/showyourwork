@@ -3,8 +3,6 @@ from utils import zenodo
 
 xnum = 1
 dnum = 1
-cnum = 1
-unum = 1
 for host in ["zenodo", "zenodo_sandbox"]:
 
 
@@ -16,34 +14,8 @@ for host in ["zenodo", "zenodo_sandbox"]:
 
 
         # Get entry metadata
-        token_name = entry["token_name"]
-        id_type = entry["id_type"]
-        owner_ids = entry["owner_ids"]
-        user_id = entry["user_id"]
         contents = entry["contents"]
         zip_files = entry["zip_files"]
-
-
-        # Rule to upload all files in the deposit
-        rulename = f"syw__upload{unum}"
-        unum += 1
-        rule:
-            """
-            Upload a deposit to Zenodo.
-
-            """
-            name:
-                rulename
-            message:
-                "Uploading files to Zenodo..."
-            input:
-                list(contents.values())
-            output:
-                temp(touch(entry["upload_complete"]))
-            conda:
-                "../envs/main.yml"
-            script:
-                "../scripts/upload.py"
 
 
         # Rules to download files individually
@@ -71,36 +43,12 @@ for host in ["zenodo", "zenodo_sandbox"]:
                     "../scripts/download.py"
 
 
-        # Rules for zip files and tarballs (TODO: Hashing logic)
+        # Rules for zip files and tarballs
         for zip_file, zip_contents in zip_files.items():
 
 
             # Path to the local version of the zip file
             local_zip_file = contents[zip_file]
-
-
-            # Rule to compress the files
-            rulename = f"syw__compress{cnum}"
-            cnum += 1
-            rule:
-                """
-                Compress files into a zip file or tarball for a Zenodo upload.
-
-                """
-                name:
-                    rulename
-                message:
-                    "Compressing {output}..."
-                input:
-                    list(zip_contents.values())
-                output:
-                    local_zip_file
-                params:
-                    compressed_files=list(zip_contents.keys())
-                conda:
-                    "../envs/main.yml"
-                script:
-                    "../scripts/compress.py"
 
 
             # Rules to extract files individually
