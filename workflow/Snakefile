@@ -53,17 +53,11 @@ if (paths.temp / "config.json").exists():
         logfile=paths.logs / "compile.log"
     )
 
-    def debug(wildcards):
-        checkpoints.syw__dag.get()
-        breakpoint()
-        return []
-
 
     # Hack to make the pdf generation the default rule
     rule syw__main:
         input:
-            config["ms_pdf"],
-            debug
+            config["ms_pdf"]
 
 
     # Include all other rules

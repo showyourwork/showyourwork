@@ -1,8 +1,59 @@
-from click import exceptions
-from . import zenodo
+from . import exceptions
 import snakemake
 
 __all__ = ["process_user_rules"]
+
+
+from .logging import get_logger
+import types
+
+
+def patch_snakemake_cache():
+    """
+    Patches the Snakemake cache functionality to
+
+        - Add custom logging messages
+        - Attempt to download the cache file from Zenodo on `fetch()`
+        - Uploads the cache file to Zenodo on `store()`
+
+    """
+    # Get the showyourwork logger
+    logger = get_logger()
+
+    # The instance we'll patch
+    output_file_cache = snakemake.workflow.workflow.output_file_cache
+
+    # Make a copy of the original methods
+    _fetch = output_file_cache.fetch
+    _store = output_file_cache.store
+
+    # Define the patches
+    def fetch(self, job):
+        for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
+            if not cachefile.exists():
+                # TODO: Attempt to download from Zenodo
+                pass
+            else:
+                logger.info(f"Restoring file from cache: {outputfile}...")
+
+        # Call the original method
+        return _fetch(job)
+
+    def store(self, job):
+
+        # Call the original method
+        result = _store(job)
+
+        for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
+            logger.info(f"Caching output file: {outputfile}...")
+
+            # TODO: Upload to Zenodo
+
+        return result
+
+    # Apply them
+    output_file_cache.fetch = types.MethodType(fetch, output_file_cache)
+    output_file_cache.store = types.MethodType(store, output_file_cache)
 
 
 def process_user_rules():
@@ -11,7 +62,7 @@ def process_user_rules():
 
     """
 
-    # Get figure, zenodo, and user rules
+    # Get all showyourwork and user rules
     syw_rules = []
     user_rules = []
     for r in snakemake.workflow.workflow.rules:
@@ -19,6 +70,10 @@ def process_user_rules():
             syw_rules.append(r)
         else:
             user_rules.append(r)
+
+    # Patch the Snakemake caching functionality so we
+    # can cache things on Zenodo
+    patch_snakemake_cache()
 
     # Process each user rule
     for ur in user_rules:
@@ -41,6 +96,7 @@ def process_user_rules():
             raise exceptions.RunDirectiveNotAllowedInUserRules()
 
         # Ensure we're running in a conda env
+        # and add the env file as an explicit input
         if ur.conda_env:
             ur.set_input(ur.conda_env)
         else:
@@ -48,10 +104,12 @@ def process_user_rules():
             # TODO
             raise exceptions.MissingCondaEnvironmentInUserRule()
 
-        # Add the user Snakefile as an input
+        # Add the Snakefile or .smk file defining the rule as an explicit
+        # input (user can modularize their Snakefile for more fine-grained
+        # control here)
         ur.set_input(ur.snakefile)
 
-        # Make the rule cacheable
+        # Make the rule cacheable (Snakemake handles this)
         ur.ruleinfo.cache = True
         snakemake.workflow.workflow.cache_rules.add(ur.name)
         try:
