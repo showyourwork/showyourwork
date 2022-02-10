@@ -2,21 +2,15 @@
 Main Zenodo interface.
 
 """
-from . import exceptions, paths
-from .config import get_snakemake_variable
+from . import exceptions, paths, git
+from .logging import get_logger
 import requests
 import os
 import json
-import hashlib
 from pathlib import Path
 import snakemake
+import subprocess
 
-
-# Default evironment variable names
-default_token_name = {
-    "zenodo": "ZENODO_TOKEN",
-    "zenodo_sandbox": "ZENODO_SANDBOX_TOKEN",
-}
 
 # Zenodo base URLs
 zenodo_url = {"zenodo": "zenodo.org", "zenodo_sandbox": "sandbox.zenodo.org"}
@@ -43,7 +37,7 @@ def check_status(r):
     return r
 
 
-def get_access_token(token_name, error_if_missing=False):
+def get_access_token(token_name="ZENODO_TOKEN", error_if_missing=False):
     """
     Return the access token stored in the environment variable `token_name`.
 
@@ -113,3 +107,203 @@ def get_id_type(deposit_id, zenodo_url="zenodo.org"):
             print(id_type, file=f)
 
     return id_type
+
+
+def get_deposit_title():
+    """
+    Return the title of the Zenodo deposit for the current repo branch.
+
+    """
+    # Repo info
+    try:
+        url = snakemake.workflow.config["url"]
+    except:
+        url = git.get_repo_url()
+    for s in ["https://", "http://"]:
+        url = url.replace(s, "")
+    try:
+        branch = snakemake.workflow.config["branch"]
+    except:
+        branch = git.get_repo_branch()
+    return f"Data for {url}@{branch}"
+
+
+def create_draft():
+    """
+    Create a draft of a Zenodo deposit for the current repo & branch.
+
+    """
+    logger = get_logger()
+    logger.info("Creating a draft deposit on Zenodo...")
+
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=True)
+
+    # Create the draft
+    r = check_status(
+        requests.post(
+            "https://zenodo.org/api/deposit/depositions",
+            params={
+                "access_token": access_token,
+            },
+            json={},
+        )
+    )
+
+    # Add some minimal metadata
+    data = r.json()
+    title = get_deposit_title()
+    description = (
+        "Data automatically uploaded by the showyourwork workflow. "
+        "Please visit the source repository for more information."
+    )
+    metadata = {
+        "metadata": {
+            "title": title,
+            "upload_type": "dataset",
+            "description": description,
+            "creators": [{"name": "showyourwork"}],
+        }
+    }
+    r = check_status(
+        requests.put(
+            data["links"]["latest_draft"],
+            params={"access_token": access_token},
+            data=json.dumps(metadata),
+            headers={"Content-Type": "application/json"},
+        )
+    )
+    data = r.json()
+    logger.info(f"Created draft with id {data['id']} on Zenodo.")
+
+    return data
+
+
+def get_draft():
+    """
+    Get the Zenodo deposit draft for the current repo & branch.
+    Creates it if it doesn't exist.
+
+    """
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=True)
+
+    # Search
+    title = get_deposit_title()
+    r = requests.get(
+        "https://zenodo.org/api/deposit/depositions",
+        params={
+            "q": f'title:"{title}"',
+            "access_token": access_token,
+            "status": "draft",
+            "size": 10,
+            "page": 1,
+            "sort": "mostrecent",
+            "all_versions": 0,
+        },
+    )
+    data = r.json()
+    if len(data):
+
+        # We found a matching draft; return the most recent one.
+        r = check_status(
+            requests.get(
+                data[0]["links"]["latest_draft"],
+                params={"access_token": access_token},
+            )
+        )
+        return r.json()
+
+    else:
+
+        # We'll create a new draft
+        return create_draft()
+
+
+def upload_file_to_draft(file):
+    """
+    Upload a file to a Zenodo draft.
+
+    """
+    # File name on remote
+    file_name = Path(file).name
+
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=True)
+
+    # Get the current draft
+    draft = get_draft()
+    bucket_url = draft["links"]["bucket"]
+
+    # Use curl so we have a progress bar
+    try:
+        subprocess.check_output(
+            [
+                "curl",
+                "--progress-bar",
+                "--upload-file",
+                str(file),
+                "--request",
+                "PUT",
+                f"{bucket_url}/{file_name}?access_token={access_token}",
+            ]
+        )
+    except Exception as e:
+        msg = str(e).replace(access_token, "*" * len(access_token))
+        with exceptions.no_traceback():
+            # Don't display the traceback, which will usually show
+            # the command we invoked containing the access token.
+            # Hide the access token from the error message.
+            raise Exception(msg)
+
+
+def download_file_from_draft(file):
+    """
+    Downloads a file from a Zenodo draft.
+
+    """
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=True)
+
+    # File name on remote
+    file_name = Path(file).name
+
+    # Get the current draft
+    draft = get_draft()
+
+    # Get the files currently on the remote
+    r = check_status(
+        requests.get(
+            draft["links"]["files"],
+            params={"access_token": access_token},
+        )
+    )
+    data = r.json()
+
+    # Look for a match
+    for entry in data:
+        if entry["filename"] == file_name:
+
+            # Download it
+            url = entry["links"]["download"]
+            try:
+                subprocess.check_output(
+                    [
+                        "curl",
+                        f"{url}?access_token={access_token}",
+                        "--output",
+                        str(file),
+                    ]
+                )
+            except Exception as e:
+                msg = str(e).replace(access_token, "*" * len(access_token))
+                with exceptions.no_traceback():
+                    # Don't display the traceback, which will usually show
+                    # the command we invoked containing the access token.
+                    # Hide the access token from the error message.
+                    raise Exception(msg)
+
+            return
+
+    # This is caught in the enclosing scope and treated as a cache miss
+    raise exceptions.FileNotFoundOnZenodo(file_name)

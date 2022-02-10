@@ -1,11 +1,11 @@
+from distutils.command.upload import upload
 from . import exceptions
+from .logging import get_logger
+from .zenodo import download_file_from_draft, upload_file_to_draft
+import types
 import snakemake
 
 __all__ = ["process_user_rules"]
-
-
-from .logging import get_logger
-import types
 
 
 def patch_snakemake_cache():
@@ -31,10 +31,17 @@ def patch_snakemake_cache():
     def fetch(self, job):
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             if not cachefile.exists():
-                # TODO: Attempt to download from Zenodo
-                pass
+                # Attempt to download from Zenodo
+                try:
+                    logger.info(f"Searching Zenodo file cache: {outputfile}...")
+                    download_file_from_draft(cachefile)
+                    logger.info(f"Restoring from Zenodo cache: {outputfile}...")
+                except exceptions.FileNotFoundOnZenodo:
+                    # Cache miss; not fatal
+                    logger.warn(f"File not found in cache: {outputfile}.")
+
             else:
-                logger.info(f"Restoring file from cache: {outputfile}...")
+                logger.info(f"Restoring from local cache: {outputfile}...")
 
         # Call the original method
         return _fetch(job)
@@ -45,9 +52,8 @@ def patch_snakemake_cache():
         result = _store(job)
 
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
-            logger.info(f"Caching output file: {outputfile}...")
-
-            # TODO: Upload to Zenodo
+            logger.info(f"Caching output file on Zenodo: {outputfile}...")
+            upload_file_to_draft(cachefile)
 
         return result
 

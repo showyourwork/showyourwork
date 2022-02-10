@@ -6,21 +6,14 @@ from contextlib import contextmanager
 @contextmanager
 def no_traceback():
     """
-    Sets a custom exception handler for the scope of a 'with' block.
+    Remove the traceback from an exception message.
 
-    https://stackoverflow.com/a/40347369
+    https://stackoverflow.com/a/63657211
     """
-    sys.excepthook = no_traceback_excepthook
+    tracebacklimit = getattr(sys, "tracebacklimit", 1000)
+    sys.tracebacklimit = 0
     yield
-    sys.excepthook = sys.__excepthook__
-
-
-def no_traceback_excepthook(type, value, traceback):
-    """
-    Print an exception message without the traceback.
-
-    """
-    print(": ".join([str(type.__name__), str(value)]))
+    sys.tracebacklimit = tracebacklimit
 
 
 class ShowyourworkException(Exception):
@@ -110,3 +103,15 @@ class MissingCondaEnvironmentInUserRule(ShowyourworkException):
 
 class RunDirectiveNotAllowedInUserRules(ShowyourworkException):
     pass
+
+
+class FileNotFoundOnZenodo(Exception):
+    """
+    Note: not a subclass of `ShowyourworkException` since we
+    don't want this printed to the logs.
+
+    """
+
+    def __init__(self, file_name):
+        message = f"File {file_name} not found on Zenodo."
+        super().__init__(message)

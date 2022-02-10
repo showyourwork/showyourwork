@@ -39,7 +39,6 @@ def as_dict(x, depth=0, maxdepth=30):
         return {}
     elif depth > maxdepth:
         with exceptions.no_traceback():
-            # TODO: Our custom excepthook isn't working
             raise exceptions.ConfigError()
 
     if type(x) is list:
