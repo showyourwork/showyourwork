@@ -26,7 +26,7 @@ SNAKEMAKE_INSTALLED := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
 ERROR_HANDLER        = python workflow/utils/scripts/error_handler.py $$?
 
 # Snakemake command
-SNAKEMAKE           := SNAKEMAKE_OUTPUT_CACHE=$(CACHE) snakemake $(FORCE_OPTIONS) $(OPTIONS)
+SNAKEMAKE            = SNAKEMAKE_OUTPUT_CACHE=$(CACHE) snakemake $(FORCE_OPTIONS) $(OPTIONS)
 
 
 # Default target: generate the article
