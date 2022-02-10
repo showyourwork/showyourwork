@@ -1,0 +1,1 @@
+{"version":3,"file":"url.js","sourceRoot":"","sources":["../../../src/util/url.ts"],"names":[],"mappings":"AAAA,uCAAuC;AACvC,kCAAkC;AAElC,OAAO,EAAE,GAAG,EAAE,MAAM,KAAK,CAAC","sourcesContent":["// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT license.\n\nexport { URL } from \"url\";\n"]}

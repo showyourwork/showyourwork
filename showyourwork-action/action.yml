@@ -1,0 +1,30 @@
+name: "showyourwork"
+author: "Rodrigo Luger"
+description: "Build reproducible scientific articles"
+runs:
+  using: "node12"
+  main: "src/index.js"
+inputs:
+  conda-cache-number:
+    description: "Bump this number to reset the conda cache"
+    required: false
+    default: "0"
+  article-cache-number:
+    description: "Bump this number to reset the article cache"
+    required: false
+    default: "0"
+  output-branch-suffix:
+    description: "Force-push output to branch with this suffix"
+    required: false
+    default: pdf
+  github-token:
+    description: "A token for access to GitHub (e.g. 'secrets.GITHUB_TOKEN')"
+    required: false
+    default: ${{ github.token }}
+  arxiv-tarball:
+    description: "Build a tarball for easy ArXiV submission?"
+    required: false
+    default: true
+branding:
+  icon: "book-open"
+  color: "red"

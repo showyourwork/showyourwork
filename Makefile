@@ -62,6 +62,16 @@ clean: snakemake_setup
 	@rm -rf $(USER)/.showyourwork
 
 
+# Update the cache on CI
+_update_cache:
+	@python workflow/utils/scripts/cache.py --update
+
+
+# Restore the cache on CI
+_restore_cache:
+	@python workflow/utils/scripts/cache.py --restore
+
+
 # Catch-all target: route all unknown targets to Snakemake
 %: Makefile preprocess
 	@$(SNAKEMAKE) $@; $(ERROR_HANDLER)
