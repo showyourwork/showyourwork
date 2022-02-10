@@ -1,4 +1,4 @@
-.PHONY: pdf reserve clean preprocess snakemake_setup conda_setup Makefile
+.PHONY: pdf reserve clean preprocess snakemake_setup conda_setup _update_cache _restore_cache Makefile
 
 # PATHS
 HERE            	:= $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -62,12 +62,12 @@ clean: snakemake_setup
 	@rm -rf $(USER)/.showyourwork
 
 
-# Update the cache on CI
+# Update the cache on CI (internal command)
 _update_cache:
 	@python workflow/utils/scripts/cache.py --update
 
 
-# Restore the cache on CI
+# Restore the cache on CI (internal command)
 _restore_cache:
 	@python workflow/utils/scripts/cache.py --restore
 

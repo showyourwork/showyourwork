@@ -6,7 +6,7 @@ import os
 
 
 # The cached output directory
-OUTDIR = Path("src/tex/figures")
+OUTDIR = Path(__file__).resolve().parents[4] / "src/tex/figures"
 
 
 def get_modified_files(commit="HEAD^"):
