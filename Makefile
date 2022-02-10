@@ -34,6 +34,11 @@ pdf: preprocess
 	@$(SNAKEMAKE); $(ERROR_HANDLER)
 
 
+debug:
+	echo $(SNAKEMAKE_INSTALLED)
+
+
+
 # Ensure conda is setup
 conda_setup:
 	@if [ "$(CONDA_INSTALLED)" = "0" ]; then \
