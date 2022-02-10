@@ -1,4 +1,6 @@
 from . import paths, exceptions
+from .logging import get_logger
+from pathlib import Path
 import subprocess
 import shutil
 
@@ -6,7 +8,7 @@ import shutil
 __all__ = ["compile_tex"]
 
 
-def compile_tex(config, args=[], stylesheet=None):
+def compile_tex(config, output_dir=paths.compile, args=[], stylesheet=None):
     """
     Compile the TeX document using `tectonic`.
 
@@ -23,15 +25,35 @@ def compile_tex(config, args=[], stylesheet=None):
         shutil.copy(str(stylesheet), str(paths.tex / ".showyourwork.tex"))
 
     # Run tectonic
+    force_args = [
+        "--chatter",
+        "minimal",
+        "--keep-logs",
+        "--keep-intermediates",
+        "-o",
+        str(output_dir),
+    ]
     result = subprocess.run(
-        ["tectonic"] + args + [paths.user / config["ms_tex"]],
+        ["tectonic"] + args + force_args + [paths.user / config["ms_tex"]],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
+
+    # Copy over the tectonic log file
+    logfile = Path(output_dir) / "{}.log".format(config["ms_name"])
+    if logfile.exists():
+        shutil.copy(logfile, paths.logs / "tectonic.log")
+        logfile = paths.logs / "tectonic.log"
+    else:
+        logfile = None
+
+    # Process errors
     if result.returncode != 0:
-        # TODO: Log these
-        # TODO: Keep all logs
-        print(result.stdout.decode("utf-8"))
-        print(result.stderr.decode("utf-8"))
-        # TODO
-        raise exceptions.TectonicError()
+
+        # Log the error
+        logger = get_logger()
+        logger.error(result.stderr.decode("utf-8"))
+
+        # Raise the exception
+        with exceptions.no_traceback():
+            raise exceptions.TectonicError(logfile)

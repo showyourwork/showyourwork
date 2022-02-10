@@ -220,9 +220,10 @@ def get_draft():
         return create_draft()
 
 
-def upload_file_to_draft(file):
+def upload_file_to_draft(file, rule_name):
     """
-    Upload a file to a Zenodo draft.
+    Upload a file to a Zenodo draft. Delete the current file
+    produced by the same rule, if present.
 
     """
     # File name on remote
@@ -233,9 +234,44 @@ def upload_file_to_draft(file):
 
     # Get the current draft
     draft = get_draft()
-    bucket_url = draft["links"]["bucket"]
 
-    # Use curl so we have a progress bar
+    # Get file provenance info
+    metadata = draft["metadata"]
+    notes = metadata.get("notes", "{}")
+    try:
+        file_provenance = json.loads(notes)
+    except json.JSONDecodeError:
+        # TODO
+        raise exceptions.InvalidZenodoNotesField()
+
+    # Search for an existing file on Zenodo
+    existing_file = file_provenance.get(rule_name, None)
+    if existing_file == file_name:
+        # The file is up to date
+        return
+    elif existing_file:
+        # Delete the existing file
+        files_url = draft["links"]["files"]
+        r = check_status(
+            requests.get(
+                files_url,
+                params={"access_token": access_token},
+            )
+        )
+        data = r.json()
+        for entry in data:
+            if entry["filename"] == existing_file:
+                file_id = entry["id"]
+                r = check_status(
+                    requests.delete(
+                        f"{files_url}/{file_id}",
+                        params={"access_token": access_token},
+                    )
+                )
+                break
+
+    # Use curl to upload the file so we have a progress bar
+    bucket_url = draft["links"]["bucket"]
     try:
         subprocess.check_output(
             [
@@ -255,6 +291,18 @@ def upload_file_to_draft(file):
             # the command we invoked containing the access token.
             # Hide the access token from the error message.
             raise Exception(msg)
+
+    # Update the provenance
+    file_provenance[rule_name] = file_name
+    metadata["notes"] = json.dumps(file_provenance)
+    r = check_status(
+        requests.put(
+            draft["links"]["latest_draft"],
+            params={"access_token": access_token},
+            data=json.dumps({"metadata": metadata}),
+            headers={"Content-Type": "application/json"},
+        )
+    )
 
 
 def download_file_from_draft(file):

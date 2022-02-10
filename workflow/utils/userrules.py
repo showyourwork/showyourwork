@@ -39,9 +39,12 @@ def patch_snakemake_cache():
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
                     logger.warn(f"File not found in cache: {outputfile}.")
-
             else:
                 logger.info(f"Restoring from local cache: {outputfile}...")
+                # Always ensure the cached file on Zenodo is the latest
+                # local cache hit. (If it is, this is a no-op)
+                logger.info(f"Syncing file with Zenodo cache: {outputfile}...")
+                upload_file_to_draft(cachefile, job.rule.name)
 
         # Call the original method
         return _fetch(job)
@@ -53,7 +56,7 @@ def patch_snakemake_cache():
 
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             logger.info(f"Caching output file on Zenodo: {outputfile}...")
-            upload_file_to_draft(cachefile)
+            upload_file_to_draft(cachefile, job.rule.name)
 
         return result
 

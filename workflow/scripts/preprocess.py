@@ -187,15 +187,10 @@ def get_xml_tree():
     compile_tex(
         config,
         args=[
-            "--chatter",
-            "minimal",
-            "--keep-logs",
-            "--keep-intermediates",
             "-r",
             "0",
-            "-o",
-            str(paths.preprocess),
         ],
+        output_dir=paths.preprocess,
         stylesheet=paths.resources / "styles" / "preprocess.tex",
     )
 
