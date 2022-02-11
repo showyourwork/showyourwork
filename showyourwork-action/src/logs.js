@@ -12,11 +12,14 @@ module.exports = { publishLogs };
  */
 async function publishLogs() {
     // Upload an artifact
-    var files = shell.exec("find .showyourwork -not -type d -not -path '.showyourwork/cache/**' -print", {silent: true}).split("\n").filter(n => n);
-    files = files.map(function(file) { 
-        return file.replace(/^(.showyourwork\/)/,'');
-    });
-    
+    var files = shell.exec(
+        "find .showyourwork -not -type d -not -path '.showyourwork/cache/**' -print", 
+        {silent: true}
+    );
+    files = files.split("\n").filter(n => n);
+    //files = files.map(function(file) { 
+    //    return file.replace(/^(.showyourwork\/)/,'');
+    //});
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
         "showyourwork-logs", 
