@@ -21,6 +21,7 @@ def get_modified_files(commit="HEAD^"):
             subprocess.check_output(
                 ["git", "diff", "HEAD", commit, "--name-only"],
                 stderr=subprocess.DEVNULL,
+                cwd=str(ROOT)
             )
             .decode()
             .split("\n")
@@ -52,10 +53,6 @@ def restore_cache():
     except FileNotFoundError:
         print("Cache info not found.")
         return
-
-    # DEBUG
-    print(get_modified_files(commit))
-    # DEBUG
 
     # Get all files modified since that commit
     try:
