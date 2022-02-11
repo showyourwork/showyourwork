@@ -2,8 +2,8 @@
 const core = require("@actions/core");
 const cache = require("@actions/cache");
 const shell = require("shelljs");
-const {ARTICLE_CACHE_VERSION, CONDA_CACHE_VERSION} = require("./cache.js");
-const { makeId, exec, getInputAsArray } = require("./utils");
+const constants = require("./constants.js");
+const { makeId, exec } = require("./utils");
 
 // Exports
 module.exports = { buildArticle };
@@ -22,7 +22,7 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const GITHUB_REF = shell.env["GITHUB_REF"];
   const randomId = makeId(8);
-  const article_key = `article-${ARTICLE_CACHE_VERSION}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_key = `article-${constants.article_cache_version}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
   const article_restoreKeys = [
     `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
