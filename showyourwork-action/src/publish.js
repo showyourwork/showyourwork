@@ -9,7 +9,7 @@ module.exports = { publishOutput };
 // Get repo info
 const GITHUB_SLUG = shell.env["GITHUB_REPOSITORY"];
 const GITHUB_BRANCH = shell
-  .exec("echo ${GITHUB_REF##*/}")
+  .exec("echo ${GITHUB_REF##*/}", {silent: true})
   .replace(/(\r\n|\n|\r)/gm, "");
 const GITHUB_TOKEN = core.getInput("github-token");
 const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
@@ -21,8 +21,9 @@ const PULL_REQUEST = shell.env["GITHUB_BASE_REF"].length > 0;
  */
 async function publishOutput() {
 
-  // TODO: Infer manuscript name
-  const output = ["ms.pdf"];
+  // Infer the manuscript name
+  const config = require("./.showyourwork/config.json");
+  const output = [config["ms_name"]];
 
   if (PULL_REQUEST) {
     // Upload an artifact
@@ -47,10 +48,7 @@ async function publishOutput() {
       shell.cp("-R", ".", `${TARGET_DIRECTORY}`);
       shell.cd(`${TARGET_DIRECTORY}`);
       shell.exec(`git checkout --orphan ${TARGET_BRANCH}`);
-      var silentState = shell.config.silent;
-      shell.config.silent = true;
-      shell.exec("git rm --cached -rf .");
-      shell.config.silent = silentState;
+      shell.exec("git rm --cached -rf .", {silent: true});
       for (const out of output) {
         shell.exec(`git add -f ${out}`);
       }

@@ -8,9 +8,10 @@ const { makeId, exec, getInputAsArray } = require("./utils");
 module.exports = { setupConda };
 
 // Cache settings
+const CACHE_PREFIX = "cache-v1";
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
-const conda_key = `debug3-conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`; // DEBUG
+const conda_key = `${CACHE_PREFIX}-conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
 const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
 
