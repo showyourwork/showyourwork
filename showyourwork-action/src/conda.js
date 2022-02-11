@@ -2,16 +2,16 @@
 const core = require("@actions/core");
 const cache = require("@actions/cache");
 const shell = require("shelljs");
+const {ARTICLE_CACHE_VERSION, CONDA_CACHE_VERSION} = require("./cache.js");
 const { makeId, exec, getInputAsArray } = require("./utils");
 
 // Exports
 module.exports = { setupConda };
 
 // Cache settings
-const CACHE_PREFIX = "cache-v1";
 const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
 const RUNNER_OS = shell.env["RUNNER_OS"];
-const conda_key = `${CACHE_PREFIX}-conda-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
+const conda_key = `conda-${CONDA_CACHE_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
 const conda_restoreKeys = [];
 const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
 

@@ -2,6 +2,7 @@
 const core = require("@actions/core");
 const cache = require("@actions/cache");
 const shell = require("shelljs");
+const {ARTICLE_CACHE_VERSION, CONDA_CACHE_VERSION} = require("./cache.js");
 const { makeId, exec, getInputAsArray } = require("./utils");
 
 // Exports
@@ -12,7 +13,8 @@ module.exports = { buildArticle };
  *
  */
 async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
-  // Article cache settings. We only cache the contents of `src/tex/figures`.
+  // Article cache settings. We only cache the contents of 
+  // `.snakemake`, `.showyourwork`, and `src/tex/figures`.
   // Note that the GITHUB_REF (branch) is part of the cache key
   // so we don't mix up the caches for different branches!
   if (ARTICLE_CACHE_NUMBER == null)
@@ -20,11 +22,13 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const GITHUB_REF = shell.env["GITHUB_REF"];
   const randomId = makeId(8);
-  const article_key = `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
+  const article_key = `article-${ARTICLE_CACHE_VERSION}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
   const article_restoreKeys = [
     `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
   const article_paths = [
+    ".showyourwork",
+    ".snakemake",
     "src/tex/figures"
   ];
 
