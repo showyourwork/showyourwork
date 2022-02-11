@@ -46,7 +46,7 @@ conda_setup:
 snakemake_setup: conda_setup
 	@[ "${SNAKEMAKE_TEST}" ] || ( \
 		echo "Snakemake not found. Installing it using conda..."; \
-		conda install -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
+		conda install -y -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
 	)
 
 
