@@ -23,7 +23,7 @@ async function publishLogs() {
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
         "showyourwork-logs", 
-        [".showyourwork/**"], 
+        [".showyourwork/config.json"], 
         GITHUB_WORKSPACE, 
         {
             continueOnError: false
