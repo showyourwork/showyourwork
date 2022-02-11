@@ -6,7 +6,8 @@ import os
 
 
 # The cached output directory
-OUTDIR = Path(__file__).resolve().parents[4] / "src/tex/figures"
+ROOT = Path(__file__).resolve().parents[4]
+OUTDIR = ROOT / "src/tex/figures"
 
 
 def get_modified_files(commit="HEAD^"):
@@ -15,7 +16,7 @@ def get_modified_files(commit="HEAD^"):
 
     """
     return [
-        Path(file)
+        Path(file).resolve()
         for file in (
             subprocess.check_output(
                 ["git", "diff", "HEAD", commit, "--name-only"],
@@ -34,7 +35,9 @@ def restore_cache():
 
     """
     # Give everything in the output dir a fresh timestamp
+    print("Contents of `src/tex/figures`:")
     for file in OUTDIR.rglob("*"):
+        print("    {}".format(file.relative_to(OUTDIR)))
         file.touch()
 
     # Get the commit when the files were cached
@@ -56,6 +59,8 @@ def restore_cache():
     # Give all modified files a fresher timestamp than the outputs
     # to trick Snakemake into re-running them.
     for file in modified_files:
+        relpath = file.relative_to(ROOT)
+        print(f"Refreshing timestamp for file {relpath}.")
         file.touch()
 
 
