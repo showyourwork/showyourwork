@@ -60,7 +60,7 @@ def restore_cache():
     # to trick Snakemake into re-running them.
     for file in modified_files:
         relpath = file.relative_to(ROOT)
-        print(f"Refreshing timestamp for file {relpath}.")
+        print(f"Refreshing timestamp for modified file {relpath}.")
         file.touch()
 
 
