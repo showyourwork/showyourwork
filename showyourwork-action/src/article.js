@@ -24,7 +24,7 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   const randomId = makeId(8);
   const article_key = `article-${constants.article_cache_version}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}-${randomId}`;
   const article_restoreKeys = [
-    `article-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
+    `article-${constants.article_cache_version}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
   const article_paths = [
     ".showyourwork",
