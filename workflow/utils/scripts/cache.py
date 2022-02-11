@@ -5,7 +5,7 @@ import sys
 import os
 
 
-# The cached output directory
+# The repo root & cached output directory
 ROOT = Path(__file__).resolve().parents[4]
 OUTDIR = ROOT / "src/tex/figures"
 
@@ -21,7 +21,7 @@ def get_modified_files(commit="HEAD^"):
             subprocess.check_output(
                 ["git", "diff", "HEAD", commit, "--name-only"],
                 stderr=subprocess.DEVNULL,
-                cwd=str(ROOT)
+                cwd=str(ROOT),
             )
             .decode()
             .split("\n")
@@ -77,7 +77,9 @@ def update_cache():
 
     """
     # Store the current commit
-    commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=str(ROOT)
+    ).decode()
     with open(OUTDIR / "last_commit_sha.txt", "w") as f:
         print(commit, file=f)
 
