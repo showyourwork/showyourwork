@@ -45,14 +45,6 @@ def restore_cache():
     for file in files:
         os.utime(file, (0, 0))
 
-    # Set all timestamtps for figure outputs to the current time to
-    # trick Snakemake into thinking they're all up to date.
-    # (This is probably redundant given the above step.)
-    print("Contents of `src/tex/figures`:")
-    for file in OUTDIR.rglob("*"):
-        print("    {}".format(file.relative_to(OUTDIR)))
-        file.touch()
-
     # Get the commit when the files were cached
     try:
         with open(OUTDIR / "last_commit_sha.txt", "r") as f:
