@@ -12,12 +12,12 @@ module.exports = { publishLogs };
  */
 async function publishLogs() {
     // Upload an artifact
-    const files = shell.exec("find .showyourwork -not -type d -print", {silent: true}).split("\n").filter(n => n);
+    const files = shell.exec("pushd .showyourwork && find . -not -type d -print && popd", {silent: true}).split("\n").filter(n => n);
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
         "showyourwork-logs", 
         files, 
-        ".", 
+        ".showyourwork", 
         {
             continueOnError: false
         }
