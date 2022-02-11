@@ -35,6 +35,7 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
     article_key,
     article_restoreKeys
   );
+
   exec("make _restore_cache");
   core.endGroup();
 

@@ -16,11 +16,11 @@ SNAKEMAKE_VERSION 	:= 6.12.3
 # Always enforce these Snakemake options
 FORCE_OPTIONS   	:= -c1 --use-conda --cache -d $(USER)
 
-# Boolean flag: is conda installed?
-CONDA_INSTALLED     := $(shell command -v conda &> /dev/null && echo 1 || echo 0)
+# Test if conda is installed
+CONDA_TEST     		:= $(shell command -v conda 2> /dev/null)
 
-# Boolean flag: is snakemake installed?
-SNAKEMAKE_INSTALLED := $(shell command -v snakemake 2&> /dev/null && echo 1 || echo 0)
+# Test if snakemake is installed
+SNAKEMAKE_TEST 		:= $(shell command -v snakemake 2> /dev/null)
 
 # Error handlers
 ERROR_HANDLER        = python workflow/utils/scripts/error_handler.py $$?
@@ -36,18 +36,18 @@ pdf: preprocess
 
 # Ensure conda is setup
 conda_setup:
-	@if [ "$(CONDA_INSTALLED)" = "0" ]; then \
+	@[ "${CONDA_TEST}" ] || ( \
 		echo "Conda package manager not found. Please install it from anaconda.com/products/individual."; \
-		false; \
-	fi
+		false \
+	)
 
 
 # Ensure Snakemake is setup
 snakemake_setup: conda_setup
-	@if [ "$(SNAKEMAKE_INSTALLED)" = "0" ]; then \
+	@[ "${SNAKEMAKE_TEST}" ] || ( \
 		echo "Snakemake not found. Installing it using conda..."; \
-		conda install -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION); \
-	fi
+		conda install -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
+	)
 
 
 # Pre-processing step
