@@ -34,7 +34,20 @@ def restore_cache():
     Runs after restoring the cache using @actions/cache.
 
     """
-    # Give everything in the output dir a fresh timestamp
+    # Reset all timestamps across the repo.
+    # This ensures no file is newer than any other file, which tricks
+    # Snakemake into thinking everything is up to date.
+    files = (
+        list(ROOT.glob("*"))
+        + list((ROOT / ".showyourwork").rglob("*"))
+        + list((ROOT / "src").rglob("*"))
+    )
+    for file in files:
+        os.utime(file, (0, 0))
+
+    # Set all timestamtps for figure outputs to the current time to
+    # trick Snakemake into thinking they're all up to date.
+    # (This is probably redundant given the above step.)
     print("Contents of `src/tex/figures`:")
     for file in OUTDIR.rglob("*"):
         print("    {}".format(file.relative_to(OUTDIR)))
@@ -56,8 +69,9 @@ def restore_cache():
         print(e)
         return
 
-    # Give all modified files a fresher timestamp than the outputs
-    # to trick Snakemake into re-running them.
+    # Give all modified files a fresher timestamp than everything else.
+    # This will trick Snakemake into re-generating any outputs downstream
+    # of these files.
     for file in modified_files:
         relpath = file.relative_to(ROOT)
         print(f"Refreshing timestamp for modified file {relpath}.")

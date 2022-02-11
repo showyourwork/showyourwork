@@ -17,9 +17,6 @@ async function publishLogs() {
         {silent: true}
     );
     files = files.split("\n").filter(n => n);
-    //files = files.map(function(file) { 
-    //    return file.replace(/^(.showyourwork\/)/,'');
-    //});
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
         "showyourwork-logs", 
