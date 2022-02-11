@@ -11,11 +11,12 @@ module.exports = { publishLogs };
  */
 async function publishLogs() {
     // Upload an artifact
+    const GITHUB_WORKSPACE = shell.env["GITHUB_WORKSPACE"];
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
-        "showyourwork-output", 
+        "showyourwork-logs", 
         [".showyourwork"], 
-        ".", 
+        GITHUB_WORKSPACE, 
         {
             continueOnError: false
         }
