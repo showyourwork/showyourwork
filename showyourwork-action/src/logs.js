@@ -12,11 +12,11 @@ module.exports = { publishLogs };
  */
 async function publishLogs() {
     // Upload an artifact
-    shell.exec("tar -czvf logs.tar.gz .showyourwork");
+    const files = shell.exec("find .showyourwork -not -type d -print", {silent: true}).split("\n").filter(n => n);
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
         "showyourwork-logs", 
-        ["logs.tar.gz"], 
+        files, 
         ".", 
         {
             continueOnError: false
