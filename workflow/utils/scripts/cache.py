@@ -53,6 +53,10 @@ def restore_cache():
         print("Cache info not found.")
         return
 
+    # DEBUG
+    print(get_modified_files(commit))
+    # DEBUG
+
     # Get all files modified since that commit
     try:
         modified_files = get_modified_files(commit)

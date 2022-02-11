@@ -11,7 +11,7 @@ module.exports = { publishLogs };
  *
  */
 async function publishLogs() {
-    // Upload an artifact
+    // Collect all files to upload
     var files = shell.exec(
         "find .showyourwork " + 
         "-not -type d " + 
@@ -22,6 +22,8 @@ async function publishLogs() {
         {silent: true}
     );
     files = files.split("\n").filter(n => n);
+
+    // Upload the artifact
     const artifactClient = artifact.create();
     const uploadResponse = await artifactClient.uploadArtifact(
         "showyourwork-logs", 
