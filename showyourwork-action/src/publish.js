@@ -22,7 +22,7 @@ const PULL_REQUEST = shell.env["GITHUB_BASE_REF"].length > 0;
 async function publishOutput() {
 
   // Infer the manuscript name
-  const config = require("./.showyourwork/config.json");
+  const config = require(`${GITHUB_WORKSPACE}/.showyourwork/config.json`);
   const output = [config["ms_name"]];
 
   if (PULL_REQUEST) {
