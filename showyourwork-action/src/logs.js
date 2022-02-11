@@ -1,5 +1,6 @@
 // Imports
 const artifact = require("@actions/artifact");
+const shell = require("shelljs");
 
 // Exports
 module.exports = { publishLogs };
