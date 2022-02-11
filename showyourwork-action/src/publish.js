@@ -23,7 +23,7 @@ async function publishOutput() {
 
   // Infer the manuscript name
   const config = require(`${GITHUB_WORKSPACE}/.showyourwork/config.json`);
-  const output = [config["ms_name"]];
+  const output = [config["ms_pdf"]];
 
   if (PULL_REQUEST) {
     // Upload an artifact
