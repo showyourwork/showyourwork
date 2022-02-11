@@ -46,7 +46,7 @@ def restore_cache():
 
         # DEBUG
         print(OUTDIR)
-        print(OUTDIR.rglob("*"))
+        print(list(OUTDIR.rglob("*")))
 
         return
 
@@ -76,7 +76,7 @@ def update_cache():
 
     # DEBUG
     print(OUTDIR)
-    print(OUTDIR.rglob("*"))
+    print(list(OUTDIR.rglob("*")))
 
 
 if __name__ == "__main__":
