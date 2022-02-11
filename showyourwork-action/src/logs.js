@@ -13,7 +13,12 @@ module.exports = { publishLogs };
 async function publishLogs() {
     // Upload an artifact
     var files = shell.exec(
-        "find .showyourwork -not -type d -not -path '.showyourwork/cache/**' -print", 
+        "find .showyourwork " + 
+        "-not -type d " + 
+        "-not -path '.showyourwork/cache/**' " + 
+        "-not -path '.showyourwork/zenodo/**' " + 
+        "-not -path '.showyourwork/zenodo_sandbox/**' " + 
+        "-print", 
         {silent: true}
     );
     files = files.split("\n").filter(n => n);
