@@ -14,7 +14,7 @@ MAMBA_VERSION   	:= 0.17.0
 SNAKEMAKE_VERSION 	:= 6.12.3
 
 # Always enforce these Snakemake options
-FORCE_OPTIONS   	:= -c1 --use-conda --cache -d $(USER)
+FORCE_OPTIONS   	:= -c1 --use-conda --reason --cache -d $(USER)
 
 # Test if conda is installed
 CONDA_TEST     		:= $(shell command -v conda 2> /dev/null)
