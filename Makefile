@@ -17,10 +17,10 @@ SNAKEMAKE_VERSION 	:= 6.12.3
 FORCE_OPTIONS   	:= -c1 --use-conda --cache -d $(USER)
 
 # Boolean flag: is conda installed?
-CONDA_INSTALLED     := $(shell conda -V 2&> /dev/null && echo 1 || echo 0)
+CONDA_INSTALLED     := $(shell command -v conda &> /dev/null && echo 1 || echo 0)
 
 # Boolean flag: is snakemake installed?
-SNAKEMAKE_INSTALLED := $(shell snakemake -v 2&> /dev/null && echo 1 || echo 0)
+SNAKEMAKE_INSTALLED := $(shell command -v snakemake 2&> /dev/null && echo 1 || echo 0)
 
 # Error handlers
 ERROR_HANDLER        = python workflow/utils/scripts/error_handler.py $$?
@@ -32,11 +32,6 @@ SNAKEMAKE            = SNAKEMAKE_OUTPUT_CACHE=$(CACHE) snakemake $(FORCE_OPTIONS
 # Default target: generate the article
 pdf: preprocess
 	@$(SNAKEMAKE); $(ERROR_HANDLER)
-
-
-debug:
-	echo $(SNAKEMAKE_INSTALLED)
-
 
 
 # Ensure conda is setup
