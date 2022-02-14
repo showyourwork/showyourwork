@@ -11,6 +11,9 @@ module.exports = { publishLogs };
  *
  */
 async function publishLogs() {
+
+    core.startGroup("Uploading logs");
+
     // Collect all files to upload
     var files = shell.exec(
         "find .showyourwork " + 
@@ -33,4 +36,5 @@ async function publishLogs() {
             continueOnError: false
         }
     );
+    core.endGroup();
 }

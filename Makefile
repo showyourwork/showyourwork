@@ -58,7 +58,7 @@ install_deps: conda_setup
 		echo "Snakemake not found. Installing it using conda..."; \
 		conda install $(CONDA_YES) -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
 	);
-	@[ "${SNAKEMAKE_INSTALLED_VERSION}" == "${SNAKEMAKE_VERSION}" ] || ( \
+	@[ "${SNAKEMAKE_INSTALLED_VERSION}" = "${SNAKEMAKE_VERSION}" ] || ( \
 		echo "Snakemake version ${SNAKEMAKE_INSTALLED_VERSION} found, but showyourwork requires version ${SNAKEMAKE_VERSION}. Installing it using conda..."; \
 		conda install $(CONDA_YES) -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
 	);
@@ -66,7 +66,7 @@ install_deps: conda_setup
 		echo "Jinja2 not found. Installing it using conda..."; \
 		conda install $(CONDA_YES) -c conda-forge jinja2==$(JINJA2_VERSION) \
 	);
-	@[ "${JINJA2_INSTALLED_VERSION}" == "${JINJA2_VERSION}" ] || ( \
+	@[ "${JINJA2_INSTALLED_VERSION}" = "${JINJA2_VERSION}" ] || ( \
 		echo "Jinja2 version ${JINJA2_INSTALLED_VERSION} found, but showyourwork requires version ${JINJA2_VERSION}. Installing it using conda..."; \
 		conda install $(CONDA_YES) -c conda-forge jinja2==$(JINJA2_VERSION) \
 	)
