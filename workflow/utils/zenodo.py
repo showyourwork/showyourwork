@@ -339,6 +339,7 @@ def download_file_from_draft(file):
                     [
                         "curl",
                         f"{url}?access_token={access_token}",
+                        "--progress-bar",
                         "--output",
                         str(file),
                     ]

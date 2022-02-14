@@ -30,7 +30,7 @@ rule:
         config["config_json"],
         temp(config["tex_files_out"]),
         temp(config["stylesheet"]),
-        temp(directory(paths.preprocess.as_posix()))
+        directory(paths.preprocess.as_posix())
     conda:
         "../envs/main.yml"
     script:

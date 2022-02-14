@@ -22,7 +22,7 @@ def compile_tex(config, output_dir=paths.compile, args=[], stylesheet=None):
 
     # Copy over the actual stylesheet
     if stylesheet is not None:
-        shutil.copy(str(stylesheet), str(paths.tex / ".showyourwork.tex"))
+        shutil.copy(str(stylesheet), str(paths.tex / "showyourwork.tex"))
 
     # Run tectonic
     force_args = [

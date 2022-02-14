@@ -1,4 +1,4 @@
-.PHONY: pdf reserve clean preprocess snakemake_setup conda_setup _update_cache _restore_cache Makefile
+.PHONY: pdf reserve clean arxiv preprocess snakemake_setup conda_setup _update_cache _restore_cache Makefile
 
 # PATHS
 HERE            	:= $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -55,10 +55,16 @@ preprocess: snakemake_setup
 	@$(SNAKEMAKE) -s $(PREPROCESS); $(ERROR_HANDLER)
 
 
+# Generate the arxiv tarball
+arxiv: preprocess
+	@$(SNAKEMAKE) syw__arxiv_entrypoint; $(ERROR_HANDLER)
+
+
 # Clean
 clean: snakemake_setup
 	@$(SNAKEMAKE) --config debug=true --delete-all-output
 	@$(SNAKEMAKE) --config debug=true -s $(PREPROCESS) --delete-all-output
+	@rm -rf $(USER)/arxiv.tar.gz
 	@rm -rf $(USER)/.showyourwork
 
 

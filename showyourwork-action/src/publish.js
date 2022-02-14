@@ -25,6 +25,11 @@ async function publishOutput() {
   const config = require(`${GITHUB_WORKSPACE}/.showyourwork/config.json`);
   const output = [config["ms_pdf"]];
 
+  // Upload the arxiv tarball?
+  if (core.getInput("arxiv-tarball") == "true") {
+    output.push("arxiv.tar.gz");
+  }
+
   if (PULL_REQUEST) {
     // Upload an artifact
     const artifactClient = artifact.create();

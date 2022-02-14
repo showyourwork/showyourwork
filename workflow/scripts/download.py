@@ -24,6 +24,7 @@ result = subprocess.run(
     [
         "curl",
         f"https://{zenodo_url}/record/{deposit_id}/files/{remote_file}",
+        "--progress-bar",
         "--output",
         output,
     ]

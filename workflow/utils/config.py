@@ -166,12 +166,10 @@ def parse_config():
 
         # Paths to the TeX stylesheets
         config["stylesheet"] = (
-            (paths.tex / ".showyourwork.tex").relative_to(paths.user).as_posix()
+            (paths.tex / "showyourwork.tex").relative_to(paths.user).as_posix()
         )
         config["stylesheet_meta_file"] = (
-            (paths.tex / ".showyourwork-metadata.tex")
-            .relative_to(paths.user)
-            .as_posix()
+            (paths.tex / "showyourwork-metadata.tex").relative_to(paths.user).as_posix()
         )
 
         # Script extensions

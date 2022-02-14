@@ -19,7 +19,7 @@ rule:
         temp(config["tex_files_out"]),
         temp(config["stylesheet"]),
         temp(config["stylesheet_meta_file"]),
-        temp(directory(paths.compile.as_posix()))
+        directory(paths.compile.as_posix())
     conda:
         "../envs/main.yml"
     script:

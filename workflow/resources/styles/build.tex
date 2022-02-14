@@ -30,8 +30,8 @@
 }
 
 % Import metadata
-\IfFileExists{./.showyourwork-metadata.tex}{
-    \input{.showyourwork-metadata.tex}
+\IfFileExists{./showyourwork-metadata.tex}{
+    \input{showyourwork-metadata.tex}
 }{
   \OnGithubActionsfalse
   \def\syw@url{https://github.com/rodluger/showyourwork-paper}
@@ -50,7 +50,7 @@
   }
 \else
   \newcommand{\showyourwork}{%
-      \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork.pdf}}}\xspace%
+      \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
   }
 \fi
 

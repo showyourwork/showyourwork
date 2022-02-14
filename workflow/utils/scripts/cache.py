@@ -72,9 +72,6 @@ def update_cache():
     """
     Runs before updating the cache using @actions/cache.
 
-    TODO: RELATIVE PATHS ARE WRONG. Must be relative to repo root, not `showyourwork`!
-
-
     """
     # Store the current commit
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()

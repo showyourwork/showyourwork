@@ -12,13 +12,12 @@ module.exports = { buildArticle };
  * Build the article.
  *
  */
-async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
+async function buildArticle() {
   // Article cache settings. We only cache the contents of 
   // `.snakemake`, `.showyourwork`, and `src/tex/figures`.
   // Note that the GITHUB_REF (branch) is part of the cache key
   // so we don't mix up the caches for different branches!
-  if (ARTICLE_CACHE_NUMBER == null)
-    ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
+  const ARTICLE_CACHE_NUMBER = core.getInput("article-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
   const GITHUB_REF = shell.env["GITHUB_REF"];
   const randomId = makeId(8);
@@ -47,11 +46,6 @@ async function buildArticle(ARTICLE_CACHE_NUMBER = null) {
   core.startGroup("Build article");
   exec("make");
   core.endGroup();
-
-  // Build arxiv tarball
-  if (core.getInput("arxiv-tarball") == "true") {
-    // TODO
-  }
 
   // Save article cache
   core.startGroup("Update article cache");
