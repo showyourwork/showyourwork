@@ -27,7 +27,12 @@ const { publishLogs } = require("./logs");
   } catch (error) {
 
     // Publish the logs
-    await publishLogs();
+    try {
+      await publishLogs();
+    } catch (error) {
+      core.error("Unable to upload the build logs.");
+      core.setFailed(error.message);
+    }
 
     // Exit gracefully
     core.setFailed(error.message);

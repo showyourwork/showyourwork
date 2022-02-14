@@ -64,12 +64,12 @@ clean: snakemake_setup
 
 # Update the cache on CI (internal command)
 _update_cache:
-	@cd$(USER) && python showyourwork/workflow/utils/scripts/cache.py --update
+	@cd $(USER) && python showyourwork/workflow/utils/scripts/cache.py --update
 
 
 # Restore the cache on CI (internal command)
 _restore_cache:
-	@cd$(USER) && python showyourwork/workflow/utils/scripts/cache.py --restore
+	@cd $(USER) && python showyourwork/workflow/utils/scripts/cache.py --restore
 
 
 # Catch-all target: route all unknown targets to Snakemake
