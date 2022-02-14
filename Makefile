@@ -18,7 +18,11 @@ JINJA2_VERSION      := 3.0.2
 FORCE_OPTIONS   	:= -c1 --use-conda --reason --cache -d $(USER)
 
 # Skip user prompt in conda install when running on CI
-CONDA_YES           := $(shell [ "${CI}" == "true" ] && echo -y)
+ifeq ($(CI),true)
+    CONDA_YES := -y
+else
+    CONDA_YES :=
+endif
 
 # Test if things are installed
 CONDA_TEST     		:= $(shell command -v conda 2> /dev/null)
@@ -47,7 +51,6 @@ conda_setup:
 		echo "Conda package manager not found. Please install it from anaconda.com/products/individual."; \
 		false \
 	)
-
 
 # Ensure Snakemake & other dependencies are installed
 install_deps: conda_setup

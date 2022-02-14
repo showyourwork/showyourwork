@@ -106,9 +106,8 @@ def process_user_rules():
         # Ensure we're running in a conda env
         # and add the env file as an explicit input
         if ur.conda_env:
-            if hasattr(ur.conda_env, "is_file"):
-                if ur.conda_env.is_file:
-                    ur.set_input(str(ur.conda_env.file))
+            if hasattr(ur.conda_env, "is_file") and ur.conda_env.is_file:
+                ur.set_input(str(ur.conda_env.file))
             else:
                 ur.set_input(ur.conda_env)
         else:
