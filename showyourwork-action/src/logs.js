@@ -1,4 +1,5 @@
 // Imports
+const core = require("@actions/core");
 const artifact = require("@actions/artifact");
 const shell = require("shelljs");
 
