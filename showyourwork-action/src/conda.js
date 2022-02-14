@@ -52,8 +52,8 @@ async function setupConda() {
       "Create environment"
     );
     exec(
-      "make snakemake_setup",
-      "Install snakemake"
+      "make install_deps",
+      "Install dependencies"
     );
   }
 
