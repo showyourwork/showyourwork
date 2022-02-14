@@ -273,10 +273,15 @@ def upload_file_to_draft(file, rule_name):
     # Use curl to upload the file so we have a progress bar
     bucket_url = draft["links"]["bucket"]
     try:
+        progress_bar = (
+            ["--progress-bar"]
+            if not snakemake.workflow.config["github_actions"]
+            else []
+        )
         subprocess.check_output(
             [
                 "curl",
-                "--progress-bar",
+                *progress_bar,
                 "--upload-file",
                 str(file),
                 "--request",
@@ -335,11 +340,16 @@ def download_file_from_draft(file):
             # Download it
             url = entry["links"]["download"]
             try:
+                progress_bar = (
+                    ["--progress-bar"]
+                    if not snakemake.workflow.config["github_actions"]
+                    else []
+                )
                 subprocess.check_output(
                     [
                         "curl",
                         f"{url}?access_token={access_token}",
-                        "--progress-bar",
+                        *progress_bar,
                         "--output",
                         str(file),
                     ]

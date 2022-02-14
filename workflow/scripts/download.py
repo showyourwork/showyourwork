@@ -20,11 +20,12 @@ logger = get_logger()
 
 
 # Download it
+progress_bar = ["--progress-bar"] if not snakemake.config["github_actions"] else []
 result = subprocess.run(
     [
         "curl",
         f"https://{zenodo_url}/record/{deposit_id}/files/{remote_file}",
-        "--progress-bar",
+        *progress_bar,
         "--output",
         output,
     ]

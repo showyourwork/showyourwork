@@ -1,6 +1,7 @@
 import snakemake
 from pathlib import Path
 import sys
+import jinja2
 
 
 # Require Snakemake >= this version
@@ -17,8 +18,12 @@ from utils import paths, parse_config, setup_logging, clear_errors
 workdir: paths.user.as_posix()
 
 
-# User config
-configfile: (paths.user / "showyourwork.yml").as_posix()
+
+# User config. Allow Jinja2 templating syntax.
+with open(paths.temp / "showyourwork.yml", "w") as f:
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
+    print(env.get_template("showyourwork.yml").render(), file=f)
+configfile: (paths.temp / "showyourwork.yml").as_posix()
 
 
 # Report template

@@ -1,4 +1,4 @@
-.PHONY: pdf reserve clean arxiv preprocess snakemake_setup conda_setup _update_cache _restore_cache Makefile
+.PHONY: pdf reserve clean arxiv preprocess install_deps conda_setup _update_cache _restore_cache Makefile
 
 # PATHS
 HERE            	:= $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -11,16 +11,23 @@ OPTIONS         	?=
 
 # Pinned package versions
 MAMBA_VERSION   	:= 0.17.0
-SNAKEMAKE_VERSION 	:= 6.12.3
+SNAKEMAKE_VERSION 	:= 6.15.5
+JINJA2_VERSION      := 3.0.2
 
 # Always enforce these Snakemake options
 FORCE_OPTIONS   	:= -c1 --use-conda --reason --cache -d $(USER)
 
-# Test if conda is installed
-CONDA_TEST     		:= $(shell command -v conda 2> /dev/null)
+# Skip user prompt in conda install when running on CI
+CONDA_YES           := $(shell [ "${CI}" == "true" ] && echo -y)
 
-# Test if snakemake is installed
+# Test if things are installed
+CONDA_TEST     		:= $(shell command -v conda 2> /dev/null)
 SNAKEMAKE_TEST 		:= $(shell command -v snakemake 2> /dev/null)
+JINJA2_TEST         := $(shell conda list jinja2 | grep "jinja2 " 2> /dev/null)
+
+# Get installed versions
+SNAKEMAKE_INSTALLED_VERSION = $(shell snakemake -v 2> /dev/null)
+JINJA2_INSTALLED_VERSION    = $(shell python -c "import jinja2; print(jinja2.__version__)" 2> /dev/null)
 
 # Error handlers
 ERROR_HANDLER        = python workflow/utils/scripts/error_handler.py $$?
@@ -42,16 +49,28 @@ conda_setup:
 	)
 
 
-# Ensure Snakemake is setup
-snakemake_setup: conda_setup
+# Ensure Snakemake & other dependencies are installed
+install_deps: conda_setup
 	@[ "${SNAKEMAKE_TEST}" ] || ( \
 		echo "Snakemake not found. Installing it using conda..."; \
-		conda install -y -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
+		conda install $(CONDA_YES) -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
+	);
+	@[ "${SNAKEMAKE_INSTALLED_VERSION}" == "${SNAKEMAKE_VERSION}" ] || ( \
+		echo "Snakemake version ${SNAKEMAKE_INSTALLED_VERSION} found, but showyourwork requires version ${SNAKEMAKE_VERSION}. Installing it using conda..."; \
+		conda install $(CONDA_YES) -c defaults -c conda-forge -c bioconda mamba==$(MAMBA_VERSION) snakemake-minimal==$(SNAKEMAKE_VERSION) \
+	);
+	@[ "${JINJA2_TEST}" ] || ( \
+		echo "Jinja2 not found. Installing it using conda..."; \
+		conda install $(CONDA_YES) -c conda-forge jinja2==$(JINJA2_VERSION) \
+	);
+	@[ "${JINJA2_INSTALLED_VERSION}" == "${JINJA2_VERSION}" ] || ( \
+		echo "Jinja2 version ${JINJA2_INSTALLED_VERSION} found, but showyourwork requires version ${JINJA2_VERSION}. Installing it using conda..."; \
+		conda install $(CONDA_YES) -c conda-forge jinja2==$(JINJA2_VERSION) \
 	)
 
 
 # Pre-processing step
-preprocess: snakemake_setup
+preprocess: install_deps
 	@$(SNAKEMAKE) -s $(PREPROCESS); $(ERROR_HANDLER)
 
 
@@ -61,7 +80,7 @@ arxiv: preprocess
 
 
 # Clean
-clean: snakemake_setup
+clean: install_deps
 	@$(SNAKEMAKE) --config debug=true --delete-all-output
 	@$(SNAKEMAKE) --config debug=true -s $(PREPROCESS) --delete-all-output
 	@rm -rf $(USER)/arxiv.tar.gz
