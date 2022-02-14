@@ -5,9 +5,8 @@ import sys
 import os
 
 
-# The repo root & cached output directory
-ROOT = Path(__file__).resolve().parents[4]
-OUTDIR = ROOT / "src/tex/figures"
+# File containing the previous commit SHA
+LAST_COMMIT_SHA = Path("src") / "tex" / "figures" / "last_commit_sha.txt"
 
 
 def get_modified_files(commit="HEAD^"):
@@ -21,7 +20,6 @@ def get_modified_files(commit="HEAD^"):
             subprocess.check_output(
                 ["git", "diff", "HEAD", commit, "--name-only"],
                 stderr=subprocess.DEVNULL,
-                cwd=str(ROOT),
             )
             .decode()
             .split("\n")
@@ -39,16 +37,16 @@ def restore_cache():
     # This ensures no file is newer than any other file, which tricks
     # Snakemake into thinking everything is up to date.
     files = (
-        list(ROOT.glob("*"))
-        + list((ROOT / ".showyourwork").rglob("*"))
-        + list((ROOT / "src").rglob("*"))
+        list(Path(".").glob("*"))
+        + list((Path(".") / ".showyourwork").rglob("*"))
+        + list((Path(".") / "src").rglob("*"))
     )
     for file in files:
         os.utime(file, (0, 0))
 
     # Get the commit when the files were cached
     try:
-        with open(OUTDIR / "last_commit_sha.txt", "r") as f:
+        with open(LAST_COMMIT_SHA, "r") as f:
             commit = f.readlines()[0].replace("\n", "")
     except FileNotFoundError:
         print("Cache info not found.")
@@ -66,8 +64,7 @@ def restore_cache():
     # This will trick Snakemake into re-generating any outputs downstream
     # of these files.
     for file in modified_files:
-        relpath = file.relative_to(ROOT)
-        print(f"Refreshing timestamp for modified file {relpath}.")
+        print(f"Refreshing timestamp for modified file: {file}")
         file.touch()
 
 
@@ -75,17 +72,21 @@ def update_cache():
     """
     Runs before updating the cache using @actions/cache.
 
+    TODO: RELATIVE PATHS ARE WRONG. Must be relative to repo root, not `showyourwork`!
+
+
     """
     # Store the current commit
-    commit = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=str(ROOT)
-    ).decode()
-    with open(OUTDIR / "last_commit_sha.txt", "w") as f:
+    commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
+    with open(LAST_COMMIT_SHA, "w") as f:
         print(commit, file=f)
 
 
 if __name__ == "__main__":
     assert len(sys.argv) == 2, "Incorrect number of args to `cache.py`."
+    assert Path(
+        "showyourwork/workflow/Snakefile"
+    ).exists(), "File `cache.py` must be run from the top level of the repo."
     if sys.argv[1] == "--restore":
         restore_cache()
     elif sys.argv[1] == "--update":
