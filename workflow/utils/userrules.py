@@ -16,18 +16,6 @@ def patch_snakemake_cache():
         - Add custom logging messages
         - Attempt to download the cache file from Zenodo on `fetch()`
         - Uploads the cache file to Zenodo on `store()`
-        - Prevent the contents of the Snakefile defining a rule from getting
-          ingested into the hash for that rule. Showyourwork automatically adds
-          the Snakefiles as inputs to user-generated rules to force re-running
-          them when their definition changes. However, if a Snakefile defines
-          multiple rules (and the hash for the rule depends on the contents of
-          the Snakefile), editing the parameters for one rule will force
-          re-running _all_ rules, since they'll all have different hashes. To
-          circumvent this, we intercept the `hash_file()` function and filter
-          out the Snakefile associated with the current rule. Note that changing
-          the parameters for the rule _still_ will force re-evaluation, since
-          the parameters themselves are also ingested when computing the rule
-          hash.
 
     """
     # Get the showyourwork logger
@@ -39,7 +27,6 @@ def patch_snakemake_cache():
     # Make a copy of the original methods
     _fetch = output_file_cache.fetch
     _store = output_file_cache.store
-    _hash_file = snakemake.caching.hash.hash_file
 
     # Define the patches
     def fetch(self, job):
@@ -86,18 +73,9 @@ def patch_snakemake_cache():
 
         return result
 
-    def hash_file(f):
-        # Don't hash the Snakefile in which the rule is declared
-        job = get_snakemake_variable("job")
-        if f == job.rule.snakefile:
-            return ""
-        else:
-            return _hash_file(f)
-
     # Apply them
     output_file_cache.fetch = types.MethodType(fetch, output_file_cache)
     output_file_cache.store = types.MethodType(store, output_file_cache)
-    snakemake.caching.hash.hash_file = hash_file
 
 
 def process_user_rules():
@@ -147,24 +125,6 @@ def process_user_rules():
             else:
                 ur.set_input(ur.conda_env)
         else:
-            # All users rules should run in conda envs!
+            # All user rules should run in conda envs!
             # TODO
             raise exceptions.MissingCondaEnvironmentInUserRule()
-
-        # Add the Snakefile or .smk file defining the rule as an explicit
-        # input (user can modularize their Snakefile for more fine-grained
-        # control here)
-        ur.set_input(ur.snakefile)
-
-        """
-        # Make all user rules cacheable
-        # DEPRECATED: User must now explicitly set `cache: True` 
-        # in rules whose output is to be cached
-        ur.ruleinfo.cache = True
-        snakemake.workflow.workflow.cache_rules.add(ur.name)
-        try:
-            ur.check_caching()
-        except snakemake.exceptions.RuleException:
-            ur.ruleinfo.cache = False
-            snakemake.workflow.workflow.cache_rules.remove(ur.name)
-        """
