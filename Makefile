@@ -1,4 +1,4 @@
-.PHONY: pdf reserve clean arxiv preprocess install_deps conda_setup _update_cache _restore_cache Makefile
+.PHONY: pdf reserve clean arxiv preprocess summary install_deps conda_setup _update_cache _restore_cache Makefile
 
 # PATHS
 HERE            	:= $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -80,6 +80,11 @@ preprocess: install_deps
 # Generate the arxiv tarball
 arxiv: preprocess
 	@$(SNAKEMAKE) syw__arxiv_entrypoint; $(ERROR_HANDLER)
+
+
+# Display detailed workflow file summary
+summary: preprocess
+	@$(SNAKEMAKE) -D; $(ERROR_HANDLER)
 
 
 # Clean

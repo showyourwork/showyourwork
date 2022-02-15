@@ -26,7 +26,7 @@ async function buildArticle() {
     `article-${constants.article_cache_version}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
   const article_paths = [
-    // DEBUG ".showyourwork",
+    ".showyourwork",
     ".snakemake/conda",
     "src/tex/figures"
   ];
@@ -40,6 +40,11 @@ async function buildArticle() {
   );
 
   exec("make _restore_cache");
+  core.endGroup();
+
+  // Display the workflow summary
+  core.startGroup("Workflow summary");
+  exec("make summary");
   core.endGroup();
 
   // Build the article
