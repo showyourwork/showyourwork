@@ -67,6 +67,9 @@ def restore_cache():
         print(f"Refreshing timestamp for modified file: {file}")
         file.touch()
 
+    # DEBUG
+    subprocess.check_call(["ls", "-lahtr"])
+
 
 def update_cache():
     """

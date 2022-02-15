@@ -1,7 +1,7 @@
 TODO
 ----
 
-- Enforce file size limits on Zenodo
+- Test uploads of very large files
 - Figure out Zenodo draft publishing logic
 
 - Overleaf integration
