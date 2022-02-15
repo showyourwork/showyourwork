@@ -39,8 +39,7 @@ async function publishLogs() {
     );
     core.endGroup();
 
-    core.startGroup("Repository tree");
-    shell.exec("tree -DaL 1");
-    shell.exec("tree -Da src");
+    core.startGroup("Display repository tree");
+    shell.exec("tree -Dah --timefmt='%d/%m/%Y %H:%M:%S' -I 'showyourwork|.snakemake|.git|__pycache__'");
     core.endGroup();
 }
