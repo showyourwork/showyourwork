@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 import sys
 import os
+import time
 
 
 # File containing the previous commit SHA
@@ -41,8 +42,9 @@ def restore_cache():
         + list((Path(".") / ".showyourwork").rglob("*"))
         + list((Path(".") / "src").rglob("*"))
     )
+    timestamp = time.time()
     for file in files:
-        os.utime(file, (0, 0))
+        os.utime(file, (timestamp, timestamp))
 
     # Get the commit when the files were cached
     try:
@@ -60,9 +62,10 @@ def restore_cache():
         print(e)
         return
 
-    # Give all modified files a fresher timestamp than everything else.
+    # Give all modified files a newer timestamp than everything else.
     # This will trick Snakemake into re-generating any outputs downstream
     # of these files.
+    time.sleep(1)
     for file in modified_files:
         print(f"Refreshing timestamp for modified file: {file}")
         file.touch()
