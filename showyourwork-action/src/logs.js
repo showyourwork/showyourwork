@@ -40,6 +40,6 @@ async function publishLogs() {
     core.endGroup();
 
     core.startGroup("Display repository tree");
-    shell.exec("tree -Dah --timefmt='%d/%m/%Y %H:%M:%S' -I 'showyourwork|.snakemake|.git|__pycache__'");
+    shell.exec("tree -Dah --timefmt='%d/%m/%Y %H:%M:%S' -I 'showyourwork|.snakemake|.git|__pycache__|envs'");
     core.endGroup();
 }
