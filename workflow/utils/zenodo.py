@@ -164,6 +164,7 @@ def create_draft():
             "upload_type": "dataset",
             "description": description,
             "creators": [{"name": "showyourwork"}],
+            "notes": "{}",
         }
     }
     r = check_status(
@@ -226,31 +227,31 @@ def upload_file_to_draft(file, rule_name, tarball=False):
     Upload a file to a Zenodo draft. Delete the current file
     produced by the same rule, if present.
 
-    """
-    # File name on remote
-    file_name = Path(file).name
+    Note that the name of the file _is_ the hash of the rule
+    that generated it (courtesy of Snakemake).
 
+    """
     # Get the Zenodo token
     access_token = get_access_token(error_if_missing=True)
 
     # Get the current draft
     draft = get_draft()
 
-    # Get file provenance info
+    # Get rule hashes for the files currently on Zenodo
     metadata = draft["metadata"]
     notes = metadata.get("notes", "{}")
     try:
-        file_provenance = json.loads(notes)
+        rule_hashes = json.loads(notes)
     except json.JSONDecodeError:
         # TODO
         raise exceptions.InvalidZenodoNotesField()
 
     # Search for an existing file on Zenodo
-    existing_file = file_provenance.get(rule_name, None)
-    if existing_file == file_name:
+    rule_hash_on_zenodo = rule_hashes.get(rule_name, None)
+    if rule_hash_on_zenodo == file.name:
         # The file is up to date
         return
-    elif existing_file:
+    elif rule_hash_on_zenodo:
         # Delete the existing file
         files_url = draft["links"]["files"]
         r = check_status(
@@ -261,7 +262,7 @@ def upload_file_to_draft(file, rule_name, tarball=False):
         )
         data = r.json()
         for entry in data:
-            if entry["filename"] == existing_file:
+            if entry["filename"] == rule_name:
                 file_id = entry["id"]
                 r = check_status(
                     requests.delete(
@@ -275,7 +276,9 @@ def upload_file_to_draft(file, rule_name, tarball=False):
     if tarball:
         with tarfile.open(f"{file}.tar.gz", "w:gz") as tb:
             tb.add(file, arcname=".")
-        file = Path(f"{file}.tar.gz")
+        file_to_upload = Path(f"{file}.tar.gz")
+    else:
+        file_to_upload = file
 
     # Use curl to upload the file so we have a progress bar
     bucket_url = draft["links"]["bucket"]
@@ -290,10 +293,10 @@ def upload_file_to_draft(file, rule_name, tarball=False):
                 "curl",
                 *progress_bar,
                 "--upload-file",
-                str(file),
+                file_to_upload,
                 "--request",
                 "PUT",
-                f"{bucket_url}/{file_name}?access_token={access_token}",
+                f"{bucket_url}/{rule_name}?access_token={access_token}",
             ]
         )
     except Exception as e:
@@ -306,11 +309,11 @@ def upload_file_to_draft(file, rule_name, tarball=False):
 
     # Delete the tarball if we created it
     if tarball:
-        file.unlink()
+        file_to_upload.unlink()
 
     # Update the provenance
-    file_provenance[rule_name] = file_name
-    metadata["notes"] = json.dumps(file_provenance, indent=4)
+    rule_hashes[rule_name] = file.name
+    metadata["notes"] = json.dumps(rule_hashes, indent=4)
     r = check_status(
         requests.put(
             draft["links"]["latest_draft"],
@@ -321,7 +324,7 @@ def upload_file_to_draft(file, rule_name, tarball=False):
     )
 
 
-def download_file_from_draft(file, tarball=False):
+def download_file_from_draft(file, rule_name, tarball=False):
     """
     Downloads a file from a Zenodo draft.
 
@@ -329,11 +332,17 @@ def download_file_from_draft(file, tarball=False):
     # Get the Zenodo token
     access_token = get_access_token(error_if_missing=True)
 
-    # File name on remote
-    file_name = Path(file).name
-
     # Get the current draft
     draft = get_draft()
+
+    # Get rule hashes for the files currently on Zenodo
+    metadata = draft["metadata"]
+    notes = metadata.get("notes", "{}")
+    try:
+        rule_hashes = json.loads(notes)
+    except json.JSONDecodeError:
+        # TODO
+        raise exceptions.InvalidZenodoNotesField()
 
     # Get the files currently on the remote
     r = check_status(
@@ -346,7 +355,10 @@ def download_file_from_draft(file, tarball=False):
 
     # Look for a match
     for entry in data:
-        if entry["filename"] == file_name:
+        if (
+            entry["filename"] == rule_name
+            and rule_hashes.get(rule_name, None) == file.name
+        ):
 
             # Download it
             url = entry["links"]["download"]
@@ -383,4 +395,4 @@ def download_file_from_draft(file, tarball=False):
             return
 
     # This is caught in the enclosing scope and treated as a cache miss
-    raise exceptions.FileNotFoundOnZenodo(file_name)
+    raise exceptions.FileNotFoundOnZenodo(file.name)

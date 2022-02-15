@@ -2,6 +2,7 @@ from distutils.command.upload import upload
 from . import exceptions
 from .logging import get_logger
 from .zenodo import download_file_from_draft, upload_file_to_draft
+from .config import get_snakemake_variable
 import types
 import snakemake
 
@@ -15,6 +16,18 @@ def patch_snakemake_cache():
         - Add custom logging messages
         - Attempt to download the cache file from Zenodo on `fetch()`
         - Uploads the cache file to Zenodo on `store()`
+        - Prevent the contents of the Snakefile defining a rule from getting
+          ingested into the hash for that rule. Showyourwork automatically adds
+          the Snakefiles as inputs to user-generated rules to force re-running
+          them when their definition changes. However, if a Snakefile defines
+          multiple rules (and the hash for the rule depends on the contents of
+          the Snakefile), editing the parameters for one rule will force
+          re-running _all_ rules, since they'll all have different hashes. To
+          circumvent this, we intercept the `hash_file()` function and filter
+          out the Snakefile associated with the current rule. Note that changing
+          the parameters for the rule _still_ will force re-evaluation, since
+          the parameters themselves are also ingested when computing the rule
+          hash.
 
     """
     # Get the showyourwork logger
@@ -26,6 +39,7 @@ def patch_snakemake_cache():
     # Make a copy of the original methods
     _fetch = output_file_cache.fetch
     _store = output_file_cache.store
+    _hash_file = snakemake.caching.hash.hash_file
 
     # Define the patches
     def fetch(self, job):
@@ -41,7 +55,7 @@ def patch_snakemake_cache():
                 # Attempt to download from Zenodo
                 try:
                     logger.info(f"Searching Zenodo file cache: {outputfile}...")
-                    download_file_from_draft(cachefile, tarball=tarball)
+                    download_file_from_draft(cachefile, job.rule.name, tarball=tarball)
                     logger.info(f"Restoring from Zenodo cache: {outputfile}...")
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
@@ -57,7 +71,6 @@ def patch_snakemake_cache():
         return _fetch(job)
 
     def store(self, job):
-
         # Call the original method
         result = _store(job)
 
@@ -73,9 +86,18 @@ def patch_snakemake_cache():
 
         return result
 
+    def hash_file(f):
+        # Don't hash the Snakefile in which the rule is declared
+        job = get_snakemake_variable("job")
+        if f == job.rule.snakefile:
+            return ""
+        else:
+            return _hash_file(f)
+
     # Apply them
     output_file_cache.fetch = types.MethodType(fetch, output_file_cache)
     output_file_cache.store = types.MethodType(store, output_file_cache)
+    snakemake.caching.hash.hash_file = hash_file
 
 
 def process_user_rules():
