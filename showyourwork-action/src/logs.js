@@ -38,4 +38,9 @@ async function publishLogs() {
         }
     );
     core.endGroup();
+
+    core.startGroup("Repository tree");
+    shell.exec("tree -DaL 1");
+    shell.exec("tree -Da src");
+    core.endGroup();
 }
