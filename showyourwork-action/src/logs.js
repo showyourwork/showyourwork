@@ -15,6 +15,9 @@ async function publishLogs() {
 
     core.startGroup("Uploading logs");
 
+    // Save a snapshot of the repository tree
+    shell.exec("tree -Dah --timefmt='%d/%m/%Y %H:%M:%S' -I 'showyourwork|.snakemake|.git|__pycache__|envs' > .showyourwork/tree.txt");
+
     // Collect all files to upload
     var files = shell.exec(
         "find .showyourwork " + 
@@ -39,7 +42,4 @@ async function publishLogs() {
     );
     core.endGroup();
 
-    core.startGroup("Display repository tree");
-    shell.exec("tree -Dah --timefmt='%d/%m/%Y %H:%M:%S' -I 'showyourwork|.snakemake|.git|__pycache__|envs'");
-    core.endGroup();
 }

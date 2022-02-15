@@ -27,7 +27,7 @@ async function buildArticle() {
   ];
   const article_paths = [
     ".showyourwork",
-    ".snakemake",
+    ".snakemake/conda",
     "src/tex/figures"
   ];
 
