@@ -26,7 +26,7 @@ async function buildArticle() {
     `article-${constants.article_cache_version}-${RUNNER_OS}-${GITHUB_REF}-${ARTICLE_CACHE_NUMBER}`,
   ];
   const article_paths = [
-    ".showyourwork",
+    // DEBUG ".showyourwork",
     ".snakemake/conda",
     "src/tex/figures"
   ];

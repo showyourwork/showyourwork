@@ -156,7 +156,11 @@ def create_draft():
     title = get_deposit_title()
     description = (
         "Data automatically uploaded by the showyourwork workflow. "
-        "Please visit the source repository for more information."
+        "Each of the files in this deposit were generated from a user-defined "
+        "Snakemake rule with the same name and hash specified in the Notes "
+        "section below. "
+        "Please visit github.com/rodluger/showyourwork and/or the article source "
+        "repository for more information."
     )
     metadata = {
         "metadata": {
