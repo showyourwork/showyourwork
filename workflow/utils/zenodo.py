@@ -5,6 +5,7 @@ Main Zenodo interface.
 from . import exceptions, paths, git
 from .logging import get_logger
 import requests
+import tarfile
 import os
 import json
 from pathlib import Path
@@ -220,7 +221,7 @@ def get_draft():
         return create_draft()
 
 
-def upload_file_to_draft(file, rule_name):
+def upload_file_to_draft(file, rule_name, tarball=False):
     """
     Upload a file to a Zenodo draft. Delete the current file
     produced by the same rule, if present.
@@ -270,6 +271,12 @@ def upload_file_to_draft(file, rule_name):
                 )
                 break
 
+    # If it's a directory, tar it up
+    if tarball:
+        with tarfile.open(f"{file}.tar.gz", "w:gz") as tb:
+            tb.add(file, arcname=".")
+        file = Path(f"{file}.tar.gz")
+
     # Use curl to upload the file so we have a progress bar
     bucket_url = draft["links"]["bucket"]
     try:
@@ -297,9 +304,13 @@ def upload_file_to_draft(file, rule_name):
             # Hide the access token from the error message.
             raise Exception(msg)
 
+    # Delete the tarball if we created it
+    if tarball:
+        file.unlink()
+
     # Update the provenance
     file_provenance[rule_name] = file_name
-    metadata["notes"] = json.dumps(file_provenance)
+    metadata["notes"] = json.dumps(file_provenance, indent=4)
     r = check_status(
         requests.put(
             draft["links"]["latest_draft"],
@@ -310,7 +321,7 @@ def upload_file_to_draft(file, rule_name):
     )
 
 
-def download_file_from_draft(file):
+def download_file_from_draft(file, tarball=False):
     """
     Downloads a file from a Zenodo draft.
 
@@ -361,6 +372,13 @@ def download_file_from_draft(file):
                     # the command we invoked containing the access token.
                     # Hide the access token from the error message.
                     raise Exception(msg)
+
+            # If it's a directory tarball, extract it
+            if tarball:
+                os.rename(file, f"{file}.tar.gz")
+                with tarfile.open(f"{file}.tar.gz") as tb:
+                    tb.extractall(file)
+                Path(f"{file}.tar.gz").unlink()
 
             return
 

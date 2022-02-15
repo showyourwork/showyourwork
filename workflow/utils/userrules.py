@@ -29,12 +29,19 @@ def patch_snakemake_cache():
 
     # Define the patches
     def fetch(self, job):
+        # If the cache file is a directory, we must tar it up
+        # Recall that cacheable jobs can only have a _single_ output
+        # (unless using multiext), so checking the first output should suffice
+        if job.output[0].is_directory:
+            tarball = True
+        else:
+            tarball = False
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             if not cachefile.exists():
                 # Attempt to download from Zenodo
                 try:
                     logger.info(f"Searching Zenodo file cache: {outputfile}...")
-                    download_file_from_draft(cachefile)
+                    download_file_from_draft(cachefile, tarball=tarball)
                     logger.info(f"Restoring from Zenodo cache: {outputfile}...")
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
@@ -44,7 +51,7 @@ def patch_snakemake_cache():
                 # Always ensure the cached file on Zenodo is the latest
                 # local cache hit. (If it is, this is a no-op)
                 logger.info(f"Syncing file with Zenodo cache: {outputfile}...")
-                upload_file_to_draft(cachefile, job.rule.name)
+                upload_file_to_draft(cachefile, job.rule.name, tarball=tarball)
 
         # Call the original method
         return _fetch(job)
@@ -54,9 +61,15 @@ def patch_snakemake_cache():
         # Call the original method
         result = _store(job)
 
+        # See note in `fetch()` about tarballs
+        if job.output[0].is_directory:
+            tarball = True
+        else:
+            tarball = False
+
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             logger.info(f"Caching output file on Zenodo: {outputfile}...")
-            upload_file_to_draft(cachefile, job.rule.name)
+            upload_file_to_draft(cachefile, job.rule.name, tarball=tarball)
 
         return result
 
@@ -81,7 +94,8 @@ def process_user_rules():
 
     # Patch the Snakemake caching functionality so we
     # can cache things on Zenodo
-    patch_snakemake_cache()
+    if snakemake.workflow.config["zenodo_cache"]:
+        patch_snakemake_cache()
 
     # Process each user rule
     for ur in user_rules:
@@ -120,7 +134,10 @@ def process_user_rules():
         # control here)
         ur.set_input(ur.snakefile)
 
-        # Make the rule cacheable (Snakemake handles this)
+        """
+        # Make all user rules cacheable
+        # DEPRECATED: User must now explicitly set `cache: True` 
+        # in rules whose output is to be cached
         ur.ruleinfo.cache = True
         snakemake.workflow.workflow.cache_rules.add(ur.name)
         try:
@@ -128,3 +145,4 @@ def process_user_rules():
         except snakemake.exceptions.RuleException:
             ur.ruleinfo.cache = False
             snakemake.workflow.workflow.cache_rules.remove(ur.name)
+        """

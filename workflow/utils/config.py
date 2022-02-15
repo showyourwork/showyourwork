@@ -96,7 +96,10 @@ def parse_config():
     config = snakemake.workflow.config
 
     # During the preprocessing stage, we import user settings,
-    # set defaults, and record additional internal settings
+    # set defaults, and record additional internal settings.
+    # These get recorded in a JSON file which is loaded as
+    # the main config file in the build stage, so all these
+    # settings are available in both stages.
     if Path(snakemake.workflow.workflow.main_snakefile).name == "preprocess.smk":
 
         #
@@ -125,6 +128,11 @@ def parse_config():
         #: Zenodo datasets
         config["zenodo"] = as_dict(config.get("zenodo", {}))
         config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
+
+        #: Zenodo caching
+        config["zenodo_cache"] = (
+            str(config.get("zenodo_cache", "true")).lower() == "true"
+        )
 
         #
         # -- Internal settings --
