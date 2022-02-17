@@ -44,7 +44,7 @@ def get_access_token(token_name="ZENODO_TOKEN", error_if_missing=False):
 
     """
     access_token = os.getenv(token_name, None)
-    if error_if_missing and access_token is None:
+    if error_if_missing and access_token is None or not len(access_token):
         raise exceptions.MissingZenodoAccessToken(token_name)
     return access_token
 
