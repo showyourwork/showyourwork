@@ -8,3 +8,11 @@
 
 This is the repository for the next version of `showyourwork`, to be released sometime in Spring 2022.
 If you're looking for the current release of `showyourwork`, please visit https://github.com/rodluger/showyourwork.
+
+<h2>To-do</h2>
+
+- [ ] Test uploads of very large files
+- [ ] Figure out Zenodo draft publishing logic
+- [ ] Implement all custom exception messages
+- [ ] Write documentation
+- [ ] Integration with Overleaf
