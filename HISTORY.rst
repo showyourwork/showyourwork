@@ -1,5 +1,11 @@
 .. :changelog:
 
+0.2.3 (2022-02-21)
+++++++++++++++++++
+
+- Bump `jinja2` version to fix issue with `markupsafe`
+- Changelog: `v0.2.2...v0.2.3 <https://github.com/rodluger/showyourwork/compare/v0.2.2...v0.2.3>`_
+
 0.2.2 (2022-01-05)
 ++++++++++++++++++
 
