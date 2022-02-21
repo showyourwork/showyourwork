@@ -17,7 +17,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
   // Cache settings
   const CONDA_CACHE_NUMBER = core.getInput("conda-cache-number");
   const RUNNER_OS = shell.env["RUNNER_OS"];
-  const conda_key = `conda-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
+  const conda_key = `anaconda-${SHOWYOURWORK_VERSION}-${RUNNER_OS}-${CONDA_CACHE_NUMBER}`;
   const conda_restoreKeys = [];
   const conda_paths = ["~/.conda", "~/.condarc", "~/conda_pkgs_dir", "envs"];
   const CACHE_CONDA = !(CONDA_CACHE_NUMBER == null || CONDA_CACHE_NUMBER == "");
@@ -54,7 +54,7 @@ async function setupConda(SHOWYOURWORK_VERSION) {
       "Create environment"
     );
     exec(
-      "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3 jinja2==2.11.3",
+      "conda install -y -c defaults -c conda-forge -c bioconda mamba==0.17.0 snakemake-minimal==6.12.3 jinja2==3.0.3",
       "Install mamba, snakemake-minimal, and jinja2"
     );
   }
