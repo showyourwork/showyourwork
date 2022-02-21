@@ -12,7 +12,7 @@ OPTIONS         	?=
 # Pinned package versions
 MAMBA_VERSION   	:= 0.17.0
 SNAKEMAKE_VERSION 	:= 6.15.5
-JINJA2_VERSION      := 3.0.2
+JINJA2_VERSION      := 3.0.3
 
 # Always enforce these Snakemake options
 FORCE_OPTIONS   	:= -c1 --use-conda --reason --cache -d $(USER)
