@@ -16,7 +16,7 @@ def get_overleaf_credentials(
     creds = []
     for key in [overleaf_email, overleaf_password]:
         val = os.getenv(key, None)
-        if overleaf_email is None or not len(val):
+        if val is None or not len(val):
             # TODO
             raise exceptions.MissingOverleafCredentials()
         else:
