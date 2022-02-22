@@ -18,7 +18,8 @@ from utils import (
     get_logger,
     exceptions,
     is_make_clean,
-    process_user_rules
+    process_user_rules,
+    overleaf
 )
 
 
@@ -52,6 +53,11 @@ if (paths.temp / "config.json").exists():
         verbose=config["verbose"], 
         logfile=paths.logs / "compile.log"
     )
+
+
+    # Setup Overleaf integration for this build
+    if not is_make_clean():
+        overleaf.setup()
 
 
     # Hack to make the pdf generation the default rule

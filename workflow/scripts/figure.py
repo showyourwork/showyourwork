@@ -6,7 +6,7 @@ import time
 
 # Import utils
 sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import exceptions, get_logger
+from utils import exceptions, get_logger, overleaf
 
 
 # Initialize the logger
@@ -33,3 +33,9 @@ if missing:
         time.sleep(1)
     # TODO
     raise exceptions.MissingFigureOutputError()
+
+
+# Push new figures to Overleaf
+project_id = snakemake.config["overleaf"].get("id", None)
+if project_id:
+    overleaf.push_files(snakemake.output, project_id)

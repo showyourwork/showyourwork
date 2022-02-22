@@ -144,6 +144,24 @@ class InvalidZenodoNotesField(ShowyourworkException):
     pass
 
 
+class MissingOverleafCredentials(ShowyourworkException):
+    pass
+
+
+class MultipleOverleafIds(ShowyourworkException):
+    def __init__(self):
+        super().__init__(
+            "Only a single Overleaf project ID may be specified in the config file."
+        )
+
+
+class OverleafError(ShowyourworkException):
+    pass
+
+
+# --
+
+
 class FileNotFoundOnZenodo(Exception):
     """
     Note: not a subclass of `ShowyourworkException` since we

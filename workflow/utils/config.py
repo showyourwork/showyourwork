@@ -134,6 +134,9 @@ def parse_config():
             str(config.get("zenodo_cache", "true")).lower() == "true"
         )
 
+        #: Overleaf
+        config["overleaf"] = as_dict(config.get("overleaf", {}))
+
         #
         # -- Internal settings --
         #

@@ -42,5 +42,7 @@ zenodo_sandbox = temp / "zenodo_sandbox"
 zenodo_sandbox.mkdir(exist_ok=True)
 zenodo_sandbox_ids = zenodo_sandbox / "ids"
 zenodo_sandbox_ids.mkdir(exist_ok=True)
+overleaf = temp / "overleaf"
+overleaf.mkdir(exist_ok=True)
 checkpoints = temp / "checkpoints"
 checkpoints.mkdir(exist_ok=True)
