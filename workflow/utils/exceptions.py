@@ -159,6 +159,10 @@ class OverleafError(ShowyourworkException):
     pass
 
 
+class CalledProcessError(ShowyourworkException):
+    pass
+
+
 # --
 
 

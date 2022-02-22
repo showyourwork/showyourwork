@@ -3,6 +3,7 @@ Main Zenodo interface.
 
 """
 from . import exceptions, paths, git
+from .subproc import run
 from .logging import get_logger
 import requests
 import tarfile
@@ -286,30 +287,21 @@ def upload_file_to_draft(file, rule_name, tarball=False):
 
     # Use curl to upload the file so we have a progress bar
     bucket_url = draft["links"]["bucket"]
-    try:
-        progress_bar = (
-            ["--progress-bar"]
-            if not snakemake.workflow.config["github_actions"]
-            else []
-        )
-        subprocess.check_output(
-            [
-                "curl",
-                *progress_bar,
-                "--upload-file",
-                file_to_upload,
-                "--request",
-                "PUT",
-                f"{bucket_url}/{rule_name}?access_token={access_token}",
-            ]
-        )
-    except Exception as e:
-        msg = str(e).replace(access_token, "*" * len(access_token))
-        with exceptions.no_traceback():
-            # Don't display the traceback, which will usually show
-            # the command we invoked containing the access token.
-            # Hide the access token from the error message.
-            raise Exception(msg)
+    progress_bar = (
+        ["--progress-bar"] if not snakemake.workflow.config["github_actions"] else []
+    )
+    run(
+        [
+            "curl",
+            *progress_bar,
+            "--upload-file",
+            file_to_upload,
+            "--request",
+            "PUT",
+            f"{bucket_url}/{rule_name}?access_token={access_token}",
+        ],
+        secrets=[access_token],
+    )
 
     # Delete the tarball if we created it
     if tarball:
@@ -366,28 +358,21 @@ def download_file_from_draft(file, rule_name, tarball=False):
 
             # Download it
             url = entry["links"]["download"]
-            try:
-                progress_bar = (
-                    ["--progress-bar"]
-                    if not snakemake.workflow.config["github_actions"]
-                    else []
-                )
-                subprocess.check_output(
-                    [
-                        "curl",
-                        f"{url}?access_token={access_token}",
-                        *progress_bar,
-                        "--output",
-                        str(file),
-                    ]
-                )
-            except Exception as e:
-                msg = str(e).replace(access_token, "*" * len(access_token))
-                with exceptions.no_traceback():
-                    # Don't display the traceback, which will usually show
-                    # the command we invoked containing the access token.
-                    # Hide the access token from the error message.
-                    raise Exception(msg)
+            progress_bar = (
+                ["--progress-bar"]
+                if not snakemake.workflow.config["github_actions"]
+                else []
+            )
+            run(
+                [
+                    "curl",
+                    f"{url}?access_token={access_token}",
+                    *progress_bar,
+                    "--output",
+                    str(file),
+                ],
+                secrets=[access_token],
+            )
 
             # If it's a directory tarball, extract it
             if tarball:

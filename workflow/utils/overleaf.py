@@ -1,4 +1,5 @@
 from . import paths, exceptions, logging
+from .subproc import run
 import subprocess
 import os
 import shutil
@@ -28,40 +29,6 @@ def get_overleaf_credentials(
             creds.append(val)
 
     return creds
-
-
-def run(args, cwd=None, secrets=[], exception=exceptions.OverleafError):
-    # Run the command and capture all output
-    result = subprocess.run(
-        args,
-        cwd=cwd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-
-    # Parse the output
-    stdout = result.stdout.decode()
-    stderr = result.stderr.decode()
-
-    # Hide secrets from the command output
-    for secret in secrets:
-        stdout = stdout.replace(secret, "*****")
-        stderr = stderr.replace(secret, "*****")
-
-    # Log the output
-    logger = logging.get_logger()
-    if stdout:
-        logger.debug(stdout)
-
-    # Skip raising the exception?
-    if exception is None:
-        return result
-
-    if result.returncode != 0:
-        # Raise the exception with no traceback to hide
-        # the invocation (which may contain secrets)
-        with exceptions.no_traceback():
-            raise exception(stderr)
 
 
 def setup():
@@ -121,8 +88,21 @@ def push_files(files, project_id):
             cwd=str(paths.overleaf),
         )
 
-    # Commit; don't raise an exception automatically, since git returns
-    # a nonzero status code when there's nothing to commit
+    # Commit callback
+    def callback(code, stdout, stderr):
+        if stdout:
+            logger.debug(stdout)
+        file_list = " ".join(files)
+        if code != 0:
+            if "nothing to commit" in stdout:
+                logger.info(f"No changes to commit to Overleaf: {file_list}")
+            else:
+                with exceptions.no_traceback():
+                    raise exceptions.CalledProcessError(stderr)
+        else:
+            logger.info(f"Pushing changes to Overleaf: {file_list}")
+
+    # Commit!
     result = run(
         [
             "git",
@@ -135,17 +115,8 @@ def push_files(files, project_id):
             "automatic showyourwork update",
         ],
         cwd=str(paths.overleaf),
-        exception=None,
+        callback=callback,
     )
-    file_list = " ".join(files)
-    if result.returncode != 0:
-        if "nothing to commit" in result.stdout.decode():
-            logger.info(f"No changes to commit to Overleaf: {file_list}")
-        else:
-            with exceptions.no_traceback():
-                raise exception(result.stderr.decode())
-    else:
-        logger.info(f"Pushing changes to Overleaf: {file_list}")
 
     # Push (again being careful about secrets)
     run(
