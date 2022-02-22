@@ -31,8 +31,6 @@ for host in ["zenodo", "zenodo_sandbox"]:
                     rulename
                 message:
                     "Downloading {output} from Zenodo..."
-                input:
-                    "showyourwork.yml"
                 output:
                     report(local_file, category="Dataset")
                 params:
