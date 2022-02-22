@@ -58,6 +58,10 @@ def clone(project_id):
 
 def push_files(files, project_id):
 
+    # Disable if user didn't specify an id
+    if not project_id:
+        return
+
     # Setup logging
     logger = logging.get_logger()
 
@@ -134,6 +138,10 @@ def push_files(files, project_id):
 
 
 def pull_files(files, project_id):
+
+    # Disable if user didn't specify an id
+    if not project_id:
+        return
 
     # Clone the repo
     clone(project_id)

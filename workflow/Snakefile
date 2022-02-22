@@ -18,7 +18,8 @@ from utils import (
     get_logger,
     exceptions,
     is_make_clean,
-    process_user_rules
+    process_user_rules,
+    overleaf
 )
 
 
@@ -73,7 +74,6 @@ if (paths.temp / "config.json").exists():
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
-    include: "rules/overleaf.smk"
 
 
     # Resolve ambiguities in rule order
@@ -92,7 +92,19 @@ else:
         raise exceptions.MissingConfigFile()
 
 
+onstart:
+
+
+    # Overleaf sync: pull in changes
+    overleaf.pull_files(config["overleaf"]["pull"], config["overleaf"]["id"])
+
+
 onsuccess:
 
 
+    # Overleaf sync: push changes
+    overleaf.push_files(config["overleaf"]["push"], config["overleaf"]["id"])
+
+
+    # We're done
     get_logger().info("Done!")

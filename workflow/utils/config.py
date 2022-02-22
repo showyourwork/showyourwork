@@ -133,6 +133,13 @@ def parse_config():
 
         #: Overleaf
         config["overleaf"] = as_dict(config.get("overleaf", {}))
+        # Make sure `push` and `pull` are defined and they are lists
+        config["overleaf"]["push"] = config["overleaf"].get("push", [])
+        if not config["overleaf"]["push"]:
+            config["overleaf"]["push"] = []
+        config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
+        if not config["overleaf"]["pull"]:
+            config["overleaf"]["pull"] = []
 
         #
         # -- Internal settings --
