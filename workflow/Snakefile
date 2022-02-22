@@ -18,8 +18,7 @@ from utils import (
     get_logger,
     exceptions,
     is_make_clean,
-    process_user_rules,
-    overleaf
+    process_user_rules
 )
 
 
@@ -55,11 +54,6 @@ if (paths.temp / "config.json").exists():
     )
 
 
-    # Setup Overleaf integration for this build
-    if not is_make_clean():
-        overleaf.setup()
-
-
     # Hack to make the pdf generation the default rule
     rule syw__main:
         input:
@@ -79,6 +73,7 @@ if (paths.temp / "config.json").exists():
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
+    include: "rules/overleaf.smk"
 
 
     # Resolve ambiguities in rule order

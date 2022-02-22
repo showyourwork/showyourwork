@@ -159,6 +159,11 @@ class OverleafError(ShowyourworkException):
     pass
 
 
+class MissingOverleafFile(ShowyourworkException):
+    def __init__(self, file):
+        super().__init__(f"File not found in Overleaf repo: {file}")
+
+
 class CalledProcessError(ShowyourworkException):
     pass
 

@@ -112,9 +112,6 @@ def parse_config():
         #: Debug mode
         config["debug"] = str(config.get("debug", "false")).lower() == "true"
 
-        #: Fast mode
-        config["fast"] = str(config.get("fast", "false")).lower() == "true"
-
         #: Manuscript name
         config["ms_name"] = config.get("ms_name", "ms")
 
