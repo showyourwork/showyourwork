@@ -202,11 +202,11 @@ def pull_files(files, project_id, auto_commit=False):
         run(
             [
                 "git",
-                "commit",
                 "-c",
                 "user.name='showyourwork'",
                 "-c",
                 "user.email='showyourwork'",
+                "commit",
                 "-m",
                 "automatic showyourwork Overleaf update",
             ],
