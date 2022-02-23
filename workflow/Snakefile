@@ -18,6 +18,7 @@ from utils import (
     get_logger,
     exceptions,
     is_make_clean,
+    is_make_main,
     process_user_rules,
     overleaf
 )
@@ -94,20 +95,22 @@ else:
 
 onstart:
 
-
+    
     # Overleaf sync: pull in changes
-    overleaf.pull_files(
-        config["overleaf"]["pull"], 
-        config["overleaf"]["id"], 
-        auto_commit=config["overleaf"]["auto-commit"] and config["github_actions"]
-    )
+    if is_make_main():
+        overleaf.pull_files(
+            config["overleaf"]["pull"], 
+            config["overleaf"]["id"], 
+            auto_commit=config["overleaf"]["auto-commit"] and config["github_actions"]
+        )
 
 
 onsuccess:
 
 
     # Overleaf sync: push changes
-    overleaf.push_files(config["overleaf"]["push"], config["overleaf"]["id"])
+    if is_make_main():
+        overleaf.push_files(config["overleaf"]["push"], config["overleaf"]["id"])
 
 
     # We're done
