@@ -56,7 +56,7 @@ def clone(project_id):
                 raise exceptions.OverleafAuthenticationError()
             else:
                 with exceptions.no_traceback():
-                    raise exceptions.CalledProcessError(stderr)
+                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
     run(
         ["git", "pull", url],
@@ -117,7 +117,7 @@ def push_files(files, project_id):
                 logger.info(f"No changes to commit to Overleaf: {file_list}")
             else:
                 with exceptions.no_traceback():
-                    raise exceptions.CalledProcessError(stderr)
+                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
         else:
             logger.info(f"Pushing changes to Overleaf: {file_list}")
 
@@ -202,7 +202,7 @@ def pull_files(files, project_id, auto_commit=False):
                 if "no changes added to commit" in stdout:
                     logger.warn("No changes to be committed.")
                 else:
-                    raise exceptions.CalledProcessError(stderr)
+                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
         run(
             [
