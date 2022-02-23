@@ -200,7 +200,16 @@ def pull_files(files, project_id, auto_commit=False):
                     raise exceptions.CalledProcessError(stderr)
 
         run(
-            ["git", "commit", "-m", "automatic showyourwork Overleaf update"],
+            [
+                "git",
+                "commit",
+                "-c",
+                "user.name='showyourwork'",
+                "-c",
+                "user.email='showyourwork'",
+                "-m",
+                "automatic showyourwork Overleaf update",
+            ],
             cwd=paths.user,
             callback=callback,
         )
