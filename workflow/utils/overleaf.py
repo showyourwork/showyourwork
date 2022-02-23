@@ -3,7 +3,6 @@ from .subproc import run
 import subprocess
 import os
 import shutil
-import snakemake
 from pathlib import Path
 from urllib.parse import quote
 
@@ -49,17 +48,28 @@ def clone(project_id):
     run(["git", "init"], cwd=str(paths.overleaf))
 
     # Pull from the repo (hide secrets)
+    def callback(code, stdout, stderr):
+        if stdout:
+            logger.debug(stdout)
+        if code != 0:
+            if "Authentication failed" in stderr:
+                raise exceptions.OverleafAuthenticationError()
+            else:
+                with exceptions.no_traceback():
+                    raise exceptions.CalledProcessError(stderr)
+
     run(
         ["git", "pull", url],
         cwd=str(paths.overleaf),
         secrets=[overleaf_email, overleaf_password],
+        callback=callback,
     )
 
 
 def push_files(files, project_id):
 
-    # Disable if user didn't specify an id
-    if not project_id:
+    # Disable if user didn't specify an id or if there are no files
+    if not project_id or not files:
         return
 
     # Setup logging
@@ -137,10 +147,10 @@ def push_files(files, project_id):
     )
 
 
-def pull_files(files, project_id):
+def pull_files(files, project_id, auto_commit=False):
 
-    # Disable if user didn't specify an id
-    if not project_id:
+    # Disable if user didn't specify an id or if there are no files
+    if not project_id or not files:
         return
 
     # Clone the repo
@@ -150,17 +160,51 @@ def pull_files(files, project_id):
     file_list = " ".join(files)
     logger = logging.get_logger()
     logger.info(f"Pulling changes from Overleaf: {file_list}")
-    logger.warn("Run `git status` to see what changed. Don't forget to commit!")
     for file in files:
         file = Path(file).absolute()
         remote_file = (paths.overleaf / file.relative_to(paths.tex)).resolve()
         if not remote_file.exists():
-            raise exceptions.MissingOverleafFile(
-                remote_file.relative_to(paths.overleaf)
+            # Non-fatal
+            logger.error(
+                f"File not found on Overleaf: {remote_file.relative_to(paths.overleaf)}"
             )
+            continue
+
         if remote_file.is_dir():
             if file.exists():
                 shutil.rmtree(file)
             shutil.copytree(remote_file, file)
         else:
-            shutil.copy(remote_file, file)
+            # Only copy if the files actually differ
+            def callback(code, stdout, stderr):
+                if code != 0:
+                    shutil.copy(remote_file, file)
+                    if auto_commit:
+                        run(
+                            ["git", "add", file.relative_to(paths.user)], cwd=paths.user
+                        )
+
+            run(["diff", remote_file, file], callback=callback)
+
+    if auto_commit:
+
+        def callback(code, stdout, stderr):
+            if code == 0:
+                # Push the changes
+                run(["git", "push"], cwd=paths.user)
+                logger.info("Changes committed and pushed to remote.")
+            else:
+                if "no changes added to commit" in stdout:
+                    logger.warn("No changes to be committed.")
+                else:
+                    raise exceptions.CalledProcessError(stderr)
+
+        run(
+            ["git", "commit", "-m", "automatic showyourwork Overleaf update"],
+            cwd=paths.user,
+            callback=callback,
+        )
+
+    else:
+
+        logger.warn("Run `git status` to see what changed. Don't forget to commit!")

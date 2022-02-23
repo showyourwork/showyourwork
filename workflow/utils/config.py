@@ -107,10 +107,10 @@ def parse_config():
         #
 
         #: Verbosity
-        config["verbose"] = str(config.get("verbose", "false")).lower() == "true"
+        config["verbose"] = config.get("verbose", False)
 
         #: Debug mode
-        config["debug"] = str(config.get("debug", "false")).lower() == "true"
+        config["debug"] = config.get("debug", False)
 
         #: Manuscript name
         config["ms_name"] = config.get("ms_name", "ms")
@@ -133,13 +133,6 @@ def parse_config():
 
         #: Overleaf
         config["overleaf"] = as_dict(config.get("overleaf", {}))
-        # Make sure `push` and `pull` are defined and they are lists
-        config["overleaf"]["push"] = config["overleaf"].get("push", [])
-        if not config["overleaf"]["push"]:
-            config["overleaf"]["push"] = []
-        config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
-        if not config["overleaf"]["pull"]:
-            config["overleaf"]["pull"] = []
 
         #
         # -- Internal settings --

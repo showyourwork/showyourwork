@@ -43,6 +43,28 @@ def flatten_zenodo_contents(
     return dict(items)
 
 
+def parse_overleaf():
+    # Make sure `id` is defined
+    config["overleaf"]["id"] = config["overleaf"].get("id", None)
+
+    # Make sure `auto-commit` is defined
+    config["overleaf"]["auto-commit"] = config["overleaf"].get("auto-commit", False)
+
+    # Make sure `push` and `pull` are defined and they are lists
+    config["overleaf"]["push"] = config["overleaf"].get("push", [])
+    if config["overleaf"]["push"] is None:
+        config["overleaf"]["push"] = []
+    elif type(config["overleaf"]["push"]) is not list:
+        # TODO
+        raise exceptions.ConfigError()
+    config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
+    if config["overleaf"]["pull"] is None:
+        config["overleaf"]["pull"] = []
+    elif type(config["overleaf"]["pull"]) is not list:
+        # TODO
+        raise exceptions.ConfigError()
+
+
 def parse_zenodo_datasets():
     """
     Parse the `zenodo` and `zenodo_sandbox` keys in the config file and
@@ -373,6 +395,10 @@ def get_json_tree():
 
 # Parse the `zenodo` key in the config
 parse_zenodo_datasets()
+
+
+# Parse overleaf config
+parse_overleaf()
 
 
 # Get the article tree

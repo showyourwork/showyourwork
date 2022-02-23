@@ -96,7 +96,11 @@ onstart:
 
 
     # Overleaf sync: pull in changes
-    overleaf.pull_files(config["overleaf"]["pull"], config["overleaf"]["id"])
+    overleaf.pull_files(
+        config["overleaf"]["pull"], 
+        config["overleaf"]["id"], 
+        auto_commit=config["overleaf"]["auto-commit"] and config["github_actions"]
+    )
 
 
 onsuccess:

@@ -22,6 +22,10 @@ class ShowyourworkException(Exception):
         super().__init__()
 
 
+class ConfigError(ShowyourworkException):
+    pass
+
+
 class MissingFigureOutputError(ShowyourworkException):
     pass
 
@@ -159,13 +163,17 @@ class OverleafError(ShowyourworkException):
     pass
 
 
-class MissingOverleafFile(ShowyourworkException):
-    def __init__(self, file):
-        super().__init__(f"File not found in Overleaf repo: {file}")
-
-
 class CalledProcessError(ShowyourworkException):
     pass
+
+
+class OverleafAuthenticationError(ShowyourworkException):
+    def __init__(self):
+        super().__init__(
+            "Overleaf authentication failed.\nMake sure you have set the environment "
+            "variables and GitHub secrets `OVERLEAF_EMAIL` and `OVERLEAF_PASSWORD`. "
+            "See the docs for details."
+        )
 
 
 # --
