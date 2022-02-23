@@ -63,6 +63,6 @@ async function setupConda() {
     const conda_cacheId = await cache.saveCache(conda_paths, conda_key);
     core.endGroup();
   } catch (error) {
-    exec(`WARNING: ${error.message}`);
+    shell.echo(`WARNING: ${error.message}`);
   }
 }

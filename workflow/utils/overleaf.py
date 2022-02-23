@@ -114,9 +114,9 @@ def push_files(files, project_id):
         file_list = " ".join([str(s) for s in files])
         if code != 0:
             if (
-                "Your branch is up to date" in stdout
-                or "nothing to commit" in stdout
-                or "nothing added to commit" in stdout
+                "Your branch is up to date" in stdout + stderr
+                or "nothing to commit" in stdout + stderr
+                or "nothing added to commit" in stdout + stderr
             ):
                 logger.warn(f"No changes to commit to Overleaf: {file_list}")
             else:
@@ -202,8 +202,12 @@ def pull_files(files, project_id, auto_commit=False):
                 run(["git", "push"], cwd=paths.user, callback=callback)
                 logger.info("Changes committed and pushed to remote.")
             else:
-                if "no changes added to commit" in stdout:
-                    logger.warn("No changes to be committed.")
+                if (
+                    "Your branch is up to date" in stdout + stderr
+                    or "nothing to commit" in stdout + stderr
+                    or "nothing added to commit" in stdout + stderr
+                ):
+                    logger.warn(f"No changes to commit to the repo.")
                 else:
                     raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
