@@ -113,11 +113,14 @@ def push_files(files, project_id):
             logger.debug(stdout)
         file_list = " ".join([str(s) for s in files])
         if code != 0:
-            if "nothing to commit" in stdout:
-                logger.info(f"No changes to commit to Overleaf: {file_list}")
+            if (
+                "Your branch is up to date" in stdout
+                or "nothing to commit" in stdout
+                or "nothing added to commit" in stdout
+            ):
+                logger.warn(f"No changes to commit to Overleaf: {file_list}")
             else:
-                with exceptions.no_traceback():
-                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
         else:
             logger.info(f"Pushing changes to Overleaf: {file_list}")
 
