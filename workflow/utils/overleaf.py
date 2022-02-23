@@ -191,7 +191,12 @@ def pull_files(files, project_id, auto_commit=False):
         def callback(code, stdout, stderr):
             if code == 0:
                 # Push the changes
-                run(["git", "push"], cwd=paths.user)
+                def callback(code, stdout, stderr):
+                    if code != 0:
+                        # Non-fatal
+                        logger.error("Error pushing changes to the remote.\n" + stderr)
+
+                run(["git", "push"], cwd=paths.user, callback=callback)
                 logger.info("Changes committed and pushed to remote.")
             else:
                 if "no changes added to commit" in stdout:
