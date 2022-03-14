@@ -64,6 +64,33 @@ def parse_overleaf():
         # TODO
         raise exceptions.ConfigError()
 
+    # Ensure all files in `push` and `pull` are in the `src/tex` directory
+    for file in config["overleaf"]["push"] + config["overleaf"]["pull"]:
+        if not Path(file).resolve().is_relative_to(paths.tex):
+            # TODO
+            raise exceptions.ConfigError()
+
+    # Ensure no overlap between `push` and `pull`.
+    # User could in principle provide a directory in one
+    # and a file within that directory in the other and that would
+    # not trigger this error; we'll just have to let them live
+    # dangerously!
+    push_files = set(
+        [
+            str(Path(file).resolve().relative_to(paths.tex))
+            for file in config["overleaf"]["push"]
+        ]
+    )
+    pull_files = set(
+        [
+            str(Path(file).resolve().relative_to(paths.tex))
+            for file in config["overleaf"]["pull"]
+        ]
+    )
+    if len(push_files & pull_files):
+        # TODO
+        raise exceptions.ConfigError()
+
 
 def parse_zenodo_datasets():
     """

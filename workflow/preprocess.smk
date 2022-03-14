@@ -40,7 +40,6 @@ parse_config()
 
 # Set up custom logging
 setup_logging(
-    debug=config["debug"], 
     verbose=config["verbose"], 
     logfile=paths.logs / "preprocess.log"
 )

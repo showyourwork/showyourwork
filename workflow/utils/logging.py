@@ -28,6 +28,12 @@ def get_logger():
         file_handler.setLevel(logging.ERROR)
         logger.addHandler(file_handler)
 
+        # File: all showyourwork messages
+        msg_file = paths.logs / "showyourwork.log"
+        file_handler = logging.FileHandler(msg_file)
+        file_handler.setLevel(logging.DEBUG)
+        logger.addHandler(file_handler)
+
     return logger
 
 
@@ -52,7 +58,7 @@ def clear_errors():
         file.unlink()
 
 
-def setup_logging(debug=False, verbose=False, logfile=None):
+def setup_logging(verbose=False, logfile=None):
     """
     Hack the Snakemake logger to suppress most of its terminal output.
 
@@ -63,13 +69,13 @@ def setup_logging(debug=False, verbose=False, logfile=None):
     # Get the default Snakemake logger
     snakemake_logger = snakemake.logging.logger
 
-    # Suppress *all* Snakemake output to the terminal (unless debug);
+    # Suppress *all* Snakemake output to the terminal (unless verbose);
     # save it all for the logs!
     for handler in snakemake_logger.logger.handlers:
         if isinstance(handler, logging.FileHandler):
             handler.setLevel(logging.DEBUG)
         else:
-            if not debug:
+            if not verbose:
                 handler.setLevel(logging.CRITICAL)
 
     # Custom error handler

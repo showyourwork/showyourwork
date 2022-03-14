@@ -122,9 +122,6 @@ def parse_config():
         #: Verbosity
         config["verbose"] = config.get("verbose", False)
 
-        #: Debug mode
-        config["debug"] = config.get("debug", False)
-
         #: Manuscript name
         config["ms_name"] = config.get("ms_name", "ms")
 
