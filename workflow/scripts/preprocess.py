@@ -370,11 +370,29 @@ def get_json_tree():
 
             raise exceptions.FigureFormatError("There is a figure without a label.")
 
-        # TODO: Collect associated datasets
-        datasets = []
-
         # Collect user-defined dependencies
         dependencies = config["dependencies"].get(script, [])
+
+        # If any of the dependencies exists in a Zenodo deposit, infer
+        # its URL here so we can add margin links to the PDF
+        datasets = []
+        for host in ["zenodo", "zenodo_sandbox"]:
+            for deposit_id in config[host]:
+                url = f"https://{zenodo.zenodo_url[host]}/record/{deposit_id}"
+                for dep in dependencies:
+                    if dep in config[host][deposit_id]["contents"].values():
+                        datasets.append(url)
+                    else:
+                        for zip_file in config[host][deposit_id]["zip_files"]:
+                            if (
+                                dep
+                                in config[host][deposit_id]["zip_files"][
+                                    zip_file
+                                ].values()
+                            ):
+                                datasets.append(url)
+                                break
+        datasets = list(set(datasets))
 
         # Format the command by replacing placeholders
         if command is not None:
@@ -443,12 +461,16 @@ for figure_name in config["tree"]["figures"]:
     )
 
 
-# Gather the figure script info so we can access it on the TeX side
+# Gather the figure script & dataset info so we can access it on the TeX side
 config["labels"] = {}
 for label, value in config["tree"]["figures"].items():
     script = value["script"]
     if script is not None:
-        config["labels"]["{}_script".format(label)] = script
+        config["labels"][f"{label}_script"] = script
+    datasets = value["datasets"]
+    # Note: built-in max of 3 datasets will be displayed
+    for dataset, number in zip(datasets, ["One", "Two", "Three"]):
+        config["labels"][f"{label}_dataset{number}"] = dataset
 
 
 # Save the config file

@@ -11,7 +11,6 @@ If you're looking for the current release of `showyourwork`, please visit https:
 
 <h2>To-do</h2>
 
-- [ ] Implement Zenodo figure icon links
 - [ ] Test uploads of very large files
 - [ ] Figure out Zenodo draft publishing logic
 - [ ] Implement all custom exception messages

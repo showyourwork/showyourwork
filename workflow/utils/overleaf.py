@@ -32,7 +32,7 @@ def clone(project_id):
 
     # Logging
     logger = logging.get_logger()
-    logger.info("Cloning Overleaf repo...")
+    logger.info("Fetching Overleaf repo...")
 
     # Set up a fresh temp directory
     if paths.overleaf.exists():

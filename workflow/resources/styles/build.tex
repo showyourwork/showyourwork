@@ -139,6 +139,32 @@
   \oldendabstract%
 }
 
+
+% Dataset icons. Built-in max of 3.
+\newcommand{\syw@DatasetIcon}[1]{%
+  \ifnum#1=1%
+    \def\syw@DatasetUrl{\usevalue{\syw@CurrentLabelName_datasetOne}}%
+  \else%
+    \ifnum#1=2%
+      \def\syw@DatasetUrl{\usevalue{\syw@CurrentLabelName_datasetTwo}}%
+    \else%
+      \ifnum#1=3%
+        \def\syw@DatasetUrl{\usevalue{\syw@CurrentLabelName_datasetThree}}%
+      \else%
+        \def\syw@DatasetUrl{KEYNOTFOUND}%
+      \fi%
+    \fi%
+  \fi%
+  \IfEq*{\syw@DatasetUrl}{KEYNOTFOUND}{}{%        
+    \raisebox{0pt}[5pt][5pt]{%
+      \href{\syw@DatasetUrl}{%
+        \color{sywBlue}\faDatabase%
+      }%
+    }%
+  }%
+}
+
+
 % Hack `showkeys' to show margin links for figures
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
@@ -154,7 +180,15 @@
         }%
       }%
     }{%
-      % TODO: Datasets
+      \stackon[3pt]{%
+        \syw@DatasetIcon{1}%
+      }{%
+        \stackon[3pt]{%
+          \syw@DatasetIcon{2}%
+        }{%
+          \syw@DatasetIcon{3}%
+        }%
+      }%
     }%
   }{}%
 }

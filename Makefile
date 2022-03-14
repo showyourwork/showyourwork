@@ -89,8 +89,8 @@ summary: preprocess
 
 # Clean
 clean: install_deps
-	@$(SNAKEMAKE) --config debug=true --delete-all-output
-	@$(SNAKEMAKE) --config debug=true -s $(PREPROCESS) --delete-all-output
+	@$(SNAKEMAKE) --delete-all-output
+	@$(SNAKEMAKE) -s $(PREPROCESS) --delete-all-output
 	@rm -rf $(USER)/arxiv.tar.gz
 	@rm -rf $(USER)/.showyourwork
 
