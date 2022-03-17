@@ -35,20 +35,34 @@
   }
 \fi
 
+% Check if the Git tag is set (i.e. is it an empty string)
+((* if repo.tag != "" *))
+\newcommand{\gitHeader}{((- repo.sha_tag_header -))}
+((* endif **))
+
 % Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
 \let\oldmaketitle\maketitle
 \def\maketitle{%
     \let\oldLaTeX\LaTeX
+    \let\oldtoday\today
     \def\LaTeX{\oldLaTeX/\href{https://github.com/rodluger/showyourwork}{\showyourwork}}
+    ((* if repo.tag != "" *))
+      \renewcommand{\today}{\oldtoday;~\gitHeader}
+    ((* endif *))
     \oldmaketitle
     \let\LaTeX\oldLaTeX
+    \let\today\oldtoday
 }
 
 % MNRAS hack for displaying showyourwork logo
 \@ifclassloaded{mnras}{
   \ifx\CUP@mtlplain@loaded\undefined
     \def\@printed{Preprint \tod@y\
-      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version}
+      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version
+      ((* if repo.tag != "" *))
+      \,(\gitHeader)
+      ((* endif *))
+      }
   \else
     \def\@printed{}
   \fi

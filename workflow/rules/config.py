@@ -9,7 +9,7 @@ values if none are provided. Current config options are
 - ``figexts`` (*list*): List of recognized figure extensions. Default
   is ``["pdf", "png", "eps", "jpg", "jpeg", "gif", "svg", "tiff"]``
 
-- ``arxiv_tarball_exclude`` (*list*): List of files/paths to exclude from 
+- ``arxiv_tarball_exclude`` (*list*): List of files/paths to exclude from
   the tarball.
 
 - ``tectonic_latest`` (*bool*): Use the latest version of ``tectonic`` (built
@@ -31,6 +31,12 @@ values if none are provided. Current config options are
 
 - ``download_only`` (*bool*): Only download Zenodo dependencies (never try
   to generate and/or upload them). Default False.
+
+- ``style`` (*dict*): Custom modifications to the stylesheet
+
+    - ``show_git_sha_or_tag`` (*bool*): Show the Git SHA in the article header.
+      If the HEAD commit corresponds to a Git tag, show the tag name in the
+      header.
 
 """
 from pathlib import Path
@@ -123,3 +129,9 @@ config["scripts"]["py"] = config["scripts"].get(
 #: Article name
 config["ms"] = config.get("ms", "src/ms.tex")
 config["ms_name"] = Path(config["ms"]).relative_to("src").name
+
+#: Latex style customization
+config["style"] = config.get("style", {})
+config["style"]["show_git_sha_or_tag"] = (
+    str(config["style"].get("show_git_sha_or_tag", True)).lower() == "true"
+)

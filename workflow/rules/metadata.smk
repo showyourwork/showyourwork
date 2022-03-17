@@ -10,7 +10,7 @@ rule metadata:
     Generates article metadata from the output of the ``repo``
     and ``script_info`` rules. Saves it as a JSON in the temporary
     ``showyourwork`` directory.
-    
+
     """
     message:
         "Generating article metadata..."
@@ -31,6 +31,19 @@ rule metadata:
         with open(relpaths.temp / "scripts.json", "r") as f:
             scripts = json.load(f)
         meta = dict(repo=repo)
+
+        # TODO: expose config by sharing it in meta, or construct this here?
+        meta["repo"]["sha_tag_header"] = ""
+        if config["style"]["show_git_sha_or_tag"]:
+            if meta["repo"]["tag"] != "":
+                meta["repo"]["sha_tag_header"] = (
+                    f'Git tag: {meta["repo"]["tag"]}'
+                )
+            else:
+                # The git default short hash is the first 7 characters:
+                meta["repo"]["sha_tag_header"] = (
+                    f'Git commit: {meta["repo"]["sha"][:7]}'
+                )
 
         # Miscellaneous
         meta["CI"] = os.getenv("CI", "false") == "true"
