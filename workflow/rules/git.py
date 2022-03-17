@@ -63,6 +63,26 @@ def get_repo_sha():
     return sha
 
 
+def get_repo_tag():
+    """
+    Return a tag name if the HEAD corresponds to a tagged version.
+
+    """
+    try:
+        tag = (
+            subprocess.check_output(
+                ["git", "describe", "--exact-match", "--tags", "HEAD"],
+                stderr=subprocess.DEVNULL
+            )
+            .decode()
+            .strip()
+        )
+    except Exception:
+        tag = ""
+
+    return tag
+
+
 def get_script_status(script):
     """
     Return an error code corresponding to the git status of a given script.

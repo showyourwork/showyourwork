@@ -20,5 +20,6 @@ rule repo:
         repo["sha"] = get_repo_sha()
         repo["url"] = get_repo_url()
         repo["branch"] = get_repo_branch()
+        repo["tag"] = get_repo_tag()
         with open(relpaths.temp / "repo.json", "w") as f:
             print(json.dumps(repo, indent=4), file=f)
