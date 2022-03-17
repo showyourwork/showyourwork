@@ -18,7 +18,6 @@ def get_overleaf_credentials(
     for key in [overleaf_email, overleaf_password]:
         val = os.getenv(key, None)
         if val is None or not len(val):
-            # TODO
             raise exceptions.MissingOverleafCredentials()
         else:
             # Replace special characters in the credentials
@@ -76,7 +75,14 @@ def push_files(files, project_id):
     logger = logging.get_logger()
 
     # Clone the repo
-    clone(project_id)
+    try:
+        clone(project_id)
+    except (
+        exceptions.MissingOverleafCredentials,
+        exceptions.OverleafAuthenticationError,
+    ):
+        # Not fatal!
+        return
 
     # Process each file
     skip = []
@@ -156,12 +162,21 @@ def pull_files(files, project_id, auto_commit=False):
     if not project_id or not files:
         return
 
+    # Setup logging
+    logger = logging.get_logger()
+
     # Clone the repo
-    clone(project_id)
+    try:
+        clone(project_id)
+    except (
+        exceptions.MissingOverleafCredentials,
+        exceptions.OverleafAuthenticationError,
+    ):
+        # Not fatal!
+        return
 
     # Copy over the files
     file_list = " ".join(files)
-    logger = logging.get_logger()
     logger.info(f"Pulling changes from Overleaf: {file_list}")
     for file in files:
         file = Path(file).absolute()

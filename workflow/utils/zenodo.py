@@ -121,13 +121,13 @@ def get_deposit_title():
         url = snakemake.workflow.config["url"]
     except:
         url = git.get_repo_url()
-    for s in ["https://", "http://"]:
+    for s in ["https://github.com/", "http://github.com/", "https://", "http://"]:
         url = url.replace(s, "")
     try:
         branch = snakemake.workflow.config["branch"]
     except:
         branch = git.get_repo_branch()
-    return f"Data for {url}@{branch}"
+    return f"Data for {url} [{branch}]"
 
 
 def create_draft():
@@ -144,7 +144,7 @@ def create_draft():
     # Create the draft
     r = check_status(
         requests.post(
-            "https://zenodo.org/api/deposit/depositions",
+            f"https://zenodo.org/api/deposit/depositions",
             params={
                 "access_token": access_token,
             },
@@ -158,8 +158,8 @@ def create_draft():
     description = (
         "Data automatically uploaded by the <code>showyourwork</code> workflow. "
         "Each of the files in this deposit were generated from a user-defined "
-        "<code>Snakemake</code> rule with the same name and hash specified in the "
-        "<strong>Additional Notes</strong> section below. Please visit "
+        "<code>Snakemake</code> rule with the same name and hash specified "
+        "below. Please visit "
         "<a href='https://github.com/showyourwork'>github.com/showyourwork</a> "
         "and/or the article source repository for more information."
     )
@@ -183,6 +183,10 @@ def create_draft():
     data = r.json()
     logger.info(f"Created draft with id {data['id']} on Zenodo.")
 
+    # Store the deposit ids in the `.zenodo` file
+    with open(".zenodo", "w") as f:
+        json.dump({"conceptrecid": data["conceptrecid"], "id": data["id"]}, f)
+
     return data
 
 
@@ -197,19 +201,22 @@ def get_draft():
 
     # Search
     title = get_deposit_title()
-    r = requests.get(
-        "https://zenodo.org/api/deposit/depositions",
-        params={
-            "q": f'title:"{title}"',
-            "access_token": access_token,
-            "status": "draft",
-            "size": 10,
-            "page": 1,
-            "sort": "mostrecent",
-            "all_versions": 0,
-        },
+    r = check_status(
+        requests.get(
+            f"https://zenodo.org/api/deposit/depositions",
+            params={
+                "q": f'title:"{title}"',
+                "access_token": access_token,
+                "status": "draft",
+                "size": 10,
+                "page": 1,
+                "sort": "mostrecent",
+                "all_versions": 0,
+            },
+        )
     )
     data = r.json()
+
     if len(data):
 
         # We found a matching draft; return the most recent one.
@@ -227,20 +234,14 @@ def get_draft():
         return create_draft()
 
 
-def upload_file_to_draft(file, rule_name, tarball=False):
+def upload_file_to_draft(draft, file, rule_name, tarball=False):
     """
     Upload a file to a Zenodo draft. Delete the current file
     produced by the same rule, if present.
 
-    Note that the name of the file _is_ the hash of the rule
-    that generated it (courtesy of Snakemake).
-
     """
     # Get the Zenodo token
     access_token = get_access_token(error_if_missing=True)
-
-    # Get the current draft
-    draft = get_draft()
 
     # Get rule hashes for the files currently on Zenodo
     metadata = draft["metadata"]
@@ -320,7 +321,7 @@ def upload_file_to_draft(file, rule_name, tarball=False):
     )
 
 
-def download_file_from_draft(file, rule_name, tarball=False):
+def download_file_from_draft(draft, file, rule_name, tarball=False):
     """
     Downloads a file from a Zenodo draft.
 
@@ -328,8 +329,8 @@ def download_file_from_draft(file, rule_name, tarball=False):
     # Get the Zenodo token
     access_token = get_access_token(error_if_missing=True)
 
-    # Get the current draft
-    draft = get_draft()
+    # Logger
+    logger = get_logger()
 
     # Get rule hashes for the files currently on Zenodo
     metadata = draft["metadata"]
@@ -385,3 +386,216 @@ def download_file_from_draft(file, rule_name, tarball=False):
 
     # This is caught in the enclosing scope and treated as a cache miss
     raise exceptions.FileNotFoundOnZenodo(file.name)
+
+
+def download_file_from_record(record, file, rule_name, tarball=False):
+    """
+    Downloads a file from a published Zenodo record.
+
+    """
+    # Get rule hashes for the files currently on Zenodo
+    metadata = record["metadata"]
+    notes = metadata.get("notes", "{}")
+    try:
+        rule_hashes = json.loads(notes)
+    except json.JSONDecodeError:
+        # TODO
+        raise exceptions.InvalidZenodoNotesField()
+
+    # Look for a match
+    for entry in record["files"]:
+        if entry["key"] == rule_name and rule_hashes.get(rule_name, None) == file.name:
+
+            # Download it
+            url = entry["links"]["self"]
+            progress_bar = (
+                ["--progress-bar"]
+                if not snakemake.workflow.config["github_actions"]
+                else []
+            )
+            run(
+                [
+                    "curl",
+                    url,
+                    *progress_bar,
+                    "--output",
+                    str(file),
+                ]
+            )
+
+            # If it's a directory tarball, extract it
+            if tarball:
+                os.rename(file, f"{file}.tar.gz")
+                with tarfile.open(f"{file}.tar.gz") as tb:
+                    tb.extractall(file)
+                Path(f"{file}.tar.gz").unlink()
+
+            return
+
+    # This is caught in the enclosing scope and treated as a cache miss
+    raise exceptions.FileNotFoundOnZenodo(file.name)
+
+
+def download_file_from_zenodo(file, rule_name, tarball=False):
+    # Logger
+    logger = get_logger()
+
+    # Get the deposit concept ID, if one exists
+    with open(".zenodo", "r") as f:
+        try:
+            data = json.load(f)
+        except:
+            data = {}
+    concept_id = data.get("conceptrecid")
+    version_id = data.get("id")
+
+    if concept_id:
+
+        # Check if there's a draft (and the user has access), and check for
+        # a file match. If not, check for existing published versions, and
+        # check for a match in each one. If no file is found, raise a cache
+        # miss exception, which is caught in the enclosing scope.
+
+        # Get the Zenodo token
+        access_token = get_access_token(error_if_missing=False)
+
+        # Check for an existing draft; if found, check for the file in
+        # that draft and return if found
+        r = requests.get(
+            f"https://zenodo.org/api/deposit/depositions/{version_id}",
+            params={"access_token": access_token},
+        )
+        if r.status_code <= 204:
+            data = r.json()
+            draft_url = data.get("links", {}).get("latest_draft", None)
+            if draft_url:
+                r = requests.get(
+                    draft_url,
+                    params={"access_token": access_token},
+                )
+                if r.status_code <= 204:
+                    draft = r.json()
+                    try:
+                        download_file_from_draft(
+                            draft, file, rule_name, tarball=tarball
+                        )
+                    except exceptions.FileNotFoundOnZenodo:
+                        pass
+                    else:
+                        return
+
+        # Check for a published record
+        r = requests.get(f"https://zenodo.org/api/records/{concept_id}")
+        if r.status_code > 204:
+            data = r.json()
+            if "PID is not registered" in data.get("message", ""):
+                # There is no published record with this id
+                pass
+            else:
+                # Something unexpected happened
+                raise exceptions.ZenodoError(
+                    status=data.get("status", "unknown"),
+                    message=data.get(
+                        "message", "An error occurred while accessing Zenodo."
+                    ),
+                )
+        else:
+            # There's a published record. Let's search all versions for
+            # a file match.
+            r = requests.get(
+                f"https://zenodo.org/api/records",
+                params={
+                    "q": f'conceptdoi:"10.5281/zenodo.{concept_id}"',
+                    "access_token": access_token,
+                    "all_versions": 1,
+                },
+            )
+            if r.status_code <= 204:
+                records = r.json().get("hits", {}).get("hits", [])
+                for record in records[::-1]:
+                    try:
+                        download_file_from_record(
+                            record, file, rule_name, tarball=tarball
+                        )
+                    except exceptions.FileNotFoundOnZenodo:
+                        pass
+                    else:
+                        return
+
+    else:
+
+        # There is no Zenodo deposit associated with this repository.
+        # Let's create a draft in a fresh deposit.
+        create_draft()
+
+    # This is caught in the enclosing scope and treated as a cache miss
+    raise exceptions.FileNotFoundOnZenodo(file.name)
+
+
+def upload_file_to_zenodo(file, rule_name, tarball=False):
+    # Logger
+    logger = get_logger()
+
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=False)
+    if not access_token:
+        logger.warn(f"Zenodo access token not provided. Unable to upload {file}.")
+        return
+
+    # Get the deposit version ID, if one exists
+    with open(".zenodo", "r") as f:
+        try:
+            data = json.load(f)
+        except:
+            data = {}
+    version_id = data.get("id")
+
+    if not version_id:
+
+        # There is no Zenodo deposit associated with this repository.
+        # Let's create a draft in a fresh deposit.
+        data = create_draft()
+        version_id = data.get("id")
+
+    # Check if a draft already exists, and create it if not.
+    # If authentication fails, return with a gentle warning
+    r = requests.get(
+        f"https://zenodo.org/api/deposit/depositions/{version_id}",
+        params={"access_token": access_token},
+    )
+    if r.status_code > 204:
+        logger.warn(f"Zenodo authentication failed. Unable to upload {file}.")
+        return
+
+    data = r.json()
+    draft_url = data.get("links", {}).get("latest_draft", None)
+    if draft_url:
+
+        # Draft exists
+        r = check_status(
+            requests.get(
+                draft_url,
+                params={"access_token": access_token},
+            )
+        )
+        draft = r.json()
+
+    else:
+
+        # Create a new draft
+        r = check_status(
+            requests.post(
+                data["links"]["newversion"],
+                params={"access_token": access_token},
+            )
+        )
+        draft_url = r.json()["links"]["latest_draft"]
+        r = check_status(
+            requests.get(
+                draft_url,
+                params={"access_token": access_token},
+            )
+        )
+        draft = r.json()
+
+    upload_file_to_draft(draft, file, rule_name, tarball=tarball)

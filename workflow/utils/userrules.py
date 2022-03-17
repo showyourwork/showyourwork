@@ -1,7 +1,7 @@
 from distutils.command.upload import upload
 from . import exceptions
 from .logging import get_logger
-from .zenodo import download_file_from_draft, upload_file_to_draft
+from .zenodo import download_file_from_zenodo, upload_file_to_zenodo
 from .config import get_snakemake_variable
 import types
 import snakemake
@@ -42,7 +42,7 @@ def patch_snakemake_cache():
                 # Attempt to download from Zenodo
                 try:
                     logger.info(f"Searching Zenodo file cache: {outputfile}...")
-                    download_file_from_draft(cachefile, job.rule.name, tarball=tarball)
+                    download_file_from_zenodo(cachefile, job.rule.name, tarball=tarball)
                     logger.info(f"Restoring from Zenodo cache: {outputfile}...")
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
@@ -52,7 +52,7 @@ def patch_snakemake_cache():
                 # Always ensure the cached file on Zenodo is the latest
                 # local cache hit. (If it is, this is a no-op)
                 logger.info(f"Syncing file with Zenodo cache: {outputfile}...")
-                upload_file_to_draft(cachefile, job.rule.name, tarball=tarball)
+                upload_file_to_zenodo(cachefile, job.rule.name, tarball=tarball)
 
         # Call the original method
         return _fetch(job)
@@ -69,7 +69,7 @@ def patch_snakemake_cache():
 
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             logger.info(f"Caching output file on Zenodo: {outputfile}...")
-            upload_file_to_draft(cachefile, job.rule.name, tarball=tarball)
+            upload_file_to_zenodo(cachefile, job.rule.name, tarball=tarball)
 
         return result
 

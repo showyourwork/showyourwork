@@ -17,8 +17,19 @@ def no_traceback():
 
 
 class ShowyourworkException(Exception):
-    def __init__(self, message="An error occurred while executing the workflow."):
-        get_logger().error(message)
+    def __init__(
+        self, message="An error occurred while executing the workflow.", level="error"
+    ):
+        if level == "error":
+            get_logger().error(message)
+        elif level == "warn":
+            get_logger().warn(message)
+        elif level == "info":
+            get_logger().info(message)
+        elif level == "debug":
+            get_logger().debug(message)
+        else:
+            super().__init__(message)
         super().__init__()
 
 
@@ -148,10 +159,6 @@ class InvalidZenodoNotesField(ShowyourworkException):
     pass
 
 
-class MissingOverleafCredentials(ShowyourworkException):
-    pass
-
-
 class MultipleOverleafIds(ShowyourworkException):
     def __init__(self):
         super().__init__(
@@ -167,25 +174,23 @@ class CalledProcessError(ShowyourworkException):
     pass
 
 
-class OverleafAuthenticationError(ShowyourworkException):
-    def __init__(self):
-        super().__init__(
-            "Overleaf authentication failed.\nMake sure you have set the environment "
-            "variables and GitHub secrets `OVERLEAF_EMAIL` and `OVERLEAF_PASSWORD`. "
-            "See the docs for details."
-        )
-
-
 # --
 
 
-class FileNotFoundOnZenodo(Exception):
-    """
-    Note: not a subclass of `ShowyourworkException` since we
-    don't want this printed to the logs.
+class MissingOverleafCredentials(ShowyourworkException):
+    def __init__(self):
+        super().__init__(
+            "Overleaf credentials not found. See the docs for details.", level="warn"
+        )
 
-    """
 
+class OverleafAuthenticationError(ShowyourworkException):
+    def __init__(self):
+        super().__init__(
+            "Overleaf authentication failed. See the docs for details.", level="warn"
+        )
+
+
+class FileNotFoundOnZenodo(ShowyourworkException):
     def __init__(self, file_name):
-        message = f"File {file_name} not found on Zenodo."
-        super().__init__(message)
+        super().__init__(f"File {file_name} not found on Zenodo.", level=None)
