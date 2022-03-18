@@ -45,7 +45,7 @@ def get_access_token(token_name="ZENODO_TOKEN", error_if_missing=False):
 
     """
     access_token = os.getenv(token_name, None)
-    if error_if_missing and access_token is None or not len(access_token):
+    if error_if_missing and not access_token:
         raise exceptions.MissingZenodoAccessToken(token_name)
     return access_token
 
@@ -190,50 +190,6 @@ def create_draft():
     return data
 
 
-def get_draft():
-    """
-    Get the Zenodo deposit draft for the current repo & branch.
-    Creates it if it doesn't exist.
-
-    """
-    # Get the Zenodo token
-    access_token = get_access_token(error_if_missing=True)
-
-    # Search
-    title = get_deposit_title()
-    r = check_status(
-        requests.get(
-            f"https://zenodo.org/api/deposit/depositions",
-            params={
-                "q": f'title:"{title}"',
-                "access_token": access_token,
-                "status": "draft",
-                "size": 10,
-                "page": 1,
-                "sort": "mostrecent",
-                "all_versions": 0,
-            },
-        )
-    )
-    data = r.json()
-
-    if len(data):
-
-        # We found a matching draft; return the most recent one.
-        r = check_status(
-            requests.get(
-                data[0]["links"]["latest_draft"],
-                params={"access_token": access_token},
-            )
-        )
-        return r.json()
-
-    else:
-
-        # We'll create a new draft
-        return create_draft()
-
-
 def upload_file_to_draft(draft, file, rule_name, tarball=False):
     """
     Upload a file to a Zenodo draft. Delete the current file
@@ -249,7 +205,6 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
     try:
         rule_hashes = json.loads(notes)
     except json.JSONDecodeError:
-        # TODO
         raise exceptions.InvalidZenodoNotesField()
 
     # Search for an existing file on Zenodo
@@ -326,11 +281,14 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
     Downloads a file from a Zenodo draft.
 
     """
-    # Get the Zenodo token
-    access_token = get_access_token(error_if_missing=True)
-
     # Logger
     logger = get_logger()
+
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=False)
+    if not access_token:
+        logger.debug("Zenodo access token not provided; can't search drafts.")
+        exceptions.FileNotFoundOnZenodo(rule_name)
 
     # Get rule hashes for the files currently on Zenodo
     metadata = draft["metadata"]
@@ -338,7 +296,6 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
     try:
         rule_hashes = json.loads(notes)
     except json.JSONDecodeError:
-        # TODO
         raise exceptions.InvalidZenodoNotesField()
 
     # Get the files currently on the remote
@@ -384,8 +341,15 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
 
             return
 
+        elif entry["filename"] == rule_name:
+
+            logger.debug(
+                f"File {rule_name} found, but it has the wrong hash. Skipping..."
+            )
+            break
+
     # This is caught in the enclosing scope and treated as a cache miss
-    raise exceptions.FileNotFoundOnZenodo(file.name)
+    raise exceptions.FileNotFoundOnZenodo(rule_name)
 
 
 def download_file_from_record(record, file, rule_name, tarball=False):
@@ -399,7 +363,6 @@ def download_file_from_record(record, file, rule_name, tarball=False):
     try:
         rule_hashes = json.loads(notes)
     except json.JSONDecodeError:
-        # TODO
         raise exceptions.InvalidZenodoNotesField()
 
     # Look for a match
@@ -432,8 +395,15 @@ def download_file_from_record(record, file, rule_name, tarball=False):
 
             return
 
+        elif entry["key"] == rule_name:
+
+            logger.debug(
+                f"File {rule_name} found, but it has the wrong hash. Skipping..."
+            )
+            break
+
     # This is caught in the enclosing scope and treated as a cache miss
-    raise exceptions.FileNotFoundOnZenodo(file.name)
+    raise exceptions.FileNotFoundOnZenodo(rule_name)
 
 
 def download_file_from_zenodo(file, rule_name, tarball=False):
@@ -460,7 +430,9 @@ def download_file_from_zenodo(file, rule_name, tarball=False):
         access_token = get_access_token(error_if_missing=False)
 
         # Check for an existing draft; if found, check for the file in
-        # that draft and return if found
+        # that draft and return if found. Note that we must query the
+        # *version* id for the deposit here.
+        logger.debug(f"Attempting to access Zenodo deposit {version_id}...")
         r = requests.get(
             f"https://zenodo.org/api/deposit/depositions/{version_id}",
             params={"access_token": access_token},
@@ -480,14 +452,37 @@ def download_file_from_zenodo(file, rule_name, tarball=False):
                             draft, file, rule_name, tarball=tarball
                         )
                     except exceptions.FileNotFoundOnZenodo:
-                        pass
+                        logger.debug(
+                            f"File {rule_name} not found in deposit {concept_id}."
+                        )
                     else:
                         return
+                else:
+                    logger.debug(f"Something went wrong accessing {draft_url}.")
+                    try:
+                        data = r.json()
+                    except:
+                        pass
+                    else:
+                        logger.debug(data["message"])
+
+        else:
+            logger.debug(f"Failed to access Zenodo deposit {version_id}.")
+            try:
+                data = r.json()
+            except:
+                pass
+            else:
+                logger.debug(data["message"])
 
         # Check for a published record
+        logger.debug(f"Attempting to access Zenodo record {concept_id}...")
         r = requests.get(f"https://zenodo.org/api/records/{concept_id}")
         if r.status_code > 204:
-            data = r.json()
+            try:
+                data = r.json()
+            except:
+                data = {}
             if "PID is not registered" in data.get("message", ""):
                 # There is no published record with this id
                 pass
@@ -518,9 +513,23 @@ def download_file_from_zenodo(file, rule_name, tarball=False):
                             record, file, rule_name, tarball=tarball
                         )
                     except exceptions.FileNotFoundOnZenodo:
-                        pass
+                        logger.debug(
+                            f"File {rule_name} not found in record {concept_id}."
+                        )
                     else:
                         return
+            else:
+                # Something unexpected happened
+                try:
+                    data = r.json()
+                except:
+                    data = {}
+                raise exceptions.ZenodoError(
+                    status=data.get("status", "unknown"),
+                    message=data.get(
+                        "message", "An error occurred while accessing Zenodo."
+                    ),
+                )
 
     else:
 
@@ -539,7 +548,9 @@ def upload_file_to_zenodo(file, rule_name, tarball=False):
     # Get the Zenodo token
     access_token = get_access_token(error_if_missing=False)
     if not access_token:
-        logger.warn(f"Zenodo access token not provided. Unable to upload {file}.")
+        logger.warn(
+            f"Zenodo access token not provided. Unable to upload cache for rule {rule_name}."
+        )
         return
 
     # Get the deposit version ID, if one exists
@@ -564,7 +575,15 @@ def upload_file_to_zenodo(file, rule_name, tarball=False):
         params={"access_token": access_token},
     )
     if r.status_code > 204:
-        logger.warn(f"Zenodo authentication failed. Unable to upload {file}.")
+        logger.warn(
+            f"Zenodo authentication failed. Unable to upload cache for rule {rule_name}."
+        )
+        try:
+            data = r.json()
+        except:
+            pass
+        else:
+            logger.debug(data["message"])
         return
 
     data = r.json()

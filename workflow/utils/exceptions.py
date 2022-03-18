@@ -16,6 +16,11 @@ def no_traceback():
     sys.tracebacklimit = tracebacklimit
 
 
+#
+# Parent class
+#
+
+
 class ShowyourworkException(Exception):
     def __init__(
         self, message="An error occurred while executing the workflow.", level="error"
@@ -31,6 +36,101 @@ class ShowyourworkException(Exception):
         else:
             super().__init__(message)
         super().__init__()
+
+
+#
+# Zenodo
+#
+
+
+class ZenodoException(ShowyourworkException):
+    pass
+
+
+class ZenodoError(ZenodoException):
+    def __init__(self, status="", message="An error occurred while accessing Zenodo."):
+        super().__init__(f"Zenodo error {status}: {message}")
+
+
+class MissingZenodoAccessToken(ZenodoException):
+    def __init__(self, token_name):
+        message = (
+            f"Zenodo access token `{token_name}` not found. "
+            "This should be set as an environment variable."
+        )
+        super().__init__(message)
+
+
+class ZenodoRecordNotFound(ZenodoException):
+    def __init__(self, record_id, id_type="version or concept"):
+        message = (
+            f"The provided `id` {record_id} does "
+            "not seem to be a valid Zenodo {id_type} id."
+        )
+        super().__init__(message)
+
+
+class ZenodoUploadError(ZenodoException):
+    pass
+
+
+class ZenodoContentsError(ZenodoException):
+    pass
+
+
+class InvalidZenodoIdType(ZenodoException):
+    pass
+
+
+class InvalidZenodoNotesField(ZenodoException):
+    def __init__(self):
+        super().__init__(
+            "The `Additional Notes` field in the current Zenodo record is not valid JSON."
+        )
+
+
+class FileNotFoundOnZenodo(ZenodoException):
+    def __init__(self, file_name):
+        super().__init__(f"File {file_name} not found on Zenodo.", level=None)
+
+
+#
+# Overleaf
+#
+
+
+class OverleafException(ShowyourworkException):
+    pass
+
+
+class MultipleOverleafIds(OverleafException):
+    def __init__(self):
+        super().__init__(
+            "Only a single Overleaf project ID may be specified in the config file."
+        )
+
+
+class OverleafError(OverleafException):
+    pass
+
+
+class MissingOverleafCredentials(OverleafException):
+    def __init__(self):
+        super().__init__(
+            "Overleaf credentials not found. See the docs for details.", level="warn"
+        )
+
+
+class OverleafAuthenticationError(OverleafException):
+    def __init__(self):
+        super().__init__(
+            "Overleaf authentication failed. See the docs for details.", level="warn"
+        )
+
+
+#
+# Other
+#
 
 
 class ConfigError(ShowyourworkException):
@@ -104,42 +204,7 @@ class MissingConfigFile(ShowyourworkException):
     pass
 
 
-class ZenodoError(ShowyourworkException):
-    def __init__(self, status="", message="An error occurred while accessing Zenodo."):
-        super().__init__(f"Zenodo error {status}: {message}")
-
-
-class MissingZenodoAccessToken(ShowyourworkException):
-    def __init__(self, token_name):
-        message = (
-            f"Zenodo access token `{token_name}` not found. "
-            "This should be set as an environment variable."
-        )
-        super().__init__(message)
-
-
-class ZenodoRecordNotFound(ShowyourworkException):
-    def __init__(self, record_id, id_type="version or concept"):
-        message = (
-            f"The provided `id` {record_id} does "
-            "not seem to be a valid Zenodo {id_type} id."
-        )
-        super().__init__(message)
-
-
-class ZenodoUploadError(ShowyourworkException):
-    pass
-
-
 class NotImplementedError(ShowyourworkException):
-    pass
-
-
-class ZenodoContentsError(ShowyourworkException):
-    pass
-
-
-class InvalidZenodoIdType(ShowyourworkException):
     pass
 
 
@@ -155,42 +220,5 @@ class RunDirectiveNotAllowedInUserRules(ShowyourworkException):
     pass
 
 
-class InvalidZenodoNotesField(ShowyourworkException):
-    pass
-
-
-class MultipleOverleafIds(ShowyourworkException):
-    def __init__(self):
-        super().__init__(
-            "Only a single Overleaf project ID may be specified in the config file."
-        )
-
-
-class OverleafError(ShowyourworkException):
-    pass
-
-
 class CalledProcessError(ShowyourworkException):
     pass
-
-
-# --
-
-
-class MissingOverleafCredentials(ShowyourworkException):
-    def __init__(self):
-        super().__init__(
-            "Overleaf credentials not found. See the docs for details.", level="warn"
-        )
-
-
-class OverleafAuthenticationError(ShowyourworkException):
-    def __init__(self):
-        super().__init__(
-            "Overleaf authentication failed. See the docs for details.", level="warn"
-        )
-
-
-class FileNotFoundOnZenodo(ShowyourworkException):
-    def __init__(self, file_name):
-        super().__init__(f"File {file_name} not found on Zenodo.", level=None)
