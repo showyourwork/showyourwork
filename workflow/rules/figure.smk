@@ -8,7 +8,6 @@ for figure_name in figures:
     # Get figure metadata
     figscript = figures[figure_name]["script"]
     graphics = figures[figure_name]["graphics"]
-    datasets = figures[figure_name]["datasets"]
     dependencies = figures[figure_name]["dependencies"]
     command = figures[figure_name]["command"]
 
@@ -35,7 +34,6 @@ for figure_name in figures:
             "Generating figure output: {output}..."
         input:
             figscript,
-            datasets,
             dependencies,
             "environment.yml"
         output:
