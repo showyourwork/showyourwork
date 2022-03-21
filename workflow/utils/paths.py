@@ -18,8 +18,8 @@ user = showyourwork.parents[0]
 src = user / "src"
 tex = src / "tex"
 data = src / "data"
-figure_scripts = src / "figure-scripts"
-static_figures = src / "static-figures"
+figure_scripts = src / "figures"
+static_figures = src / "static"
 figures = tex / "figures"
 
 

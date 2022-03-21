@@ -11,6 +11,7 @@ If you're looking for the current release of `showyourwork`, please visit https:
 
 <h2>To-do</h2>
 
+- [ ] Show message when setting up conda env (can take a while)
 - [ ] Test uploads of very large files
 - [ ] Implement all custom exception messages
 - [ ] Write documentation
