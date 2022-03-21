@@ -20,7 +20,7 @@ def flatten_zenodo_contents(
 ):
     """
     Flatten the `contents` dictionary of a Zenodo entry, filling
-    in default mappings and removing zipfiles from the target path.
+    in default mappings and removing zipfile extensions from the target path.
 
     Adapted from https://stackoverflow.com/a/6027615
 
@@ -29,16 +29,24 @@ def flatten_zenodo_contents(
     for k, v in d.items():
         new_key = (Path(parent_key) / k).as_posix() if parent_key else k
         if isinstance(v, MutableMapping):
-            items.extend(flatten_zenodo_contents(v, new_key).items())
+            items.extend(
+                flatten_zenodo_contents(v, new_key, default_path=default_path).items()
+            )
         else:
             if v is None:
                 # Use the default path
-                # If inside a zipfile, remove the zipfile from the target path
+                # If inside a zipfile, remove the zipfile extension
+                # from the target path
                 zip_file = Path(new_key).parts[0]
-                if any([zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]):
-                    v = (default_path / Path(*Path(new_key).parts[1:])).as_posix()
+                for ext in zenodo.zip_exts:
+                    if zip_file.endswith(f".{ext}"):
+                        mod_key = Path(new_key).parts[0][: -len(f".{ext}")] / Path(
+                            *Path(new_key).parts[1:]
+                        )
+                        v = (Path(default_path) / mod_key).as_posix()
+                        break
                 else:
-                    v = (default_path / new_key).as_posix()
+                    v = (Path(default_path) / new_key).as_posix()
             items.append((new_key, v))
     return dict(items)
 
@@ -121,7 +129,12 @@ def parse_zenodo_datasets():
                 raise exceptions.InvalidZenodoIdType()
 
             # Deposit contents
-            contents = flatten_zenodo_contents(entry.get("contents", {}))
+            entry["destination"] = entry.get(
+                "destination", str(paths.data.relative_to(paths.user))
+            )
+            contents = flatten_zenodo_contents(
+                entry.get("contents", {}), default_path=entry["destination"]
+            )
 
             # Handle files inside zipfiles, tarballs, etc.
             entry["zip_files"] = {}

@@ -35,6 +35,7 @@ if zipfile.name.endswith(".tar") or zipfile.name.endswith(".tar.gz"):
             except Exception as e:
 
                 # TODO
+                breakpoint()
                 raise exceptions.TarballExtractionError()
 
             # Move it to target destination
