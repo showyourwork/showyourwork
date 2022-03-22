@@ -33,7 +33,7 @@
         "doi": "arXiv:2111.08660",
         "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211108660F/abstract",
         "field": "Astronomy"
-    }
+    },
     "mathren/top_down_compact_obj_mass": {
 	"title": "Pair-instability mass loss for top-down compact object mass calculations",
 	"authors": ["M. Renzo", "D. H. Hendriks", "L. A. C. van Son", "R. Farmer"],
