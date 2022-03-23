@@ -65,7 +65,7 @@ class ZenodoRecordNotFound(ZenodoException):
     def __init__(self, record_id, id_type="version or concept"):
         message = (
             f"The provided `id` {record_id} does "
-            "not seem to be a valid Zenodo {id_type} id."
+            f"not seem to be a valid Zenodo {id_type} id."
         )
         super().__init__(message)
 

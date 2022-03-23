@@ -180,13 +180,29 @@
         }%
       }%
     }{%
-      \stackon[3pt]{%
-        \syw@DatasetIcon{1}%
+      \IfEq*{\usevalue{\syw@CurrentLabelName_cache}}{KEYNOTFOUND}{}{%
+        \stackon[3pt]{%
+          \raisebox{0pt}[5pt][5pt]{%
+            \href{\usevalue{\syw@CurrentLabelName_cache}}{%
+              \color{sywBlue}\faCloudDownload%
+            }%
+          }%
+        }{%
+          \stackon[3pt]{%
+            \syw@DatasetIcon{1}%
+          }{%
+            \syw@DatasetIcon{2}%
+          }%
+        }%
       }{%
         \stackon[3pt]{%
-          \syw@DatasetIcon{2}%
+          \syw@DatasetIcon{1}%
         }{%
-          \syw@DatasetIcon{3}%
+          \stackon[3pt]{%
+            \syw@DatasetIcon{2}%
+          }{%
+            \syw@DatasetIcon{3}%
+          }%
         }%
       }%
     }%

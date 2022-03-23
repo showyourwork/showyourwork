@@ -15,7 +15,8 @@ def get_logger():
     logger = logging.getLogger("showyourwork")
     if not logger.handlers:
 
-        logger.setLevel(logging.INFO)
+        # Root level
+        logger.setLevel(logging.DEBUG)
 
         # Terminal: all messages
         stream_handler = snakemake.logging.ColorizingStreamHandler()
@@ -93,6 +94,9 @@ def setup_logging(verbose=False, logfile=None):
             logger.info(msg["msg"])
 
     snakemake_logger.job_info = lambda **msg: job_info(snakemake_logger, **msg)
+
+    # Allow all conda messages to come through
+    snakemake.deployment.conda.logger = logger
 
     # Store the path to the snakemake logfile in the showyourwork temp dir
     # At the end of the build, we'll copy the contents over to this same file.

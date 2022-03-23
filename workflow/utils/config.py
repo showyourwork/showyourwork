@@ -196,6 +196,7 @@ def parse_config():
         # Overridden in the `preprocess` rule
         config["tree"] = {"figures": {}}
         config["labels"] = {}
+        config["cached_dependencies"] = []
 
     # The following is run in both the preprocessing stage and the main build.
     # If we ran it only during preprocessing, passing different command line

@@ -4,7 +4,10 @@ from .logging import get_logger
 from .zenodo import download_file_from_zenodo, upload_file_to_zenodo
 from .config import get_snakemake_variable
 import types
+import json
 import snakemake
+import requests
+
 
 __all__ = ["process_user_rules"]
 
@@ -48,7 +51,7 @@ def patch_snakemake_cache():
                     # Cache miss; not fatal
                     logger.warn(f"File not found in cache: {outputfile}.")
                 except exceptions.ZenodoException as e:
-                    # NOTE: we treate all Zenodo caching errors as non-fatal
+                    # NOTE: we treat all Zenodo caching errors as non-fatal
                     logger.error(str(e))
             else:
                 logger.info(f"Restoring from local cache: {outputfile}...")
@@ -105,6 +108,7 @@ def process_user_rules():
 
     # Patch the Snakemake caching functionality so we
     # can cache things on Zenodo
+    cached_deps = []
     if snakemake.workflow.config["zenodo_cache"]:
         patch_snakemake_cache()
 
@@ -128,7 +132,13 @@ def process_user_rules():
             # TODO
             raise exceptions.RunDirectiveNotAllowedInUserRules()
 
-        # Ensure we're running in a conda env
+        # Record any cached output
+        if snakemake.workflow.config["zenodo_cache"]:
+            if ur.ruleinfo.cache:
+                for file in ur.output:
+                    cached_deps.append(str(file))
+
+        # Ensure we're running in a conda env & make it a direct dependency
         if ur.conda_env:
             if hasattr(ur.conda_env, "is_file") and ur.conda_env.is_file:
                 ur.set_input(str(ur.conda_env.file))
@@ -138,3 +148,42 @@ def process_user_rules():
             # All user rules should run in conda envs!
             # TODO
             raise exceptions.MissingCondaEnvironmentInUserRule()
+
+    # Add some metadata containing the link to the Zenodo cache record
+    # which we can access on the LaTeX side to provide margin links
+    # for figures that depend on cached datasets
+    try:
+
+        # Grab the Zenodo id for this repo
+        with open(".zenodo", "r") as f:
+            data = json.load(f)
+        concept_id = data["conceptrecid"]
+        zenodo_cache_url = f"https://zenodo.org/record/{concept_id}"
+
+        # Check that the record has been published
+        r = requests.get(f"https://zenodo.org/api/record/{concept_id}")
+        data = r.json()
+        if r.status_code > 204:
+            zenodo_cache_url = None
+            get_logger().warn(f"Zenodo cache record {concept_id} not yet published for this repository.")
+            raise Exception()
+
+    except:
+
+        # Fail silently
+        pass
+
+    else:
+
+        # Add the metadata to the config (accessed in `pdf.py`)
+        labels = {}
+        for figscript in snakemake.workflow.config["dependencies"]:
+            for dep in snakemake.workflow.config["dependencies"][figscript]:
+                if dep in cached_deps:
+                    for label in snakemake.workflow.config["labels"]:
+                        if (
+                            label.endswith("_script")
+                            and snakemake.workflow.config["labels"][label] == figscript
+                        ):
+                            labels[label[:-6] + "cache"] = zenodo_cache_url
+        snakemake.workflow.config["labels"].update(labels)
