@@ -47,14 +47,14 @@ def run(command, **kwargs):
         print(yaml.dump(env, Dumper=yaml.CDumper), file=f)
 
     # Set up or update our isolated conda env
-    cached_envfile = paths.showyourwork().temp / "environment.yml"
-    if not paths.showyourwork().env.exists():
+    cached_envfile = paths.user().home_temp / "environment.yml"
+    if not paths.user().env.exists():
         # Set up a new env and cache the envfile
         logger.info(
             "Creating a new conda environment in ~/.showyourwork/env..."
         )
         subprocess.run(
-            f"conda env create -p {paths.showyourwork().env} -f {envfile} -q",
+            f"conda env create -p {paths.user().env} -f {envfile} -q",
             shell=True,
         )
         shutil.copy(envfile, cached_envfile)
@@ -68,15 +68,13 @@ def run(command, **kwargs):
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
             subprocess.run(
-                f"conda env update -p {paths.showyourwork().env} -f {envfile} --prune -q",
+                f"conda env update -p {paths.user().env} -f {envfile} --prune -q",
                 shell=True,
             )
             shutil.copy(envfile, cached_envfile)
 
     # Command to activate our environment
-    conda_activate = (
-        f"{conda_setup} && conda activate {paths.showyourwork().env}"
-    )
+    conda_activate = f"{conda_setup} && conda activate {paths.user().env}"
 
     # Run
     return subprocess.run(

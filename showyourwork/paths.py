@@ -10,9 +10,6 @@ class showyourwork:
         self.rules = self.workflow / "rules"
         self.checkpoints = self.workflow / "checkpoints"
         self.resources = self.workflow / "resources"
-        self.temp = Path.home() / ".showyourwork"
-        self.temp.mkdir(exist_ok=True)
-        self.env = self.temp / "env"
 
 
 # User paths
@@ -31,6 +28,11 @@ class user:
         self.figure_scripts = self.src / "figures"
         self.static_figures = self.src / "static"
         self.figures = self.tex / "figures"
+
+        # User home temp (for all repos)
+        self.home_temp = Path.home() / ".showyourwork"
+        self.home_temp.mkdir(exist_ok=True)
+        self.env = self.home_temp / "env"
 
         # Temporary paths
         self.temp = self.repo / ".showyourwork"
