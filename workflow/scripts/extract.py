@@ -5,9 +5,15 @@ import tempfile
 import shutil
 
 
-# Import utils
-sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import exceptions, get_logger
+# Snakemake config (available automagically)
+config = snakemake.config  # type:ignore
+if config["showyourwork_path"]:
+    sys.path.insert(1, config["showyourwork_path"])
+
+
+# Import showyourwork
+from showyourwork import exceptions
+from showyourwork.logging import get_logger
 
 
 # Initialize the logger
@@ -35,7 +41,6 @@ if zipfile.name.endswith(".tar") or zipfile.name.endswith(".tar.gz"):
             except Exception as e:
 
                 # TODO
-                breakpoint()
                 raise exceptions.TarballExtractionError()
 
             # Move it to target destination

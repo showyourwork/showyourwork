@@ -1,4 +1,4 @@
-from utils import paths
+from showyourwork import paths
 import snakemake
 
 
@@ -14,4 +14,4 @@ checkpoint:
     priority:
         snakemake.jobs.Job.HIGHEST_PRIORITY
     output:
-        touch(paths.checkpoints / "dag.flag")
+        touch(paths.user().checkpoints / "dag.flag")

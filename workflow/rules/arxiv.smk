@@ -1,4 +1,4 @@
-from utils import paths
+from showyourwork import paths
 
 
 rule:
@@ -20,8 +20,6 @@ rule:
         temp(config["tex_files_out"]),
         temp(config["stylesheet"]),
         temp(config["stylesheet_meta_file"]),
-        directory(paths.compile.as_posix())
-    conda:
-        "../envs/main.yml"
+        directory(paths.user().compile.as_posix())
     script:
         "../scripts/arxiv.py"

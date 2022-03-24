@@ -8,16 +8,16 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 
 # Snakemake config (available automagically)
 config = snakemake.config  # type:ignore
+if config["showyourwork_path"]:
+    sys.path.insert(1, config["showyourwork_path"])
 
 
-# Import utils
-sys.path.insert(1, config["workflow_abspath"])
-from utils import paths, compile_tex, exceptions, zenodo
+# Import showyourwork
+from showyourwork import paths, exceptions, zenodo
+from showyourwork.tex import compile_tex
 
 
-def flatten_zenodo_contents(
-    d, parent_key="", default_path=paths.data.relative_to(paths.user)
-):
+def flatten_zenodo_contents(d, parent_key="", default_path=None):
     """
     Flatten the `contents` dictionary of a Zenodo entry, filling
     in default mappings and removing zipfile extensions from the target path.
@@ -25,12 +25,16 @@ def flatten_zenodo_contents(
     Adapted from https://stackoverflow.com/a/6027615
 
     """
+    if not default_path:
+        default_path = paths.user().data.relative_to(paths.user().repo)
     items = []
     for k, v in d.items():
         new_key = (Path(parent_key) / k).as_posix() if parent_key else k
         if isinstance(v, MutableMapping):
             items.extend(
-                flatten_zenodo_contents(v, new_key, default_path=default_path).items()
+                flatten_zenodo_contents(
+                    v, new_key, default_path=default_path
+                ).items()
             )
         else:
             if v is None:
@@ -40,9 +44,9 @@ def flatten_zenodo_contents(
                 zip_file = Path(new_key).parts[0]
                 for ext in zenodo.zip_exts:
                     if zip_file.endswith(f".{ext}"):
-                        mod_key = Path(new_key).parts[0][: -len(f".{ext}")] / Path(
-                            *Path(new_key).parts[1:]
-                        )
+                        mod_key = Path(new_key).parts[0][
+                            : -len(f".{ext}")
+                        ] / Path(*Path(new_key).parts[1:])
                         v = (Path(default_path) / mod_key).as_posix()
                         break
                 else:
@@ -56,7 +60,9 @@ def parse_overleaf():
     config["overleaf"]["id"] = config["overleaf"].get("id", None)
 
     # Make sure `auto-commit` is defined
-    config["overleaf"]["auto-commit"] = config["overleaf"].get("auto-commit", False)
+    config["overleaf"]["auto-commit"] = config["overleaf"].get(
+        "auto-commit", False
+    )
 
     # Make sure `push` and `pull` are defined and they are lists
     config["overleaf"]["push"] = config["overleaf"].get("push", [])
@@ -74,7 +80,7 @@ def parse_overleaf():
 
     # Ensure all files in `push` and `pull` are in the `src/tex` directory
     for file in config["overleaf"]["push"] + config["overleaf"]["pull"]:
-        if not Path(file).resolve().is_relative_to(paths.tex):
+        if not Path(file).resolve().is_relative_to(paths.user().tex):
             # TODO
             raise exceptions.ConfigError()
 
@@ -85,13 +91,13 @@ def parse_overleaf():
     # dangerously!
     push_files = set(
         [
-            str(Path(file).resolve().relative_to(paths.tex))
+            str(Path(file).resolve().relative_to(paths.user().tex))
             for file in config["overleaf"]["push"]
         ]
     )
     pull_files = set(
         [
-            str(Path(file).resolve().relative_to(paths.tex))
+            str(Path(file).resolve().relative_to(paths.user().tex))
             for file in config["overleaf"]["pull"]
         ]
     )
@@ -109,9 +115,11 @@ def parse_zenodo_datasets():
     for host in ["zenodo", "zenodo_sandbox"]:
 
         if host == "zenodo":
-            tmp_path = paths.zenodo.relative_to(paths.user)
+            tmp_path = paths.user().zenodo.relative_to(paths.user().repo)
         else:
-            tmp_path = paths.zenodo_sandbox.relative_to(paths.user)
+            tmp_path = paths.user().zenodo_sandbox.relative_to(
+                paths.user().repo
+            )
 
         for deposit_id, entry in config[host].items():
 
@@ -130,7 +138,8 @@ def parse_zenodo_datasets():
 
             # Deposit contents
             entry["destination"] = entry.get(
-                "destination", str(paths.data.relative_to(paths.user))
+                "destination",
+                str(paths.user().data.relative_to(paths.user().repo)),
             )
             contents = flatten_zenodo_contents(
                 entry.get("contents", {}), default_path=entry["destination"]
@@ -148,10 +157,14 @@ def parse_zenodo_datasets():
 
                 # If it's a zipfile, add it to a separate entry in the config
                 zip_file = Path(source).parts[0]
-                if any([zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]):
+                if any(
+                    [zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]
+                ):
                     new_source = Path(*Path(source).parts[1:]).as_posix()
                     if zip_file in entry["zip_files"].keys():
-                        entry["zip_files"][zip_file].update({new_source: target})
+                        entry["zip_files"][zip_file].update(
+                            {new_source: target}
+                        )
                     else:
                         entry["zip_files"][zip_file] = {new_source: target}
 
@@ -237,13 +250,15 @@ def check_figure_format(figure):
     elif len(labels) == 0:
         if len(figure.findall("LABELSTAR")) == 0:
             # TODO
-            raise exceptions.FigureFormatError("There is a figure without a label.")
+            raise exceptions.FigureFormatError(
+                "There is a figure without a label."
+            )
 
 
 def get_xml_tree():
     """"""
     # Parameters
-    xmlfile = paths.preprocess / "showyourwork.xml"
+    xmlfile = paths.user().preprocess / "showyourwork.xml"
 
     # Build the paper to get the XML file
     compile_tex(
@@ -252,8 +267,10 @@ def get_xml_tree():
             "-r",
             "0",
         ],
-        output_dir=paths.preprocess,
-        stylesheet=paths.resources / "styles" / "preprocess.tex",
+        output_dir=paths.user().preprocess,
+        stylesheet=paths.showyourwork().resources
+        / "styles"
+        / "preprocess.tex",
     )
 
     # Add <HTML></HTML> tags to the XML file
@@ -270,7 +287,7 @@ def get_xml_tree():
         print(contents, file=f)
 
     # Load the XML tree
-    return ParseXMLTree(paths.preprocess / "showyourwork.xml").getroot()
+    return ParseXMLTree(paths.user().preprocess / "showyourwork.xml").getroot()
 
 
 def get_json_tree():
@@ -301,9 +318,9 @@ def get_json_tree():
         # Find all graphics included in this figure environment
         graphics = [
             str(
-                (paths.tex / graphicspath / graphic.text)
+                (paths.user().tex / graphicspath / graphic.text)
                 .resolve()
-                .relative_to(paths.user)
+                .relative_to(paths.user().repo)
             )
             for graphic in figure.findall("GRAPHICS")
         ]
@@ -311,8 +328,9 @@ def get_json_tree():
         # Are these static figures?
         static = all(
             [
-                (paths.user / graphic).parents[0] == paths.figures
-                and (paths.static_figures / Path(graphic).name).exists()
+                (paths.user().repo / graphic).parents[0]
+                == paths.user().figures
+                and (paths.user().static_figures / Path(graphic).name).exists()
                 for graphic in graphics
             ]
         )
@@ -331,9 +349,9 @@ def get_json_tree():
             # files with any of the user-defined extensions
             # (and settling on the first match)
             for ext in config["script_extensions"]:
-                script = paths.figure_scripts / f"{label}.{ext}"
+                script = paths.user().figure_scripts / f"{label}.{ext}"
                 if script.exists():
-                    script = str(script.relative_to(paths.user))
+                    script = str(script.relative_to(paths.user().repo))
                     command = config["scripts"][ext]
                     break
             else:
@@ -342,14 +360,15 @@ def get_json_tree():
                     srcs = " ".join(
                         [
                             str(
-                                (paths.static_figures / Path(graphic).name).relative_to(
-                                    paths.user
-                                )
+                                (
+                                    paths.user().static_figures
+                                    / Path(graphic).name
+                                ).relative_to(paths.user().repo)
                             )
                             for graphic in graphics
                         ]
                     )
-                    dest = paths.figures.relative_to(paths.user)
+                    dest = paths.user().figures.relative_to(paths.user().repo)
                     command = f"cp {srcs} {dest}"
                 else:
                     command = None
@@ -367,21 +386,24 @@ def get_json_tree():
                 srcs = " ".join(
                     [
                         str(
-                            (paths.static_figures / Path(graphic).name).relative_to(
-                                paths.user
-                            )
+                            (
+                                paths.user().static_figures
+                                / Path(graphic).name
+                            ).relative_to(paths.user().repo)
                         )
                         for graphic in graphics
                     ]
                 )
-                dest = paths.figures.relative_to(paths.user)
+                dest = paths.user().figures.relative_to(paths.user().repo)
                 command = f"cp {srcs} {dest}"
             else:
                 command = None
 
         else:
 
-            raise exceptions.FigureFormatError("There is a figure without a label.")
+            raise exceptions.FigureFormatError(
+                "There is a figure without a label."
+            )
 
         # Collect user-defined dependencies
         dependencies = config["dependencies"].get(script, [])
@@ -427,13 +449,19 @@ def get_json_tree():
 
     # Parse free-floating graphics
     graphics = [
-        str((paths.tex / graphicspath / graphic.text).resolve().relative_to(paths.user))
+        str(
+            (paths.user().tex / graphicspath / graphic.text)
+            .resolve()
+            .relative_to(paths.user().repo)
+        )
         for graphic in xml_tree.findall("GRAPHICS")
     ]
 
     # Ignore graphics that are dependencies of the texfile (such as orcid-ID.png)
     graphics = [
-        graphic for graphic in graphics if graphic not in config["tex_files_out"]
+        graphic
+        for graphic in graphics
+        if graphic not in config["tex_files_out"]
     ]
 
     # Add an entry to the tree

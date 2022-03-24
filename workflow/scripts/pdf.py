@@ -4,9 +4,15 @@ from pathlib import Path
 from jinja2 import Environment, BaseLoader
 
 
-# Import utils
-sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import paths, compile_tex
+# Snakemake config (available automagically)
+config = snakemake.config  # type:ignore
+if config["showyourwork_path"]:
+    sys.path.insert(1, config["showyourwork_path"])
+
+
+# Import showyourwork
+from showyourwork import paths
+from showyourwork.tex import compile_tex
 
 
 # Metadata file jinja template
@@ -49,13 +55,13 @@ with open(str(Path(snakemake.config["stylesheet_meta_file"])), "w") as f:
 # Build the paper
 compile_tex(
     snakemake.config,
-    output_dir=paths.compile,
-    stylesheet=paths.resources / "styles" / "build.tex",
+    output_dir=paths.user().compile,
+    stylesheet=paths.showyourwork().resources / "styles" / "build.tex",
 )
 
 
 # Copy the PDF to the user dir
 shutil.copy(
-    str(paths.compile / (snakemake.config["ms_name"] + ".pdf")),
+    str(paths.user().compile / (snakemake.config["ms_name"] + ".pdf")),
     str(Path(snakemake.config["ms_pdf"])),
 )

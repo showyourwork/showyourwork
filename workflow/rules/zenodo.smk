@@ -1,4 +1,4 @@
-from utils import zenodo
+from showyourwork import zenodo
 
 
 xnum = 1
@@ -68,7 +68,5 @@ for host in ["zenodo", "zenodo_sandbox"]:
                         report(extracted_file, category="Dataset")
                     params:
                         compressed_file=compressed_file
-                    conda:
-                        "../envs/main.yml"
                     script:
                         "../scripts/extract.py"

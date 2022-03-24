@@ -1,4 +1,4 @@
-from utils import paths
+from showyourwork import paths
 
 
 figures = config["tree"]["figures"]
@@ -39,7 +39,7 @@ for figure_name in figures:
         output:
             report(graphics, category="Figure")
         conda:
-            (paths.user / "environment.yml").as_posix()
+            (paths.user().repo / "environment.yml").as_posix()
         params:
             command=command
         script:

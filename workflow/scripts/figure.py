@@ -4,9 +4,15 @@ from pathlib import Path
 import time
 
 
-# Import utils
-sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import exceptions, get_logger
+# Snakemake config (available automagically)
+config = snakemake.config  # type:ignore
+if config["showyourwork_path"]:
+    sys.path.insert(1, config["showyourwork_path"])
+
+
+# Import showyourwork
+from showyourwork import exceptions
+from showyourwork.logging import get_logger
 
 
 # Initialize the logger
@@ -26,7 +32,9 @@ latency_wait = snakemake.config["latency_wait"]
 get_missing = lambda: [f for f in snakemake.output if not Path(f).exists()]
 missing = get_missing()
 if missing:
-    logger.info("Waiting at most {} seconds for missing files.".format(latency_wait))
+    logger.info(
+        "Waiting at most {} seconds for missing files.".format(latency_wait)
+    )
     for _ in range(latency_wait):
         if not get_missing():
             break

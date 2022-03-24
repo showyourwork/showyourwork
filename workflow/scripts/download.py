@@ -1,11 +1,16 @@
 import sys
-from pathlib import Path
 import subprocess
 
 
-# Import utils
-sys.path.insert(1, snakemake.config["workflow_abspath"])
-from utils import exceptions, get_logger
+# Snakemake config (available automagically)
+config = snakemake.config  # type:ignore
+if config["showyourwork_path"]:
+    sys.path.insert(1, config["showyourwork_path"])
+
+
+# Import showyourwork
+from showyourwork import exceptions
+from showyourwork.logging import get_logger
 
 
 # Get params
@@ -20,7 +25,7 @@ logger = get_logger()
 
 
 # Download it
-progress_bar = ["--progress-bar"] if not snakemake.config["github_actions"] else []
+progress_bar = ["--progress-bar"] if not config["github_actions"] else []
 result = subprocess.run(
     [
         "curl",

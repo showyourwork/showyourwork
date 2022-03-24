@@ -1,4 +1,4 @@
-from utils import paths
+from showyourwork import paths
 
 
 rule:
@@ -30,8 +30,6 @@ rule:
         config["config_json"],
         temp(config["tex_files_out"]),
         temp(config["stylesheet"]),
-        directory(paths.preprocess.as_posix())
-    conda:
-        "../envs/main.yml"
+        directory(paths.user().preprocess.as_posix())
     script:
         "../scripts/preprocess.py"
