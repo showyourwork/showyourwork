@@ -4,8 +4,8 @@ from .zenodo import download_file_from_zenodo, upload_file_to_zenodo
 from .config import get_snakemake_variable
 import types
 import json
-import snakemake
 import requests
+import snakemake
 
 
 __all__ = ["process_user_rules"]
@@ -43,12 +43,20 @@ def patch_snakemake_cache():
             if not cachefile.exists():
                 # Attempt to download from Zenodo
                 try:
-                    logger.info(f"Searching Zenodo file cache: {outputfile}...")
-                    download_file_from_zenodo(cachefile, job.rule.name, tarball=tarball)
-                    logger.info(f"Restoring from Zenodo cache: {outputfile}...")
+                    logger.info(
+                        f"Searching Zenodo file cache: {outputfile}..."
+                    )
+                    download_file_from_zenodo(
+                        cachefile, job.rule.name, tarball=tarball
+                    )
+                    logger.info(
+                        f"Restoring from Zenodo cache: {outputfile}..."
+                    )
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
-                    logger.warn(f"File not found in cache: {outputfile}.")
+                    logger.warn(
+                        f"Required version of file not found in cache: {outputfile}."
+                    )
                 except exceptions.ZenodoException as e:
                     # NOTE: we treat all Zenodo caching errors as non-fatal
                     logger.error(str(e))
@@ -58,7 +66,9 @@ def patch_snakemake_cache():
                 # local cache hit. (If it is, this is a no-op)
                 logger.info(f"Syncing file with Zenodo cache: {outputfile}...")
                 try:
-                    upload_file_to_zenodo(cachefile, job.rule.name, tarball=tarball)
+                    upload_file_to_zenodo(
+                        cachefile, job.rule.name, tarball=tarball
+                    )
                 except exceptions.ZenodoException as e:
                     # NOTE: we treate all Zenodo caching errors as non-fatal
                     logger.error(str(e))
@@ -79,7 +89,9 @@ def patch_snakemake_cache():
         for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             logger.info(f"Caching output file on Zenodo: {outputfile}...")
             try:
-                upload_file_to_zenodo(cachefile, job.rule.name, tarball=tarball)
+                upload_file_to_zenodo(
+                    cachefile, job.rule.name, tarball=tarball
+                )
             except exceptions.ZenodoException as e:
                 # NOTE: we treate all Zenodo caching errors as non-fatal
                 logger.error(str(e))
@@ -137,16 +149,9 @@ def process_user_rules():
                 for file in ur.output:
                     cached_deps.append(str(file))
 
-        # Ensure we're running in a conda env & make it a direct dependency
-        if ur.conda_env:
-            if hasattr(ur.conda_env, "is_file") and ur.conda_env.is_file:
-                ur.set_input(str(ur.conda_env.file))
-            else:
-                ur.set_input(ur.conda_env)
-        else:
-            # All user rules should run in conda envs!
-            # TODO
-            raise exceptions.MissingCondaEnvironmentInUserRule()
+        # Ensure we're running in a conda env
+        if not ur.conda_env:
+            ur.conda_env = "environment.yml"
 
     # Add some metadata containing the link to the Zenodo cache record
     # which we can access on the LaTeX side to provide margin links
@@ -164,7 +169,9 @@ def process_user_rules():
         data = r.json()
         if r.status_code > 204:
             zenodo_cache_url = None
-            get_logger().warn(f"Zenodo cache record {concept_id} not yet published for this repository.")
+            get_logger().warn(
+                f"Zenodo cache record {concept_id} not yet published for this repository."
+            )
             raise Exception()
 
     except:
@@ -182,7 +189,8 @@ def process_user_rules():
                     for label in snakemake.workflow.config["labels"]:
                         if (
                             label.endswith("_script")
-                            and snakemake.workflow.config["labels"][label] == figscript
+                            and snakemake.workflow.config["labels"][label]
+                            == figscript
                         ):
                             labels[label[:-6] + "cache"] = zenodo_cache_url
         snakemake.workflow.config["labels"].update(labels)

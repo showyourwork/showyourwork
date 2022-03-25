@@ -1,3 +1,5 @@
+from showyourwork import paths, exceptions, zenodo
+from showyourwork.tex import compile_tex
 import sys
 import json
 import re
@@ -8,13 +10,6 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 
 # Snakemake config (available automagically)
 config = snakemake.config  # type:ignore
-if config["showyourwork_path"]:
-    sys.path.insert(1, config["showyourwork_path"])
-
-
-# Import showyourwork
-from showyourwork import paths, exceptions, zenodo
-from showyourwork.tex import compile_tex
 
 
 def flatten_zenodo_contents(d, parent_key="", default_path=None):

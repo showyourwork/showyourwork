@@ -1,16 +1,11 @@
+from showyourwork import exceptions
+from showyourwork.logging import get_logger
 import sys
 import subprocess
 
 
 # Snakemake config (available automagically)
 config = snakemake.config  # type:ignore
-if config["showyourwork_path"]:
-    sys.path.insert(1, config["showyourwork_path"])
-
-
-# Import showyourwork
-from showyourwork import exceptions
-from showyourwork.logging import get_logger
 
 
 # Get params

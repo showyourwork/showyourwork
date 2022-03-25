@@ -10,8 +10,8 @@ import tarfile
 import os
 import json
 from pathlib import Path
-import snakemake
 import subprocess
+import snakemake
 
 
 # Zenodo base URLs

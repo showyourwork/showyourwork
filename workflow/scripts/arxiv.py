@@ -1,14 +1,9 @@
+from showyourwork import paths
 import tarfile
 
 
 # Snakemake config (available automagically)
 config = snakemake.config  # type:ignore
-if config["showyourwork_path"]:
-    sys.path.insert(1, config["showyourwork_path"])
-
-
-# Import showyourwork
-from showyourwork import paths
 
 
 # Hack to run the `pdf.py` script

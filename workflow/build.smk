@@ -1,3 +1,7 @@
+from showyourwork import paths, exceptions, overleaf
+from showyourwork.config import parse_config, is_make_clean, is_make_main
+from showyourwork.logging import setup_logging, get_logger, clear_errors
+from showyourwork.userrules import process_user_rules
 import snakemake
 import sys
 import os
@@ -6,16 +10,6 @@ import jinja2
 
 # Require Snakemake >= this version
 snakemake.utils.min_version("6.15.5")
-
-
-# Import showyourwork
-showyourwork_path = os.getenv("SHOWYOURWORK_PATH")
-if showyourwork_path:
-    sys.path.insert(1, showyourwork_path)
-from showyourwork import paths, exceptions, overleaf
-from showyourwork.config import parse_config, is_make_clean, is_make_main
-from showyourwork.logging import setup_logging, get_logger, clear_errors
-from showyourwork.userrules import process_user_rules
 
 
 # Working directory is the top level of the user repo

@@ -3,9 +3,9 @@ from pathlib import Path
 from collections import OrderedDict, ChainMap
 import inspect
 import os
-import snakemake
 import re
 import sys
+import snakemake
 
 __all__ = [
     "parse_config",
@@ -159,9 +159,6 @@ def parse_config():
         #
         # -- Internal settings --
         #
-
-        # Path to showyourwork (if running in dev mode)
-        config["showyourwork_path"] = os.getenv("SHOWYOURWORK_PATH")
 
         # Path to the user repo
         config["user_abspath"] = paths.user().repo.as_posix()

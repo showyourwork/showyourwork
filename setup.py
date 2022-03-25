@@ -16,7 +16,7 @@ setup(
         "write_to": Path("showyourwork") / "showyourwork_version.py",
         "write_to_template": '__version__ = "{version}"\n',
     },
-    install_requires=["setuptools_scm", "jinja2", "click"],
+    install_requires=["setuptools_scm", "jinja2", "click", "pyyaml", "requests"],
     entry_points={
         "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]
     },

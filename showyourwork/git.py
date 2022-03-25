@@ -5,6 +5,25 @@ Miscellaneous functions for interfacing with git.
 import subprocess
 
 
+def get_repo_root():
+    """
+    Return the path to the repository root.
+
+    """
+    try:
+        root = (
+            subprocess.check_output(
+                ["git", "rev-parse", "--show-toplevel"],
+                stderr=subprocess.DEVNULL,
+            )
+            .decode()
+            .replace("\n", "")
+        )
+    except Exception as e:
+        root = "None"
+    return root
+
+
 def get_repo_url():
     """
     Return the repository URL.

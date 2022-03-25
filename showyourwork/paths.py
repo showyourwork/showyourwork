@@ -1,3 +1,4 @@
+from . import git
 from pathlib import Path
 from os.path import realpath
 
@@ -17,8 +18,7 @@ class user:
     def __init__(self, path=None):
 
         if path is None:
-            # TODO: Check that this is the top-level of a git repo
-            path = Path(".").absolute()
+            path = Path(git.get_repo_root()).absolute()
 
         # Repo paths
         self.repo = Path(path)

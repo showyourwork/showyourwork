@@ -1,3 +1,5 @@
+from showyourwork import paths
+from showyourwork.tex import compile_tex
 import sys
 import shutil
 from pathlib import Path
@@ -6,13 +8,6 @@ from jinja2 import Environment, BaseLoader
 
 # Snakemake config (available automagically)
 config = snakemake.config  # type:ignore
-if config["showyourwork_path"]:
-    sys.path.insert(1, config["showyourwork_path"])
-
-
-# Import showyourwork
-from showyourwork import paths
-from showyourwork.tex import compile_tex
 
 
 # Metadata file jinja template

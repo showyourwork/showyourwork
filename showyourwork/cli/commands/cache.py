@@ -1,13 +1,8 @@
+from ... import paths
 import subprocess
 from pathlib import Path
-import shutil
-import sys
 import os
 import time
-
-
-# File containing the previous commit SHA
-LAST_COMMIT_SHA = Path("src") / "tex" / "figures" / "last_commit_sha.txt"
 
 
 def get_modified_files(commit="HEAD^"):
@@ -29,7 +24,7 @@ def get_modified_files(commit="HEAD^"):
     ]
 
 
-def restore_cache():
+def cache_restore():
     """
     Runs after restoring the cache using @actions/cache.
 
@@ -48,7 +43,7 @@ def restore_cache():
 
     # Get the commit when the files were cached
     try:
-        with open(LAST_COMMIT_SHA, "r") as f:
+        with open(paths.user().figures / "last_commit_sha.txt", "r") as f:
             commit = f.readlines()[0].replace("\n", "")
     except FileNotFoundError:
         print("Cache info not found.")
@@ -71,25 +66,12 @@ def restore_cache():
         file.touch()
 
 
-def update_cache():
+def cache_update():
     """
     Runs before updating the cache using @actions/cache.
 
     """
     # Store the current commit
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
-    with open(LAST_COMMIT_SHA, "w") as f:
+    with open(paths.user().figures / "last_commit_sha.txt", "w") as f:
         print(commit, file=f)
-
-
-if __name__ == "__main__":
-    assert len(sys.argv) == 2, "Incorrect number of args to `cache.py`."
-    assert Path(
-        "showyourwork/workflow/Snakefile"
-    ).exists(), "File `cache.py` must be run from the top level of the repo."
-    if sys.argv[1] == "--restore":
-        restore_cache()
-    elif sys.argv[1] == "--update":
-        update_cache()
-    else:
-        raise ValueError(f"Invalid argument: {sys.argv[1]}")
