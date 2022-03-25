@@ -64,7 +64,9 @@ The following block in ``ms.tex``
     \end{figure}
 
 tells ``showyourwork`` to execute a script called ``mandelbrot.py`` in the ``src/figures``
-directory to generated ``figures/mandelbrot.pdf``.
+directory to generated ``figures/mandelbrot.pdf``. Note that while
+you can omit the extension (`.pdf` in this example) when using the
+``graphics`` package in LaTeX, ``showyourwork`` will return
 To change, supplement, or override this behavior, read on!
 
 .. _custom_multi:
@@ -303,7 +305,7 @@ specify a custom rule in the ``Snakefile`` (see below).
     or someone else manually uploaded it), you should always specify an exact
     **version** id. If you specify a **concept** id, ``showyourwork`` will
     attempt to take over management of the deposit: it will try to re-generate
-    the dataset when needed (if instructions are available) and upload a new 
+    the dataset when needed (if instructions are available) and upload a new
     version to Zenodo under that concept id. See :ref:`zenodo.dataset.id <zenodo.dataset.id>` or
     refer to the `Zenodo docs <https://help.zenodo.org/#versioning>`_ for
     more information.
@@ -327,7 +329,7 @@ and instead create a custom rule in the ``Snakefile``:
     # Custom rule to download a dataset
     rule fibonacci:
         output:
-            "src/figures/fibonacci.dat"
+            "src/data/fibonacci.dat"
         shell:
             "curl https://zenodo.org/record/5187276/files/fibonacci.dat --output {output[0]}"
 
@@ -354,9 +356,9 @@ Simulation dependencies
     </a>
     <br/><br/>
 
-Quite often you may have a figure that is very computationally expensive to run. 
-An example is a posterior distribution plot for an MCMC run, or a plot of an expensive fluid dynamical simulation. 
-If the runtime is more than a few tens of minutes (on a single machine), you probably don’t want to run it on 
+Quite often you may have a figure that is very computationally expensive to run.
+An example is a posterior distribution plot for an MCMC run, or a plot of an expensive fluid dynamical simulation.
+If the runtime is more than a few tens of minutes (on a single machine), you probably don’t want to run it on
 GitHub Actions, even if you rely on ``showyourwork`` caching. One way around this is to run the simulation,
 upload the results to Zenodo (via the workflow discussed above), and treat that as a static "dataset" on which
 your figure depends. The downside, however, is that your workflow is no longer fully reproducible, since
@@ -390,7 +392,7 @@ First, we're telling ``showyourwork`` that the figure script ``src/figures/my_fi
 requires the result of some expensive simulation, stored in the data file ``src/data/simulation.dat``.
 Then, under ``zenodo:``, we specify the ``id`` of the deposit, as in the `previous example <custom_dataset_deps>`_,
 but this time it's a **concept** id (:ref:`read more about that here <zenodo.dataset.id>`).
-This id corresponds to *all versions* of a Zenodo record. This allows ``showyourwork`` to upload new versions 
+This id corresponds to *all versions* of a Zenodo record. This allows ``showyourwork`` to upload new versions
 of the dataset when the dependencies change,
 each with their own **version** id, while maintaining the same **concept** id for all of them.
 If you already have a Zenodo deposit for this file, you can simply specify its concept id
@@ -422,7 +424,7 @@ will show up in the metadata section of the Zenodo deposit.
 Finally, since ``showyourwork`` will upload the results of the simulation to Zenodo, it needs your
 credentials to access the API. So, in order for this all to work, you need to do two things:
 
-1. If you haven't done this already, create a `Zenodo account <https://zenodo.org/signup>`_ and 
+1. If you haven't done this already, create a `Zenodo account <https://zenodo.org/signup>`_ and
    generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
    Make sure to give it at least ``deposit:actions`` and ``deposit:write`` scopes, and store it somewhere
    safe.
@@ -505,17 +507,17 @@ Dependency tarballs
 
 This is similar to the previous example, except this time the figure script
 depends on a large number of simulation result files. By specifying a ``contents``
-key under a ``zenodo`` entry, we can instruct ``showyourwork`` to generate the 
+key under a ``zenodo`` entry, we can instruct ``showyourwork`` to generate the
 tarball ``results.tar.gz`` out of those contents and upload it to Zenodo.
 We then list all of those *individual* files as dependencies of the figure script.
 This example works in the same way as above -- the simulation is only ever
 run locally. So again, make sure to run it before pushing your changes
-to GitHub -- otherwise GitHub Actions won't find the tarball on Zenodo, 
+to GitHub -- otherwise GitHub Actions won't find the tarball on Zenodo,
 and the build will fail.
 
 By the way, there's a handy feature of the YAML syntax that can save us
 some repetition: anchors and aliases. It's a handy way of defining and re-using
-chunks of metadata. You can 
+chunks of metadata. You can
 `read more about them here <https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet#anchors>`_.
 We can use the anchor/alias syntax to re-write the YAML file above as
 
@@ -546,7 +548,7 @@ We can use the anchor/alias syntax to re-write the YAML file above as
                 scientific article workflow.
             creators:
                 - Luger, Rodrigo
-            contents: 
+            contents:
                 *results
 
 The first time we listed all our results files, we added an anchor (``&results``),
@@ -612,7 +614,7 @@ example, but this time **omit** the ``script`` key:
                 scientific article workflow.
             creators:
                 - Luger, Rodrigo
-            contents: 
+            contents:
                 *results
 
 Instead of the ``script`` key, we include a custom ``rule`` in the ``Snakefile``
@@ -630,7 +632,7 @@ to generate all of the results files:
                 "python {input[0]} {wildcards.value}"
 
 That's it! ``showyourwork`` automatically infers that it must execute the
-``analysis`` rule with all values of the (integer) wildcard ``value`` 
+``analysis`` rule with all values of the (integer) wildcard ``value``
 in the range ``[0, 10)`` to produce the dependencies of the figure script.
 When run locally, it will tar them up and upload the tarball to Zenodo;
 when running on GitHub Actions, it will download and unpack the tarball
@@ -699,7 +701,7 @@ a new file called ``showyourwork.yml.jinja`` with the following template:
             - src/data/results_{{i}}.dat
             {% endfor %}
 
-If you're not familiar with ``jinja`` templating, check out the 
+If you're not familiar with ``jinja`` templating, check out the
 `documentation <https://jinja.palletsprojects.com/en/3.0.x/>`_. The idea here
 is to define a for loop over the variable ``i`` to list all the dependencies
 for us. But since this file isn't a valid YAML config file, we have to add
@@ -863,7 +865,7 @@ a package called ``<package>`` to be installed as follows:
       with:
         install-tex: true
         tex-packages: |
-          type1cm 
+          type1cm
           cm-super
           <package>
 
@@ -955,7 +957,7 @@ don't see what you're looking for here, please
                 </a>
             </td>
         </tr>
-        
+
         <tr>
             <td style="padding-right: 30px;">
                 <a href="https://www.aanda.org/for-authors"><span style="font-weight:bold";>A&amp;A</span></a>
@@ -1103,7 +1105,7 @@ For example, the default configuration for ``Python`` scripts looks like this:
 
 This tells ``showyourwork`` that to generate a figure from a ``Python`` script, all it
 needs to do is ``cd`` into the path containing the script (represented by the ``{script.path}``
-placeholder) and 
+placeholder) and
 run the ``python`` shell command followed by the script name (represented by the ``{script.name}``
 placeholder). See :ref:`config_scripts` for more information on the placeholder syntax.
 
