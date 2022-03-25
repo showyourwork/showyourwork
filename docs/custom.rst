@@ -65,8 +65,10 @@ The following block in ``ms.tex``
 
 tells ``showyourwork`` to execute a script called ``mandelbrot.py`` in the ``src/figures``
 directory to generated ``figures/mandelbrot.pdf``. Note that while
-you can omit the extension (`.pdf` in this example) when using the
-``graphics`` package in LaTeX, ``showyourwork`` will return
+you can omit the extension ``.pdf`` when using the
+``graphics`` package in LaTeX, ``showyourwork`` will return an error
+if it is not provided.
+
 To change, supplement, or override this behavior, read on!
 
 .. _custom_multi:
