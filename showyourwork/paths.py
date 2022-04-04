@@ -6,11 +6,12 @@ from os.path import realpath
 # showyourwork paths
 class showyourwork:
     def __init__(self):
-        self.module = Path(realpath(__file__)).absolute().parents[1]
+        self.module = Path(realpath(__file__)).absolute().parents[0]
         self.workflow = self.module / "workflow"
         self.rules = self.workflow / "rules"
         self.checkpoints = self.workflow / "checkpoints"
         self.resources = self.workflow / "resources"
+        self.envs = self.workflow / "envs"
 
 
 # User paths

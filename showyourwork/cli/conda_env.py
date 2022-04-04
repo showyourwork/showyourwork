@@ -27,7 +27,7 @@ def run(command, **kwargs):
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
 
     # Various conda environment files
-    syw_envfile = paths.showyourwork().module / "environment.yml"
+    syw_envfile = paths.showyourwork().envs / "environment.yml"
     workflow_envfile = paths.user().temp / "environment.yml"
     cached_envfile = paths.user().home_temp / "environment.yml"
 
