@@ -6,6 +6,9 @@ import subprocess
 import shutil
 import yaml
 import filecmp
+import jinja2
+from pathlib import Path
+import re
 
 
 def run(command, **kwargs):
@@ -24,32 +27,35 @@ def run(command, **kwargs):
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
 
     # Various conda environment files
-    user_envfile = paths.user().repo / "environment.yml"
     syw_envfile = paths.showyourwork().module / "environment.yml"
     workflow_envfile = paths.user().temp / "environment.yml"
     cached_envfile = paths.user().home_temp / "environment.yml"
 
-    # Infer the pip specs for `showyourwork` from the user's env file
-    try:
-        with open(user_envfile, "r") as f:
-            user_env = yaml.load(f, Loader=yaml.CLoader)
-    except:
-        # TODO
-        raise exceptions.ShowyourworkException()
-    for dep in user_env["dependencies"]:
-        if type(dep) is dict and "pip" in dep:
-            pip_deps = dep["pip"]
-            break
+    # Infer the `showyourwork` version from the user's config file
+    user_config = yaml.load(
+        jinja2.Environment(loader=jinja2.FileSystemLoader(paths.user().repo))
+        .get_template("showyourwork.yml")
+        .render(),
+        Loader=yaml.CLoader,
+    )
+    syw_spec = user_config.get("showyourwork", {}).get("version", "any")
+    if syw_spec == "any":
+        # No specific version provided
+        syw_spec = "showyourwork"
+    elif syw_spec == "latest":
+        # Latest version from GitHub
+        syw_spec = "git+https://github.com/showyourwork/showyourwork.git@main#egg=showyourwork"
+    elif re.match("(?:(\d+\.[.\d]*\d+))", syw_spec):
+        # This is an actual package version
+        syw_spec = f"showyourwork=={syw_spec}"
+    elif re.match("[0-9a-f]{5,40}", syw_spec):
+        # This is a commit SHA
+        syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{syw_spec}#egg=showyourwork"
     else:
-        # TODO
-        raise exceptions.ShowyourworkException()
-    for dep in pip_deps:
-        if "showyourwork" in dep:
-            syw_spec = dep
-            break
-    else:
-        # TODO
-        raise exceptions.ShowyourworkException()
+        # Assume it's a local path to the package
+        if not Path(syw_spec).is_absolute():
+            syw_spec = (paths.user().repo / syw_spec).resolve()
+        syw_spec = f"-e {syw_spec}"
 
     # Copy the showyourwork environment file to a temp location,
     # and add the user's requested showyourwork version as a dependency
@@ -82,6 +88,7 @@ def run(command, **kwargs):
             )
         else:
             cache_hit = False
+
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
             subprocess.run(

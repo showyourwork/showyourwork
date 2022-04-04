@@ -1,4 +1,5 @@
 from showyourwork import paths, exceptions, overleaf
+from showyourwork.patches import patch_snakemake_wait_for_files
 from showyourwork.config import parse_config, is_make_clean, is_make_main
 from showyourwork.logging import setup_logging, get_logger, clear_errors
 from showyourwork.userrules import process_user_rules
@@ -71,6 +72,10 @@ if (paths.user().temp / "config.json").exists():
     # Include custom rules defined by the user
     include: (paths.user().repo / "Snakefile").as_posix()
     process_user_rules()
+
+
+    # Hack to display a custom message when a figure output is missing
+    patch_snakemake_wait_for_files()
 
 
 else:

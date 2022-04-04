@@ -11,8 +11,9 @@ If you're looking for the current release of `showyourwork`, please visit https:
 
 <h2>To-do</h2>
 
+- [ ] Expose interface to create Zenodo deposit draft, especially on `setup`
 - [ ] Test stuff on no internet connection
 - [ ] Test uploads of very large files
+- [ ] Test integration with Overleaf
 - [ ] Implement all custom exception messages
 - [ ] Write documentation
-- [ ] Integration with Overleaf

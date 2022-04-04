@@ -129,6 +129,18 @@ def parse_config():
         # -- User settings --
         #
 
+        #: Showyourwork meta-settings
+        config["showyourwork"] = config.get("showyourwork", {})
+        config["showyourwork"]["version"] = config["showyourwork"].get(
+            "version", None
+        )
+        config["showyourwork"]["cache"] = config["showyourwork"].get(
+            "cache", {}
+        )
+        config["showyourwork"]["cache"]["zenodo"] = config["showyourwork"][
+            "cache"
+        ].get("zenodo", None)
+
         #: Verbosity
         config["verbose"] = config.get("verbose", False)
 
@@ -147,11 +159,6 @@ def parse_config():
         #: Zenodo datasets
         config["zenodo"] = as_dict(config.get("zenodo", {}))
         config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
-
-        #: Zenodo caching
-        config["zenodo_cache"] = (
-            str(config.get("zenodo_cache", "true")).lower() == "true"
-        )
 
         #: Overleaf
         config["overleaf"] = as_dict(config.get("overleaf", {}))
@@ -236,10 +243,3 @@ def parse_config():
     config["git_branch"] = git.get_repo_branch()
     config["github_actions"] = os.getenv("CI", "false") == "true"
     config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
-
-    # Get the values of some internal snakemake variables
-    # so we can mimic snakemake functionality
-    config["latency_wait"] = get_snakemake_variable("latency_wait", default=5)
-    config["assume_shared_fs"] = get_snakemake_variable(
-        "assume_shared_fs", default=True
-    )
