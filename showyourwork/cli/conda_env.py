@@ -45,6 +45,7 @@ def run(command, **kwargs):
         syw_spec = "showyourwork"
     elif syw_spec == "latest":
         # Install latest commit on github
+        # TODO: Catch errors here (fallback to `main` for no network connection)
         sha = (
             subprocess.check_output(
                 f"git ls-remote https://github.com/showyourwork/showyourwork.git | grep refs/heads/main | cut -f 1",
@@ -53,7 +54,7 @@ def run(command, **kwargs):
             .decode()
             .replace("\n", "")
         )
-        syw_spec = f"-e git+https://github.com/showyourwork/showyourwork.git@{sha}#egg=showyourwork"
+        syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{sha}#egg=showyourwork"
     elif re.match("(?:(\d+\.[.\d]*\d+))", syw_spec):
         # This is an actual package version
         syw_spec = f"showyourwork=={syw_spec}"
