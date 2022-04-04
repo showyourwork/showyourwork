@@ -2,9 +2,13 @@ from . import exceptions
 from .zenodo import download_file_from_zenodo, upload_file_to_zenodo
 from .logging import get_logger
 import time
-import snakemake
 import types
 import os
+
+try:
+    import snakemake
+except ModuleNotFoundError:
+    snakemake = None
 
 
 def patch_snakemake_cache(concept_id):

@@ -1,7 +1,11 @@
 from . import paths
 from pathlib import Path
 import logging
-import snakemake
+
+try:
+    import snakemake
+except ModuleNotFoundError:
+    snakemake = None
 
 
 __all__ = ["get_logger", "setup_logging", "clear_errors"]
@@ -19,7 +23,10 @@ def get_logger():
         logger.setLevel(logging.DEBUG)
 
         # Terminal: all messages
-        stream_handler = snakemake.logging.ColorizingStreamHandler()
+        if snakemake:
+            stream_handler = snakemake.logging.ColorizingStreamHandler()
+        else:
+            stream_handler = logging.StreamHandler()
         stream_handler.setLevel(logging.INFO)
         logger.addHandler(stream_handler)
 
@@ -64,6 +71,9 @@ def setup_logging(verbose=False, logfile=None):
     Hack the Snakemake logger to suppress most of its terminal output.
 
     """
+    if not snakemake:
+        return
+
     # Get our custom logger
     logger = get_logger()
 

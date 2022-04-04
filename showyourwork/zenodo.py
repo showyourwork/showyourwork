@@ -11,7 +11,11 @@ import os
 import json
 from pathlib import Path
 import subprocess
-import snakemake
+
+try:
+    import snakemake
+except ModuleNotFoundError:
+    snakemake = None
 
 
 # Zenodo base URLs

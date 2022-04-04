@@ -5,7 +5,11 @@ import inspect
 import os
 import re
 import sys
-import snakemake
+
+try:
+    import snakemake
+except ModuleNotFoundError:
+    snakemake = None
 
 __all__ = [
     "parse_config",

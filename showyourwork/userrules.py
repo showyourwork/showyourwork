@@ -3,7 +3,11 @@ from .logging import get_logger
 from .patches import patch_snakemake_cache
 import json
 import requests
-import snakemake
+
+try:
+    import snakemake
+except ModuleNotFoundError:
+    snakemake = None
 
 
 __all__ = ["process_user_rules"]
