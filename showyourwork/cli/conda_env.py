@@ -2,6 +2,7 @@ from .. import __version__
 from .. import paths
 from .. import exceptions
 from ..logging import get_logger
+from ..meta import is_make_main
 import subprocess
 import shutil
 import yaml
@@ -38,13 +39,21 @@ def run(command, **kwargs):
         .render(),
         Loader=yaml.CLoader,
     )
-    syw_spec = user_config.get("showyourwork", {}).get("version", "any")
-    if syw_spec == "any":
-        # No specific version provided
+    syw_spec = user_config.get("showyourwork", {}).get("version", None)
+    if not syw_spec:
+        # No specific version provided; default to any
         syw_spec = "showyourwork"
     elif syw_spec == "latest":
-        # Latest version from GitHub
-        syw_spec = "git+https://github.com/showyourwork/showyourwork.git@main#egg=showyourwork"
+        # Install latest commit on github
+        sha = (
+            subprocess.check_output(
+                f"git ls-remote https://github.com/showyourwork/showyourwork.git | grep refs/heads/main | cut -f 1",
+                shell=True,
+            )
+            .decode()
+            .replace("\n", "")
+        )
+        syw_spec = f"-e git+https://github.com/showyourwork/showyourwork.git@{sha}#egg=showyourwork"
     elif re.match("(?:(\d+\.[.\d]*\d+))", syw_spec):
         # This is an actual package version
         syw_spec = f"showyourwork=={syw_spec}"
@@ -55,6 +64,11 @@ def run(command, **kwargs):
         # Assume it's a local path to the package
         if not Path(syw_spec).is_absolute():
             syw_spec = (paths.user().repo / syw_spec).resolve()
+        else:
+            syw_spec = syw_spec.resolve()
+        if not syw_spec.exists():
+            # TODO
+            raise exceptions.ShowyourworkException()
         syw_spec = f"-e {syw_spec}"
 
     # Copy the showyourwork environment file to a temp location,

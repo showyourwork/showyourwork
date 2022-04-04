@@ -1,7 +1,6 @@
 from . import exceptions
 from .logging import get_logger
 from .patches import patch_snakemake_cache
-from .meta import is_make_main
 import json
 import requests
 
@@ -66,48 +65,44 @@ def process_user_rules():
         if not ur.conda_env:
             ur.conda_env = "environment.yml"
 
-    if is_make_main():
+    # Add some metadata containing the link to the Zenodo cache record
+    # which we can access on the LaTeX side to provide margin links
+    # for figures that depend on cached datasets
+    try:
 
-        # Add some metadata containing the link to the Zenodo cache record
-        # which we can access on the LaTeX side to provide margin links
-        # for figures that depend on cached datasets
-        try:
+        # Grab the Zenodo id for this repo
+        concept_id = snakemake.workflow.config["showyourwork"]["cache"][
+            "zenodo"
+        ]
+        zenodo_cache_url = f"https://zenodo.org/record/{concept_id}"
 
-            # Grab the Zenodo id for this repo
-            concept_id = snakemake.workflow.config["showyourwork"]["cache"][
-                "zenodo"
-            ]
-            zenodo_cache_url = f"https://zenodo.org/record/{concept_id}"
+        # Check that the record has been published
+        r = requests.get(f"https://zenodo.org/api/record/{concept_id}")
+        data = r.json()
+        if r.status_code > 204:
+            zenodo_cache_url = None
+            get_logger().warn(
+                f"Zenodo cache record {concept_id} not yet published for this repository."
+            )
+            raise Exception()
 
-            # Check that the record has been published
-            r = requests.get(f"https://zenodo.org/api/record/{concept_id}")
-            data = r.json()
-            if r.status_code > 204:
-                zenodo_cache_url = None
-                get_logger().warn(
-                    f"Zenodo cache record {concept_id} not yet published for this repository."
-                )
-                raise Exception()
+    except:
 
-        except:
+        # Fail silently
+        pass
 
-            # Fail silently
-            pass
+    else:
 
-        else:
-
-            # Add the metadata to the config (accessed in `pdf.py`)
-            labels = {}
-            for figscript in snakemake.workflow.config["dependencies"]:
-                for dep in snakemake.workflow.config["dependencies"][
-                    figscript
-                ]:
-                    if dep in cached_deps:
-                        for label in snakemake.workflow.config["labels"]:
-                            if (
-                                label.endswith("_script")
-                                and snakemake.workflow.config["labels"][label]
-                                == figscript
-                            ):
-                                labels[label[:-6] + "cache"] = zenodo_cache_url
-            snakemake.workflow.config["labels"].update(labels)
+        # Add the metadata to the config (accessed in `pdf.py`)
+        labels = {}
+        for figscript in snakemake.workflow.config["dependencies"]:
+            for dep in snakemake.workflow.config["dependencies"][figscript]:
+                if dep in cached_deps:
+                    for label in snakemake.workflow.config["labels"]:
+                        if (
+                            label.endswith("_script")
+                            and snakemake.workflow.config["labels"][label]
+                            == figscript
+                        ):
+                            labels[label[:-6] + "cache"] = zenodo_cache_url
+        snakemake.workflow.config["labels"].update(labels)

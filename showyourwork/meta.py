@@ -1,5 +1,6 @@
 import inspect
 import sys
+
 try:
     import snakemake
 except ModuleNotFoundError:
@@ -12,7 +13,8 @@ def get_snakemake_variable(name, default=None):
 
     This is extremely hacky.
     """
-    for level in inspect.stack():
+    levels = inspect.stack()
+    for level in levels:
         value = level.frame.f_locals.get(name, None)
         if value is not None:
             return value
