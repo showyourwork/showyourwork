@@ -1,22 +1,16 @@
 from . import paths, git, exceptions
+from .meta import is_make_clean, is_make_main
 from pathlib import Path
 from collections import OrderedDict, ChainMap
-import inspect
 import os
 import re
-import sys
 
 try:
     import snakemake
 except ModuleNotFoundError:
     snakemake = None
 
-__all__ = [
-    "parse_config",
-    "get_snakemake_variable",
-    "is_make_clean",
-    "is_make_main",
-]
+__all__ = ["parse_config"]
 
 
 def get_class_name(ms_name):
@@ -71,43 +65,6 @@ def as_dict(x, depth=0, maxdepth=30):
             x[key] = as_dict(value, depth + 1)
 
     return x
-
-
-def get_snakemake_variable(name, default=None):
-    """
-    Infer the value of a variable within snakemake.
-
-    This is extremely hacky.
-    """
-    for level in inspect.stack():
-        value = level.frame.f_locals.get(name, None)
-        if value is not None:
-            return value
-    return default
-
-
-def is_make_clean():
-    """
-    Returns True if the current workflow was triggered by `make clean`
-
-    """
-    if "--delete-all-output" in sys.argv:
-        return True
-    else:
-        return False
-
-
-def is_make_main():
-    """
-    Returns True if the current workflow is the main PDF build.
-
-    """
-    dag = get_snakemake_variable("dag")
-    targetjobs = [j.name for j in dag.targetjobs]
-    if "syw__main" in targetjobs or "syw__compile" in targetjobs:
-        return True
-    else:
-        return False
 
 
 def parse_config():

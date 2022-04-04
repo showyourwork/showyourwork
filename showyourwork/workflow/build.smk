@@ -1,6 +1,7 @@
 from showyourwork import paths, exceptions, overleaf
 from showyourwork.patches import patch_snakemake_wait_for_files
-from showyourwork.config import parse_config, is_make_clean, is_make_main
+from showyourwork.config import parse_config
+from showyourwork.meta import is_make_clean, is_make_main
 from showyourwork.logging import setup_logging, get_logger, clear_errors
 from showyourwork.userrules import process_user_rules
 import snakemake
