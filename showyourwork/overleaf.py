@@ -8,7 +8,9 @@ from urllib.parse import quote
 
 
 def get_overleaf_credentials(
-    overleaf_email="OVERLEAF_EMAIL", overleaf_password="OVERLEAF_PASSWORD"
+    overleaf_email="OVERLEAF_EMAIL",
+    overleaf_password="OVERLEAF_PASSWORD",
+    error_if_missing=False,
 ):
     """
     Return the user's Overleaf email and password, stored in env vars.
@@ -18,7 +20,12 @@ def get_overleaf_credentials(
     for key in [overleaf_email, overleaf_password]:
         val = os.getenv(key, None)
         if val is None or not len(val):
-            raise exceptions.MissingOverleafCredentials()
+            if error_if_missing:
+                level = "error"
+            else:
+                # This exception is caught in the enclosing scope
+                level = "warn"
+            raise exceptions.MissingOverleafCredentials(level=level)
         else:
             # Replace special characters in the credentials
             val = quote(val, safe="")

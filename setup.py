@@ -22,6 +22,8 @@ setup(
         "click",
         "pyyaml",
         "requests",
+        "cookiecutter",
+        "packaging",
     ],
     entry_points={
         "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]

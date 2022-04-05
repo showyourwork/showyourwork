@@ -119,31 +119,7 @@ def get_id_type(deposit_id, zenodo_url="zenodo.org"):
     return id_type
 
 
-def get_deposit_title():
-    """
-    Return the title of the Zenodo deposit for the current repo branch.
-
-    """
-    # Repo info
-    try:
-        url = snakemake.workflow.config["url"]
-    except:
-        url = git.get_repo_url()
-    for s in [
-        "https://github.com/",
-        "http://github.com/",
-        "https://",
-        "http://",
-    ]:
-        url = url.replace(s, "")
-    try:
-        branch = snakemake.workflow.config["branch"]
-    except:
-        branch = git.get_repo_branch()
-    return f"Data for {url} [{branch}]"
-
-
-def create_deposit():
+def create_deposit(title):
     """
     Create a draft of a Zenodo deposit for the current repo & branch.
 
@@ -167,7 +143,6 @@ def create_deposit():
 
     # Add some minimal metadata
     data = r.json()
-    title = get_deposit_title()
     description = (
         "Data automatically uploaded by the <code>showyourwork</code> workflow. "
         "Each of the files in this deposit were generated from a user-defined "

@@ -12,6 +12,7 @@ class showyourwork:
         self.checkpoints = self.workflow / "checkpoints"
         self.resources = self.workflow / "resources"
         self.envs = self.workflow / "envs"
+        self.cookiecutter = self.module / "cookiecutter-showyourwork"
 
 
 # User paths

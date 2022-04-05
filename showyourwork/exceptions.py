@@ -23,7 +23,9 @@ def no_traceback():
 
 class ShowyourworkException(Exception):
     def __init__(
-        self, message="An error occurred while executing the workflow.", level="error"
+        self,
+        message="An error occurred while executing the workflow.",
+        level="error",
     ):
         if level == "error":
             get_logger().error(message)
@@ -48,7 +50,9 @@ class ZenodoException(ShowyourworkException):
 
 
 class ZenodoError(ZenodoException):
-    def __init__(self, status="", message="An error occurred while accessing Zenodo."):
+    def __init__(
+        self, status="", message="An error occurred while accessing Zenodo."
+    ):
         super().__init__(f"Zenodo error {status}: {message}")
 
 
@@ -56,7 +60,8 @@ class MissingZenodoAccessToken(ZenodoException):
     def __init__(self, token_name):
         message = (
             f"Zenodo access token `{token_name}` not found. "
-            "This should be set as an environment variable."
+            "This should be set as both an environment variable "
+            "and a GitHub repository secret."
         )
         super().__init__(message)
 
@@ -115,16 +120,24 @@ class OverleafError(OverleafException):
 
 
 class MissingOverleafCredentials(OverleafException):
-    def __init__(self):
+    def __init__(self, **kwargs):
+        message = (
+            f"Overleaf credentials `OVERLEAF_EMAIL` and/or "
+            "`OVERLEAF_PASSWORD` not found. "
+            "These should be set as both environment variables "
+            "and GitHub repository secrets."
+        )
         super().__init__(
-            "Overleaf credentials not found. See the docs for details.", level="warn"
+            message,
+            level=kwargs.get("level", "warn"),
         )
 
 
 class OverleafAuthenticationError(OverleafException):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__(
-            "Overleaf authentication failed. See the docs for details.", level="warn"
+            "Overleaf authentication failed. See the docs for details.",
+            level=kwargs.get("level", "warn"),
         )
 
 
@@ -167,10 +180,10 @@ class TectonicError(ShowyourworkException):
                         message = "".join(tectonic_log[-i - 1 :])
                         break
                 else:
-                    message = "An error occurred while compiling the manuscript."
-                message += (
-                    f"\nFor more information, check out the log file:\n{logfile}."
-                )
+                    message = (
+                        "An error occurred while compiling the manuscript."
+                    )
+                message += f"\nFor more information, check out the log file:\n{logfile}."
             else:
 
                 # Admonish the user (:

@@ -1,6 +1,10 @@
 from . import paths
 from pathlib import Path
 import logging
+import platform
+import threading
+import os
+import sys
 
 try:
     import snakemake
@@ -9,6 +13,66 @@ except ModuleNotFoundError:
 
 
 __all__ = ["get_logger", "setup_logging", "clear_errors"]
+
+
+class ColorizingStreamHandler(logging.StreamHandler):
+    """
+    Adapted from snakemake.logging.ColorizingStreamHandler.
+
+    """
+
+    BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
+    RESET_SEQ = "\033[0m"
+    COLOR_SEQ = "\033[%dm"
+    BOLD_SEQ = "\033[1m"
+    colors = {
+        "WARNING": YELLOW,
+        "INFO": GREEN,
+        "DEBUG": BLUE,
+        "CRITICAL": RED,
+        "ERROR": RED,
+    }
+
+    def __init__(self, stream=sys.stderr):
+        super().__init__(stream=stream)
+        self._output_lock = threading.Lock()
+        self.nocolor = not self.can_color_tty()
+
+    def can_color_tty(
+        self,
+    ):
+        if "TERM" in os.environ and os.environ["TERM"] == "dumb":
+            return False
+        return self.is_tty and not platform.system() == "Windows"
+
+    @property
+    def is_tty(self):
+        isatty = getattr(self.stream, "isatty", None)
+        return isatty and isatty()
+
+    def emit(self, record):
+        with self._output_lock:
+            try:
+                self.format(record)
+                self.stream.write(self.decorate(record))
+                self.stream.write(getattr(self, "terminator", "\n"))
+                self.flush()
+            except BrokenPipeError as e:
+                raise e
+            except (KeyboardInterrupt, SystemExit):
+                pass
+            except Exception as e:
+                self.handleError(record)
+
+    def decorate(self, record):
+        message = record.message
+        message = [message]
+        if not self.nocolor and record.levelname in self.colors:
+            message.insert(
+                0, self.COLOR_SEQ % (30 + self.colors[record.levelname])
+            )
+            message.append(self.RESET_SEQ)
+        return "".join(message)
 
 
 def get_logger():
@@ -23,10 +87,7 @@ def get_logger():
         logger.setLevel(logging.DEBUG)
 
         # Terminal: all messages
-        if snakemake:
-            stream_handler = snakemake.logging.ColorizingStreamHandler()
-        else:
-            stream_handler = logging.StreamHandler()
+        stream_handler = ColorizingStreamHandler()
         stream_handler.setLevel(logging.INFO)
         logger.addHandler(stream_handler)
 

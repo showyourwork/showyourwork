@@ -1,1 +1,2 @@
 include showyourwork/workflow/**
+include showyourwork/cookiecutter-showyourwork/**
