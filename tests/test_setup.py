@@ -1,5 +1,6 @@
 from showyourwork import gitapi
 from showyourwork.git import get_repo_sha
+from showyourwork.subproc import run
 import subprocess
 from pathlib import Path
 import shutil
@@ -44,7 +45,7 @@ class TemporaryShowyourworkRepository:
     @pytest.mark.asyncio
     async def test_showyourwork(self, initwait=240, maxtries=10, interval=60):
         """
-        TODO: Better error handling, logging
+        TODO: Better error handling, logging. Replace subprocess.run with run
 
         """
         # Name the repo after the subclass (in snake_case)
@@ -63,10 +64,21 @@ class TemporaryShowyourworkRepository:
 
             # Commit and push to GitHub
             print(f"Pushing to `showyourwork/{self.repo}`...")
-
-            # TODO!
-            raise NotImplementedError(
-                "Use the API to push to a different repo!"
+            subprocess.run("git init -q", shell=True, cwd=SANDBOX / self.repo)
+            subprocess.run("git add .", shell=True, cwd=SANDBOX / self.repo)
+            subprocess.run(
+                "git -c user.name='gh-actions' -c user.email='gh-actions' commit -q -m 'first commit'",
+                shell=True,
+                cwd=SANDBOX / self.repo,
+            )
+            subprocess.run(
+                "git branch -M main", shell=True, cwd=SANDBOX / self.repo
+            )
+            run(
+                f"git push --force https://x-access-token:{gitapi.get_access_token()}@github.com/showyourwork/{self.repo} main",
+                shell=True,
+                cwd=SANDBOX / self.repo,
+                secrets=[gitapi.get_access_token()],
             )
 
             # Wait for the workflow to finish

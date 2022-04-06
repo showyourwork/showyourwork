@@ -15,10 +15,11 @@ def process_run_result(code, stdout, stderr):
             raise exceptions.CalledProcessError(stderr)
 
 
-def run(args, cwd=None, secrets=[], callback=process_run_result):
+def run(args, shell=False, cwd=None, secrets=[], callback=process_run_result):
     # Run the command and capture all output
     result = subprocess.run(
         args,
+        shell=shell,
         cwd=cwd,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
