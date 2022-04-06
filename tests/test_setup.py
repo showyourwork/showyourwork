@@ -1,6 +1,5 @@
 from showyourwork import gitapi
 from showyourwork.git import get_repo_sha
-from showyourwork.cli.commands.setup import git_init_commit_and_push
 import subprocess
 from pathlib import Path
 import shutil
@@ -64,11 +63,10 @@ class TemporaryShowyourworkRepository:
 
             # Commit and push to GitHub
             print(f"Pushing to `showyourwork/{self.repo}`...")
-            git_init_commit_and_push(
-                "showyourwork",
-                self.repo,
-                SANDBOX / self.repo,
-                authenticate_as_showyourwork=True,
+
+            # TODO!
+            raise NotImplementedError(
+                "Use the API to push to a different repo!"
             )
 
             # Wait for the workflow to finish

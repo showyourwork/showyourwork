@@ -6,40 +6,6 @@ from pathlib import Path
 import subprocess
 
 
-def git_init_commit_and_push(
-    user, repo, cwd, ssh=False, authenticate_as_showyourwork=False
-):
-    subprocess.run("git init -q", shell=True, cwd=cwd)
-    if authenticate_as_showyourwork:
-        subprocess.run(
-            "git config user.name 'showyourwork'", shell=True, cwd=cwd
-        )
-        subprocess.run(
-            "git config user.email 'showyourwork'", shell=True, cwd=cwd
-        )
-    subprocess.run("git add .", shell=True, cwd=cwd)
-    subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=cwd)
-    subprocess.run("git branch -M main", shell=True, cwd=cwd)
-    if ssh:
-        subprocess.run(
-            f"git remote add origin git@github.com:{user}/{repo}.git",
-            shell=True,
-            cwd=cwd,
-        )
-    else:
-        subprocess.run(
-            f"git remote add origin https://github.com/{user}/{repo}.git",
-            shell=True,
-            cwd=cwd,
-        )
-    res = subprocess.run("git push -q -u origin main", shell=True, cwd=cwd)
-    if res.returncode > 0:
-        with exceptions.no_traceback():
-            raise exceptions.ShowyourworkException(
-                f"Unable to push to GitHub. Did you forget to create the remote repo?"
-            )
-
-
 def setup(slug, overleaf, ssh, no_git, showyourwork_version):
     """Set up a new article repo."""
     # Parse the slug
@@ -81,4 +47,25 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
 
     # Set up git
     if not no_git:
-        git_init_commit_and_push(user, repo, repo, ssh=ssh)
+        subprocess.run("git init -q", shell=True, cwd=cwd)
+        subprocess.run("git add .", shell=True, cwd=cwd)
+        subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=cwd)
+        subprocess.run("git branch -M main", shell=True, cwd=cwd)
+        if ssh:
+            subprocess.run(
+                f"git remote add origin git@github.com:{user}/{repo}.git",
+                shell=True,
+                cwd=cwd,
+            )
+        else:
+            subprocess.run(
+                f"git remote add origin https://github.com/{user}/{repo}.git",
+                shell=True,
+                cwd=cwd,
+            )
+        res = subprocess.run("git push -q -u origin main", shell=True, cwd=cwd)
+        if res.returncode > 0:
+            with exceptions.no_traceback():
+                raise exceptions.ShowyourworkException(
+                    f"Unable to push to GitHub. Did you forget to create the remote repo?"
+                )

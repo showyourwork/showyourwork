@@ -55,7 +55,7 @@ def run(command, **kwargs):
             .replace("\n", "")
         )
         syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{sha}#egg=showyourwork"
-    elif re.match("(?:(\d+\.[.\d]*\d+))", syw_spec):
+    elif re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
         # This is an actual package version
         syw_spec = f"showyourwork=={syw_spec}"
     elif re.match("[0-9a-f]{5,40}", syw_spec):
