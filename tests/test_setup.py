@@ -23,10 +23,10 @@ class TemporaryShowyourworkRepository:
         options = f"--yes --no-git --showyourwork-version={get_repo_sha()}"
         if not zenodo_cache:
             # Disable zenodo caching
-            command = "ZENODO_TOKEN='' {command}"
+            command = f"ZENODO_TOKEN='' {command}"
         if overleaf_id:
             # Enable overleaf syncing
-            options += "--overleaf={overleaf_id}"
+            options += f"--overleaf={overleaf_id}"
 
         # Create a new one
         print(f"Creating local repo `tests/sandbox/{self.repo}`...")
