@@ -24,6 +24,7 @@ setup(
         "requests",
         "cookiecutter",
         "packaging",
+        "pytest-asyncio",  # TODO: Only for testing?
     ],
     entry_points={
         "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]

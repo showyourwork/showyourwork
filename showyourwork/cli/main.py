@@ -5,7 +5,7 @@ import shutil
 import click
 
 
-BANNER = """
+BANNER = r"""
          _                                                             _    _ 
      ___| |__   _____      ___   _  ___  _   _ _ ____      _____  _ __| | _| |
     / __| '_ \ / _ \ \ /\ / / | | |/ _ \| | | | '__\ \ /\ / / _ \| '__| |/ / |
@@ -163,7 +163,12 @@ def validate_slug(context, param, slug):
 
 @entry_point.command()
 @click.argument("slug", callback=validate_slug)
-@click.option("--yes", is_flag=True, default=False)
+@click.option(
+    "--yes",
+    is_flag=True,
+    default=False,
+    help="Accept all `Press any key to continue` prompts automatically.",
+)
 @click.option(
     "--overleaf",
     help="Overleaf project id to sync with (optional). Requires Overleaf "
@@ -176,7 +181,18 @@ def validate_slug(context, param, slug):
     is_flag=True,
     help="Use ssh to authenticate with GitHub? Default is to use https.",
 )
-def setup(slug, yes, overleaf, ssh):
+@click.option(
+    "--no-git",
+    is_flag=True,
+    help="Don't initialize the git repository "
+    "(in case you'd like to do it manually).",
+)
+@click.option(
+    "--showyourwork-version",
+    help="Version of showyourwork to use. Default is the current version.",
+    default=None,
+)
+def setup(slug, yes, overleaf, ssh, no_git, showyourwork_version):
     """
     Set up a new article repository in the current working directory.
 
@@ -184,7 +200,7 @@ def setup(slug, yes, overleaf, ssh):
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    commands.setup(slug, overleaf, ssh)
+    commands.setup(slug, overleaf, ssh, no_git, showyourwork_version)
 
 
 @entry_point.command()

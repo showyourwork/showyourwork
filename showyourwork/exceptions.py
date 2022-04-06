@@ -41,6 +41,25 @@ class ShowyourworkException(Exception):
 
 
 #
+# GitHub
+#
+
+
+class GitHubException(ShowyourworkException):
+    pass
+
+
+class MissingGitHubAPIKey(GitHubException):
+    def __init__(self, token_name):
+        message = (
+            f"GitHub API key `{token_name}` not found. "
+            "This should be set as both an environment variable "
+            "and a GitHub repository secret."
+        )
+        super().__init__(message)
+
+
+#
 # Zenodo
 #
 
@@ -144,6 +163,15 @@ class OverleafAuthenticationError(OverleafException):
 #
 # Other
 #
+
+
+class RequestError(ShowyourworkException):
+    def __init__(
+        self,
+        status="",
+        message="An error occurred while accessing a remote server.",
+    ):
+        super().__init__(f"Request error {status}: {message}")
 
 
 class ConfigError(ShowyourworkException):

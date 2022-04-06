@@ -268,6 +268,8 @@ def get_xml_tree():
         / "preprocess.tex",
     )
 
+    breakpoint()
+
     # Add <HTML></HTML> tags to the XML file
     if xmlfile.exists():
         with open(xmlfile, "r") as f:

@@ -6,7 +6,32 @@ from pathlib import Path
 import subprocess
 
 
-def setup(slug, overleaf, ssh):
+def git_init_commit_and_push(user, repo, cwd, ssh=False):
+    subprocess.run("git init -q", shell=True, cwd=cwd)
+    subprocess.run("git add .", shell=True, cwd=cwd)
+    subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=cwd)
+    subprocess.run("git branch -M main", shell=True, cwd=cwd)
+    if ssh:
+        subprocess.run(
+            f"git remote add origin git@github.com:{user}/{repo}.git",
+            shell=True,
+            cwd=cwd,
+        )
+    else:
+        subprocess.run(
+            f"git remote add origin https://github.com/{user}/{repo}.git",
+            shell=True,
+            cwd=cwd,
+        )
+    res = subprocess.run("git push -q -u origin main", shell=True, cwd=cwd)
+    if res.returncode > 0:
+        with exceptions.no_traceback():
+            raise exceptions.ShowyourworkException(
+                f"Unable to push to GitHub. Did you forget to create the remote repo?"
+            )
+
+
+def setup(slug, overleaf, ssh, no_git, showyourwork_version):
     """Set up a new article repo."""
     # Parse the slug
     user, repo = slug.split("/")
@@ -18,7 +43,8 @@ def setup(slug, overleaf, ssh):
     name = f"@{user}"
 
     # Get current stable version
-    showyourwork_version = version.parse(__version__).base_version
+    if showyourwork_version is None:
+        showyourwork_version = version.parse(__version__).base_version
 
     # Create a Zenodo deposit draft for this repo if the user
     # set the ZENODO_TOKEN environment variable
@@ -45,25 +71,5 @@ def setup(slug, overleaf, ssh):
     )
 
     # Set up git
-    subprocess.run("git init -q", shell=True, cwd=repo)
-    subprocess.run("git add .", shell=True, cwd=repo)
-    subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=repo)
-    subprocess.run("git branch -M main", shell=True, cwd=repo)
-    if ssh:
-        subprocess.run(
-            f"git remote add origin git@github.com:{user}/{repo}.git",
-            shell=True,
-            cwd=repo,
-        )
-    else:
-        subprocess.run(
-            f"git remote add origin https://github.com/{user}/{repo}.git",
-            shell=True,
-            cwd=repo,
-        )
-    res = subprocess.run("git push -u origin main", shell=True, cwd=repo)
-    if res.returncode > 0:
-        with exceptions.no_traceback():
-            raise exceptions.ShowyourworkException(
-                f"Unable to push to GitHub. Did you forget to create the remote repo?"
-            )
+    if not no_git:
+        git_init_commit_and_push(user, repo, repo, ssh=ssh)

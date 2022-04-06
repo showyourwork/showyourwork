@@ -36,3 +36,24 @@ def run(args, cwd=None, secrets=[], callback=process_run_result):
 
     # Callback
     return callback(code, stdout, stderr)
+
+
+def check_status(r):
+    """
+    Parse a requests return object and raise a custom exception
+    for a >200-level status code.
+
+    """
+    if r.status_code > 204:
+        try:
+            data = r.json()
+        except:
+            raise exceptions.RequestError(status=r.status_code)
+        data["message"] = data.get("message", "")
+        data["status"] = data.get("status", "")
+        for error in data.get("errors", []):
+            data["message"] += " " + error["message"]
+        raise exceptions.RequestError(
+            status=data["status"], message=data["message"]
+        )
+    return r

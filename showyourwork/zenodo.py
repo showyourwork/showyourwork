@@ -3,7 +3,7 @@ Main Zenodo interface.
 
 """
 from . import exceptions, paths, git
-from .subproc import run
+from .subproc import run, check_status
 from .logging import get_logger
 import requests
 import tarfile
@@ -24,25 +24,6 @@ zenodo_url = {"zenodo": "zenodo.org", "zenodo_sandbox": "sandbox.zenodo.org"}
 
 # Supported tarball extensions
 zip_exts = ["tar.gz"]
-
-
-def check_status(r):
-    """
-    Parse a requests return object and raise a custom exception
-    for a >200-level status code.
-
-    """
-    if r.status_code > 204:
-        try:
-            data = r.json()
-        except:
-            raise exceptions.ZenodoError(status=r.status_code)
-        for error in data.get("errors", []):
-            data["message"] += " " + error["message"]
-        raise exceptions.ZenodoError(
-            status=data["status"], message=data["message"]
-        )
-    return r
 
 
 def get_access_token(token_name="ZENODO_TOKEN", error_if_missing=False):

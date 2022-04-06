@@ -66,7 +66,7 @@ def run(command, **kwargs):
         if not Path(syw_spec).is_absolute():
             syw_spec = (paths.user().repo / syw_spec).resolve()
         else:
-            syw_spec = syw_spec.resolve()
+            syw_spec = Path(syw_spec).resolve()
         if not syw_spec.exists():
             # TODO
             raise exceptions.ShowyourworkException()
