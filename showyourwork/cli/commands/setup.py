@@ -6,8 +6,17 @@ from pathlib import Path
 import subprocess
 
 
-def git_init_commit_and_push(user, repo, cwd, ssh=False):
+def git_init_commit_and_push(
+    user, repo, cwd, ssh=False, authenticate_as_showyourwork=False
+):
     subprocess.run("git init -q", shell=True, cwd=cwd)
+    if authenticate_as_showyourwork:
+        subprocess.run(
+            "git config user.name 'showyourwork'", shell=True, cwd=cwd
+        )
+        subprocess.run(
+            "git config user.email 'showyourwork'", shell=True, cwd=cwd
+        )
     subprocess.run("git add .", shell=True, cwd=cwd)
     subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=cwd)
     subprocess.run("git branch -M main", shell=True, cwd=cwd)

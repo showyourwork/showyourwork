@@ -64,10 +64,11 @@ class TemporaryShowyourworkRepository:
 
             # Commit and push to GitHub
             print(f"Pushing to `showyourwork/{self.repo}`...")
-            subprocess.run("git config user.name 'showyourwork'", shell=True, cwd=SANDBOX / self.repo)
-            subprocess.run("git config user.email 'showyourwork'", shell=True, cwd=SANDBOX / self.repo)
             git_init_commit_and_push(
-                "showyourwork", self.repo, SANDBOX / self.repo
+                "showyourwork",
+                self.repo,
+                SANDBOX / self.repo,
+                authenticate_as_showyourwork=True,
             )
 
             # Wait for the workflow to finish
