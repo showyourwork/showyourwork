@@ -23,9 +23,16 @@ setup(
         "pyyaml",
         "requests",
         "cookiecutter",
-        "packaging",
-        "pytest-asyncio",  # TODO: Only for testing?
+        "packaging"
     ],
+    extras_require={
+        "tests": [
+            "parameterized",
+            "nose",
+            "pytest",
+            "pytest-asyncio",
+        ],
+    },
     entry_points={
         "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]
     },
