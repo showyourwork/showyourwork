@@ -50,6 +50,19 @@ class TemporaryShowyourworkRepository:
             shell=True,
         )
 
+        # Get the Zenodo concept id (if any)
+        user_config = yaml.load(
+            jinja2.Environment(
+                loader=jinja2.FileSystemLoader(SANDBOX / self.repo)
+            )
+            .get_template("showyourwork.yml")
+            .render(),
+            Loader=yaml.CLoader,
+        )
+        self.concept_id = (
+            user_config.get("showyourwork", {}).get("cache", {}).get("zenodo")
+        )
+
     def create_remote(self):
         """Create the repo on GitHub."""
         print("")
@@ -61,6 +74,7 @@ class TemporaryShowyourworkRepository:
             self.repo,
             org="showyourwork",
             description="Temporary test repository for showyourwork",
+            private=True,
         )
 
     def setup_git(self):
@@ -81,7 +95,7 @@ class TemporaryShowyourworkRepository:
         print(f"[{self.repo}] Building the article locally...")
         run("showyourwork build", shell=True, cwd=SANDBOX / self.repo)
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio_cooperative
     async def run_github_action(self, initwait=240, maxtries=10, interval=60):
         """
         Push to the remote and asynchronously wait for the workflow on
@@ -132,25 +146,12 @@ class TemporaryShowyourworkRepository:
 
     def delete_zenodo(self):
         """Delete the Zenodo deposit associated with the temp repo."""
-        if (SANDBOX / self.repo / "showyourwork.yml").exists():
-            # Get the Zenodo concept id (if any)
-            user_config = yaml.load(
-                jinja2.Environment(
-                    loader=jinja2.FileSystemLoader(SANDBOX / self.repo)
-                )
-                .get_template("showyourwork.yml")
-                .render(),
-                Loader=yaml.CLoader,
+        if self.concept_id:
+            print(
+                f"[{self.repo}] Deleting Zenodo deposit "
+                f"with concept id {self.concept_id}..."
             )
-            concept_id = (
-                user_config.get("showyourwork", {}).get("cache", {}).get("zenodo")
-            )
-            if concept_id:
-                print(
-                    f"[{self.repo}] Deleting Zenodo deposit "
-                    f"with concept id {concept_id}..."
-                )
-                delete_deposit(concept_id)
+            delete_deposit(self.concept_id)
 
     def delete_remote(self):
         """Delete the remote repo."""
@@ -168,7 +169,7 @@ class TemporaryShowyourworkRepository:
             )
             shutil.rmtree(SANDBOX / self.repo)
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio_cooperative
     async def test_repo(self):
         """
         Test functionality by creating a new repo, customizing it,

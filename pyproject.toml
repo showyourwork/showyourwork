@@ -20,5 +20,6 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
-addopts = "-v -s"
+addopts = "-v -s --asyncio-task-timeout=1800"
 norecursedirs = "tests/helpers"
+asyncio_mode = "strict"

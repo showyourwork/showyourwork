@@ -23,14 +23,14 @@ setup(
         "pyyaml",
         "requests",
         "cookiecutter",
-        "packaging"
+        "packaging",
     ],
     extras_require={
         "tests": [
             "parameterized",
             "nose",
             "pytest",
-            "pytest-asyncio",
+            "pytest-asyncio-cooperative",
         ],
     },
     entry_points={
