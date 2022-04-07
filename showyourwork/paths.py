@@ -20,7 +20,11 @@ class user:
     def __init__(self, path=None):
 
         if path is None:
-            path = Path(git.get_repo_root()).absolute()
+            root = git.get_repo_root()
+            if root == "None":
+                raise Exception("Not in a git repo.")
+            else:
+                path = Path(root).absolute()
 
         # Repo paths
         self.repo = Path(path)

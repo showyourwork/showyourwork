@@ -47,23 +47,25 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
 
     # Set up git
     if not no_git:
-        subprocess.run("git init -q", shell=True, cwd=cwd)
-        subprocess.run("git add .", shell=True, cwd=cwd)
-        subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=cwd)
-        subprocess.run("git branch -M main", shell=True, cwd=cwd)
+        subprocess.run("git init -q", shell=True, cwd=repo)
+        subprocess.run("git add .", shell=True, cwd=repo)
+        subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=repo)
+        subprocess.run("git branch -M main", shell=True, cwd=repo)
         if ssh:
             subprocess.run(
                 f"git remote add origin git@github.com:{user}/{repo}.git",
                 shell=True,
-                cwd=cwd,
+                cwd=repo,
             )
         else:
             subprocess.run(
                 f"git remote add origin https://github.com/{user}/{repo}.git",
                 shell=True,
-                cwd=cwd,
+                cwd=repo,
             )
-        res = subprocess.run("git push -q -u origin main", shell=True, cwd=cwd)
+        res = subprocess.run(
+            "git push -q -u origin main", shell=True, cwd=repo
+        )
         if res.returncode > 0:
             with exceptions.no_traceback():
                 raise exceptions.ShowyourworkException(

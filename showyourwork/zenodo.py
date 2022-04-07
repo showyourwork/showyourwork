@@ -378,6 +378,40 @@ def download_file_from_record(record, file, rule_name, tarball=False):
     raise exceptions.FileNotFoundOnZenodo(rule_name)
 
 
+def delete_deposit(concept_id):
+    # Logger
+    logger = get_logger()
+
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=False)
+
+    # Grab the version id
+    logger.debug(f"Deleting Zenodo deposit {concept_id}...")
+    r = check_status(
+        requests.get(
+            f"https://zenodo.org/api/deposit/depositions",
+            params={
+                "q": f"conceptrecid:{concept_id}",
+                "all_versions": 1,
+                "access_token": access_token,
+            },
+        )
+    )
+    try:
+        data = r.json()[0]
+    except:
+        raise exceptions.ZenodoRecordNotFound(concept_id)
+    version_id = data["id"]
+    check_status(
+        requests.delete(
+            f"https://zenodo.org/api/deposit/depositions/{version_id}",
+            params={
+                "access_token": access_token,
+            },
+        )
+    )
+
+
 def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
     # Logger
     logger = get_logger()

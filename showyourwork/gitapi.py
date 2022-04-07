@@ -35,17 +35,7 @@ def create_repo(name, description=None, private=False, org=None):
 
     """
     # Delete repo (if it exists)
-    if org:
-        url = f"https://api.github.com/repos/{org}/{name}"
-    else:
-        url = f"https://api.github.com/repos/{get_authenticated_user()}/{name}"
-    requests.delete(
-        url,
-        headers={
-            "Accept": "application/vnd.github.v3+json",
-            "Authorization": f"token {get_access_token()}",
-        },
-    )  # fail silently
+    delete_repo(name, org=org, quiet=True)
 
     # Create a new repo
     if description is None:
@@ -76,7 +66,7 @@ def create_repo(name, description=None, private=False, org=None):
     )
 
 
-def delete_repo(name, org=None):
+def delete_repo(name, org=None, quiet=False):
     """
     Delete a repository on GitHub.
 
@@ -85,15 +75,15 @@ def delete_repo(name, org=None):
         url = f"https://api.github.com/repos/{org}/{name}"
     else:
         url = f"https://api.github.com/repos/{get_authenticated_user()}/{name}"
-    check_status(
-        requests.delete(
-            url,
-            headers={
-                "Accept": "application/vnd.github.v3+json",
-                "Authorization": f"token {get_access_token()}",
-            },
-        )
+    result = requests.delete(
+        url,
+        headers={
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": f"token {get_access_token()}",
+        },
     )
+    if not quiet:
+        check_status(result)
 
 
 def get_latest_workflow_run_status(name, org=None):

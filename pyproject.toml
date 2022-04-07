@@ -18,3 +18,7 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.pytest.ini_options]
+addopts = "-v -s"
+norecursedirs = "tests/helpers"

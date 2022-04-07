@@ -1,12 +1,12 @@
 from ... import paths
 from ..conda_env import run
 from ..error_handler import error_handler
-from ..constants import SNAKEMAKE
 
 
 def preprocess(options=""):
     """Pre-processing step for the article build."""
     snakefile = paths.showyourwork().workflow / "preprocess.smk"
-    command = f"{SNAKEMAKE} {options} -s {snakefile}"
+    snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} snakemake -c1 --use-conda --reason --cache"
+    command = f"{snakemake} {options} -s {snakefile}"
     result = run(command, check=False)
     error_handler(result.returncode)

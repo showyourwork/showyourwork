@@ -91,17 +91,29 @@ def get_logger():
         stream_handler.setLevel(logging.INFO)
         logger.addHandler(stream_handler)
 
-        # File: just showyourwork errors
-        error_file = paths.user().logs / "showyourwork_errors.log"
-        file_handler = logging.FileHandler(error_file)
-        file_handler.setLevel(logging.ERROR)
-        logger.addHandler(file_handler)
+        try:
 
-        # File: all showyourwork messages
-        msg_file = paths.user().logs / "showyourwork.log"
-        file_handler = logging.FileHandler(msg_file)
-        file_handler.setLevel(logging.DEBUG)
-        logger.addHandler(file_handler)
+            LOGS = paths.user().logs
+
+        except:
+
+            # Can't resolve path to logs; assume we're not
+            # in a showyourwork/git repo and fail silently.
+            pass
+
+        else:
+
+            # File: just showyourwork errors
+            error_file = LOGS / "showyourwork_errors.log"
+            file_handler = logging.FileHandler(error_file)
+            file_handler.setLevel(logging.ERROR)
+            logger.addHandler(file_handler)
+
+            # File: all showyourwork messages
+            msg_file = LOGS / "showyourwork.log"
+            file_handler = logging.FileHandler(msg_file)
+            file_handler.setLevel(logging.DEBUG)
+            logger.addHandler(file_handler)
 
     return logger
 

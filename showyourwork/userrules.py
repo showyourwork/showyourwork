@@ -74,16 +74,20 @@ def process_user_rules():
         concept_id = snakemake.workflow.config["showyourwork"]["cache"][
             "zenodo"
         ]
-        zenodo_cache_url = f"https://zenodo.org/record/{concept_id}"
 
         # Check that the record has been published
-        r = requests.get(f"https://zenodo.org/api/record/{concept_id}")
-        data = r.json()
-        if r.status_code > 204:
-            zenodo_cache_url = None
-            get_logger().warn(
-                f"Zenodo cache record {concept_id} not yet published for this repository."
-            )
+        if concept_id:
+            zenodo_cache_url = f"https://zenodo.org/record/{concept_id}"
+            r = requests.get(f"https://zenodo.org/api/record/{concept_id}")
+            data = r.json()
+            if r.status_code > 204:
+                zenodo_cache_url = None
+                get_logger().warn(
+                    f"Zenodo cache record {concept_id} "
+                    "not yet published for this repository."
+                )
+                raise Exception()
+        else:
             raise Exception()
 
     except:

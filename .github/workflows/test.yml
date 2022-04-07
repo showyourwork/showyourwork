@@ -34,7 +34,7 @@ jobs:
         id: tests
         if: steps.install.outcome == 'success'
         shell: bash -l {0}
-        run: python -m pytest tests
+        run: python -m pytest
         env:
           ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
