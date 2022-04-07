@@ -31,6 +31,7 @@ setup(
             "nose",
             "pytest",
             "pytest-asyncio-cooperative",
+            "pytest-cov",
         ],
     },
     entry_points={

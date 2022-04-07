@@ -4,3 +4,5 @@
 showyourwork/showyourwork_version.py
 showyourwork.egg-info
 .eggs
+.coverage
+htmlcov
