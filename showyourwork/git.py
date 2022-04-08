@@ -2,7 +2,7 @@
 Miscellaneous functions for interfacing with git.
 
 """
-import subprocess
+from .subproc import get_stdout
 
 
 def get_repo_root():
@@ -11,13 +11,8 @@ def get_repo_root():
 
     """
     try:
-        root = (
-            subprocess.check_output(
-                ["git", "rev-parse", "--show-toplevel"],
-                stderr=subprocess.DEVNULL,
-            )
-            .decode()
-            .replace("\n", "")
+        root = get_stdout(["git", "rev-parse", "--show-toplevel"]).replace(
+            "\n", ""
         )
     except Exception as e:
         root = "None"
@@ -30,14 +25,9 @@ def get_repo_url():
 
     """
     try:
-        url = (
-            subprocess.check_output(
-                ["git", "config", "--get", "remote.origin.url"],
-                stderr=subprocess.DEVNULL,
-            )
-            .decode()
-            .replace("\n", "")
-        )
+        url = get_stdout(
+            ["git", "config", "--get", "remote.origin.url"]
+        ).replace("\n", "")
         if url.endswith(".git"):
             url = url[:-4]
     except Exception as e:
@@ -51,12 +41,8 @@ def get_repo_branch():
 
     """
     try:
-        branch = (
-            subprocess.check_output(
-                ["git", "branch", "--show-current"], stderr=subprocess.DEVNULL
-            )
-            .decode()
-            .replace("\n", "")
+        branch = get_stdout(["git", "branch", "--show-current"]).replace(
+            "\n", ""
         )
     except Exception as e:
         branch = "unknown"
@@ -69,13 +55,7 @@ def get_repo_sha():
 
     """
     try:
-        sha = (
-            subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
-            )
-            .decode()
-            .replace("\n", "")
-        )
+        sha = get_stdout(["git", "rev-parse", "HEAD"]).replace("\n", "")
     except Exception as e:
         sha = "unknown"
     return sha

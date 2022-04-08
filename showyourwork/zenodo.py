@@ -3,7 +3,7 @@ Main Zenodo interface.
 
 """
 from . import exceptions, paths, git
-from .subproc import run, check_status
+from .subproc import check_status
 from .logging import get_logger
 import requests
 import tarfile
@@ -215,7 +215,7 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
         if not snakemake.workflow.config["github_actions"]
         else []
     )
-    run(
+    subprocess.run(
         [
             "curl",
             *progress_bar,
@@ -290,7 +290,7 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
                 if not snakemake.workflow.config["github_actions"]
                 else []
             )
-            run(
+            subprocess.run(
                 [
                     "curl",
                     f"{url}?access_token={access_token}",
@@ -348,7 +348,7 @@ def download_file_from_record(record, file, rule_name, tarball=False):
                 if not snakemake.workflow.config["github_actions"]
                 else []
             )
-            run(
+            subprocess.run(
                 [
                     "curl",
                     url,

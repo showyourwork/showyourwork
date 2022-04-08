@@ -5,4 +5,7 @@ showyourwork/showyourwork_version.py
 showyourwork.egg-info
 .eggs
 .coverage
+.coverage.*
 htmlcov
+junit
+**/sitecustomize.py

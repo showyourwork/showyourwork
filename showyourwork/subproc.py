@@ -1,8 +1,11 @@
-from . import logging, exceptions
 import subprocess
+import os
+from pathlib import Path
 
 
 def process_run_result(code, stdout, stderr):
+    from . import logging, exceptions
+
     # Log the output
     logger = logging.get_logger()
     if stdout:
@@ -14,8 +17,12 @@ def process_run_result(code, stdout, stderr):
         with exceptions.no_traceback():
             raise exceptions.CalledProcessError(stderr)
 
+    return stdout
 
-def run(args, shell=False, cwd=None, secrets=[], callback=process_run_result):
+
+def get_stdout(
+    args, shell=False, cwd=None, secrets=[], callback=process_run_result
+):
     # Run the command and capture all output
     result = subprocess.run(
         args,
@@ -45,6 +52,8 @@ def check_status(r):
     for a >200-level status code.
 
     """
+    from . import exceptions
+
     if r.status_code > 204:
         try:
             data = r.json()

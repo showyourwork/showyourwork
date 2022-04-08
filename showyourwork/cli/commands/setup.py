@@ -1,4 +1,5 @@
 from ... import paths, zenodo, exceptions, __version__
+from ...subproc import get_stdout
 from cookiecutter.main import cookiecutter
 from packaging import version
 import time
@@ -47,27 +48,34 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
 
     # Set up git
     if not no_git:
-        subprocess.run("git init -q", shell=True, cwd=repo)
-        subprocess.run("git add .", shell=True, cwd=repo)
-        subprocess.run("git commit -q -m 'first commit'", shell=True, cwd=repo)
-        subprocess.run("git branch -M main", shell=True, cwd=repo)
+        get_stdout("git init -q", shell=True, cwd=repo)
+        get_stdout("git add .", shell=True, cwd=repo)
+        get_stdout("git commit -q -m 'first commit'", shell=True, cwd=repo)
+        get_stdout("git branch -M main", shell=True, cwd=repo)
         if ssh:
-            subprocess.run(
+            get_stdout(
                 f"git remote add origin git@github.com:{user}/{repo}.git",
                 shell=True,
                 cwd=repo,
             )
         else:
-            subprocess.run(
+            get_stdout(
                 f"git remote add origin https://github.com/{user}/{repo}.git",
                 shell=True,
                 cwd=repo,
             )
-        res = subprocess.run(
-            "git push -q -u origin main", shell=True, cwd=repo
+
+        def callback(code, stdout, stderr):
+            if code > 0:
+                with exceptions.no_traceback():
+                    raise exceptions.ShowyourworkException(
+                        f"Unable to push to GitHub. Did you forget "
+                        "to create the remote repo?"
+                    )
+
+        get_stdout(
+            "git push -q -u origin main",
+            shell=True,
+            cwd=repo,
+            callback=callback,
         )
-        if res.returncode > 0:
-            with exceptions.no_traceback():
-                raise exceptions.ShowyourworkException(
-                    f"Unable to push to GitHub. Did you forget to create the remote repo?"
-                )

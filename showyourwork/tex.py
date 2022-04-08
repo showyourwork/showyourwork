@@ -1,7 +1,7 @@
 from . import paths, exceptions
+from .subproc import get_stdout
 from .logging import get_logger
 from pathlib import Path
-import subprocess
 import shutil
 
 
@@ -38,30 +38,29 @@ def compile_tex(config, output_dir=None, args=[], stylesheet=None):
         "-o",
         str(output_dir),
     ]
-    result = subprocess.run(
+
+    def callback(code, stdout, stderr):
+        # Copy over the tectonic log file
+        logfile = Path(output_dir) / "{}.log".format(config["ms_name"])
+        if logfile.exists():
+            shutil.copy(logfile, paths.user().logs / "tectonic.log")
+            logfile = paths.user().logs / "tectonic.log"
+        else:
+            logfile = None
+
+        if code > 0:
+            # Log the error
+            logger = get_logger()
+            logger.error(stderr)
+
+            # Raise the exception
+            with exceptions.no_traceback():
+                raise exceptions.TectonicError(logfile)
+
+    get_stdout(
         ["tectonic"]
         + args
         + force_args
         + [paths.user().repo / config["ms_tex"]],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        callback=callback,
     )
-
-    # Copy over the tectonic log file
-    logfile = Path(output_dir) / "{}.log".format(config["ms_name"])
-    if logfile.exists():
-        shutil.copy(logfile, paths.user().logs / "tectonic.log")
-        logfile = paths.user().logs / "tectonic.log"
-    else:
-        logfile = None
-
-    # Process errors
-    if result.returncode != 0:
-
-        # Log the error
-        logger = get_logger()
-        logger.error(result.stderr.decode("utf-8"))
-
-        # Raise the exception
-        with exceptions.no_traceback():
-            raise exceptions.TectonicError(logfile)

@@ -1,8 +1,0 @@
-[run]
-omit =
-    **/test_*.py
-    **/conftest.py
-
-[report]
-exclude_lines =
-    pragma: no cover

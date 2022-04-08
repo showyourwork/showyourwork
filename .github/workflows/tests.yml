@@ -1,4 +1,4 @@
-name: test
+name: tests
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up Python
+      - name: Set up python
         id: setup_python
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -40,3 +40,10 @@ jobs:
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
           OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
+
+      - name: Publish tests
+        id: publish_tests
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "junit/*.xml"

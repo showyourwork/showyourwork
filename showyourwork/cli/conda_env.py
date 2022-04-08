@@ -3,6 +3,7 @@ from .. import paths
 from .. import exceptions
 from ..logging import get_logger
 from ..meta import is_make_main
+from ..subproc import get_stdout
 import subprocess
 import shutil
 import yaml
@@ -12,7 +13,7 @@ from pathlib import Path
 import re
 
 
-def run(command, **kwargs):
+def run_in_env(command, **kwargs):
     """Run a command in the isolated showyourwork conda environment."""
 
     # Logging
@@ -20,11 +21,12 @@ def run(command, **kwargs):
 
     # Command to set up conda
     try:
-        conda_prefix = subprocess.check_output("conda info --base", shell=True)
-    except subprocess.CalledProcessError:
+        conda_prefix = get_stdout("conda info --base", shell=True).replace(
+            "\n", ""
+        )
+    except:
         # TODO
         raise exceptions.ShowyourworkException()
-    conda_prefix = conda_prefix.decode().replace("\n", "")
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
 
     # Various conda environment files
@@ -46,14 +48,10 @@ def run(command, **kwargs):
     elif syw_spec == "latest":
         # Install latest commit on github
         # TODO: Catch errors here (fallback to `main` for no network connection)
-        sha = (
-            subprocess.check_output(
-                f"git ls-remote https://github.com/showyourwork/showyourwork.git | grep refs/heads/main | cut -f 1",
-                shell=True,
-            )
-            .decode()
-            .replace("\n", "")
-        )
+        sha = get_stdout(
+            f"git ls-remote https://github.com/showyourwork/showyourwork.git | grep refs/heads/main | cut -f 1",
+            shell=True,
+        ).replace("\n", "")
         syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{sha}#egg=showyourwork"
     elif re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
         # This is an actual package version
@@ -89,7 +87,7 @@ def run(command, **kwargs):
         logger.info(
             "Creating a new conda environment in ~/.showyourwork/env..."
         )
-        subprocess.run(
+        get_stdout(
             f"conda env create -p {paths.user().env} -f {workflow_envfile} -q",
             shell=True,
         )
@@ -106,7 +104,7 @@ def run(command, **kwargs):
 
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
-            subprocess.run(
+            get_stdout(
                 f"conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
                 shell=True,
             )

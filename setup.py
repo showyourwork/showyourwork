@@ -27,11 +27,8 @@ setup(
     ],
     extras_require={
         "tests": [
-            "parameterized",
-            "nose",
             "pytest",
-            "pytest-asyncio-cooperative",
-            "pytest-cov",
+            "pytest-asyncio-cooperative"
         ],
     },
     entry_points={

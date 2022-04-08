@@ -1,5 +1,5 @@
 from ... import paths
-import subprocess
+from ...subproc import get_stdout
 from pathlib import Path
 import os
 import time
@@ -13,12 +13,9 @@ def get_modified_files(commit="HEAD^"):
     return [
         Path(file).resolve()
         for file in (
-            subprocess.check_output(
-                ["git", "diff", "HEAD", commit, "--name-only"],
-                stderr=subprocess.DEVNULL,
+            get_stdout(["git", "diff", "HEAD", commit, "--name-only"]).split(
+                "\n"
             )
-            .decode()
-            .split("\n")
         )
         if len(file)
     ]
@@ -72,6 +69,6 @@ def cache_update():
 
     """
     # Store the current commit
-    commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode()
+    commit = get_stdout(["git", "rev-parse", "HEAD"])
     with open(paths.user().figures / "last_commit_sha.txt", "w") as f:
         print(commit, file=f)

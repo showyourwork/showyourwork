@@ -1,5 +1,5 @@
 from . import paths, exceptions, logging
-from .subproc import run
+from .subproc import get_stdout
 import subprocess
 import os
 import shutil
@@ -51,7 +51,7 @@ def clone(project_id):
 
     # Set up a local version of the repo. We don't actually _clone_ it to avoid
     # storing the url containing the password in .git/config
-    run(["git", "init"], cwd=str(paths.user().overleaf))
+    get_stdout(["git", "init"], cwd=str(paths.user().overleaf))
 
     # Pull from the repo (hide secrets)
     def callback(code, stdout, stderr):
@@ -64,7 +64,7 @@ def clone(project_id):
                 with exceptions.no_traceback():
                     raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
-    run(
+    get_stdout(
         ["git", "pull", url],
         cwd=str(paths.user().overleaf),
         secrets=[overleaf_email, overleaf_password],
@@ -111,7 +111,7 @@ def push_files(files, project_id):
             shutil.copy(file, remote_file)
 
         # git-add the file
-        run(
+        get_stdout(
             ["git", "add", remote_file.relative_to(paths.user().overleaf)],
             cwd=str(paths.user().overleaf),
         )
@@ -140,7 +140,7 @@ def push_files(files, project_id):
             logger.info(f"Pushing changes to Overleaf: {file_list}")
 
     # Commit!
-    result = run(
+    get_stdout(
         [
             "git",
             "-c",
@@ -158,7 +158,7 @@ def push_files(files, project_id):
     # Push (again being careful about secrets)
     overleaf_email, overleaf_password = get_overleaf_credentials()
     url = f"https://{overleaf_email}:{overleaf_password}@git.overleaf.com/{project_id}"
-    run(
+    get_stdout(
         ["git", "push", url, "master"],
         cwd=str(paths.user().overleaf),
         secrets=[overleaf_email, overleaf_password],
@@ -209,7 +209,7 @@ def pull_files(files, project_id, auto_commit=False):
                 if code != 0:
                     shutil.copy(remote_file, file)
                     if auto_commit:
-                        run(
+                        get_stdout(
                             [
                                 "git",
                                 "add",
@@ -218,7 +218,7 @@ def pull_files(files, project_id, auto_commit=False):
                             cwd=paths.user().repo,
                         )
 
-            run(["diff", remote_file, file], callback=callback)
+            get_stdout(["diff", remote_file, file], callback=callback)
 
     if auto_commit:
 
@@ -232,7 +232,9 @@ def pull_files(files, project_id, auto_commit=False):
                             "Error pushing changes to the remote.\n" + stderr
                         )
 
-                run(["git", "push"], cwd=paths.user().repo, callback=callback)
+                get_stdout(
+                    ["git", "push"], cwd=paths.user().repo, callback=callback
+                )
                 logger.info("Changes committed and pushed to remote.")
             else:
                 if (
@@ -244,7 +246,7 @@ def pull_files(files, project_id, auto_commit=False):
                 else:
                     raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
-        run(
+        get_stdout(
             [
                 "git",
                 "-c",

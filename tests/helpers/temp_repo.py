@@ -1,6 +1,6 @@
 from showyourwork import gitapi
 from showyourwork.git import get_repo_sha
-from showyourwork.subproc import run
+from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import delete_deposit
 from pathlib import Path
 import shutil
@@ -44,7 +44,7 @@ class TemporaryShowyourworkRepository:
         print(
             f"[{self.repo}] Creating local repo `tests/sandbox/{self.repo}`..."
         )
-        res = run(
+        get_stdout(
             f"{command} {options} showyourwork/{self.repo}",
             cwd=SANDBOX,
             shell=True,
@@ -80,20 +80,20 @@ class TemporaryShowyourworkRepository:
     def setup_git(self):
         """Init the git repo and add + commit all files."""
         print(f"[{self.repo}] Setting up local git repo...")
-        run("git init -q", shell=True, cwd=SANDBOX / self.repo)
-        run("git add .", shell=True, cwd=SANDBOX / self.repo)
-        run(
+        get_stdout("git init -q", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout("git add .", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout(
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
             "commit -q -m 'first commit'",
             shell=True,
             cwd=SANDBOX / self.repo,
         )
-        run("git branch -M main", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout("git branch -M main", shell=True, cwd=SANDBOX / self.repo)
 
     def build_local(self):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
-        run("showyourwork build", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout("showyourwork build", shell=True, cwd=SANDBOX / self.repo)
 
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self, initwait=240, maxtries=10, interval=60):
@@ -104,7 +104,7 @@ class TemporaryShowyourworkRepository:
 
         """
         print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}`...")
-        run(
+        get_stdout(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
             f"@github.com/showyourwork/{self.repo} main",

@@ -1,4 +1,4 @@
-from temp_repo import TemporaryShowyourworkRepository
+from helpers import TemporaryShowyourworkRepository
 
 
 class TestDefault(TemporaryShowyourworkRepository):

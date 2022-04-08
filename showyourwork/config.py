@@ -14,9 +14,17 @@ __all__ = ["parse_config"]
 
 
 def get_class_name(ms_name):
-    """
-    Infer the document class for the main TeX file.
+    """Infer the document class used in the main TeX file.
 
+    Args:
+        ms_name (str): The manuscript file name (no path or extension).
+
+    Raises:
+        exceptions.UnableToInferClassName: If the name cannot be inferred
+            by parsing the TeX file.
+
+    Returns:
+        str: The LaTeX class used in the manuscript.
     """
     with open(paths.user().tex / f"{ms_name}.tex", "r") as f:
         lines = f.readlines()
@@ -26,9 +34,7 @@ def get_class_name(ms_name):
                 name = match.groups()[0]
                 break
         else:
-            raise ValueError(
-                f"Unable to determine document class in `{ms_name}.tex`."
-            )
+            raise exceptions.UnableToInferClassName(ms_name)
         return name
 
 
