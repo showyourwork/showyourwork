@@ -6,9 +6,6 @@
     <a href="https://github.com/showyourwork/showyourwork/actions/workflows/tests.yml">
         <img src="https://github.com/showyourwork/showyourwork/actions/workflows/tests.yml/badge.svg" alt="tests"/>
     </a>
-    <a href="https://coveralls.io/github/showyourwork/showyourwork?branch=main">
-        <img src="https://coveralls.io/repos/github/showyourwork/showyourwork/badge.svg?branch=main" alt="coverage"/>
-    </a>
 </p>
 
 <h2>Coming soon</h2>

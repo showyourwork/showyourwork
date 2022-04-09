@@ -74,7 +74,7 @@ class TemporaryShowyourworkRepository:
             self.repo,
             org="showyourwork",
             description="Temporary test repository for showyourwork",
-            private=True,
+            private=False,
         )
 
     def setup_git(self):

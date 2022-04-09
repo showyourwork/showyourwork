@@ -1,7 +1,7 @@
 **/__pycache__
 **/.showyourwork
 **/.snakemake
-showyourwork/showyourwork_version.py
+showyourwork/_showyourwork_version.py
 showyourwork.egg-info
 .eggs
 .coverage

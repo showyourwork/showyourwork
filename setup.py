@@ -13,7 +13,7 @@ setup(
     license="MIT",
     packages=find_packages(),
     use_scm_version={
-        "write_to": Path("showyourwork") / "showyourwork_version.py",
+        "write_to": Path("showyourwork") / "_showyourwork_version.py",
         "write_to_template": '__version__ = "{version}"\n',
     },
     install_requires=[
@@ -26,10 +26,7 @@ setup(
         "packaging",
     ],
     extras_require={
-        "tests": [
-            "pytest",
-            "pytest-asyncio-cooperative"
-        ],
+        "tests": ["pytest", "pytest-asyncio-cooperative"],
     },
     entry_points={
         "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]

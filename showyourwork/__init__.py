@@ -1,1 +1,1 @@
-from .showyourwork_version import __version__
+from ._showyourwork_version import __version__
