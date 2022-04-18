@@ -76,8 +76,8 @@ checkpoint script_info:
                             "{}.{}".format(relpaths.figures / label, ext), []
                         )
                         datasets = [
-                            dataset for dataset in alldeps 
-                            if type(dataset) is str and 
+                            dataset for dataset in alldeps
+                            if type(dataset) is str and
                             dataset.endswith(".zenodo")
                         ]
 
@@ -98,13 +98,13 @@ checkpoint script_info:
                                     figures[label]["datasets"].append(ds)
                         else:
                             figures[label] = {
-                                "script": script, 
-                                "files": filenames, 
+                                "script": script,
+                                "files": filenames,
                                 "datasets": datasets
                             }
 
         # Other figures
-        other_filenames = []
+        other_filenames = set()
 
         # Parse graphics labeled with fig* inside `figure` environments
         # These won't be automatically generated, but we still
@@ -118,7 +118,7 @@ checkpoint script_info:
                     if str(path) == "figures/dag.pdf":
                             continue
                     elif path.parts[0] == "figures":
-                        other_filenames.append(str(relpaths.src / path))
+                        other_filenames.add(str(relpaths.src / path))
                     elif path.parts[0] == "static":
                         continue
                     elif path.name in files.special_figures:
@@ -135,7 +135,9 @@ checkpoint script_info:
             if str(path) == "figures/dag.pdf":
                 continue
             elif path.parts[0] == "figures":
-                other_filenames.append(str(relpaths.src / path))
+                if path.parts[-1].startswith('orcid-id.'):
+                    continue
+                other_filenames.add(str(relpaths.src / path))
             elif path.parts[0] == "static":
                 continue
             elif path.name in files.special_figures:
@@ -148,7 +150,7 @@ checkpoint script_info:
         if len(other_filenames):
             figures["unknown"] = {
                 "script": files.unknown,
-                "files": other_filenames,
+                "files": list(other_filenames),
                 "datasets": []
             }
 
