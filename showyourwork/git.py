@@ -10,13 +10,16 @@ def get_repo_root():
     Return the path to the repository root.
 
     """
-    try:
-        root = get_stdout(["git", "rev-parse", "--show-toplevel"]).replace(
-            "\n", ""
-        )
-    except Exception as e:
-        root = "None"
-    return root
+
+    def callback(code, stdout, stderr):
+        if code != 0:
+            return "None"
+        else:
+            return stdout.replace("\n", "")
+
+    return get_stdout(
+        ["git", "rev-parse", "--show-toplevel"], callback=callback
+    )
 
 
 def get_repo_url():

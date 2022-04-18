@@ -29,11 +29,9 @@ class TemporaryShowyourworkRepository:
     action_wait = 240
     action_max_tries = 10
     action_interval = 60
-    iterations = 1
     use_local_showyourwork = False
 
     # Internal
-    _iteration = 0
     _concept_id = None
 
     @property
@@ -44,10 +42,6 @@ class TemporaryShowyourworkRepository:
             .lower()
             .replace("_", "-")
         )
-
-    @property
-    def iteration(self):
-        return self._iteration
 
     @property
     def cwd(self):
@@ -142,7 +136,7 @@ class TemporaryShowyourworkRepository:
     def build_local(self):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
-        get_stdout("showyourwork build", shell=True, cwd=self.cwd)
+        get_stdout("CI=false showyourwork build", shell=True, cwd=self.cwd)
 
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self):
@@ -240,27 +234,18 @@ class TemporaryShowyourworkRepository:
             # git init, add, and commit
             self.setup_git()
 
-            # Main loop
-            for n in range(self.iterations):
+            # Customize the repo
+            self.customize()
 
-                # Record the iteration number
-                self._iteration = n
-                print(
-                    f"[{self.repo}] Main loop: {self._iteration + 1}/{self.iterations}"
-                )
+            # Commit changes
+            self.git_commit()
 
-                # Customize the repo
-                self.customize()
+            # Build the article locally
+            self.build_local()
 
-                # Commit changes
-                self.git_commit()
-
-                # Build the article locally
-                self.build_local()
-
-                # Push to GitHub to trigger the Actions workflow
-                # and wait for the result
-                await self.run_github_action()
+            # Push to GitHub to trigger the Actions workflow
+            # and wait for the result
+            await self.run_github_action()
 
         except:
 

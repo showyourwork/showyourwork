@@ -15,12 +15,7 @@ BANNER = r"""
 """
 
 
-@click.group(invoke_without_command=True)
-@click.pass_context
-def entry_point(context):
-    """Easily build open-source, reproducible scientific articles."""
-
-    # Show the banner
+def show_banner():
     try:
         terminal_size = shutil.get_terminal_size().columns
     except:
@@ -34,19 +29,25 @@ def entry_point(context):
             )
         )
 
-    if context.invoked_subcommand is None:
-        # Default command is `build`
-        context.invoke(build)
-    elif context.invoked_subcommand == "setup":
-        pass
-    else:
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def entry_point(context):
+    """Easily build open-source, reproducible scientific articles."""
+    # Parse
+    if context.invoked_subcommand != "setup":
         # Ensure we're running the command in the top level of a git repo
         root = os.path.realpath(git.get_repo_root())
         here = os.path.realpath(".")
         if not root == here:
-            raise exceptions.ShowyourworkException(
-                "Must run `showyourwork` in the top level of a git repo."
-            )
+            with exceptions.no_traceback():
+                raise exceptions.ShowyourworkException(
+                    "The `showyourwork` command must be called "
+                    "from the top level of a git repo."
+                )
+        if context.invoked_subcommand is None:
+            # Default command is `build`
+            context.invoke(build)
 
 
 @entry_point.command()

@@ -32,4 +32,8 @@ class ShowyourworkException(Exception):
             get_logger().debug(message)
         else:
             super().__init__(message)
+
+        # We already logged the error message;
+        # now fail silently.
+        sys.excepthook = lambda *args: None
         super().__init__()
