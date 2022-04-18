@@ -1,7 +1,7 @@
 from helpers import TemporaryShowyourworkRepository
 from pathlib import Path
 
-'''
+
 class TestDefault(TemporaryShowyourworkRepository):
     """Test setting up and building the default repo."""
 
@@ -13,7 +13,6 @@ class TestDefaultWithZenodoCaching(TemporaryShowyourworkRepository):
 
     def create_local(self):
         super().create_local(zenodo_cache=True)
-'''
 
 
 class TestZenodo(TemporaryShowyourworkRepository):

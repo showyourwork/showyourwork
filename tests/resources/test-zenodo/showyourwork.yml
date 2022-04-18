@@ -9,8 +9,8 @@ dependencies:
     - src/data/TOI640/S07.txt
     - src/data/TOI640/S07.json
 
-zenodo_sandbox:
-  1038841:
+zenodo:
+  6468327:
     destination: src/data/TOI640                        # default folder to extract files to
     contents:
 
