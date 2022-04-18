@@ -44,9 +44,11 @@ def _get_id_type(deposit_id, zenodo_url="zenodo.org"):
 
     """
     # Try to find a published record (no authentication needed)
-    data = parse_request(
-        requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
-    )
+    r = requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
+    try:
+        data = r.json()
+    except:
+        data = {}
 
     if r.status_code > 204:
 
