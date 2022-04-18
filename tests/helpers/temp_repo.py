@@ -1,3 +1,4 @@
+import showyourwork
 from showyourwork import gitapi
 from showyourwork.git import get_repo_sha
 from showyourwork.subproc import get_stdout
@@ -22,6 +23,32 @@ class TemporaryShowyourworkRepository:
 
     """
 
+    # Editable class settings
+    zenodo_cache = False
+    overleaf_id = None
+    action_wait = 240
+    action_max_tries = 10
+    action_interval = 60
+    iterations = 1
+    use_local_showyourwork = False
+
+    # Internal
+    _iteration = 0
+    _concept_id = None
+
+    @property
+    def repo(self):
+        # Name the repo after the subclass (in hyphenated-snake-case)
+        return (
+            re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__)
+            .lower()
+            .replace("_", "-")
+        )
+
+    @property
+    def iteration(self):
+        return self._iteration
+
     @property
     def cwd(self):
         return SANDBOX / self.repo
@@ -39,20 +66,24 @@ class TemporaryShowyourworkRepository:
                     target.parents[0].mkdir(exist_ok=True, parents=True)
                     shutil.copy(file, target)
 
-    def create_local(self, zenodo_cache=False, overleaf_id=None):
+    def create_local(self):
         """Create the repo locally."""
         # Delete any local repos
         self.delete_local()
 
         # Parse options
         command = "showyourwork setup"
-        options = f"--yes --no-git --showyourwork-version={get_repo_sha()}"
-        if not zenodo_cache:
+        if self.use_local_showyourwork:
+            version = str(Path(showyourwork.__file__).parents[1])
+        else:
+            version = get_repo_sha()
+        options = f"--yes --no-git --showyourwork-version={version}"
+        if not self.zenodo_cache:
             # Disable zenodo caching
             command = f"ZENODO_TOKEN='' {command}"
-        if overleaf_id:
+        if self.overleaf_id:
             # Enable overleaf syncing
-            options += f"--overleaf={overleaf_id}"
+            options += f"--overleaf={self.overleaf_id}"
 
         # Create a new one
         print(
@@ -64,14 +95,14 @@ class TemporaryShowyourworkRepository:
             shell=True,
         )
 
-        # Get the Zenodo concept id (if any)
+        # Get the Zenodo cache concept id (if any)
         user_config = yaml.load(
             jinja2.Environment(loader=jinja2.FileSystemLoader(self.cwd))
             .get_template("showyourwork.yml")
             .render(),
             Loader=yaml.CLoader,
         )
-        self.concept_id = (
+        self._concept_id = (
             user_config.get("showyourwork", {}).get("cache", {}).get("zenodo")
         )
 
@@ -93,14 +124,20 @@ class TemporaryShowyourworkRepository:
         """Init the git repo and add + commit all files."""
         print(f"[{self.repo}] Setting up local git repo...")
         get_stdout("git init -q", shell=True, cwd=self.cwd)
+        get_stdout(
+            "git symbolic-ref HEAD refs/heads/main", shell=True, cwd=self.cwd
+        )
+
+    def git_commit(self):
+        """Add and commit all files in the local repo."""
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
+            "git diff-index --quiet HEAD || "
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
-            "commit -q -m 'first commit'",
+            "commit -q -m 'auto commit from showyourwork'",
             shell=True,
             cwd=self.cwd,
         )
-        get_stdout("git branch -M main", shell=True, cwd=self.cwd)
 
     def build_local(self):
         """Run showyourwork locally to build the article."""
@@ -108,7 +145,7 @@ class TemporaryShowyourworkRepository:
         get_stdout("showyourwork build", shell=True, cwd=self.cwd)
 
     @pytest.mark.asyncio_cooperative
-    async def run_github_action(self, initwait=240, maxtries=10, interval=60):
+    async def run_github_action(self):
         """
         Push to the remote and asynchronously wait for the workflow on
         GitHub Actions to finish.
@@ -125,12 +162,12 @@ class TemporaryShowyourworkRepository:
             secrets=[gitapi.get_access_token()],
         )
         print(
-            f"[{self.repo}] Waiting {initwait} seconds for workflow "
-            f"to finish (1/{maxtries})..."
+            f"[{self.repo}] Waiting {self.action_wait} seconds for workflow "
+            f"to finish (1/{self.action_max_tries})..."
         )
-        await asyncio.sleep(initwait)
+        await asyncio.sleep(self.action_wait)
         status = "unknown"
-        for n in range(maxtries):
+        for n in range(self.action_max_tries):
             (status, conclusion, url,) = gitapi.get_latest_workflow_run_status(
                 self.repo, org="showyourwork"
             )
@@ -144,12 +181,12 @@ class TemporaryShowyourworkRepository:
                         f"with status {conclusion}.\n"
                         f"For details, see {url}."
                     )
-            elif n < maxtries - 1:
+            elif n < self.action_max_tries - 1:
                 print(
-                    f"[{self.repo}] Waiting {interval} seconds for "
-                    f"workflow to finish ({n+2}/{maxtries})..."
+                    f"[{self.repo}] Waiting {self.action_interval} seconds for "
+                    f"workflow to finish ({n+2}/{self.action_max_tries})..."
                 )
-                await asyncio.sleep(interval)
+                await asyncio.sleep(self.action_interval)
         else:
             raise Exception(
                 "[{self.repo}] GitHub Actions workflow timed out.\n"
@@ -158,12 +195,12 @@ class TemporaryShowyourworkRepository:
 
     def delete_zenodo(self):
         """Delete the Zenodo deposit associated with the temp repo."""
-        if self.concept_id:
+        if self._concept_id:
             print(
                 f"[{self.repo}] Deleting Zenodo deposit "
-                f"with concept id {self.concept_id}..."
+                f"with concept id {self._concept_id}..."
             )
-            delete_deposit(self.concept_id)
+            delete_deposit(self._concept_id)
 
     def delete_remote(self):
         """Delete the remote repo."""
@@ -189,14 +226,6 @@ class TemporaryShowyourworkRepository:
         complete.
 
         """
-        # Name the repo after the subclass (in hyphenated-snake-case)
-        self.repo = (
-            re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__)
-            .lower()
-            .replace("_", "-")
-        )
-        self.concept_id = None
-
         try:
 
             # Create the repo on GitHub
@@ -208,18 +237,30 @@ class TemporaryShowyourworkRepository:
             # Copy files from the template
             self.copy_files()
 
-            # Customize the repo
-            self.customize()
-
             # git init, add, and commit
             self.setup_git()
 
-            # Build the article locally
-            self.build_local()
+            # Main loop
+            for n in range(self.iterations):
 
-            # Push to GitHub to trigger the Actions workflow
-            # and wait for the result
-            await self.run_github_action()
+                # Record the iteration number
+                self._iteration = n
+                print(
+                    f"[{self.repo}] Main loop: {self._iteration + 1}/{self.iterations}"
+                )
+
+                # Customize the repo
+                self.customize()
+
+                # Commit changes
+                self.git_commit()
+
+                # Build the article locally
+                self.build_local()
+
+                # Push to GitHub to trigger the Actions workflow
+                # and wait for the result
+                await self.run_github_action()
 
         except:
 

@@ -1,0 +1,7 @@
+rule generate_dataset:
+    output:
+        directory("src/data/dataset")
+    cache:
+        True
+    script:
+        "src/scripts/generate_dataset.py"

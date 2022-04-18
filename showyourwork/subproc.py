@@ -58,10 +58,15 @@ def parse_request(r):
     try:
         data = r.json()
     except:
-        data = {}
+        if len(r.text) == 0:
+            # We're good; there's just no data
+            data = {}
+        else:
+            # Something went wrong
+            data = {"message": r.text}
 
     # Parse the status code
-    if r.status_code > 204 or not data:
+    if r.status_code > 204:
         data["message"] = data.get("message", "")
         data["status"] = data.get("status", "")
         for error in data.get("errors", []):

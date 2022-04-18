@@ -209,13 +209,15 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
         file_to_upload = file
 
     # Use curl to upload the file so we have a progress bar
+    # TODO: The progress bar isn't displaying, even if we don't
+    # catch stdout & stderr. What gives?
     bucket_url = draft["links"]["bucket"]
     progress_bar = (
         ["--progress-bar"]
         if not snakemake.workflow.config["github_actions"]
         else []
     )
-    subprocess.run(
+    res = subprocess.run(
         [
             "curl",
             *progress_bar,
@@ -225,8 +227,13 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
             "PUT",
             f"{bucket_url}/{rule_name}?access_token={access_token}",
         ],
-        secrets=[access_token],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
     )
+    if res.returncode > 0:
+        stderr = res.stderr.decode().replace("access_token", "*****")
+        raise exceptions.ZenodoError(stderr)
 
     # Delete the tarball if we created it
     if tarball:
@@ -283,13 +290,15 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
         ):
 
             # Download it
+            # TODO: The progress bar isn't displaying, even if we don't
+            # catch stdout & stderr. What gives?
             url = entry["links"]["download"]
             progress_bar = (
                 ["--progress-bar"]
                 if not snakemake.workflow.config["github_actions"]
                 else []
             )
-            subprocess.run(
+            res = subprocess.run(
                 [
                     "curl",
                     f"{url}?access_token={access_token}",
@@ -297,8 +306,13 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
                     "--output",
                     str(file),
                 ],
-                secrets=[access_token],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
             )
+            if res.returncode > 0:
+                stderr = res.stderr.decode().replace("access_token", "*****")
+                raise exceptions.ZenodoError(stderr)
 
             # If it's a directory tarball, extract it
             if tarball:
@@ -386,16 +400,14 @@ def delete_deposit(concept_id):
 
     # Grab the version id
     logger.debug(f"Deleting Zenodo deposit {concept_id}...")
-    data = parse_request(
-        requests.get(
-            f"https://zenodo.org/api/deposit/depositions",
-            params={
-                "q": f"conceptrecid:{concept_id}",
-                "all_versions": 1,
-                "access_token": access_token,
-            },
-        )
-    )[0]
+    r = requests.get(
+        f"https://zenodo.org/api/deposit/depositions",
+        params={
+            "q": f"conceptrecid:{concept_id}",
+            "all_versions": 1,
+            "access_token": access_token,
+        },
+    )
     try:
         data = r.json()[0]
     except:

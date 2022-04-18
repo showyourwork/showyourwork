@@ -21,3 +21,4 @@ If you're looking for the current release of `showyourwork`, please see [here](h
 - [ ] Test integration with Overleaf
 - [ ] Implement all custom exception messages
 - [ ] Write documentation
+- [ ] Progress bars not working in upload
