@@ -46,7 +46,7 @@ def get_stdout(
     return callback(code, stdout, stderr)
 
 
-def check_status(r):
+def parse_request(r):
     """
     Parse a requests return object and raise a custom exception
     for a >200-level status code.
@@ -54,11 +54,14 @@ def check_status(r):
     """
     from . import exceptions
 
-    if r.status_code > 204:
-        try:
-            data = r.json()
-        except:
-            raise exceptions.RequestError(status=r.status_code)
+    # Try to get the data
+    try:
+        data = r.json()
+    except:
+        data = {}
+
+    # Parse the status code
+    if r.status_code > 204 or not data:
         data["message"] = data.get("message", "")
         data["status"] = data.get("status", "")
         for error in data.get("errors", []):
@@ -66,4 +69,5 @@ def check_status(r):
         raise exceptions.RequestError(
             status=data["status"], message=data["message"]
         )
-    return r
+    else:
+        return data

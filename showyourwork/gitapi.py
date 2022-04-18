@@ -1,4 +1,4 @@
-from .subproc import check_status
+from .subproc import parse_request
 from . import exceptions
 import requests
 import os
@@ -17,7 +17,7 @@ def get_access_token(token_name="GH_API_KEY", error_if_missing=False):
 
 
 def get_authenticated_user():
-    result = check_status(
+    data = parse_request(
         requests.get(
             "https://api.github.com/user",
             headers={
@@ -26,7 +26,7 @@ def get_authenticated_user():
             },
         )
     )
-    return result.json()["login"]
+    return data["login"]
 
 
 def create_repo(name, description=None, private=False, org=None):
@@ -44,7 +44,7 @@ def create_repo(name, description=None, private=False, org=None):
         url = f"https://api.github.com/orgs/{org}/repos"
     else:
         url = "https://api.github.com/user/repos"
-    check_status(
+    parse_request(
         requests.post(
             url,
             data=json.dumps(
@@ -83,7 +83,7 @@ def delete_repo(name, org=None, quiet=False):
         },
     )
     if not quiet:
-        check_status(result)
+        parse_request(result)
 
 
 def get_latest_workflow_run_status(name, org=None):
@@ -107,7 +107,7 @@ def get_latest_workflow_run_status(name, org=None):
         url = f"https://api.github.com/repos/{org}/{name}/actions/runs"
     else:
         url = f"https://api.github.com/repos/{get_authenticated_user()}/{name}/actions/runs"
-    result = check_status(
+    data = parse_request(
         requests.get(
             url,
             headers={
@@ -116,7 +116,6 @@ def get_latest_workflow_run_status(name, org=None):
             },
         )
     )
-    data = result.json()
     if data["total_count"] == 0:
         return "unknown", "unknown", None
 

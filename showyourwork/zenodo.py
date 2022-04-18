@@ -3,7 +3,7 @@ Main Zenodo interface.
 
 """
 from . import exceptions, paths, git
-from .subproc import check_status
+from .subproc import parse_request
 from .logging import get_logger
 import requests
 import tarfile
@@ -44,8 +44,9 @@ def _get_id_type(deposit_id, zenodo_url="zenodo.org"):
 
     """
     # Try to find a published record (no authentication needed)
-    r = requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
-    data = r.json()
+    data = parse_request(
+        requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
+    )
 
     if r.status_code > 204:
 
@@ -112,7 +113,7 @@ def create_deposit(title):
     access_token = get_access_token(error_if_missing=True)
 
     # Create the draft
-    r = check_status(
+    data = parse_request(
         requests.post(
             f"https://zenodo.org/api/deposit/depositions",
             params={
@@ -123,7 +124,6 @@ def create_deposit(title):
     )
 
     # Add some minimal metadata
-    data = r.json()
     description = (
         "Data automatically uploaded by the <code>showyourwork</code> workflow. "
         "Each of the files in this deposit were generated from a user-defined "
@@ -141,7 +141,7 @@ def create_deposit(title):
             "notes": "{}",
         }
     }
-    r = check_status(
+    data = parse_request(
         requests.put(
             data["links"]["latest_draft"],
             params={"access_token": access_token},
@@ -149,7 +149,6 @@ def create_deposit(title):
             headers={"Content-Type": "application/json"},
         )
     )
-    data = r.json()
     logger.info(f"Created draft with id {data['id']} on Zenodo.")
 
     # Return the ids
@@ -182,17 +181,16 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
     elif rule_hash_on_zenodo:
         # Delete the existing file
         files_url = draft["links"]["files"]
-        r = check_status(
+        data = parse_request(
             requests.get(
                 files_url,
                 params={"access_token": access_token},
             )
         )
-        data = r.json()
         for entry in data:
             if entry["filename"] == rule_name:
                 file_id = entry["id"]
-                r = check_status(
+                parse_request(
                     requests.delete(
                         f"{files_url}/{file_id}",
                         params={"access_token": access_token},
@@ -235,7 +233,7 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
     # Update the provenance
     rule_hashes[rule_name] = file.name
     metadata["notes"] = json.dumps(rule_hashes, indent=4)
-    r = check_status(
+    parse_request(
         requests.put(
             draft["links"]["latest_draft"],
             params={"access_token": access_token},
@@ -268,13 +266,12 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
         raise exceptions.InvalidZenodoNotesField()
 
     # Get the files currently on the remote
-    r = check_status(
+    data = parse_request(
         requests.get(
             draft["links"]["files"],
             params={"access_token": access_token},
         )
     )
-    data = r.json()
 
     # Look for a match
     for entry in data:
@@ -387,7 +384,7 @@ def delete_deposit(concept_id):
 
     # Grab the version id
     logger.debug(f"Deleting Zenodo deposit {concept_id}...")
-    r = check_status(
+    data = parse_request(
         requests.get(
             f"https://zenodo.org/api/deposit/depositions",
             params={
@@ -396,13 +393,13 @@ def delete_deposit(concept_id):
                 "access_token": access_token,
             },
         )
-    )
+    )[0]
     try:
         data = r.json()[0]
     except:
         raise exceptions.ZenodoRecordNotFound(concept_id)
     version_id = data["id"]
-    check_status(
+    parse_request(
         requests.delete(
             f"https://zenodo.org/api/deposit/depositions/{version_id}",
             params={
@@ -436,7 +433,10 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
         },
     )
     if r.status_code <= 204:
-        data = r.json()
+        try:
+            data = r.json()
+        except:
+            data = []
         if len(data):
             data = data[0]
             draft_url = data.get("links", {}).get("latest_draft", None)
@@ -446,8 +446,8 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
                     params={"access_token": access_token},
                 )
                 if r.status_code <= 204:
-                    draft = r.json()
                     try:
+                        draft = r.json()
                         download_file_from_draft(
                             draft, file, rule_name, tarball=tarball
                         )
@@ -467,7 +467,8 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
                         pass
                     else:
                         logger.debug(data["message"])
-
+        else:
+            logger.debug(f"Failed to access Zenodo deposit {concept_id}.")
     else:
         logger.debug(f"Failed to access Zenodo deposit {concept_id}.")
         try:
@@ -508,7 +509,13 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
             },
         )
         if r.status_code <= 204:
-            records = r.json().get("hits", {}).get("hits", [])
+            try:
+                records = r.json().get("hits", {}).get("hits", [])
+            except:
+                records = []
+                logger.debug(
+                    f"File {rule_name} not found in record {concept_id}."
+                )
             for record in records[::-1]:
                 try:
                     download_file_from_record(
@@ -571,7 +578,10 @@ def upload_file_to_zenodo(file, rule_name, concept_id, tarball=False):
             logger.debug(data["message"])
         return
 
-    data = r.json()
+    try:
+        data = r.json()
+    except:
+        data = []
     if len(data):
         data = data[0]
     else:
@@ -583,30 +593,28 @@ def upload_file_to_zenodo(file, rule_name, concept_id, tarball=False):
     if draft_url:
 
         # Draft exists
-        r = check_status(
+        draft = parse_request(
             requests.get(
                 draft_url,
                 params={"access_token": access_token},
             )
         )
-        draft = r.json()
 
     else:
 
         # Create a new draft
-        r = check_status(
+        data = parse_request(
             requests.post(
                 data["links"]["newversion"],
                 params={"access_token": access_token},
             )
         )
-        draft_url = r.json()["links"]["latest_draft"]
-        r = check_status(
+        draft_url = data["links"]["latest_draft"]
+        draft = parse_request(
             requests.get(
                 draft_url,
                 params={"access_token": access_token},
             )
         )
-        draft = r.json()
 
     upload_file_to_draft(draft, file, rule_name, tarball=tarball)

@@ -13,6 +13,7 @@ import jinja2
 
 # Folder where we'll create our temporary repos
 SANDBOX = Path(__file__).absolute().parents[1] / "sandbox"
+RESOURCES = Path(__file__).absolute().parents[1] / "resources"
 
 
 class TemporaryShowyourworkRepository:
@@ -21,9 +22,22 @@ class TemporaryShowyourworkRepository:
 
     """
 
+    @property
+    def cwd(self):
+        return SANDBOX / self.repo
+
     def customize(self):
         """Subclass me to customize the repo."""
         pass
+
+    def copy_files(self):
+        """Copy files over from the template repo, if it exists."""
+        if (RESOURCES / self.repo).exists():
+            for file in (RESOURCES / self.repo).rglob("*"):
+                if not file.is_dir():
+                    target = self.cwd / file.relative_to(RESOURCES / self.repo)
+                    target.parents[0].mkdir(exist_ok=True, parents=True)
+                    shutil.copy(file, target)
 
     def create_local(self, zenodo_cache=False, overleaf_id=None):
         """Create the repo locally."""
@@ -52,9 +66,7 @@ class TemporaryShowyourworkRepository:
 
         # Get the Zenodo concept id (if any)
         user_config = yaml.load(
-            jinja2.Environment(
-                loader=jinja2.FileSystemLoader(SANDBOX / self.repo)
-            )
+            jinja2.Environment(loader=jinja2.FileSystemLoader(self.cwd))
             .get_template("showyourwork.yml")
             .render(),
             Loader=yaml.CLoader,
@@ -80,20 +92,20 @@ class TemporaryShowyourworkRepository:
     def setup_git(self):
         """Init the git repo and add + commit all files."""
         print(f"[{self.repo}] Setting up local git repo...")
-        get_stdout("git init -q", shell=True, cwd=SANDBOX / self.repo)
-        get_stdout("git add .", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout("git init -q", shell=True, cwd=self.cwd)
+        get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
             "commit -q -m 'first commit'",
             shell=True,
-            cwd=SANDBOX / self.repo,
+            cwd=self.cwd,
         )
-        get_stdout("git branch -M main", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout("git branch -M main", shell=True, cwd=self.cwd)
 
     def build_local(self):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
-        get_stdout("showyourwork build", shell=True, cwd=SANDBOX / self.repo)
+        get_stdout("showyourwork build", shell=True, cwd=self.cwd)
 
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self, initwait=240, maxtries=10, interval=60):
@@ -109,7 +121,7 @@ class TemporaryShowyourworkRepository:
             f"{gitapi.get_access_token()}"
             f"@github.com/showyourwork/{self.repo} main",
             shell=True,
-            cwd=SANDBOX / self.repo,
+            cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
         )
         print(
@@ -163,11 +175,11 @@ class TemporaryShowyourworkRepository:
 
     def delete_local(self):
         """Delete the local repo."""
-        if (SANDBOX / self.repo).exists():
+        if (self.cwd).exists():
             print(
                 f"[{self.repo}] Deleting local repo `tests/sandbox/{self.repo}`..."
             )
-            shutil.rmtree(SANDBOX / self.repo)
+            shutil.rmtree(self.cwd)
 
     @pytest.mark.asyncio_cooperative
     async def test_repo(self):
@@ -183,6 +195,7 @@ class TemporaryShowyourworkRepository:
             .lower()
             .replace("_", "-")
         )
+        self.concept_id = None
 
         try:
 
@@ -191,6 +204,9 @@ class TemporaryShowyourworkRepository:
 
             # Set up the repo
             self.create_local()
+
+            # Copy files from the template
+            self.copy_files()
 
             # Customize the repo
             self.customize()
