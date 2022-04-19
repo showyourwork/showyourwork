@@ -40,21 +40,25 @@ def entry_point(context):
         root = os.path.realpath(git.get_repo_root())
         here = os.path.realpath(".")
         if not root == here:
-            with exceptions.no_traceback():
-                raise exceptions.ShowyourworkException(
-                    "The `showyourwork` command must be called "
-                    "from the top level of a git repo."
-                )
+            raise exceptions.ShowyourworkException(
+                "The `showyourwork` command must be called "
+                "from the top level of a git repo."
+            )
         if context.invoked_subcommand is None:
             # Default command is `build`
             context.invoke(build)
 
 
-@entry_point.command()
-def build():
+@entry_point.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+    )
+)
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
+def build(snakemake_args):
     """Build an article in the current working directory."""
-    commands.preprocess()
-    commands.build()
+    commands.preprocess(snakemake_args)
+    commands.build(snakemake_args)
 
 
 def validate_slug(context, param, slug):

@@ -11,11 +11,9 @@ def process_run_result(code, stdout, stderr):
     if stdout:
         logger.debug(stdout)
 
-    # Raise the exception with no traceback to hide
-    # the invocation (which may contain secrets)
+    # Raise the exception
     if code != 0:
-        with exceptions.no_traceback():
-            raise exceptions.CalledProcessError(stderr)
+        raise exceptions.CalledProcessError(stderr)
 
     return stdout
 

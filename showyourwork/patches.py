@@ -51,18 +51,21 @@ def patch_snakemake_cache(concept_id):
                         job.rule.name,
                         concept_id,
                         tarball=tarball,
+                        zenodo_url="zenodo.org",
                     )
                     logger.info(
                         f"Restoring from Zenodo cache: {outputfile}..."
                     )
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
+                    exceptions.enable_trace()
                     logger.warn(
                         f"Required version of file not found in cache: {outputfile}."
                     )
                     logger.warn(f"Running rule from scratch...")
                 except exceptions.ZenodoException as e:
                     # NOTE: we treat all Zenodo caching errors as non-fatal
+                    exceptions.enable_trace()
                     logger.error(str(e))
                     logger.warn(f"Running rule from scratch...")
             else:
@@ -72,10 +75,15 @@ def patch_snakemake_cache(concept_id):
                 logger.info(f"Syncing file with Zenodo cache: {outputfile}...")
                 try:
                     upload_file_to_zenodo(
-                        cachefile, job.rule.name, concept_id, tarball=tarball
+                        cachefile,
+                        job.rule.name,
+                        concept_id,
+                        tarball=tarball,
+                        zenodo_url="zenodo.org",
                     )
                 except exceptions.ZenodoException as e:
                     # NOTE: we treate all Zenodo caching errors as non-fatal
+                    exceptions.enable_trace()
                     logger.error(str(e))
 
         # Call the original method
@@ -95,10 +103,15 @@ def patch_snakemake_cache(concept_id):
             logger.info(f"Caching output file on Zenodo: {outputfile}...")
             try:
                 upload_file_to_zenodo(
-                    cachefile, job.rule.name, concept_id, tarball=tarball
+                    cachefile,
+                    job.rule.name,
+                    concept_id,
+                    tarball=tarball,
+                    zenodo_url="zenodo.org",
                 )
             except exceptions.ZenodoException as e:
                 # NOTE: we treate all Zenodo caching errors as non-fatal
+                exceptions.enable_trace()
                 logger.error(str(e))
 
         return result
@@ -109,7 +122,10 @@ def patch_snakemake_cache(concept_id):
 
 
 def patch_snakemake_wait_for_files():
-    """"""
+    """
+    Replace Snakemake's `wait_for_files` method with a custom version.
+
+    """
 
     def wait_for_files(
         files, latency_wait=3, force_stay_on_remote=False, ignore_pipe=False

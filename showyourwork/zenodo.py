@@ -23,6 +23,7 @@ zenodo_url = {"zenodo": "zenodo.org", "zenodo_sandbox": "sandbox.zenodo.org"}
 
 
 # Supported tarball extensions
+# TODO: Support other extensions
 zip_exts = ["tar.gz"]
 
 
@@ -44,13 +45,14 @@ def _get_id_type(deposit_id, zenodo_url="zenodo.org"):
 
     """
     # Try to find a published record (no authentication needed)
-    r = requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
     try:
+        r = requests.get(f"https://{zenodo_url}/api/records/{deposit_id}")
         data = r.json()
-    except:
-        data = {}
+    except Exception as e:
+        r = None
+        data = {"status": "", "message": str(e)}
 
-    if r.status_code > 204:
+    if (r is None) or (r.status_code > 204):
 
         if "PID is not registered" in data.get("message", ""):
 
@@ -61,7 +63,10 @@ def _get_id_type(deposit_id, zenodo_url="zenodo.org"):
 
             # Something unexpected happened...
             raise exceptions.ZenodoError(
-                status=data["status"], message=data["message"]
+                status=data.get("status", ""),
+                message=data.get(
+                    "message", "An error occurred while accessing Zenodo."
+                ),
             )
 
     else:
@@ -103,7 +108,7 @@ def get_id_type(deposit_id, zenodo_url="zenodo.org"):
     return id_type
 
 
-def create_deposit(title):
+def create_deposit(title, zenodo_url="zenodo.org"):
     """
     Create a draft of a Zenodo deposit for the current repo & branch.
 
@@ -117,7 +122,7 @@ def create_deposit(title):
     # Create the draft
     data = parse_request(
         requests.post(
-            f"https://zenodo.org/api/deposit/depositions",
+            f"https://{zenodo_url}/api/deposit/depositions",
             params={
                 "access_token": access_token,
             },
@@ -391,7 +396,7 @@ def download_file_from_record(record, file, rule_name, tarball=False):
     raise exceptions.FileNotFoundOnZenodo(rule_name)
 
 
-def delete_deposit(concept_id):
+def delete_deposit(concept_id, zenodo_url="zenodo.org"):
     # Logger
     logger = get_logger()
 
@@ -401,7 +406,7 @@ def delete_deposit(concept_id):
     # Grab the version id
     logger.debug(f"Deleting Zenodo deposit {concept_id}...")
     r = requests.get(
-        f"https://zenodo.org/api/deposit/depositions",
+        f"https://{zenodo_url}/api/deposit/depositions",
         params={
             "q": f"conceptrecid:{concept_id}",
             "all_versions": 1,
@@ -415,7 +420,7 @@ def delete_deposit(concept_id):
     version_id = data["id"]
     parse_request(
         requests.delete(
-            f"https://zenodo.org/api/deposit/depositions/{version_id}",
+            f"https://{zenodo_url}/api/deposit/depositions/{version_id}",
             params={
                 "access_token": access_token,
             },
@@ -423,7 +428,9 @@ def delete_deposit(concept_id):
     )
 
 
-def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
+def download_file_from_zenodo(
+    file, rule_name, concept_id, tarball=False, zenodo_url="zenodo.org"
+):
     # Logger
     logger = get_logger()
 
@@ -439,7 +446,7 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
     # that draft and return if found.
     logger.debug(f"Attempting to access Zenodo deposit {concept_id}...")
     r = requests.get(
-        f"https://zenodo.org/api/deposit/depositions",
+        f"https://{zenodo_url}/api/deposit/depositions",
         params={
             "q": f"conceptrecid:{concept_id}",
             "all_versions": 1,
@@ -466,6 +473,7 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
                             draft, file, rule_name, tarball=tarball
                         )
                     except exceptions.FileNotFoundOnZenodo:
+                        exceptions.enable_trace()
                         logger.debug(
                             f"File {rule_name} not found in deposit {concept_id}."
                         )
@@ -494,7 +502,7 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
 
     # Check for a published record
     logger.debug(f"Attempting to access Zenodo record {concept_id}...")
-    r = requests.get(f"https://zenodo.org/api/records/{concept_id}")
+    r = requests.get(f"https://{zenodo_url}/api/records/{concept_id}")
     if r.status_code > 204:
         try:
             data = r.json()
@@ -515,7 +523,7 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
         # There's a published record. Let's search all versions for
         # a file match.
         r = requests.get(
-            f"https://zenodo.org/api/records",
+            f"https://{zenodo_url}/api/records",
             params={
                 "q": f'conceptdoi:"10.5281/zenodo.{concept_id}"',
                 "access_token": access_token,
@@ -536,6 +544,7 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
                         record, file, rule_name, tarball=tarball
                     )
                 except exceptions.FileNotFoundOnZenodo:
+                    exceptions.enable_trace()
                     logger.debug(
                         f"File {rule_name} not found in record {concept_id}."
                     )
@@ -558,7 +567,9 @@ def download_file_from_zenodo(file, rule_name, concept_id, tarball=False):
     raise exceptions.FileNotFoundOnZenodo(file.name)
 
 
-def upload_file_to_zenodo(file, rule_name, concept_id, tarball=False):
+def upload_file_to_zenodo(
+    file, rule_name, concept_id, tarball=False, zenodo_url="zenodo.org"
+):
     # Logger
     logger = get_logger()
 
@@ -573,7 +584,7 @@ def upload_file_to_zenodo(file, rule_name, concept_id, tarball=False):
     # Check if a draft already exists, and create it if not.
     # If authentication fails, return with a gentle warning
     r = requests.get(
-        f"https://zenodo.org/api/deposit/depositions",
+        f"https://{zenodo_url}/api/deposit/depositions",
         params={
             "q": f"conceptrecid:{concept_id}",
             "all_versions": 1,

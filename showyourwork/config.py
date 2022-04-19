@@ -49,8 +49,7 @@ def as_dict(x, depth=0, maxdepth=30):
     if depth == 0 and not x:
         return {}
     elif depth > maxdepth:
-        with exceptions.no_traceback():
-            raise exceptions.ConfigError()
+        raise exceptions.ConfigError()
 
     if type(x) is list:
         y = dict(ChainMap(*[dict(xi) for xi in x if type(xi) is OrderedDict]))

@@ -54,8 +54,7 @@ def compile_tex(config, output_dir=None, args=[], stylesheet=None):
             logger.error(stderr)
 
             # Raise the exception
-            with exceptions.no_traceback():
-                raise exceptions.TectonicError(logfile)
+            raise exceptions.TectonicError(logfile)
 
     get_stdout(
         ["tectonic"]

@@ -19,6 +19,8 @@ class ColorizingStreamHandler(logging.StreamHandler):
     """
     Adapted from snakemake.logging.ColorizingStreamHandler.
 
+    Adds color support to stdout, if available.
+
     """
 
     BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
@@ -73,6 +75,28 @@ class ColorizingStreamHandler(logging.StreamHandler):
             )
             message.append(self.RESET_SEQ)
         return "".join(message)
+
+
+class SnakemakeFormatter(logging.Formatter):
+    """
+    Format Snakemake errors before displaying them on stdout.
+
+    Sometimes, Snakemake fails with suggestions for commands to fix certain
+    issues. We intercept those suggestions here, replacing them with the
+    corresponding showyourwork syntax for convenience.
+    """
+
+    replacements = {
+        "snakemake --cleanup-metadata": "showyourwork build --cleanup-metadata",
+        "rerun your command with the --rerun-incomplete flag": "rerun showyourwork build with the --rerun-incomplete flag",
+        "It can be removed with the --unlock argument": "It can be removed by passing --unlock to showyourwork build",
+    }
+
+    def format(self, record):
+        message = record.getMessage()
+        for key, value in self.replacements.items():
+            message = message.replace(key, value)
+        return message
 
 
 def get_logger():
@@ -167,6 +191,9 @@ def setup_logging(verbose=False, logfile=None):
         error_file = paths.user().logs / "snakemake_errors.log"
         snakemake_logger.custom_error_handler = logging.FileHandler(error_file)
         snakemake_logger.custom_error_handler.setLevel(logging.ERROR)
+        snakemake_logger.custom_error_handler.setFormatter(
+            SnakemakeFormatter()
+        )
         snakemake_logger.logger.addHandler(
             snakemake_logger.custom_error_handler
         )

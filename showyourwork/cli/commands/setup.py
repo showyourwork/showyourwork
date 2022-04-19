@@ -12,10 +12,9 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
     # Parse the slug
     user, repo = slug.split("/")
     if Path(repo).exists():
-        with exceptions.no_traceback():
-            raise exceptions.ShowyourworkException(
-                f"Directory already exists: {repo}."
-            )
+        raise exceptions.ShowyourworkException(
+            f"Directory already exists: {repo}."
+        )
     name = f"@{user}"
 
     # Get current stable version
@@ -26,7 +25,7 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
     # set the ZENODO_TOKEN environment variable
     if zenodo.get_access_token(error_if_missing=False):
         zenodo_cache_concept_id = zenodo.create_deposit(
-            f"Data for {slug} [main]"
+            f"Data for {slug} [main]", zenodo_url="zenodo.org"
         )
     else:
         zenodo_cache_concept_id = ""
@@ -67,11 +66,10 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
 
         def callback(code, stdout, stderr):
             if code > 0:
-                with exceptions.no_traceback():
-                    raise exceptions.ShowyourworkException(
-                        f"Unable to push to GitHub. Did you forget "
-                        "to create the remote repo?"
-                    )
+                raise exceptions.ShowyourworkException(
+                    f"Unable to push to GitHub. Did you forget "
+                    "to create the remote repo?"
+                )
 
         get_stdout(
             "git push -q -u origin main",

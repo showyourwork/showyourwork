@@ -9,7 +9,7 @@ class ZenodoError(ZenodoException):
     def __init__(
         self, status="", message="An error occurred while accessing Zenodo."
     ):
-        super().__init__(f"Zenodo error {status}: {message}")
+        super().__init__(f"Zenodo error{' ' * bool(len(status))}{status}: {message}")
 
 
 class MissingZenodoAccessToken(ZenodoException):

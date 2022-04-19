@@ -61,8 +61,7 @@ def clone(project_id):
             if "Authentication failed" in stderr:
                 raise exceptions.OverleafAuthenticationError()
             else:
-                with exceptions.no_traceback():
-                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
     get_stdout(
         ["git", "pull", url],
@@ -89,6 +88,7 @@ def push_files(files, project_id):
         exceptions.OverleafAuthenticationError,
     ):
         # Not fatal!
+        exceptions.enable_trace()
         return
 
     # Process each file
@@ -182,6 +182,7 @@ def pull_files(files, project_id, auto_commit=False):
         exceptions.OverleafAuthenticationError,
     ):
         # Not fatal!
+        exceptions.enable_trace()
         return
 
     # Copy over the files

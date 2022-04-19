@@ -36,7 +36,6 @@ def copy_logfiles():
 
 
 def print_errors(errorcode):
-
     # Get showyourwork errors
     syw_error_file = paths.user().logs / "showyourwork_errors.log"
     if syw_error_file.exists():
