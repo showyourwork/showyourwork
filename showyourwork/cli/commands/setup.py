@@ -19,7 +19,10 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
 
     # Get current stable version
     if showyourwork_version is None:
-        showyourwork_version = version.parse(__version__).base_version
+        if version.parse(__version__).is_devrelease:
+            showyourwork_version = "latest"
+        else:
+            showyourwork_version = version.parse(__version__).base_version
 
     # Create a Zenodo deposit draft for this repo if the user
     # set the ZENODO_TOKEN environment variable
