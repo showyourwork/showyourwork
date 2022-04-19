@@ -218,8 +218,3 @@ def setup_logging(verbose=False, logfile=None):
             smlogfile = str(Path(smlogfile))
             with open(Path(logfile), "w") as f:
                 print(smlogfile, file=f)
-        else:
-            # TODO: I've encountered cases where the logfile is None;
-            # happened once when I had checkpoints in the workflow.
-            # Investigate this, and whether we should change the logic here.
-            pass

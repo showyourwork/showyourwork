@@ -23,8 +23,8 @@ zenodo_url = {"zenodo": "zenodo.org", "zenodo_sandbox": "sandbox.zenodo.org"}
 
 
 # Supported tarball extensions
-# TODO: Support other extensions
-zip_exts = ["tar.gz"]
+# TODO: Support zip files
+zip_exts = ["tar", "tar.gz"]
 
 
 def get_access_token(token_name="ZENODO_TOKEN", error_if_missing=False):
@@ -214,31 +214,27 @@ def upload_file_to_draft(draft, file, rule_name, tarball=False):
         file_to_upload = file
 
     # Use curl to upload the file so we have a progress bar
-    # TODO: The progress bar isn't displaying, even if we don't
-    # catch stdout & stderr. What gives?
     bucket_url = draft["links"]["bucket"]
     progress_bar = (
         ["--progress-bar"]
         if not snakemake.workflow.config["github_actions"]
         else []
     )
-    res = subprocess.run(
-        [
-            "curl",
-            *progress_bar,
-            "--upload-file",
-            file_to_upload,
-            "--request",
-            "PUT",
-            f"{bucket_url}/{rule_name}?access_token={access_token}",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
-    if res.returncode > 0:
-        stderr = res.stderr.decode().replace("access_token", "*****")
-        raise exceptions.ZenodoError(stderr)
+    try:
+        res = subprocess.run(
+            [
+                "curl",
+                "-f",
+                *progress_bar,
+                "--upload-file",
+                file_to_upload,
+                "--request",
+                "PUT",
+                f"{bucket_url}/{rule_name}?access_token={access_token}",
+            ]
+        )
+    except:
+        raise exceptions.ZenodoUploadError()
 
     # Delete the tarball if we created it
     if tarball:
@@ -295,29 +291,25 @@ def download_file_from_draft(draft, file, rule_name, tarball=False):
         ):
 
             # Download it
-            # TODO: The progress bar isn't displaying, even if we don't
-            # catch stdout & stderr. What gives?
             url = entry["links"]["download"]
             progress_bar = (
                 ["--progress-bar"]
                 if not snakemake.workflow.config["github_actions"]
                 else []
             )
-            res = subprocess.run(
-                [
-                    "curl",
-                    f"{url}?access_token={access_token}",
-                    *progress_bar,
-                    "--output",
-                    str(file),
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=False,
-            )
-            if res.returncode > 0:
-                stderr = res.stderr.decode().replace("access_token", "*****")
-                raise exceptions.ZenodoError(stderr)
+            try:
+                res = subprocess.run(
+                    [
+                        "curl",
+                        "-f",
+                        f"{url}?access_token={access_token}",
+                        *progress_bar,
+                        "--output",
+                        str(file),
+                    ]
+                )
+            except:
+                raise exceptions.ZenodoDownloadError()
 
             # If it's a directory tarball, extract it
             if tarball:

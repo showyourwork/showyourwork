@@ -52,8 +52,7 @@ def process_user_rules():
         elif ur.notebook:
             ur.set_input(ur.notebook)
         elif ur.is_run:
-            # TODO
-            raise exceptions.RunDirectiveNotAllowedInUserRules()
+            raise exceptions.RunDirectiveNotAllowedInUserRules(ur.name)
 
         # Record any cached output
         if snakemake.workflow.config["showyourwork"]["cache"]["zenodo"]:

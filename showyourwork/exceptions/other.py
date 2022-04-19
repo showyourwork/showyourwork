@@ -10,6 +10,20 @@ class RequestError(ShowyourworkException):
         super().__init__(f"Request error {status}: {message}")
 
 
+class CondaNotFoundError(ShowyourworkException):
+    def __init__(self):
+        super().__init__(
+            f"Conda package manager not found. Is it installed and available in the system PATH?"
+        )
+
+
+class ShowyourworkNotFoundError(ShowyourworkException):
+    def __init__(self, path):
+        super().__init__(
+            f"The requested version of showyourwork was not found at {path}."
+        )
+
+
 class ConfigError(ShowyourworkException):
     pass
 
@@ -43,7 +57,11 @@ class MissingCondaEnvironmentInUserRule(ShowyourworkException):
 
 
 class RunDirectiveNotAllowedInUserRules(ShowyourworkException):
-    pass
+    def __init__(self, name):
+        super().__init__(
+            f"The `run` directive is not allowed in user-defined rules. "
+            f"Please use `script` or `shell` instead in rule {name}."
+        )
 
 
 class CalledProcessError(ShowyourworkException):

@@ -24,6 +24,7 @@ progress_bar = ["--progress-bar"] if not config["github_actions"] else []
 result = subprocess.run(
     [
         "curl",
+        "-f",
         f"https://{zenodo_url}/record/{deposit_id}/files/{remote_file}",
         *progress_bar,
         "--output",
@@ -31,7 +32,4 @@ result = subprocess.run(
     ]
 )
 if result.returncode != 0:
-    # TODO
-    raise exceptions.ZenodoError()
-
-# TODO: Catch 404s
+    raise exceptions.ZenodoDownloadError()

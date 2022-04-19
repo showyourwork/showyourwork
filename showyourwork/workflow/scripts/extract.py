@@ -35,8 +35,7 @@ if zipfile.name.endswith(".tar") or zipfile.name.endswith(".tar.gz"):
 
             except Exception as e:
 
-                # TODO
-                raise exceptions.TarballExtractionError()
+                raise exceptions.TarballExtractionError(str(e))
 
             # Move it to target destination
             shutil.move(Path(TEMP) / compressed_file, extracted_file)
@@ -44,6 +43,6 @@ if zipfile.name.endswith(".tar") or zipfile.name.endswith(".tar.gz"):
 else:
 
     # TODO: Support zip files
-
-    # TODO
-    raise exceptions.NotImplementedError()
+    raise exceptions.NotImplementedError(
+        "Archives ending in .zip are not currently supported. Functionality coming soon!"
+    )

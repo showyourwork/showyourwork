@@ -23,6 +23,15 @@ def flatten_zenodo_contents(d, parent_key="", default_path=None):
     if not default_path:
         default_path = paths.user().data.relative_to(paths.user().repo)
     items = []
+    if type(d) is str:
+        d = {d: None}
+    elif type(d) is list:
+        raise exceptions.ConfigError(
+            "Error parsing the config. "
+            "Something is not formatted correctly in either the `zenodo` or "
+            "`zenodo_sandbox` field."
+        )
+
     for k, v in d.items():
         new_key = (Path(parent_key) / k).as_posix() if parent_key else k
         if isinstance(v, MutableMapping):
@@ -64,20 +73,27 @@ def parse_overleaf():
     if config["overleaf"]["push"] is None:
         config["overleaf"]["push"] = []
     elif type(config["overleaf"]["push"]) is not list:
-        # TODO
-        raise exceptions.ConfigError()
+        raise exceptions.ConfigError(
+            "Error parsing the config. "
+            "The `overleaf.push` field must be a list."
+        )
     config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
     if config["overleaf"]["pull"] is None:
         config["overleaf"]["pull"] = []
     elif type(config["overleaf"]["pull"]) is not list:
-        # TODO
-        raise exceptions.ConfigError()
+        raise exceptions.ConfigError(
+            "Error parsing the config. "
+            "The `overleaf.pull` field must be a list."
+        )
 
     # Ensure all files in `push` and `pull` are in the `src/tex` directory
     for file in config["overleaf"]["push"] + config["overleaf"]["pull"]:
         if not Path(file).resolve().is_relative_to(paths.user().tex):
-            # TODO
-            raise exceptions.ConfigError()
+            raise exceptions.ConfigError(
+                "Error parsing the config. "
+                "Files specified in `overleaf.push` and `overleaf.pull` must "
+                "be located under the `src/tex` directory."
+            )
 
     # Ensure no overlap between `push` and `pull`.
     # User could in principle provide a directory in one
@@ -97,8 +113,11 @@ def parse_overleaf():
         ]
     )
     if len(push_files & pull_files):
-        # TODO
-        raise exceptions.ConfigError()
+        raise exceptions.ConfigError(
+            "Error parsing the config. "
+            "One more more files are listed in both `overleaf.push` and "
+            "`overleaf.pull`, which is not supported."
+        )
 
 
 def parse_zenodo_datasets():
@@ -128,8 +147,18 @@ def parse_zenodo_datasets():
                 deposit_id=deposit_id, zenodo_url=zenodo.zenodo_url[host]
             )
             if entry["id_type"] != "version":
-                # TODO
-                raise exceptions.InvalidZenodoIdType()
+                if entry["id_type"] == "concept":
+                    raise exceptions.InvalidZenodoIdType(
+                        "Error parsing the config. "
+                        f"Zenodo id {deposit_id} seems to be a concept id."
+                        "Datasets should be specified using their static "
+                        "version id instead."
+                    )
+                else:
+                    raise exceptions.InvalidZenodoIdType(
+                        "Error parsing the config. "
+                        f"Zenodo id {deposit_id} is not a valid version id."
+                    )
 
             # Deposit contents
             entry["destination"] = entry.get(
@@ -147,8 +176,11 @@ def parse_zenodo_datasets():
                 # Ensure the target is not a list
                 target = contents[source]
                 if type(target) is list:
-                    # TODO
-                    raise exceptions.ZenodoContentsError()
+                    raise exceptions.ZenodoContentsError(
+                        "Error parsing the config. "
+                        "The `contents` field of a Zenodo deposit must be "
+                        "provided as a mapping, not as a list."
+                    )
 
                 # If it's a zipfile, add it to a separate entry in the config
                 zip_file = Path(source).parts[0]
@@ -189,7 +221,6 @@ def check_figure_format(figure):
     for caption in captions:
         caption_labels = caption.findall("LABEL")
         if len(caption_labels):
-            # TODO
             raise exceptions.FigureFormatError(
                 "Label `{}` should not be nested within the figure caption".format(
                     caption_labels[0].text
@@ -214,7 +245,6 @@ def check_figure_format(figure):
                     break
 
             if label_idx < caption_idx:
-                # TODO
                 raise exceptions.FigureFormatError(
                     "Figure label `{}` must come after the caption.".format(
                         (labels)[0].text
@@ -229,14 +259,12 @@ def check_figure_format(figure):
                 marginicon_idx = 0
 
             if marginicon_idx > label_idx:
-                # TODO
                 raise exceptions.FigureFormatError(
                     "Command \marginicon must always come before the figure label."
                 )
 
     # Check that there is exactly one label
     if len(labels) >= 2:
-        # TODO
         raise exceptions.FigureFormatError(
             "A figure has multiple labels: `{}`".format(
                 ", ".join(label.text for label in labels)
@@ -244,7 +272,6 @@ def check_figure_format(figure):
         )
     elif len(labels) == 0:
         if len(figure.findall("LABELSTAR")) == 0:
-            # TODO
             raise exceptions.FigureFormatError(
                 "There is a figure without a label."
             )

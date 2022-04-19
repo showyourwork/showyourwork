@@ -9,7 +9,16 @@ class ZenodoError(ZenodoException):
     def __init__(
         self, status="", message="An error occurred while accessing Zenodo."
     ):
-        super().__init__(f"Zenodo error{' ' * bool(len(status))}{status}: {message}")
+        super().__init__(
+            f"Zenodo error{' ' * bool(len(status))}{status}: {message}"
+        )
+
+
+class ZenodoDownloadError(ZenodoException):
+    def __init__(self):
+        super().__init__(
+            "An error occurred while downloading the dataset from Zenodo."
+        )
 
 
 class MissingZenodoAccessToken(ZenodoException):
@@ -32,7 +41,10 @@ class ZenodoRecordNotFound(ZenodoException):
 
 
 class ZenodoUploadError(ZenodoException):
-    pass
+    def __init__(self):
+        super().__init__(
+            "An error occurred while uploading the dataset from Zenodo."
+        )
 
 
 class ZenodoContentsError(ZenodoException):

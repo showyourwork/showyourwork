@@ -25,8 +25,7 @@ def run_in_env(command, **kwargs):
             "\n", ""
         )
     except:
-        # TODO
-        raise exceptions.ShowyourworkException()
+        raise exceptions.CondaNotFoundError()
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
 
     # Various conda environment files
@@ -47,7 +46,6 @@ def run_in_env(command, **kwargs):
         syw_spec = "showyourwork"
     elif syw_spec == "latest":
         # Install latest commit on github
-        # TODO: Catch errors here (fallback to `main` for no network connection)
         sha = get_stdout(
             f"git ls-remote https://github.com/showyourwork/showyourwork.git | grep refs/heads/main | cut -f 1",
             shell=True,
@@ -66,8 +64,7 @@ def run_in_env(command, **kwargs):
         else:
             syw_spec = Path(syw_spec).resolve()
         if not syw_spec.exists():
-            # TODO
-            raise exceptions.ShowyourworkException()
+            raise exceptions.ShowyourworkNotFoundError(syw_spec)
         syw_spec = f"-e {syw_spec}"
 
     # Copy the showyourwork environment file to a temp location,
