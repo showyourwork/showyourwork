@@ -29,7 +29,7 @@ class TemporaryShowyourworkRepository:
     action_wait = 240
     action_max_tries = 10
     action_interval = 60
-    use_local_showyourwork = True
+    use_local_showyourwork = False
     local_build_only = False
 
     # Internal
