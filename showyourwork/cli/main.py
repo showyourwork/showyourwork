@@ -110,7 +110,20 @@ def validate_slug(context, param, slug):
                 "\nI didn't find a "
                 + click.style("ZENODO_TOKEN", fg="blue")
                 + " environment variable, so I'm not going to set up\n"
-                + "a Zenodo deposit for caching intermediate results.\n"
+                + "a Zenodo deposit for caching intermediate results. If you "
+                + "would like to enable\nthis, please go to\n\n"
+                + click.style(
+                    f"    https://zenodo.org/account/settings/applications/tokens/new\n\n",
+                    fg="blue",
+                )
+                + "to create a new personal access token with "
+                + click.style("deposit:actions", fg="blue")
+                + " and "
+                + click.style("deposit:write\n", fg="blue")
+                + "scopes, store it in a local "
+                + click.style("ZENODO_TOKEN", fg="blue")
+                + " environment "
+                + "variable, and re-run this\nsetup script.\n"
             )
         pause()
 

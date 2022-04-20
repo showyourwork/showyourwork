@@ -34,7 +34,7 @@
     \input{showyourwork-metadata.tex}
 }{
   \OnGithubActionsfalse
-  \def\syw@url{https://github.com/rodluger/showyourwork-paper}
+  \def\syw@url{https://github.com/showyourwork/showyourwork-example}
   \def\syw@sha{dev}
   \def\syw@runid{0}
 }
@@ -58,7 +58,7 @@
 \let\oldmaketitle\maketitle
 \def\maketitle{%
     \let\oldLaTeX\LaTeX
-    \def\LaTeX{\oldLaTeX/\href{https://github.com/rodluger/showyourwork}{\showyourwork}}
+    \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
     \oldmaketitle
     \let\LaTeX\oldLaTeX
 }
