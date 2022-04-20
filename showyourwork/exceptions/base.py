@@ -1,3 +1,4 @@
+from .. import paths
 from ..logging import get_logger
 import traceback
 import sys
@@ -18,9 +19,7 @@ def custom_excepthook(cls, exc, tb):
     Redirect the exception to the log file.
 
     """
-    get_logger().debug(
-        "".join(traceback.format_exception(cls, exc, tb))
-    )
+    get_logger().debug("".join(traceback.format_exception(cls, exc, tb)))
 
 
 print_exception = traceback.print_exception
@@ -35,12 +34,24 @@ def disable_trace():
     """
     traceback.print_exception = redirect_exception
     sys.excepthook = custom_excepthook
+    try:
+        flag = paths.user().flags / "DISABLE_SNAKEMAKE_EXCEPTIONS"
+    except:
+        pass
+    else:
+        flag.touch()
 
 
 def enable_trace():
     """Restore traceback printing to the screen."""
     traceback.print_exception = print_exception
     sys.excepthook = excepthook
+    try:
+        flag = paths.user().flags / "DISABLE_SNAKEMAKE_EXCEPTIONS"
+    except:
+        pass
+    else:
+        flag.unlink()
 
 
 class ShowyourworkException(Exception):
@@ -49,7 +60,6 @@ class ShowyourworkException(Exception):
         message="An error occurred while executing the workflow.",
         level="error",
     ):
-        disable_trace()
         if level == "error":
             get_logger().error(message)
         elif level == "warn":
@@ -60,4 +70,7 @@ class ShowyourworkException(Exception):
             get_logger().debug(message)
         else:
             super().__init__(message)
+
+        disable_trace()
+
         super().__init__()

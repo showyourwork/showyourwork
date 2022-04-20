@@ -5,18 +5,18 @@ Miscellaneous functions for interfacing with git.
 from .subproc import get_stdout
 
 
+def callback(code, stdout, stderr):
+    if code != 0:
+        return "None"
+    else:
+        return stdout.replace("\n", "")
+
+
 def get_repo_root():
     """
     Return the path to the repository root.
 
     """
-
-    def callback(code, stdout, stderr):
-        if code != 0:
-            return "None"
-        else:
-            return stdout.replace("\n", "")
-
     return get_stdout(
         ["git", "rev-parse", "--show-toplevel"], callback=callback
     )
@@ -29,8 +29,8 @@ def get_repo_url():
     """
     try:
         url = get_stdout(
-            ["git", "config", "--get", "remote.origin.url"]
-        ).replace("\n", "")
+            ["git", "config", "--get", "remote.origin.url"], callback=callback
+        )
         if url.endswith(".git"):
             url = url[:-4]
     except Exception as e:
@@ -44,8 +44,8 @@ def get_repo_branch():
 
     """
     try:
-        branch = get_stdout(["git", "branch", "--show-current"]).replace(
-            "\n", ""
+        branch = get_stdout(
+            ["git", "branch", "--show-current"], callback=callback
         )
     except Exception as e:
         branch = "unknown"
@@ -58,7 +58,7 @@ def get_repo_sha():
 
     """
     try:
-        sha = get_stdout(["git", "rev-parse", "HEAD"]).replace("\n", "")
+        sha = get_stdout(["git", "rev-parse", "HEAD"], callback=callback)
     except Exception as e:
         sha = "unknown"
     return sha

@@ -61,5 +61,5 @@ class user:
         self.zenodo_sandbox_ids.mkdir(exist_ok=True)
         self.overleaf = self.temp / "overleaf"
         self.overleaf.mkdir(exist_ok=True)
-        self.checkpoints = self.temp / "checkpoints"
-        self.checkpoints.mkdir(exist_ok=True)
+        self.flags = self.temp / "flags"
+        self.flags.mkdir(exist_ok=True)

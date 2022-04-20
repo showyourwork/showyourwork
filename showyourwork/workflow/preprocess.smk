@@ -1,6 +1,6 @@
 from showyourwork import paths
 from showyourwork.config import parse_config
-from showyourwork.logging import setup_logging, clear_errors
+from showyourwork.patches import patch_snakemake_logging
 import snakemake
 from pathlib import Path
 import sys
@@ -27,19 +27,22 @@ configfile: (paths.user().temp / "showyourwork.yml").as_posix()
 report: "report/preprocess.rst"
 
 
-# Clear errors from past builds
-clear_errors()
+# Remove temp flags
+for file in paths.user().flags.glob("*"):
+    file.unlink()
+
+
+# Remove old logs
+for file in paths.user().logs.glob("*.log"):
+    file.unlink()
+
+
+# Set up custom logging for Snakemake
+patch_snakemake_logging()
 
 
 # Parse the config file
 parse_config()
-
-
-# Set up custom logging
-setup_logging(
-    verbose=config["verbose"], 
-    logfile=paths.user().logs / "preprocess.log"
-)
 
 
 # Hack to make the configfile generation the default rule

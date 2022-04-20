@@ -14,4 +14,4 @@ checkpoint:
     priority:
         snakemake.jobs.Job.HIGHEST_PRIORITY
     output:
-        touch(paths.user().checkpoints / "dag.flag")
+        touch(paths.user().flags / "SYW__DAG")

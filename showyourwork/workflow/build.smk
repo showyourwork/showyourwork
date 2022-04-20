@@ -1,8 +1,8 @@
 from showyourwork import paths, exceptions, overleaf
-from showyourwork.patches import patch_snakemake_wait_for_files
+from showyourwork.patches import patch_snakemake_wait_for_files, patch_snakemake_logging
 from showyourwork.config import parse_config
 from showyourwork.meta import is_make_clean, is_make_main
-from showyourwork.logging import setup_logging, get_logger, clear_errors
+from showyourwork.logging import get_logger
 from showyourwork.userrules import process_user_rules
 import snakemake
 import sys
@@ -30,19 +30,12 @@ if (paths.user().temp / "config.json").exists():
     report: "report/workflow.rst"
 
 
-    # Clear errors from past builds
-    clear_errors()
+    # Set up custom logging for Snakemake
+    patch_snakemake_logging()
 
 
     # Parse the config file
     parse_config()
-
-
-    # Set up custom logging
-    setup_logging(
-        verbose=config["verbose"], 
-        logfile=paths.user().logs / "compile.log"
-    )
 
 
     # Hack to make the pdf generation the default rule

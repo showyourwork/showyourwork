@@ -18,7 +18,5 @@ If you're looking for the current release of `showyourwork`, please see [here](h
 - [ ] Add option to create new Zenodo deposit for a branch
 - [ ] Test uploads of very large files
 - [ ] Test integration with Overleaf
-- [ ] Implement all custom exception messages
 - [ ] Write documentation
-- [ ] Progress bars not working in upload
 - [ ] Implement showyourwork publish (for Zenodo)

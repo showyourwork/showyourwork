@@ -1,4 +1,4 @@
-from . import paths
+from . import paths, exceptions
 from pathlib import Path
 import logging
 import platform
@@ -12,7 +12,7 @@ except ModuleNotFoundError:
     snakemake = None
 
 
-__all__ = ["get_logger", "setup_logging", "clear_errors"]
+__all__ = ["get_logger"]
 
 
 class ColorizingStreamHandler(logging.StreamHandler):
@@ -77,34 +77,16 @@ class ColorizingStreamHandler(logging.StreamHandler):
         return "".join(message)
 
 
-class SnakemakeFormatter(logging.Formatter):
-    """
-    Format Snakemake errors before displaying them on stdout.
-
-    Sometimes, Snakemake fails with suggestions for commands to fix certain
-    issues. We intercept those suggestions here, replacing them with the
-    corresponding showyourwork syntax for convenience.
-    """
-
-    replacements = {
-        "snakemake --cleanup-metadata": "showyourwork build --cleanup-metadata",
-        "rerun your command with the --rerun-incomplete flag": "rerun showyourwork build with the --rerun-incomplete flag",
-        "It can be removed with the --unlock argument": "It can be removed by passing --unlock to showyourwork build",
-    }
-
-    def format(self, record):
-        message = record.getMessage()
-        for key, value in self.replacements.items():
-            message = message.replace(key, value)
-        return message
-
-
 def get_logger():
     """
-    Get our custom terminal logger.
+    Return the custom showyourwork logger.
+
+    Sets up the logging if needed.
 
     """
     logger = logging.getLogger("showyourwork")
+
+    # Add showyourwork stream & file handlers
     if not logger.handlers:
 
         # Root level
@@ -127,12 +109,6 @@ def get_logger():
 
         else:
 
-            # File: just showyourwork errors
-            error_file = LOGS / "showyourwork_errors.log"
-            file_handler = logging.FileHandler(error_file)
-            file_handler.setLevel(logging.ERROR)
-            logger.addHandler(file_handler)
-
             # File: all showyourwork messages
             msg_file = LOGS / "showyourwork.log"
             file_handler = logging.FileHandler(msg_file)
@@ -140,81 +116,3 @@ def get_logger():
             logger.addHandler(file_handler)
 
     return logger
-
-
-def clear_snakemake_errors():
-    error_file = paths.user().logs / "snakemake_errors.log"
-    if error_file.exists():
-        error_file.unlink()
-
-
-def clear_showyourwork_errors():
-    error_file = paths.user().logs / "showyourwork_errors.log"
-    if error_file.exists():
-        error_file.unlink()
-
-
-def clear_errors():
-    clear_snakemake_errors()
-    clear_showyourwork_errors()
-
-    # Remove temp checkpoint files
-    for file in paths.user().checkpoints.glob("*"):
-        file.unlink()
-
-
-def setup_logging(verbose=False, logfile=None):
-    """
-    Hack the Snakemake logger to suppress most of its terminal output.
-
-    """
-    if not snakemake:
-        return
-
-    # Get our custom logger
-    logger = get_logger()
-
-    # Get the default Snakemake logger
-    snakemake_logger = snakemake.logging.logger
-
-    # Suppress *all* Snakemake output to the terminal (unless verbose);
-    # save it all for the logs!
-    for handler in snakemake_logger.logger.handlers:
-        if isinstance(handler, logging.FileHandler):
-            handler.setLevel(logging.DEBUG)
-        else:
-            if not verbose:
-                handler.setLevel(logging.CRITICAL)
-
-    # Custom error handler
-    if not hasattr(snakemake_logger, "custom_error_handler"):
-        error_file = paths.user().logs / "snakemake_errors.log"
-        snakemake_logger.custom_error_handler = logging.FileHandler(error_file)
-        snakemake_logger.custom_error_handler.setLevel(logging.ERROR)
-        snakemake_logger.custom_error_handler.setFormatter(
-            SnakemakeFormatter()
-        )
-        snakemake_logger.logger.addHandler(
-            snakemake_logger.custom_error_handler
-        )
-
-    # Log job messages to the terminal manually
-    def job_info(self, **msg):
-        msg["level"] = "job_info"
-        self.handler(msg)
-        if msg.get("msg", None):
-            logger.info(msg["msg"])
-
-    snakemake_logger.job_info = lambda **msg: job_info(snakemake_logger, **msg)
-
-    # Allow all conda messages to come through
-    snakemake.deployment.conda.logger = logger
-
-    # Store the path to the snakemake logfile in the showyourwork temp dir
-    # At the end of the build, we'll copy the contents over to this same file.
-    if logfile is not None:
-        smlogfile = snakemake_logger.get_logfile()
-        if smlogfile:
-            smlogfile = str(Path(smlogfile))
-            with open(Path(logfile), "w") as f:
-                print(smlogfile, file=f)
