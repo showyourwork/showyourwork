@@ -12,11 +12,3 @@
 
 This is the repository for the next version of `showyourwork`, to be released Spring 2022.
 If you're looking for the current release of `showyourwork`, please see [here](https://github.com/rodluger/showyourwork).
-
-<h2>To-do</h2>
-
-- [ ] Add option to create new Zenodo deposit for a branch
-- [ ] Test uploads of very large files
-- [ ] Test integration with Overleaf
-- [ ] Write documentation
-- [ ] Implement showyourwork publish (for Zenodo)
