@@ -465,7 +465,7 @@ def download_file_from_zenodo(
                             draft, file, rule_name, tarball=tarball
                         )
                     except exceptions.FileNotFoundOnZenodo:
-                        exceptions.enable_trace()
+                        exceptions.restore_trace()
                         logger.debug(
                             f"File {rule_name} not found in deposit {concept_id}."
                         )
@@ -536,7 +536,7 @@ def download_file_from_zenodo(
                         record, file, rule_name, tarball=tarball
                     )
                 except exceptions.FileNotFoundOnZenodo:
-                    exceptions.enable_trace()
+                    exceptions.restore_trace()
                     logger.debug(
                         f"File {rule_name} not found in record {concept_id}."
                     )

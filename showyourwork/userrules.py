@@ -1,6 +1,7 @@
 from . import exceptions
 from .logging import get_logger
 from .patches import patch_snakemake_cache
+from .config import get_run_type
 import json
 import requests
 
@@ -63,6 +64,10 @@ def process_user_rules():
         # Ensure we're running in a conda env
         if not ur.conda_env:
             ur.conda_env = "environment.yml"
+
+    # No need to go any further if this isn't the main build
+    if get_run_type() != "main":
+        return
 
     # Add some metadata containing the link to the Zenodo cache record
     # which we can access on the LaTeX side to provide margin links

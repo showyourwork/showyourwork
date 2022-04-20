@@ -1,3 +1,11 @@
+"""
+Implements functions that modify the behavior of Snakemake.
+
+This functionality is pretty hacky and is almost certainly not future-proof, 
+so if we change the Snakemake version (currently pinned at 16.5.5), we may have 
+to update the code in this file.
+
+"""
 from . import paths, exceptions
 from .zenodo import download_file_from_zenodo, upload_file_to_zenodo
 from .logging import get_logger, ColorizingStreamHandler
@@ -82,14 +90,14 @@ def patch_snakemake_cache(concept_id):
                     )
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
-                    exceptions.enable_trace()
+                    exceptions.restore_trace()
                     logger.warn(
                         f"Required version of file not found in cache: {outputfile}."
                     )
                     logger.warn(f"Running rule from scratch...")
                 except exceptions.ZenodoException as e:
                     # NOTE: we treat all Zenodo caching errors as non-fatal
-                    exceptions.enable_trace()
+                    exceptions.restore_trace()
                     logger.error(str(e))
                     logger.warn(f"Running rule from scratch...")
             else:
@@ -107,7 +115,7 @@ def patch_snakemake_cache(concept_id):
                     )
                 except exceptions.ZenodoException as e:
                     # NOTE: we treate all Zenodo caching errors as non-fatal
-                    exceptions.enable_trace()
+                    exceptions.restore_trace()
                     logger.error(str(e))
 
         # Call the original method
@@ -135,7 +143,7 @@ def patch_snakemake_cache(concept_id):
                 )
             except exceptions.ZenodoException as e:
                 # NOTE: we treate all Zenodo caching errors as non-fatal
-                exceptions.enable_trace()
+                exceptions.restore_trace()
                 logger.error(str(e))
 
         return result

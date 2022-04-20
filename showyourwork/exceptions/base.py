@@ -42,7 +42,7 @@ def disable_trace():
         flag.touch()
 
 
-def enable_trace():
+def restore_trace():
     """Restore traceback printing to the screen."""
     traceback.print_exception = print_exception
     sys.excepthook = excepthook
@@ -60,6 +60,7 @@ class ShowyourworkException(Exception):
         message="An error occurred while executing the workflow.",
         level="error",
     ):
+        # Print the message using the logger
         if level == "error":
             get_logger().error(message)
         elif level == "warn":
@@ -71,6 +72,10 @@ class ShowyourworkException(Exception):
         else:
             super().__init__(message)
 
+        # Disable tracebacks; if this exception is caught, the
+        # caller MUST call `restore_trace` in the `except` block
+        # to restore traceback printing!
         disable_trace()
 
+        # Raise the exception
         super().__init__()

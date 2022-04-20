@@ -88,7 +88,7 @@ def push_files(files, project_id):
         exceptions.OverleafAuthenticationError,
     ):
         # Not fatal!
-        exceptions.enable_trace()
+        exceptions.restore_trace()
         return
 
     # Process each file
@@ -182,7 +182,7 @@ def pull_files(files, project_id, auto_commit=False):
         exceptions.OverleafAuthenticationError,
     ):
         # Not fatal!
-        exceptions.enable_trace()
+        exceptions.restore_trace()
         return
 
     # Copy over the files

@@ -1,16 +1,31 @@
 from . import paths, git, exceptions
-from .meta import is_make_clean, is_make_main
 from pathlib import Path
 from collections import OrderedDict, ChainMap
 import os
 import re
+import sys
 
 try:
     import snakemake
 except ModuleNotFoundError:
     snakemake = None
 
-__all__ = ["parse_config"]
+__all__ = ["parse_config", "get_run_type"]
+
+
+def get_run_type():
+    """Return the type of the current Snakemake run.
+
+    Options are:
+
+        - ``clean``
+        - ``build``
+        - ``tarball``
+        - ``preprocess``
+        - ``other``
+
+    """
+    return os.getenv("SNAKEMAKE_RUN_TYPE", "other")
 
 
 def get_class_name(ms_name):

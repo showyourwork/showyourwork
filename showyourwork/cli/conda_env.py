@@ -2,7 +2,6 @@ from .. import __version__
 from .. import paths
 from .. import exceptions
 from ..logging import get_logger
-from ..meta import is_make_main
 from ..subproc import get_stdout
 import subprocess
 import shutil
