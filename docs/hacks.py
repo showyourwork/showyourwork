@@ -16,7 +16,14 @@ class RemoveContentsHeading(StopIteration):
 
 
 # Create our API autodoc pages w/ a little customization
+for file in Path("api").rglob("*.rst"):
+    file.unlink()
 subprocess.run("sphinx-apidoc -feMT -d 5 -o api ../showyourwork", shell=True)
+with open("api/showyourwork.rst", "r") as f:
+    lines = f.readlines()
+lines[0] = "Developer API\n"
+with open("api/showyourwork.rst", "w") as f:
+    f.writelines(lines)
 for file in Path("api").rglob("*.rst"):
     with open(file, "r") as f:
         lines = f.readlines()

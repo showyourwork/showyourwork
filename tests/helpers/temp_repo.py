@@ -29,7 +29,8 @@ class TemporaryShowyourworkRepository:
     action_wait = 240
     action_max_tries = 10
     action_interval = 60
-    use_local_showyourwork = False
+    use_local_showyourwork = True
+    local_build_only = False
 
     # Internal
     _concept_id = None
@@ -223,7 +224,8 @@ class TemporaryShowyourworkRepository:
         try:
 
             # Create the repo on GitHub
-            self.create_remote()
+            if not self.local_build_only:
+                self.create_remote()
 
             # Set up the repo
             self.create_local()
@@ -245,7 +247,8 @@ class TemporaryShowyourworkRepository:
 
             # Push to GitHub to trigger the Actions workflow
             # and wait for the result
-            await self.run_github_action()
+            if not self.local_build_only:
+                await self.run_github_action()
 
         except:
 
@@ -254,7 +257,8 @@ class TemporaryShowyourworkRepository:
         else:
 
             # Delete remote repo (only on success)
-            self.delete_remote()
+            if not self.local_build_only:
+                self.delete_remote()
 
             # Delete local repo (only on success)
             self.delete_local()

@@ -16,6 +16,14 @@ Documentation
 
    intro
    quickstart
+   layout
+   config
+   snakefile
+   action
+   latex
+   local
+   custom
    faqs
-   showyourwork api <api/showyourwork>
+   api/showyourwork
    changelog
+   projects
