@@ -43,6 +43,20 @@ class SnakemakeFormatter(logging.Formatter):
         return message
 
 
+def get_snakemake_variable(name, default=None):
+    """
+    Infer the value of a variable within snakemake.
+
+    This is extremely hacky.
+    """
+    levels = inspect.stack()
+    for level in levels:
+        value = level.frame.f_locals.get(name, None)
+        if value is not None:
+            return value
+    return default
+
+
 def patch_snakemake_cache(concept_id):
     """
     Patches the Snakemake cache functionality to

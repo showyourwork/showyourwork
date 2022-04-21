@@ -24,7 +24,7 @@ class TestZenodoCache(TemporaryShowyourworkRepository):
         """Add the necessary dependencies to the config file."""
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
             config["dependencies"] = {
-                "src/figures/plot_dataset.py": "src/data/dataset.npz"
+                "src/scripts/plot_dataset.py": "src/data/dataset.npz"
             }
 
 
@@ -37,5 +37,5 @@ class TestZenodoDirCache(TemporaryShowyourworkRepository):
         """Add the necessary dependencies to the config file."""
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
             config["dependencies"] = {
-                "src/figures/plot_dataset.py": "src/data/dataset"
+                "src/scripts/plot_dataset.py": "src/data/dataset"
             }

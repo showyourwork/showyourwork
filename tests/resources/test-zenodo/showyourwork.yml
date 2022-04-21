@@ -2,7 +2,7 @@ showyourwork:
   version: latest
 
 dependencies:
-  src/figures/TOI640.py: 
+  src/scripts/TOI640.py: 
     - src/data/TOI640/planet.json
     - src/data/TOI640/S06.txt
     - src/data/TOI640/S06.json

@@ -216,6 +216,7 @@ def check_figure_format(figure):
     elements = list(figure)
     captions = figure.findall("CAPTION")
     labels = figure.findall("LABEL")
+    scripts = figure.findall("SCRIPT")
 
     # Check that figure labels aren't nested inside captions
     for caption in captions:
@@ -263,18 +264,29 @@ def check_figure_format(figure):
                     "Command \marginicon must always come before the figure label."
                 )
 
-    # Check that there is exactly one label
+    # Check that there is at most one label
     if len(labels) >= 2:
         raise exceptions.FigureFormatError(
             "A figure has multiple labels: `{}`".format(
                 ", ".join(label.text for label in labels)
             )
         )
-    elif len(labels) == 0:
-        if len(figure.findall("LABELSTAR")) == 0:
-            raise exceptions.FigureFormatError(
-                "There is a figure without a label."
+
+    # Check that there is at most one script
+    if len(scripts) >= 2:
+        raise exceptions.FigureFormatError(
+            "A figure has multiple scripts: `{}`".format(
+                ", ".join(script.text for script in scripts)
             )
+        )
+
+    # If there's a script, there must be a label
+    if len(scripts) and not len(labels):
+        raise exceptions.FigureFormatError(
+            "A figure defines a script but has no label: `{}`".format(
+                ", ".join(script.text for script in scripts)
+            )
+        )
 
 
 def get_xml_tree():
@@ -332,6 +344,7 @@ def get_json_tree():
 
     # Parse labeled graphics inside `figure` environments
     figures = {}
+    unlabeled_graphics = []
     for figure in xml_tree.findall("FIGURE"):
 
         # Ensure the figure environment conforms to the standard
@@ -352,65 +365,69 @@ def get_json_tree():
             [
                 (paths.user().repo / graphic).parents[0]
                 == paths.user().figures
-                and (paths.user().static_figures / Path(graphic).name).exists()
+                and (paths.user().static / Path(graphic).name).exists()
                 for graphic in graphics
             ]
         )
 
-        # Get the figure \label
+        # Get the figure \label, if it exists
         labels = figure.findall("LABEL")
-        label_stars = figure.findall("LABELSTAR")
+        if len(labels):
 
-        # Infer the figure script from the label
-        if len(labels) and labels[0].text is not None:
-
-            # User defined a \label{fig:XXX}
+            # We already checked that there's only one label above
             label = labels[0].text
 
-            # Infer the full path to the script, searching for
-            # files with any of the user-defined extensions
-            # (and settling on the first match)
-            for ext in config["script_extensions"]:
-                script = paths.user().figure_scripts / f"{label}.{ext}"
-                if script.exists():
-                    script = str(script.relative_to(paths.user().repo))
+        else:
+
+            # Treat these as free-floating graphics
+            unlabeled_graphics.extend(graphics)
+            continue
+
+        # Get the figure \script, if it exists
+        scripts = figure.findall("SCRIPT")
+        if len(scripts) and scripts[0].text is not None:
+
+            # The user provided an argument to \script{}, which we assume
+            # is the name of the script relative to the figure scripts
+            # directory
+            script = str(
+                (paths.user().scripts / scripts[0].text).relative_to(
+                    paths.user().repo
+                )
+            )
+
+            # Infer the command we'll use to execute the script based on its
+            # extension. Assume the extension is the string following the
+            # last '.' in the script name; if that's not a known extension,
+            # proceed leftward until we find a match (covers cases like
+            # *.tar.gz, etc.)
+            parts = scripts[0].text.split(".")
+            for i in range(1, len(parts)):
+                ext = ".".join(parts[-i:])
+                if ext in config["script_extensions"]:
                     command = config["scripts"][ext]
                     break
             else:
-                script = None
-                if static:
-                    srcs = " ".join(
-                        [
-                            str(
-                                (
-                                    paths.user().static_figures
-                                    / Path(graphic).name
-                                ).relative_to(paths.user().repo)
-                            )
-                            for graphic in graphics
-                        ]
-                    )
-                    dest = paths.user().figures.relative_to(paths.user().repo)
-                    command = f"cp {srcs} {dest}"
-                else:
-                    command = None
+                raise exceptions.FigureGenerationError(
+                    "Can't determine how to execute the figure "
+                    f"script {scripts[0].text}. Please provide instructions "
+                    "on how to execute scripts with this extension in the "
+                    "config file."
+                )
 
-        elif len(label_stars) and label_stars[0].text is not None:
+        else:
 
-            # User defined a \label{fig*:XXX}
-            label = labels[0].text
-
-            # There is no script associated with this figure
+            # No script provided
             script = None
 
-            # But we may need to copy it over from the static dir
+            # If all the figures in this environment exist in the
+            # static directory, set up the command to copy them over
             if static:
                 srcs = " ".join(
                     [
                         str(
                             (
-                                paths.user().static_figures
-                                / Path(graphic).name
+                                paths.user().static / Path(graphic).name
                             ).relative_to(paths.user().repo)
                         )
                         for graphic in graphics
@@ -418,14 +435,12 @@ def get_json_tree():
                 )
                 dest = paths.user().figures.relative_to(paths.user().repo)
                 command = f"cp {srcs} {dest}"
+
             else:
+
+                # We don't know how to generate this figure at this time.
+                # Hopefully the user specified a custom Snakemake rule!
                 command = None
-
-        else:
-
-            raise exceptions.FigureFormatError(
-                "There is a figure without a label."
-            )
 
         # Collect user-defined dependencies
         dependencies = config["dependencies"].get(script, [])
@@ -470,7 +485,7 @@ def get_json_tree():
         }
 
     # Parse free-floating graphics
-    graphics = [
+    free_floating_graphics = [
         str(
             (paths.user().tex / graphicspath / graphic.text)
             .resolve()
@@ -480,16 +495,16 @@ def get_json_tree():
     ]
 
     # Ignore graphics that are dependencies of the texfile (such as orcid-ID.png)
-    graphics = [
+    free_floating_graphics = [
         graphic
-        for graphic in graphics
+        for graphic in free_floating_graphics
         if graphic not in config["tex_files_out"]
     ]
 
     # Add an entry to the tree
     figures["free-floating"] = {
         "script": None,
-        "graphics": graphics,
+        "graphics": free_floating_graphics + unlabeled_graphics,
         "datasets": [],
         "dependencies": [],
         "command": None,

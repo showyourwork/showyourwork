@@ -1,5 +1,5 @@
 import numpy as np
-from pathlib import Path
+import paths
 import os
 
 
@@ -9,10 +9,6 @@ if os.getenv("CI", "false") == "true":
         "This script should never run on GitHub Actions, "
         "as its output should always be cached on Zenodo."
     )
-
-
-# Resolve paths
-DATA = Path(__file__).resolve().parents[1] / "data"
 
 
 # Generate samples
@@ -25,4 +21,4 @@ samples = np.random.multivariate_normal(mu, cov, 100000)
 
 
 # Store the results
-np.savez(DATA / "dataset.npz", samples=samples)
+np.savez(paths.data / "dataset.npz", samples=samples)

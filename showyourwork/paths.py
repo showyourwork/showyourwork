@@ -21,7 +21,7 @@ class user:
 
         if path is None:
             root = git.get_repo_root()
-            if root == "None":
+            if root == "unknown":
                 raise Exception("Not in a git repo.")
             else:
                 path = Path(root).absolute()
@@ -31,8 +31,8 @@ class user:
         self.src = self.repo / "src"
         self.tex = self.src / "tex"
         self.data = self.src / "data"
-        self.figure_scripts = self.src / "figures"
-        self.static_figures = self.src / "static"
+        self.scripts = self.src / "scripts"
+        self.static = self.src / "static"
         self.figures = self.tex / "figures"
 
         # User home temp (for all repos)

@@ -36,25 +36,14 @@
   \syw@LogMessage{<MARGINICON />}%
 }
 
-% Log all figure and equation labels
+% Log figure script commands
+\newcommand\script[1]{%
+  \syw@LogMessage{<SCRIPT>#1</SCRIPT>}%
+}
+
+% Log labels
 \renewcommand\showkeyslabelformat[1]{%
-  \IfBeginWith*{#1}{eq:}{%
-    % Equation label
-    \StrBehind*{#1}{eq:}[\syw@CurrentLabelName]
-    \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
-  }{}
-  \IfBeginWith*{#1}{fig:}{%
-    % Figure label
-    \StrBehind*{#1}{fig:}[\syw@CurrentLabelName]
-    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
-    \syw@LogMessage{<LABEL>\syw@CurrentLabelName</LABEL>}%
-  }{}
-  \IfBeginWith*{#1}{fig*:}{%
-    % Figure label
-    \StrBehind*{#1}{fig*:}[\syw@CurrentLabelName]
-    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
-    \syw@LogMessage{<LABELSTAR>\syw@CurrentLabelName</LABELSTAR>}%
-  }{}
+  \syw@LogMessage{<LABEL>#1</LABEL>}%
 }
 
 % Log figures

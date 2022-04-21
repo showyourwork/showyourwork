@@ -39,6 +39,9 @@
   \def\syw@runid{0}
 }
 
+% Log figure script commands (a no-op in the build step)
+\newcommand\script[1]{}
+
 % Showyourwork logo
 % We can only use our custom font if running XeTeX / LuaTeX
 \ifxetex
@@ -140,73 +143,63 @@
 }
 
 
-% Dataset icons. Built-in max of 3.
-\newcommand{\syw@DatasetIcon}[1]{%
-  \ifnum#1=1%
-    \def\syw@DatasetUrl{\usevalue{\syw@CurrentLabelName_datasetOne}}%
-  \else%
-    \ifnum#1=2%
-      \def\syw@DatasetUrl{\usevalue{\syw@CurrentLabelName_datasetTwo}}%
-    \else%
-      \ifnum#1=3%
-        \def\syw@DatasetUrl{\usevalue{\syw@CurrentLabelName_datasetThree}}%
-      \else%
-        \def\syw@DatasetUrl{KEYNOTFOUND}%
-      \fi%
-    \fi%
-  \fi%
-  \IfEq*{\syw@DatasetUrl}{KEYNOTFOUND}{}{%        
-    \raisebox{0pt}[5pt][5pt]{%
-      \href{\syw@DatasetUrl}{%
-        \color{sywBlue}\faDatabase%
-      }%
-    }%
-  }%
-}
-
-
 % Hack `showkeys' to show margin links for figures
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
-  \IfBeginWith*{#1}{fig:}{\StrBehind*{#1}{fig:}[\syw@CurrentLabelName]%
-    \StrBefore*{\syw@CurrentLabelName:}{:}[\syw@CurrentLabelName]% remove label :suffix
-    \normalfont%
-    \stackon[3pt]{%
-      \IfEq*{\usevalue{\syw@CurrentLabelName_script}}{KEYNOTFOUND}{}{%
-        \raisebox{0pt}[5pt][5pt]{%
-          \href{\syw@url/blob/\syw@sha/\usevalue{\syw@CurrentLabelName_script}}{%
-            \color{sywBlue}\faGithub%
-          }%
+  \normalfont%
+  \stackon[3pt]{%
+    \IfEq*{\usevalue{#1_script}}{KEYNOTFOUND}{}{%
+      \raisebox{0pt}[5pt][5pt]{%
+        \href{\syw@url/blob/\syw@sha/\usevalue{#1_script}}{%
+          \color{sywBlue}\faGithub%
         }%
       }%
-    }{%
-      \IfEq*{\usevalue{\syw@CurrentLabelName_cache}}{KEYNOTFOUND}{}{%
-        \stackon[3pt]{%
-          \raisebox{0pt}[5pt][5pt]{%
-            \href{\usevalue{\syw@CurrentLabelName_cache}}{%
-              \color{sywBlue}\faCloudDownload%
-            }%
-          }%
-        }{%
-          \stackon[3pt]{%
-            \syw@DatasetIcon{1}%
-          }{%
-            \syw@DatasetIcon{2}%
+    }%
+  }{%
+    \IfEq*{\usevalue{#1_cache}}{KEYNOTFOUND}{}{%
+      \stackon[3pt]{%
+        \raisebox{0pt}[5pt][5pt]{%
+          \href{\usevalue{#1_cache}}{%
+            \color{sywBlue}\faCloudDownload%
           }%
         }%
       }{%
         \stackon[3pt]{%
           \syw@DatasetIcon{1}%
         }{%
-          \stackon[3pt]{%
-            \syw@DatasetIcon{2}%
-          }{%
-            \syw@DatasetIcon{3}%
+          \syw@DatasetIcon{2}%
+        }%
+      }%
+    }{%
+      \stackon[3pt]{%
+        \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{%        
+          \raisebox{0pt}[5pt][5pt]{%
+            \href{\usevalue{#1_datasetOne}}{%
+              \color{sywBlue}\faDatabase%
+            }%
+          }%
+        }%
+      }{%
+        \stackon[3pt]{%
+          \IfEq*{\usevalue{#1_datasetTwo}}{KEYNOTFOUND}{}{%        
+            \raisebox{0pt}[5pt][5pt]{%
+              \href{\usevalue{#1_datasetTwo}}{%
+                \color{sywBlue}\faDatabase%
+              }%
+            }%
+          }%
+        }{%
+          \IfEq*{\usevalue{#1_datasetThree}}{KEYNOTFOUND}{}{%        
+            \raisebox{0pt}[5pt][5pt]{%
+              \href{\usevalue{#1_datasetThree}}{%
+                \color{sywBlue}\faDatabase%
+              }%
+            }%
           }%
         }%
       }%
     }%
-  }{}%
+  }%
 }
 
 % Set the graphics path for all figures

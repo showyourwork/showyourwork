@@ -1,12 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-from pathlib import Path
-
-
-# Resolve paths
-DATA = Path(__file__).resolve().parents[1] / "data"
-FIGURES = Path(__file__).resolve().parents[1] / "tex" / "figures"
+import paths
 
 
 # Set up the figure
@@ -22,7 +17,7 @@ fig.subplots_adjust(wspace=0.1, hspace=0.15)
 
 # Images
 for n, dataset in zip(["A", "B"], ["S06", "S07"]):
-    with open(DATA / "TOI640" / f"{dataset}.json", "r") as f:
+    with open(paths.data / "TOI640" / f"{dataset}.json", "r") as f:
         image_data = json.load(f)
     aperture = np.array(image_data["aperture"])
     image = np.array(image_data["image"]) / 1e3
@@ -40,7 +35,7 @@ cbar.ax.set_visible(False)
 
 
 # Load planet data
-with open(DATA / "TOI640" / "planet.json", "r") as f:
+with open(paths.data / "TOI640" / "planet.json", "r") as f:
     planet_data = json.load(f)
 phase = planet_data["phase"]
 period = planet_data["period"]
@@ -50,7 +45,7 @@ period = planet_data["period"]
 for dataset in ["S06", "S07"]:
 
     # Load the data
-    time, flux, *_ = np.loadtxt(DATA / "TOI640" / f"{dataset}.txt").T
+    time, flux, *_ = np.loadtxt(paths.data / "TOI640" / f"{dataset}.txt").T
 
     # Divide out the rolling 1-day median baseline
     dt = np.median(np.diff(time))
@@ -70,4 +65,4 @@ ax["C"].legend()
 ax["C"].set_xlim(-0.1, 0.1)
 ax["C"].set_xlabel("orbital phase")
 ax["C"].set_ylabel("normalized flux")
-fig.savefig(FIGURES / "TOI640.pdf", bbox_inches="tight", dpi=300)
+fig.savefig(paths.figures / "TOI640.pdf", bbox_inches="tight", dpi=300)
