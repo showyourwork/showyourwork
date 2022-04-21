@@ -492,7 +492,7 @@ def get_json_tree():
             .relative_to(paths.user().repo)
         )
         for graphic in xml_tree.findall("GRAPHICS")
-    ]
+    ] + unlabeled_graphics
 
     # Ignore graphics that are dependencies of the texfile (such as orcid-ID.png)
     free_floating_graphics = [
@@ -501,13 +501,48 @@ def get_json_tree():
         if graphic not in config["tex_files_out"]
     ]
 
-    # Add an entry to the tree
-    figures["free-floating"] = {
+    # Separate into dynamic and static figures
+    free_floating_static = [
+        graphic
+        for graphic in free_floating_graphics
+        if (paths.user().repo / graphic).parents[0] == paths.user().figures
+        and (paths.user().static / Path(graphic).name).exists()
+    ]
+    free_floating_dynamic = [
+        graphic
+        for graphic in free_floating_graphics
+        if graphic not in free_floating_static
+    ]
+
+    # Add entries to the tree: dynamic figures
+    # (User should provide a custom Snakemake rule)
+    figures["free-floating-dynamic"] = {
         "script": None,
-        "graphics": free_floating_graphics + unlabeled_graphics,
+        "graphics": free_floating_dynamic,
         "datasets": [],
         "dependencies": [],
         "command": None,
+    }
+
+    # Add entries to the tree: static figures
+    # (copy them over from the static folder)
+    srcs = " ".join(
+        [
+            str(
+                (paths.user().static / Path(graphic).name).relative_to(
+                    paths.user().repo
+                )
+            )
+            for graphic in free_floating_static
+        ]
+    )
+    dest = paths.user().figures.relative_to(paths.user().repo)
+    figures["free-floating-static"] = {
+        "script": None,
+        "graphics": free_floating_static,
+        "datasets": [],
+        "dependencies": [],
+        "command": f"cp {srcs} {dest}",
     }
 
     # The full tree (someday we'll have equations in here, too)

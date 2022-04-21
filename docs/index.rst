@@ -21,6 +21,8 @@ Documentation
    snakefile
    action
    latex
+   zenodo
+   overleaf
    local
    custom
    faqs
