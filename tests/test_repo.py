@@ -20,8 +20,6 @@ class TestOverleaf(TemporaryShowyourworkRepository):
     """Test a repo that integrates with an Overleaf project."""
 
     overleaf_id = "6262c032aae5421d6d945acf"
-    local_build_only = True
-    use_local_showyourwork = True  # DEBUG
 
     def startup(self):
         """Wipe the Overleaf remote to start fresh."""
