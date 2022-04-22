@@ -33,6 +33,12 @@ def run_in_env(command, **kwargs):
     cached_envfile = paths.user().home_temp / "environment.yml"
 
     # Infer the `showyourwork` version from the user's config file
+    if not (paths.user().repo / "showyourwork.yml").exists():
+        raise exceptions.ShowyourworkException(
+            "No `showyourwork.yml` config file in current working directory. "
+            "Are you running `showyourwork` from within your article's "
+            "repository?"
+        )
     user_config = yaml.load(
         jinja2.Environment(loader=jinja2.FileSystemLoader(paths.user().repo))
         .get_template("showyourwork.yml")

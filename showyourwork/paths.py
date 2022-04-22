@@ -18,7 +18,9 @@ class showyourwork:
 # User paths
 class user:
     def __init__(self, path=None):
-
+        """
+        path: an absolute path
+        """
         if path is None:
             root = git.get_repo_root()
             if root == "unknown":

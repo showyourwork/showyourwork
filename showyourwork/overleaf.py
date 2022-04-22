@@ -5,6 +5,38 @@ import os
 import shutil
 from pathlib import Path
 from urllib.parse import quote
+from tempfile import TemporaryDirectory
+import re
+
+
+OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
+    [
+        r"\\documentclass{article}",
+        r"\\usepackage\[utf8\]{inputenc}",
+        r"\\title{[^\n{}]+?}",
+        r"\\author{[^\n{}]+?}",
+        r"\\date{[^\n{}]+?}",
+        r"\\begin{document}",
+        r"\\maketitle",
+        r"\\section{Introduction}",
+        r"\\end{document}",
+    ]
+)
+
+OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{blank project}
+\author{Rodrigo Luger}
+\date{April 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\end{document}"""
 
 
 def get_overleaf_credentials(
@@ -34,16 +66,16 @@ def get_overleaf_credentials(
     return creds
 
 
-def clone(project_id):
+def clone(project_id, path=None):
 
     # Logging
     logger = logging.get_logger()
     logger.info("Fetching Overleaf repo...")
 
     # Set up a fresh temp directory
-    if paths.user().overleaf.exists():
-        shutil.rmtree(paths.user().overleaf)
-    paths.user().overleaf.mkdir()
+    if paths.user(path=path).overleaf.exists():
+        shutil.rmtree(paths.user(path=path).overleaf)
+    paths.user(path=path).overleaf.mkdir(exist_ok=True)
 
     # Get the credentials & repo url
     overleaf_email, overleaf_password = get_overleaf_credentials()
@@ -51,7 +83,7 @@ def clone(project_id):
 
     # Set up a local version of the repo. We don't actually _clone_ it to avoid
     # storing the url containing the password in .git/config
-    get_stdout(["git", "init"], cwd=str(paths.user().overleaf))
+    get_stdout(["git", "init"], cwd=str(paths.user(path=path).overleaf))
 
     # Pull from the repo (hide secrets)
     def callback(code, stdout, stderr):
@@ -65,13 +97,168 @@ def clone(project_id):
 
     get_stdout(
         ["git", "pull", url],
-        cwd=str(paths.user().overleaf),
+        cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_email, overleaf_password],
         callback=callback,
     )
 
 
-def push_files(files, project_id):
+def wipe_remote(project_id):
+    """
+    Remove all files from the Overleaf project and start
+    fresh as if it were a blank project.
+
+    """
+    with TemporaryDirectory() as cwd:
+        get_stdout(["git", "init"], cwd=cwd)
+        (
+            overleaf_email,
+            overleaf_password,
+        ) = get_overleaf_credentials()
+        url = (
+            f"https://{overleaf_email}:{overleaf_password}"
+            f"@git.overleaf.com/{project_id}"
+        )
+        get_stdout(
+            ["git", "pull", url],
+            cwd=cwd,
+            secrets=[overleaf_email, overleaf_password],
+        )
+        get_stdout(["git", "rm", "-r", "*"], cwd=cwd)
+        with open(Path(cwd) / "main.tex", "w") as f:
+            print(OVERLEAF_BLANK_PROJECT, file=f)
+        get_stdout(["git", "add", "main.tex"], cwd=cwd)
+
+        def callback(code, stdout, stderr):
+            if code != 0:
+                if (
+                    "Your branch is up to date" in stdout + stderr
+                    or "nothing to commit" in stdout + stderr
+                    or "nothing added to commit" in stdout + stderr
+                ):
+                    pass
+                else:
+                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+            else:
+                get_stdout(
+                    ["git", "push", url, "master"],
+                    cwd=cwd,
+                    secrets=[overleaf_email, overleaf_password],
+                )
+
+        get_stdout(
+            [
+                "git",
+                "-c",
+                "user.name='showyourwork'",
+                "-c",
+                "user.email='showyourwork'",
+                "commit",
+                "-am",
+                "automatic showyourwork update",
+            ],
+            cwd=cwd,
+            callback=callback,
+        )
+
+
+def setup_remote(project_id, path=None, maxsz=500):
+
+    # Setup logging
+    logger = logging.get_logger()
+
+    # Clone the repo
+    clone(project_id, path=path)
+
+    # Ensure this is in fact a *completely new* overleaf project
+    files = list(paths.user(path=path).overleaf.glob("*"))
+    files = [file for file in files if file.name != ".git"]
+    try:
+        if len(files) > 1:
+            # User likely added a file
+            raise Exception()
+        elif len(files) == 1:
+            # There's one file; ensure it's the default manuscript
+            # by comparing it to the blank project regex template
+            with open(files[0], "r") as f:
+                contents = f.read()
+            if re.match(OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE, contents):
+                pass
+            else:
+                raise Exception()
+    except:
+        raise exceptions.OverleafError(
+            "Overleaf repository not empty! "
+            "Refusing to rewrite files on remote."
+        )
+    else:
+        # Delete the file
+        files[0].unlink()
+        get_stdout(
+            ["git", "add", files[0].name],
+            cwd=str(paths.user(path=path).overleaf),
+        )
+
+    # Copy over all files in the `tex` directory
+    for file in paths.user(path=path).tex.glob("*"):
+
+        # Copy it to the local version of the repo
+        file = Path(file).resolve()
+        remote_file = paths.user(path=path).overleaf / file.relative_to(
+            paths.user(path=path).tex
+        )
+        if file.is_dir():
+            if remote_file.exists():
+                shutil.rmtree(remote_file)
+            shutil.copytree(file, remote_file)
+        else:
+            shutil.copy(file, remote_file)
+
+        # git-add the file
+        get_stdout(
+            [
+                "git",
+                "add",
+                remote_file.relative_to(paths.user(path=path).overleaf),
+            ],
+            cwd=str(paths.user(path=path).overleaf),
+        )
+
+    # Commit callback
+    def callback(code, stdout, stderr):
+        if stdout:
+            logger.debug(stdout)
+        if code != 0:
+            raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+
+    # Commit!
+    logger.info("Setting up Overleaf repo...")
+    get_stdout(
+        [
+            "git",
+            "-c",
+            "user.name='showyourwork'",
+            "-c",
+            "user.email='showyourwork'",
+            "commit",
+            "-m",
+            "automatic showyourwork update",
+        ],
+        cwd=str(paths.user(path=path).overleaf),
+        callback=callback,
+    )
+
+    # Push (again being careful about secrets)
+    overleaf_email, overleaf_password = get_overleaf_credentials()
+    url = f"https://{overleaf_email}:{overleaf_password}@git.overleaf.com/{project_id}"
+    get_stdout(
+        ["git", "push", url, "master"],
+        cwd=str(paths.user(path=path).overleaf),
+        secrets=[overleaf_email, overleaf_password],
+    )
+
+
+def push_files(files, project_id, path=None):
 
     # Disable if user didn't specify an id or if there are no files
     if not project_id or not files:
@@ -82,7 +269,7 @@ def push_files(files, project_id):
 
     # Clone the repo
     try:
-        clone(project_id)
+        clone(project_id, path=path)
     except (
         exceptions.MissingOverleafCredentials,
         exceptions.OverleafAuthenticationError,
@@ -100,8 +287,8 @@ def push_files(files, project_id):
             skip.append(file)
             continue
         file = Path(file).resolve()
-        remote_file = paths.user().overleaf / file.relative_to(
-            paths.user().tex
+        remote_file = paths.user(path=path).overleaf / file.relative_to(
+            paths.user(path=path).tex
         )
         if file.is_dir():
             if remote_file.exists():
@@ -112,8 +299,13 @@ def push_files(files, project_id):
 
         # git-add the file
         get_stdout(
-            ["git", "add", remote_file.relative_to(paths.user().overleaf)],
-            cwd=str(paths.user().overleaf),
+            [
+                "git",
+                "add",
+                "-f",
+                remote_file.relative_to(paths.user(path=path).overleaf),
+            ],
+            cwd=str(paths.user(path=path).overleaf),
         )
 
     # Remove missing files from the list
@@ -151,7 +343,7 @@ def push_files(files, project_id):
             "-m",
             "automatic showyourwork update",
         ],
-        cwd=str(paths.user().overleaf),
+        cwd=str(paths.user(path=path).overleaf),
         callback=callback,
     )
 
@@ -160,12 +352,12 @@ def push_files(files, project_id):
     url = f"https://{overleaf_email}:{overleaf_password}@git.overleaf.com/{project_id}"
     get_stdout(
         ["git", "push", url, "master"],
-        cwd=str(paths.user().overleaf),
+        cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_email, overleaf_password],
     )
 
 
-def pull_files(files, project_id, auto_commit=False):
+def pull_files(files, project_id, auto_commit=False, path=None):
 
     # Disable if user didn't specify an id or if there are no files
     if not project_id or not files:
@@ -176,7 +368,7 @@ def pull_files(files, project_id, auto_commit=False):
 
     # Clone the repo
     try:
-        clone(project_id)
+        clone(project_id, path=path)
     except (
         exceptions.MissingOverleafCredentials,
         exceptions.OverleafAuthenticationError,
@@ -191,12 +383,13 @@ def pull_files(files, project_id, auto_commit=False):
     for file in files:
         file = Path(file).absolute()
         remote_file = (
-            paths.user().overleaf / file.relative_to(paths.user().tex)
+            paths.user(path=path).overleaf
+            / file.relative_to(paths.user(path=path).tex)
         ).resolve()
         if not remote_file.exists():
             # Non-fatal
             logger.error(
-                f"File not found on Overleaf: {remote_file.relative_to(paths.user().overleaf)}"
+                f"File not found on Overleaf: {remote_file.relative_to(paths.user(path=path).overleaf)}"
             )
             continue
 
@@ -214,9 +407,10 @@ def pull_files(files, project_id, auto_commit=False):
                             [
                                 "git",
                                 "add",
-                                file.relative_to(paths.user().repo),
+                                "-f",
+                                file.relative_to(paths.user(path=path).repo),
                             ],
-                            cwd=paths.user().repo,
+                            cwd=paths.user(path=path).repo,
                         )
 
             get_stdout(["diff", remote_file, file], callback=callback)
@@ -234,7 +428,9 @@ def pull_files(files, project_id, auto_commit=False):
                         )
 
                 get_stdout(
-                    ["git", "push"], cwd=paths.user().repo, callback=callback
+                    ["git", "push"],
+                    cwd=paths.user(path=path).repo,
+                    callback=callback,
                 )
                 logger.info("Changes committed and pushed to remote.")
             else:
@@ -258,7 +454,7 @@ def pull_files(files, project_id, auto_commit=False):
                 "-m",
                 "automatic showyourwork Overleaf update",
             ],
-            cwd=paths.user().repo,
+            cwd=paths.user(path=path).repo,
             callback=callback,
         )
 

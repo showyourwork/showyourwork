@@ -1,4 +1,4 @@
-from . import paths, exceptions
+from . import paths
 from pathlib import Path
 import logging
 import platform

@@ -1,5 +1,6 @@
-from ... import paths, zenodo, exceptions, __version__
+from ... import paths, zenodo, exceptions, overleaf, __version__
 from ...subproc import get_stdout
+from ...logging import get_logger
 from cookiecutter.main import cookiecutter
 from packaging import version
 import time
@@ -7,7 +8,7 @@ from pathlib import Path
 import subprocess
 
 
-def setup(slug, overleaf, ssh, no_git, showyourwork_version):
+def setup(slug, overleaf_id, ssh, no_git, showyourwork_version):
     """Set up a new article repo."""
     # Parse the slug
     user, repo = slug.split("/")
@@ -43,7 +44,7 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
             "name": name,
             "showyourwork_version": showyourwork_version,
             "zenodo_cache_concept_id": zenodo_cache_concept_id,
-            "overleaf_id": overleaf,
+            "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
         },
     )
@@ -69,7 +70,8 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
 
         def callback(code, stdout, stderr):
             if code > 0:
-                raise exceptions.ShowyourworkException(
+                # Not fatal
+                get_logger().error(
                     f"Unable to push to GitHub. Did you forget "
                     "to create the remote repo?"
                 )
@@ -80,3 +82,7 @@ def setup(slug, overleaf, ssh, no_git, showyourwork_version):
             cwd=repo,
             callback=callback,
         )
+
+    # Set up repository on overleaf
+    if overleaf_id is not None:
+        overleaf.setup_remote(overleaf_id, path=Path(repo).absolute())

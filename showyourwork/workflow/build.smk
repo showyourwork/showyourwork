@@ -17,7 +17,7 @@ snakemake.utils.min_version("6.15.5")
 workdir: paths.user().repo.as_posix()
 
 
-# What kind of run is this? (clean, main, etc.)
+# What kind of run is this? (clean, build, etc.)
 run_type = get_run_type()
 
 
@@ -80,18 +80,6 @@ else:
 
     if run_type != "clean":
         raise exceptions.MissingConfigFile()
-
-
-onstart:
-
-    
-    # Overleaf sync: pull in changes
-    if run_type == "build":
-        overleaf.pull_files(
-            config["overleaf"]["pull"], 
-            config["overleaf"]["id"], 
-            auto_commit=config["overleaf"]["auto-commit"] and config["github_actions"]
-        )
 
 
 onsuccess:

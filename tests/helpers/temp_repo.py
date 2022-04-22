@@ -1,8 +1,10 @@
 import showyourwork
 from showyourwork import gitapi
+from showyourwork.logging import get_logger
 from showyourwork.git import get_repo_sha
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import delete_deposit
+import logging
 from pathlib import Path
 import shutil
 import asyncio
@@ -48,8 +50,20 @@ class TemporaryShowyourworkRepository:
     def cwd(self):
         return SANDBOX / self.repo
 
+    def startup(self):
+        """Subclass me to run things at startup."""
+        pass
+
+    def teardown(self):
+        """Subclass me to run things at teardown."""
+        pass
+
     def customize(self):
         """Subclass me to customize the repo."""
+        pass
+
+    def check_build(self):
+        """Subclass me to run post-build local checks."""
         pass
 
     def copy_files(self):
@@ -72,7 +86,7 @@ class TemporaryShowyourworkRepository:
             version = str(Path(showyourwork.__file__).parents[1])
         else:
             version = get_repo_sha()
-        options = f"--yes --no-git --showyourwork-version={version}"
+        options = f"--yes --no-git --showyourwork-version={version} "
         if not self.zenodo_cache:
             # Disable zenodo caching
             command = f"ZENODO_TOKEN='' {command}"
@@ -213,6 +227,12 @@ class TemporaryShowyourworkRepository:
             )
             shutil.rmtree(self.cwd)
 
+    def disable_logging(self):
+        """Disable showyourwork screen output."""
+        for handler in get_logger().handlers:
+            if isinstance(handler, logging.StreamHandler):
+                handler.setLevel(logging.ERROR)
+
     @pytest.mark.asyncio_cooperative
     async def test_repo(self):
         """
@@ -222,6 +242,12 @@ class TemporaryShowyourworkRepository:
 
         """
         try:
+
+            # Disable screen logging info from showyourwork
+            self.disable_logging()
+
+            # Always run this first
+            self.startup()
 
             # Create the repo on GitHub
             if not self.local_build_only:
@@ -245,6 +271,9 @@ class TemporaryShowyourworkRepository:
             # Build the article locally
             self.build_local()
 
+            # Run local checks
+            self.check_build()
+
             # Push to GitHub to trigger the Actions workflow
             # and wait for the result
             if not self.local_build_only:
@@ -267,3 +296,6 @@ class TemporaryShowyourworkRepository:
 
             # Always delete the Zenodo deposit (if created)
             self.delete_zenodo()
+
+            # Always run this last
+            self.teardown()
