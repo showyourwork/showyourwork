@@ -357,7 +357,9 @@ def push_files(files, project_id, path=None):
     )
 
 
-def pull_files(files, project_id, auto_commit=False, path=None):
+def pull_files(
+    files, project_id, error_if_missing=False, auto_commit=False, path=None
+):
 
     # Disable if user didn't specify an id or if there are no files
     if not project_id or not files:
@@ -378,7 +380,7 @@ def pull_files(files, project_id, auto_commit=False, path=None):
         return
 
     # Copy over the files
-    file_list = " ".join(files)
+    file_list = " ".join([str(file) for file in files])
     logger.info(f"Pulling changes from Overleaf: {file_list}")
     for file in files:
         file = Path(file).absolute()
@@ -387,11 +389,15 @@ def pull_files(files, project_id, auto_commit=False, path=None):
             / file.relative_to(paths.user(path=path).tex)
         ).resolve()
         if not remote_file.exists():
-            # Non-fatal
-            logger.error(
-                f"File not found on Overleaf: {remote_file.relative_to(paths.user(path=path).overleaf)}"
-            )
-            continue
+            if error_if_missing:
+                raise exceptions.OverleafError(
+                    f"File not found on Overleaf: {remote_file.relative_to(paths.user(path=path).overleaf)}"
+                )
+            else:
+                logger.error(
+                    f"File not found on Overleaf: {remote_file.relative_to(paths.user(path=path).overleaf)}"
+                )
+                continue
 
         if remote_file.is_dir():
             if file.exists():

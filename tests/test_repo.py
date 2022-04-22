@@ -20,6 +20,8 @@ class TestOverleaf(TemporaryShowyourworkRepository):
     """Test a repo that integrates with an Overleaf project."""
 
     overleaf_id = "6262c032aae5421d6d945acf"
+    local_build_only = True
+    use_local_showyourwork = True  # DEBUG
 
     def startup(self):
         """Wipe the Overleaf remote to start fresh."""
@@ -63,14 +65,24 @@ class TestOverleaf(TemporaryShowyourworkRepository):
 
     def check_build(self):
         """Check that our figure was built correctly.
-        
+
         This will only work if we successfully synced the Overleaf manuscript
         to the local repo, as that contains the figure environment defining
         the script that produces `random_numbers.pdf`.
+
+        Here we also check that the generated figure was pushed to the
+        Overleaf project successfully.
         """
-        assert (
-            self.cwd / "src" / "tex" / "figures" / "random_numbers.pdf"
-        ).exists()
+        # The programmatically-generated figure
+        figure = self.cwd / "src" / "tex" / "figures" / "random_numbers.pdf"
+
+        # Check that figure is present locally
+        assert (figure).exists()
+
+        # Check that figure is present on the remote
+        overleaf.pull_files(
+            [figure], self.overleaf_id, path=self.cwd, error_if_missing=True
+        )
 
 
 class TestZenodoCache(TemporaryShowyourworkRepository):
