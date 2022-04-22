@@ -59,67 +59,6 @@ def flatten_zenodo_contents(d, parent_key="", default_path=None):
     return dict(items)
 
 
-def parse_overleaf():
-    # Make sure `id` is defined
-    config["overleaf"]["id"] = config["overleaf"].get("id", None)
-
-    # Make sure `auto-commit` is defined
-    config["overleaf"]["auto-commit"] = config["overleaf"].get(
-        "auto-commit", False
-    )
-
-    # Make sure `push` and `pull` are defined and they are lists
-    config["overleaf"]["push"] = config["overleaf"].get("push", [])
-    if config["overleaf"]["push"] is None:
-        config["overleaf"]["push"] = []
-    elif type(config["overleaf"]["push"]) is not list:
-        raise exceptions.ConfigError(
-            "Error parsing the config. "
-            "The `overleaf.push` field must be a list."
-        )
-    config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
-    if config["overleaf"]["pull"] is None:
-        config["overleaf"]["pull"] = []
-    elif type(config["overleaf"]["pull"]) is not list:
-        raise exceptions.ConfigError(
-            "Error parsing the config. "
-            "The `overleaf.pull` field must be a list."
-        )
-
-    # Ensure all files in `push` and `pull` are in the `src/tex` directory
-    for file in config["overleaf"]["push"] + config["overleaf"]["pull"]:
-        if not Path(file).resolve().is_relative_to(paths.user().tex):
-            raise exceptions.ConfigError(
-                "Error parsing the config. "
-                "Files specified in `overleaf.push` and `overleaf.pull` must "
-                "be located under the `src/tex` directory."
-            )
-
-    # Ensure no overlap between `push` and `pull`.
-    # User could in principle provide a directory in one
-    # and a file within that directory in the other and that would
-    # not trigger this error; we'll just have to let them live
-    # dangerously!
-    push_files = set(
-        [
-            str(Path(file).resolve().relative_to(paths.user().tex))
-            for file in config["overleaf"]["push"]
-        ]
-    )
-    pull_files = set(
-        [
-            str(Path(file).resolve().relative_to(paths.user().tex))
-            for file in config["overleaf"]["pull"]
-        ]
-    )
-    if len(push_files & pull_files):
-        raise exceptions.ConfigError(
-            "Error parsing the config. "
-            "One more more files are listed in both `overleaf.push` and "
-            "`overleaf.pull`, which is not supported."
-        )
-
-
 def parse_zenodo_datasets():
     """
     Parse the `zenodo` and `zenodo_sandbox` keys in the config file and
@@ -553,10 +492,6 @@ def get_json_tree():
 
 # Parse the `zenodo` key in the config
 parse_zenodo_datasets()
-
-
-# Parse overleaf config
-parse_overleaf()
 
 
 # Get the article tree
