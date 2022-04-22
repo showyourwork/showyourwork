@@ -88,6 +88,9 @@ def as_dict(x, depth=0, maxdepth=30):
 
 
 def parse_overleaf():
+    # Get the config
+    config = snakemake.workflow.config
+
     # Make sure `id` is defined
     config["overleaf"]["id"] = config["overleaf"].get("id", None)
 
