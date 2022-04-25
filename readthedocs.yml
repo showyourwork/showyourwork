@@ -1,0 +1,8 @@
+version: 2
+
+conda:
+  environment: docs/environment.yml
+
+sphinx:
+  configuration: docs/conf.py
+  builder: dirhtml

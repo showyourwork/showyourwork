@@ -86,7 +86,7 @@ class TemporaryShowyourworkRepository:
             version = str(Path(showyourwork.__file__).parents[1])
         else:
             version = get_repo_sha()
-        options = f"--yes --no-git --showyourwork-version={version} "
+        options = f"--yes --showyourwork-version={version} "
         if not self.zenodo_cache:
             # Disable zenodo caching
             command = f"ZENODO_TOKEN='' {command}"
@@ -127,14 +127,6 @@ class TemporaryShowyourworkRepository:
             org="showyourwork",
             description="Temporary test repository for showyourwork",
             private=False,
-        )
-
-    def setup_git(self):
-        """Init the git repo and add + commit all files."""
-        print(f"[{self.repo}] Setting up local git repo...")
-        get_stdout("git init -q", shell=True, cwd=self.cwd)
-        get_stdout(
-            "git symbolic-ref HEAD refs/heads/main", shell=True, cwd=self.cwd
         )
 
     def git_commit(self):
@@ -258,9 +250,6 @@ class TemporaryShowyourworkRepository:
 
             # Copy files from the template
             self.copy_files()
-
-            # git init, add, and commit
-            self.setup_git()
 
             # Customize the repo
             self.customize()

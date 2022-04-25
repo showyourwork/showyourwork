@@ -200,17 +200,11 @@ def validate_slug(context, param, slug):
     help="Use ssh to authenticate with GitHub? Default is to use https.",
 )
 @click.option(
-    "--no-git",
-    is_flag=True,
-    help="Don't initialize the git repository "
-    "(in case you'd like to do it manually).",
-)
-@click.option(
     "--showyourwork-version",
     help="Version of showyourwork to use. Default is the current version.",
     default=None,
 )
-def setup(slug, yes, overleaf, ssh, no_git, showyourwork_version):
+def setup(slug, yes, overleaf, ssh, showyourwork_version):
     """
     Set up a new article repository in the current working directory.
 
@@ -218,7 +212,7 @@ def setup(slug, yes, overleaf, ssh, no_git, showyourwork_version):
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    commands.setup(slug, overleaf, ssh, no_git, showyourwork_version)
+    commands.setup(slug, overleaf, ssh, showyourwork_version)
 
 
 @entry_point.command()

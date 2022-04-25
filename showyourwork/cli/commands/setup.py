@@ -5,10 +5,11 @@ from cookiecutter.main import cookiecutter
 from packaging import version
 import time
 from pathlib import Path
+import shutil
 import subprocess
 
 
-def setup(slug, overleaf_id, ssh, no_git, showyourwork_version):
+def setup(slug, overleaf_id, ssh, showyourwork_version):
     """Set up a new article repo."""
     # Parse the slug
     user, repo = slug.split("/")
@@ -50,7 +51,7 @@ def setup(slug, overleaf_id, ssh, no_git, showyourwork_version):
     )
 
     # Set up git
-    if not no_git:
+    try:
         get_stdout("git init -q", shell=True, cwd=repo)
         get_stdout("git add .", shell=True, cwd=repo)
         get_stdout("git commit -q -m 'first commit'", shell=True, cwd=repo)
@@ -67,22 +68,24 @@ def setup(slug, overleaf_id, ssh, no_git, showyourwork_version):
                 shell=True,
                 cwd=repo,
             )
-
-        def callback(code, stdout, stderr):
-            if code > 0:
-                # Not fatal
-                get_logger().error(
-                    f"Unable to push to GitHub. Did you forget "
-                    "to create the remote repo?"
-                )
-
-        get_stdout(
-            "git push -q -u origin main",
-            shell=True,
-            cwd=repo,
-            callback=callback,
-        )
+    except Exception as e:
+        logger = get_logger()
+        if zenodo_cache_concept_id:
+            logger.error("Deleting Zenodo deposit...")
+            zenodo.delete_deposit(zenodo_cache_concept_id)
+        logger.error(f"Deleting directory {repo}...")
+        shutil.rmtree(repo)
+        raise e
 
     # Set up repository on overleaf
     if overleaf_id is not None:
-        overleaf.setup_remote(overleaf_id, path=Path(repo).absolute())
+        try:
+            overleaf.setup_remote(overleaf_id, path=Path(repo).absolute())
+        except Exception as e:
+            logger = get_logger()
+            if zenodo_cache_concept_id:
+                logger.error("Deleting Zenodo deposit...")
+                zenodo.delete_deposit(zenodo_cache_concept_id)
+            logger.error(f"Deleting directory {repo}...")
+            shutil.rmtree(repo)
+            raise e
