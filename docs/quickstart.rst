@@ -7,7 +7,7 @@ Quickstart
 
 
 
-.. code-block:: bash
+.. code-block:: text
 
     Let's get you set up with a new repository. I'm going to create a folder called
 
@@ -25,7 +25,7 @@ Quickstart
 
 
 
-.. code-block:: bash
+.. code-block:: text
 
     I didn't find a ZENODO_TOKEN environment variable, so I'm not going to set up
     a Zenodo deposit for caching intermediate results. If you would like to enable
@@ -41,7 +41,7 @@ Quickstart
 
 
 
-.. code-block:: bash
+.. code-block:: text
 
     You didn't provide an Overleaf project id (via the --overleaf command-line
     option), so I'm not going to set up Overleaf integration for this repository.

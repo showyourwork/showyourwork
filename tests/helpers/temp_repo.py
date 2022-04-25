@@ -12,6 +12,7 @@ import pytest
 import re
 import yaml
 import jinja2
+import os
 
 
 # Folder where we'll create our temporary repos
