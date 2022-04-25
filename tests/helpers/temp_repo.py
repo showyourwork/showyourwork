@@ -94,19 +94,18 @@ class TemporaryShowyourworkRepository:
             # Enable overleaf syncing
             options += f"--overleaf={self.overleaf_id}"
 
-        # Provide git name & email if missing
-        get_stdout(
-            "git config --global user.name &> /dev/null "
-            "|| git config --global user.name 'gh-actions'",
-            cwd=SANDBOX,
-            shell=True,
-        )
-        get_stdout(
-            "git config --global user.email &> /dev/null "
-            "|| git config --global user.email 'gh-actions'",
-            cwd=SANDBOX,
-            shell=True,
-        )
+        # Provide git name & email
+        if os.getenv("CI", "false") == "true":
+            get_stdout(
+                "git config --global user.name 'gh-actions'",
+                cwd=SANDBOX,
+                shell=True,
+            )
+            get_stdout(
+                "git config --global user.email 'gh-actions'",
+                cwd=SANDBOX,
+                shell=True,
+            )
 
         # Create a new one
         print(
