@@ -409,9 +409,9 @@ def get_json_tree():
         if command is not None:
             command = command.format(
                 script=script,
-                output=graphics,
-                datasets=datasets,
-                dependencies=dependencies,
+                output=" ".join(graphics),
+                datasets=" ".join(datasets),
+                dependencies=" ".join(dependencies),
             )
 
         # Add an entry to the tree

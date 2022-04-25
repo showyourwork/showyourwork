@@ -42,7 +42,7 @@ even when running on the cloud.
 To get started with ``showyourwork``, check out the :doc:`quickstart tutorial <quickstart>`.
 You should also read about
 the :doc:`showyourwork GitHub action <action>`, :doc:`LaTeX instructions <latex>`,
-how to :doc:`build your article locally <local>`,
+how to :doc:`build your article locally <cli>`,
 and how to :doc:`customize your workflow <custom>`.
 
 You should also spend some time browsing through the :doc:`FAQs page <faqs>`. Since ``showyourwork``

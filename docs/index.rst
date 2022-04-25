@@ -24,7 +24,6 @@ Documentation
    latex
    zenodo
    overleaf
-   local
    custom
    faqs
    api/showyourwork

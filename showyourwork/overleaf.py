@@ -399,27 +399,46 @@ def pull_files(
                 )
                 continue
 
-        if remote_file.is_dir():
-            if file.exists():
-                shutil.rmtree(file)
-            shutil.copytree(remote_file, file)
-        else:
-            # Only copy if the files actually differ
-            def callback(code, stdout, stderr):
-                if code != 0:
-                    shutil.copy(remote_file, file)
-                    if auto_commit:
-                        get_stdout(
-                            [
-                                "git",
-                                "add",
-                                "-f",
-                                file.relative_to(paths.user(path=path).repo),
-                            ],
-                            cwd=paths.user(path=path).repo,
-                        )
+        def callback(code, stdout, stderr):
+            if code != 0:
+                logger.error(
+                    f"Uncommitted changes to local file: {remote_file.relative_to(paths.user(path=path).overleaf)}. Refusing to overwrite."
+                )
+            else:
+                if remote_file.is_dir():
+                    if file.exists():
+                        shutil.rmtree(file)
+                    shutil.copytree(remote_file, file)
+                else:
+                    # Only copy if the files actually differ
+                    def file_callback(code, stdout, stderr):
+                        if code != 0:
+                            shutil.copy(remote_file, file)
+                            if auto_commit:
+                                get_stdout(
+                                    [
+                                        "git",
+                                        "add",
+                                        "-f",
+                                        file.relative_to(
+                                            paths.user(path=path).repo
+                                        ),
+                                    ],
+                                    cwd=paths.user(path=path).repo,
+                                )
 
-            get_stdout(["diff", remote_file, file], callback=callback)
+                    get_stdout(
+                        ["diff", remote_file, file], callback=file_callback
+                    )
+
+        # Ensure there are no uncommitted changes to the local file/directory.
+        # If we're good, copy over the one from Overleaf
+        get_stdout(
+            "git diff --quiet -- file",
+            shell=True,
+            cwd=paths.user(path=path).repo,
+            callback=callback,
+        )
 
     if auto_commit:
 
