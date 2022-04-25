@@ -1,6 +1,9 @@
 To-do
 -----
 
+- [ ] Zenodo deposits with lots of files; zenodo deposits with tarballs containing lots of files.
+      Consider supporting directories (instead of specific files) in the ``contents`` mapping of
+      the config file.
 - [ ] Upgrade to revtex 4.2
 - [ ] Caching files on Zenodo sometimes prints a JSON response to the terminal; investigate
 - [ ] Don't show errors on make clean

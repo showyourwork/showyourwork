@@ -47,7 +47,9 @@ def flatten_zenodo_contents(d, parent_key="", default_path=None):
                 # from the target path
                 zip_file = Path(new_key).parts[0]
                 for ext in zenodo.zip_exts:
-                    if zip_file.endswith(f".{ext}"):
+                    if len(Path(new_key).parts) > 1 and zip_file.endswith(
+                        f".{ext}"
+                    ):
                         mod_key = Path(new_key).parts[0][
                             : -len(f".{ext}")
                         ] / Path(*Path(new_key).parts[1:])
@@ -121,9 +123,9 @@ def parse_zenodo_datasets():
                         "provided as a mapping, not as a list."
                     )
 
-                # If it's a zipfile, add it to a separate entry in the config
+                # If it's a file inside a zipfile, add it to a separate entry in the config
                 zip_file = Path(source).parts[0]
-                if any(
+                if len(Path(source).parts) > 1 and any(
                     [zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]
                 ):
                     new_source = Path(*Path(source).parts[1:]).as_posix()
