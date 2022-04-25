@@ -166,7 +166,9 @@ in this case, the id is `6262c032aae5421d6d945acf`.
 
 **Type:** ``bool``
 
-**Description:** 
+**Description:** A list of files to be pulled from the Overleaf project upon
+every build. These should be files which are only ever modified on Overleaf, such as 
+the TeX manuscript and other TeX files.
 
 **Required:** no
 

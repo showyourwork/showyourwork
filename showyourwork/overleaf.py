@@ -399,46 +399,62 @@ def pull_files(
                 )
                 continue
 
+        # Ensure there are no uncommitted changes to the local file/directory
+        try:
+            get_stdout(
+                f"git diff --quiet -- {file}",
+                shell=True,
+                cwd=paths.user(path=path).repo,
+            )
+        except:
+            logger.error(
+                "Uncommitted changes to local file: "
+                f"{remote_file.relative_to(paths.user(path=path).overleaf)}. "
+                "Refusing to overwrite with Overleaf version."
+            )
+            continue
+
+        # Ensure the last change was an automatic showyourwork commit
         def callback(code, stdout, stderr):
-            if code != 0:
-                logger.error(
-                    f"Uncommitted changes to local file: {remote_file.relative_to(paths.user(path=path).overleaf)}. Refusing to overwrite."
-                )
-            else:
-                if remote_file.is_dir():
-                    if file.exists():
-                        shutil.rmtree(file)
-                    shutil.copytree(remote_file, file)
-                else:
-                    # Only copy if the files actually differ
-                    def file_callback(code, stdout, stderr):
-                        if code != 0:
-                            shutil.copy(remote_file, file)
-                            if auto_commit:
-                                get_stdout(
-                                    [
-                                        "git",
-                                        "add",
-                                        "-f",
-                                        file.relative_to(
-                                            paths.user(path=path).repo
-                                        ),
-                                    ],
-                                    cwd=paths.user(path=path).repo,
-                                )
+            assert "overleaf sync" in stdout.lower()
 
-                    get_stdout(
-                        ["diff", remote_file, file], callback=file_callback
-                    )
+        try:
+            get_stdout(
+                f"git log -n 1 --pretty=format:%s -- {file}",
+                shell=True,
+                cwd=paths.user(path=path).repo,
+                callback=callback,
+            )
+        except:
+            logger.error(
+                "File changed locally: "
+                f"{remote_file.relative_to(paths.user(path=path).overleaf)}. "
+                "Refusing to overwrite with Overleaf version. Please see the "
+                "docs for details on how to resolve this."
+            )
+            continue
 
-        # Ensure there are no uncommitted changes to the local file/directory.
-        # If we're good, copy over the one from Overleaf
-        get_stdout(
-            "git diff --quiet -- file",
-            shell=True,
-            cwd=paths.user(path=path).repo,
-            callback=callback,
-        )
+        if remote_file.is_dir():
+            if file.exists():
+                shutil.rmtree(file)
+            shutil.copytree(remote_file, file)
+        else:
+            # Only copy if the files actually differ
+            def callback(code, stdout, stderr):
+                if code != 0:
+                    shutil.copy(remote_file, file)
+                    if auto_commit:
+                        get_stdout(
+                            [
+                                "git",
+                                "add",
+                                "-f",
+                                file.relative_to(paths.user(path=path).repo),
+                            ],
+                            cwd=paths.user(path=path).repo,
+                        )
+
+            get_stdout(["diff", remote_file, file], callback=callback)
 
     if auto_commit:
 
@@ -477,7 +493,7 @@ def pull_files(
                 "user.email='showyourwork'",
                 "commit",
                 "-m",
-                "automatic showyourwork Overleaf update",
+                "Overleaf sync (automatic showyourwork commit)",
             ],
             cwd=paths.user(path=path).repo,
             callback=callback,
