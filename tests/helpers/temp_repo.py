@@ -149,7 +149,7 @@ class TemporaryShowyourworkRepository:
         get_stdout(
             "git diff-index --quiet HEAD || "
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
-            "commit -q -m 'auto commit from showyourwork'",
+            "commit -q -m 'auto commit from showyourwork tests'",
             shell=True,
             cwd=self.cwd,
         )

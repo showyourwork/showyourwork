@@ -94,11 +94,6 @@ def parse_overleaf():
     # Make sure `id` is defined
     config["overleaf"]["id"] = config["overleaf"].get("id", None)
 
-    # Make sure `auto-commit` is defined
-    config["overleaf"]["auto-commit"] = config["overleaf"].get(
-        "auto-commit", False
-    )
-
     # Make sure `push` and `pull` are defined and they are lists
     config["overleaf"]["push"] = config["overleaf"].get("push", [])
     if config["overleaf"]["push"] is None:

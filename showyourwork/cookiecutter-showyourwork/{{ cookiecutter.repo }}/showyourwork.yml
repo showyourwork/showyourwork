@@ -6,7 +6,6 @@ showyourwork:
 {% if cookiecutter.overleaf_id -%}
 overleaf:
   id: {{ cookiecutter.overleaf_id }}
-  auto-commit: true
   push: 
     - src/tex/figures
   pull:

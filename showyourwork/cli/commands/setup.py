@@ -54,7 +54,7 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
     try:
         get_stdout("git init -q", shell=True, cwd=repo)
         get_stdout("git add .", shell=True, cwd=repo)
-        get_stdout("git commit -q -m 'first commit'", shell=True, cwd=repo)
+        get_stdout("git commit -q -m '[showyourwork] first commit'", shell=True, cwd=repo)
         get_stdout("git branch -M main", shell=True, cwd=repo)
         if ssh:
             get_stdout(

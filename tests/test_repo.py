@@ -1,5 +1,5 @@
 from helpers import TemporaryShowyourworkRepository, edit_yaml
-from showyourwork import overleaf
+from showyourwork import overleaf, exceptions
 from showyourwork.subproc import get_stdout
 from tempfile import NamedTemporaryFile
 
@@ -20,6 +20,9 @@ class TestOverleaf(TemporaryShowyourworkRepository):
     """Test a repo that integrates with an Overleaf project."""
 
     overleaf_id = "6262c032aae5421d6d945acf"
+
+    use_local_showyourwork = True
+    local_build_only = True
 
     def startup(self):
         """Wipe the Overleaf remote to start fresh."""
@@ -58,28 +61,85 @@ class TestOverleaf(TemporaryShowyourworkRepository):
             )
             print(ms_new, file=f)
         overleaf.push_files([ms], self.overleaf_id, path=self.cwd)
-        with open(ms, "w") as f:
-            print(ms_orig, file=f)
+        get_stdout("git checkout -- src/tex/ms.tex", shell=True, cwd=self.cwd)
 
     def check_build(self):
-        """Check that our figure was built correctly.
+        """Run several post-build checks.
 
-        This will only work if we successfully synced the Overleaf manuscript
-        to the local repo, as that contains the figure environment defining
-        the script that produces `random_numbers.pdf`.
+        First, we check if the figure PDF exists. It should only exist if we
+        successfully synced the Overleaf manuscript to the local repo, as
+        that contains the figure environment defining the script that produces
+        `random_numbers.pdf`.
 
         Here we also check that the generated figure was pushed to the
         Overleaf project successfully.
+
+        We then make a change to the local version of the manuscript
+        and check that we get an error alerting us to the fact that those
+        changes would get overwritten; we then commit the changes and run the
+        same check, which should throw a similar error. Finally, we amend the
+        commit message to include the magical [showyourwork] stamp, which
+        is how we tell showyourwork the file has been manually synced to
+        Overleaf (see the docs).
         """
-        # The programmatically-generated figure
+        # Check that the generated figure is present locally
         figure = self.cwd / "src" / "tex" / "figures" / "random_numbers.pdf"
+        assert figure.exists()
 
-        # Check that figure is present locally
-        assert (figure).exists()
-
-        # Check that figure is present on the remote
+        # Check that the figure is present on the remote
         overleaf.pull_files(
             [figure], self.overleaf_id, path=self.cwd, error_if_missing=True
+        )
+
+        # Check that an exception is raised if we try to overwrite a file
+        # with uncommitted changes
+        ms = self.cwd / "src" / "tex" / "ms.tex"
+        with open(ms, "r") as f:
+            ms_orig = f.read()
+        with open(ms, "w") as f:
+            f.write(r"% dummy comment\n" + ms_orig)
+        try:
+            overleaf.pull_files(
+                [ms],
+                self.overleaf_id,
+                path=self.cwd,
+                error_if_local_changes=True,
+            )
+        except exceptions.OverleafError as e:
+            pass
+        else:
+            raise Exception("Failed to raise exception!")
+
+        # Commit the changes and check that the exception is still raised
+        get_stdout(
+            f"git add -f {ms} && git commit -m 'changing ms.tex locally'",
+            cwd=self.cwd,
+            shell=True,
+        )
+        try:
+            overleaf.pull_files(
+                [ms],
+                self.overleaf_id,
+                path=self.cwd,
+                error_if_local_changes=True,
+            )
+        except exceptions.OverleafError as e:
+            pass
+        else:
+            raise Exception("Failed to raise exception!")
+
+        # Amend the commit message with the magical `[showyourwork]` label
+        # and check that the merge works
+        get_stdout(
+            f"git commit --amend -m '[showyourwork] changing ms.tex locally'",
+            cwd=self.cwd,
+            shell=True,
+        )
+        overleaf.pull_files(
+            [ms],
+            self.overleaf_id,
+            path=self.cwd,
+            error_if_local_changes=True,
         )
 
 

@@ -242,7 +242,7 @@ def setup_remote(project_id, path=None, maxsz=500):
             "user.email='showyourwork'",
             "commit",
             "-m",
-            "automatic showyourwork update",
+            "[showyourwork] automatic showyourwork update",
         ],
         cwd=str(paths.user(path=path).overleaf),
         callback=callback,
@@ -341,7 +341,7 @@ def push_files(files, project_id, path=None):
             "user.email='showyourwork'",
             "commit",
             "-m",
-            "automatic showyourwork update",
+            "[showyourwork] automatic showyourwork update",
         ],
         cwd=str(paths.user(path=path).overleaf),
         callback=callback,
@@ -358,7 +358,11 @@ def push_files(files, project_id, path=None):
 
 
 def pull_files(
-    files, project_id, error_if_missing=False, auto_commit=False, path=None
+    files,
+    project_id,
+    error_if_missing=False,
+    error_if_local_changes=False,
+    path=None,
 ):
 
     # Disable if user didn't specify an id or if there are no files
@@ -389,14 +393,14 @@ def pull_files(
             / file.relative_to(paths.user(path=path).tex)
         ).resolve()
         if not remote_file.exists():
+            msg = (
+                "File not found on Overleaf: "
+                f"{remote_file.relative_to(paths.user(path=path).overleaf)}"
+            )
             if error_if_missing:
-                raise exceptions.OverleafError(
-                    f"File not found on Overleaf: {remote_file.relative_to(paths.user(path=path).overleaf)}"
-                )
+                raise exceptions.OverleafError(msg)
             else:
-                logger.error(
-                    f"File not found on Overleaf: {remote_file.relative_to(paths.user(path=path).overleaf)}"
-                )
+                logger.error(msg)
                 continue
 
         # Ensure there are no uncommitted changes to the local file/directory
@@ -407,16 +411,24 @@ def pull_files(
                 cwd=paths.user(path=path).repo,
             )
         except:
-            logger.error(
+            msg = (
                 "Uncommitted changes to local file: "
                 f"{remote_file.relative_to(paths.user(path=path).overleaf)}. "
                 "Refusing to overwrite with Overleaf version."
             )
-            continue
+            if error_if_local_changes:
+                raise exceptions.OverleafError(msg)
+            else:
+                logger.error(msg)
+                continue
 
         # Ensure the last change was an automatic showyourwork commit
+        # based on inspection of the commit message
+        # (must contain `[showyourwork]` or must not be tracked by git)
         def callback(code, stdout, stderr):
-            assert "overleaf sync" in stdout.lower()
+            assert (
+                len(stdout.lower()) == 0 or "[showyourwork]" in stdout.lower()
+            )
 
         try:
             get_stdout(
@@ -426,14 +438,19 @@ def pull_files(
                 callback=callback,
             )
         except:
-            logger.error(
-                "File changed locally: "
+            msg = (
+                "Local file changed since the last Overleaf sync: "
                 f"{remote_file.relative_to(paths.user(path=path).overleaf)}. "
                 "Refusing to overwrite with Overleaf version. Please see the "
                 "docs for details on how to resolve this."
             )
-            continue
+            if error_if_local_changes:
+                raise exceptions.OverleafError(msg)
+            else:
+                logger.error(msg)
+                continue
 
+        # Finally, overwrite the file/folder with the version on Overleaf
         if remote_file.is_dir():
             if file.exists():
                 shutil.rmtree(file)
@@ -443,64 +460,42 @@ def pull_files(
             def callback(code, stdout, stderr):
                 if code != 0:
                     shutil.copy(remote_file, file)
-                    if auto_commit:
-                        get_stdout(
-                            [
-                                "git",
-                                "add",
-                                "-f",
-                                file.relative_to(paths.user(path=path).repo),
-                            ],
-                            cwd=paths.user(path=path).repo,
-                        )
+                    get_stdout(
+                        [
+                            "git",
+                            "add",
+                            "-f",
+                            file.relative_to(paths.user(path=path).repo),
+                        ],
+                        cwd=paths.user(path=path).repo,
+                    )
 
             get_stdout(["diff", remote_file, file], callback=callback)
 
-    if auto_commit:
-
-        def callback(code, stdout, stderr):
-            if code == 0:
-                # Push the changes
-                def callback(code, stdout, stderr):
-                    if code != 0:
-                        # Non-fatal
-                        logger.error(
-                            "Error pushing changes to the remote.\n" + stderr
-                        )
-
-                get_stdout(
-                    ["git", "push"],
-                    cwd=paths.user(path=path).repo,
-                    callback=callback,
-                )
-                logger.info("Changes committed and pushed to remote.")
+    def callback(code, stdout, stderr):
+        if code == 0:
+            logger.info("Overleaf changes committed to the repo. Don't forget to push!")
+        else:
+            if (
+                "Your branch is up to date" in stdout + stderr
+                or "nothing to commit" in stdout + stderr
+                or "nothing added to commit" in stdout + stderr
+            ):
+                logger.warn(f"No Overleaf changes to commit to the repo.")
             else:
-                if (
-                    "Your branch is up to date" in stdout + stderr
-                    or "nothing to commit" in stdout + stderr
-                    or "nothing added to commit" in stdout + stderr
-                ):
-                    logger.warn(f"No changes to commit to the repo.")
-                else:
-                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
-        get_stdout(
-            [
-                "git",
-                "-c",
-                "user.name='showyourwork'",
-                "-c",
-                "user.email='showyourwork'",
-                "commit",
-                "-m",
-                "Overleaf sync (automatic showyourwork commit)",
-            ],
-            cwd=paths.user(path=path).repo,
-            callback=callback,
-        )
-
-    else:
-
-        logger.warn(
-            "Run `git status` to see what changed. Don't forget to commit!"
-        )
+    get_stdout(
+        [
+            "git",
+            "-c",
+            "user.name='showyourwork'",
+            "-c",
+            "user.email='showyourwork'",
+            "commit",
+            "-m",
+            "[showyourwork] overleaf sync",
+        ],
+        cwd=paths.user(path=path).repo,
+        callback=callback,
+    )

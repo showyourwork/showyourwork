@@ -66,6 +66,5 @@ onstart:
     if run_type == "preprocess":
         overleaf.pull_files(
             config["overleaf"]["pull"], 
-            config["overleaf"]["id"], 
-            auto_commit=config["overleaf"]["auto-commit"] and config["github_actions"]
+            config["overleaf"]["id"]
         )
