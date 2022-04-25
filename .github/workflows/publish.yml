@@ -3,7 +3,7 @@ on:
   release:
     types:
       - published
-  worfklow_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
