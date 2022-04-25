@@ -4,6 +4,10 @@ on:
     types:
       - published
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version
+        required: true
 
 jobs:
   build:
@@ -20,6 +24,8 @@ jobs:
           python-version: "3.9"
 
       - name: Build sdist
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.event.inputs.version }}
         run: |
           python -m pip install --upgrade build
           python -m build
