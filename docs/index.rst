@@ -16,6 +16,7 @@ Documentation
 
    intro
    quickstart
+   cli
    layout
    config
    snakefile
