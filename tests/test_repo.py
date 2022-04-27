@@ -39,7 +39,7 @@ class TestZenodo(TemporaryShowyourworkRepository):
                         "lightcurves.tar.gz": {
                             "lightcurves": {
                                 "README.md": None,
-                                "S06": {"lc.txt:" "src/data/TOI640/S06.txt"},
+                                "S06": {"lc.txt": "src/data/TOI640/S06.txt"},
                                 "S07": {"lc.txt": "src/data/TOI640/S07.txt"},
                             }
                         },
