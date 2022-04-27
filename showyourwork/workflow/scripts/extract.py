@@ -7,42 +7,42 @@ import tempfile
 import shutil
 
 
-# Snakemake config (available automagically)
-config = snakemake.config  # type:ignore
+if __name__ == "__main__":
 
+    # Snakemake config (available automagically)
+    config = snakemake.config  # type:ignore
 
-# Initialize the logger
-logger = get_logger()
+    # Initialize the logger
+    logger = get_logger()
 
+    # Input/output file names
+    zipfile = Path(snakemake.input[0])
+    extracted_file = Path(snakemake.output[0])
+    compressed_file = snakemake.params["compressed_file"]
 
-# Input/output file names
-zipfile = Path(snakemake.input[0])
-extracted_file = Path(snakemake.output[0])
-compressed_file = snakemake.params["compressed_file"]
+    # Tar balls
+    if zipfile.name.endswith(".tar") or zipfile.name.endswith(".tar.gz"):
 
-# Tar balls
-if zipfile.name.endswith(".tar") or zipfile.name.endswith(".tar.gz"):
+        # Open the tarball
+        with tarfile.open(zipfile) as f:
 
-    # Open the tarball
-    with tarfile.open(zipfile) as f:
+            # Extract into a temp folder
+            with tempfile.TemporaryDirectory() as TEMP:
 
-        # Extract into a temp folder
-        with tempfile.TemporaryDirectory() as TEMP:
+                try:
 
-            try:
+                    f.extract(compressed_file, TEMP)
 
-                f.extract(compressed_file, TEMP)
+                except Exception as e:
 
-            except Exception as e:
+                    raise exceptions.TarballExtractionError(str(e))
 
-                raise exceptions.TarballExtractionError(str(e))
+                # Move it to target destination
+                shutil.move(Path(TEMP) / compressed_file, extracted_file)
 
-            # Move it to target destination
-            shutil.move(Path(TEMP) / compressed_file, extracted_file)
+    else:
 
-else:
-
-    # TODO: Support zip files
-    raise exceptions.NotImplementedError(
-        "Archives ending in .zip are not currently supported. Functionality coming soon!"
-    )
+        # TODO: Support zip files
+        raise exceptions.NotImplementedError(
+            "Archives ending in .zip are not currently supported. Functionality coming soon!"
+        )

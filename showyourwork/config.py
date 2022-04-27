@@ -162,7 +162,7 @@ def parse_config():
     # settings are available in both stages.
     if (
         Path(snakemake.workflow.workflow.main_snakefile).name
-        == "preprocess.smk"
+        == "prep.smk"
     ):
 
         #

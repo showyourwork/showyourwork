@@ -3,6 +3,7 @@ To-do
 
 A list of things we should fix/implement before the first major release.
 
+- [ ] Add a Makefile that raises a warning if invoked to ease the transition from earlier versions
 - [ ] Regarding Zenodo deposits with tarballs containing lots of files:
       consider supporting directories (instead of specific files) in the ``contents`` mapping of
       the config file.

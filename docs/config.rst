@@ -339,7 +339,12 @@ package. Options are (from most recommended to least recommended):
 
 **Type:** ``bool``
 
-**Description:** Enable verbose output? Useful for debugging runs.
+**Description:** Enable verbose output? Useful for debugging runs. By default,
+``showyourwork`` suppresses nearly all ``snakemake`` output, sending it directly
+to the log file (see :doc:`logging`). Setting ``verbose: true`` results in all
+``snakemake`` output being printed to the screen as well. Note that you can
+crank up the verbosity even more by passing the ``--verbose`` argument to
+``snakemake build``, which makes ``snakemake`` itself more talkative.
 
 **Required:** no
 

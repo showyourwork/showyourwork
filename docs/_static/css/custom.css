@@ -1,0 +1,24 @@
+.text-highlight{
+    font-weight:bold; 
+    color:#204a87;
+}
+
+div.toctree-wrapper.compound li.toctree-l1 ul {
+    padding-inline-start: 20px;
+}
+
+div.toctree-wrapper.compound li.toctree-l2 ul {
+    padding-inline-start: 20px;
+}
+
+div.toctree-wrapper.compound li.toctree-l1 {
+    list-style-type: '› ';
+}
+
+div.toctree-wrapper.compound li.toctree-l2 {
+    list-style-type: '› ';
+}
+
+div.toctree-wrapper.compound li.toctree-l3 {
+    list-style-type: '› ';
+}

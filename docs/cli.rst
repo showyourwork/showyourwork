@@ -1,12 +1,3 @@
-.. raw:: html
-
-    <style>
-        .text-highlight{
-            font-weight:bold; 
-            color:#204a87;
-        }
-    </style>
-
 .. |showyourwork_help| raw:: html
 
     <span style="font-family:var(--pst-font-family-monospace);">showyourwork --help</span>
@@ -15,13 +6,26 @@
 
     <span style="font-family:var(--pst-font-family-monospace);">showyourwork setup --help</span>
 
+.. |showyourwork_build_help| raw:: html
+
+    <span style="font-family:var(--pst-font-family-monospace);">showyourwork build --help</span>
+
+.. |showyourwork_clean_help| raw:: html
+
+    <span style="font-family:var(--pst-font-family-monospace);">showyourwork clean --help</span>
+
+.. |showyourwork_tarball_help| raw:: html
+
+    <span style="font-family:var(--pst-font-family-monospace);">showyourwork tarball --help</span>
+
 
 Command line interface
 ======================
 
-The ``showyourwork`` package implements a single command-line command:
+The ``showyourwork`` package implements a single command-line utility:
 ``showyourwork``, which allows users to set up, configure, and build their
-open source article. Below we list the various subcommands and what they do.
+open source article. Below we describe this command and discuss its various
+subcommands.
 
 
 ``showyourwork``
@@ -220,7 +224,9 @@ Again, take care to never actually commit this information to your repository!
 Step 3C
 ^^^^^^^
 
-If you followed the instructions above, you'll see the following message:
+Finally, if you specified the ``--overleaf`` option *and* provided credentials
+via the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` (see above), 
+you'll get the following message:
 
 .. raw:: html
 
@@ -246,7 +252,13 @@ Step 4
 
 Finally, press any key to generate the repository. This will create a new folder
 in the current working directory with the same name as your repo (``article``, in
-the example above) and set up ``git`` tracking for it.
+the example above) and set up ``git`` tracking for it. Note that the first time
+you commit and push your changes to the GitHub repository, you'll have to specify
+the upstream branch as follows:
+
+.. code-block:: bash
+
+    git push -u origin main
 
 
 .. _syw_build:
@@ -254,6 +266,137 @@ the example above) and set up ``git`` tracking for it.
 ``showyourwork build``
 ----------------------
 
-.. note::
+.. admonition:: |showyourwork_build_help|
 
-    Coming soon!
+    .. program-output:: showyourwork build --help
+
+Run this command to build the article in the current working directory. Note that
+you must run this command from the top level of the repository (an error will
+be thrown otherwise). The command accepts any number of arguments, all of which
+are forwarded to ``snakemake``. 
+By default, ``showyourwork`` passes the following arguments to ``snakemake``:
+
+.. code-block:: bash
+
+    -c1 --use-conda --reason --cache
+
+Some of these, like the number of cores, can be overridden. For example, you
+may run
+
+.. code-block:: bash
+
+    showyourwork build -c2
+
+to run the workflow using two cores (see the `snakemake docs <https://snakemake.readthedocs.io/en/stable/executing/cli.html>`_
+for details). Additional arguments can also be provided, like ``--verbose`` to increase
+the verbosity of the ``snakemake`` logs (see :doc:`logging`), or ``--force`` and ``--forceall`` to
+force the re-execution of the rule that builds the manuscript or *all* of the rules
+in the workflow, respectively (regardless of whether the outputs are up to date
+or not). Positional arguments are also allowed; for instance, to only build a specific
+figure, you may run, e.g.,
+
+.. code-block:: bash
+
+    showyourwork build --force src/tex/figures/figure.pdf
+
+You can check out the complete list of ``snakemake`` arguments and options
+at the `snakemake documentation <https://snakemake.readthedocs.io/en/stable/executing/cli.html#all-options>`_.
+
+.. warning::
+
+    Not all ``snakemake`` options are compatible with ``showyourwork``. If you
+    run into issues when specifying custom options, please 
+    `let us know <https://github.com/showyourwork/showyourwork/issues/new>`_.
+
+Note that the build process in ``showyourwork`` happens in two steps, each of
+which executes a separate ``snakemake`` workflow. The first
+step is a preprocessing step that parses the user config file and does a quick
+first-pass compiling of the TeX manuscript to look for ``\includegraphics``
+and ``\script`` calls, which it uses to build the graph of dependencies for
+your article. The second step is the main step, in which all of the dependencies
+are built (if needed) and the final article PDF is generated. Arguments
+passed to ``showyourwork build`` are ingested *only* during the second step.
+
+Finally, ``showyourwork`` takes full advantage
+of the dependency tracking and caching functionality of ``snakemake``. When
+running ``showyourwork build``, only files whose upstream dependencies have
+changed (since the last build) will be re-generated. This is true *even when
+running on GitHub Actions*; the ``showyourwork-action`` caches results across
+runs to minimize compute time for the build. We even go a step further, and
+extend the ``snakemake`` functionality to allow caching of intermediate
+dependencies on Zenodo; read about it at :doc:`zenodo`.
+
+
+.. _syw_clean:
+
+``showyourwork clean``
+----------------------
+
+.. admonition:: |showyourwork_clean_help|
+
+    .. program-output:: showyourwork clean --help
+
+This command removes all of the output from previous ``showyourwork build``
+steps. Depending on the state of your repository, and if there are errors in
+your config file or missing dependencies, this command may fail silently, in
+which case some of the output may remain after running it.
+
+
+Manual clean
+^^^^^^^^^^^^
+
+If ``showyourwork clean`` didn't remove all of the output, you can manually
+delete all the programmatically-generated figures and datasets by removing
+everything in the ``src/tex/figures`` and ``src/data`` folders
+(assuming you're respecting the ``showyourwork`` conventions; see :doc:`layout`):
+
+.. code-block:: bash
+
+    rm -r src/tex/figures/**/*.*
+    rm -r src/data/**/*.*
+
+You may also have to manually remove the hidden ``.showyourwork`` folder, which
+keeps track of repository metadata and caches certain files:
+
+.. code-block:: bash
+
+    rm -r .showyourwork
+
+
+Deep clean
+^^^^^^^^^^
+
+If you want to start over from scratch, you can also delete the hidden ``.snakemake``
+folder at the root of your repository:
+
+.. code-block:: bash
+
+    rm -r .snakemake
+
+This houses the ``conda`` environments for your build (among other things), so
+deleting it will force a re-install of all packages used in your workflow.
+
+Finally, there's one more hidden folder to know about, a ``.showyourwork``
+folder located in your ``$HOME`` path, which also houses ``conda`` environments
+used at different stages of the build step. You can safely remove it at any time
+(at the cost of a longer runtime the next time you execute ``showyourwork``):
+
+.. code-block:: bash
+
+    rm -r ~/.showyourwork
+
+
+.. _syw_tarball:
+
+``showyourwork tarball``
+------------------------
+
+.. admonition:: |showyourwork_tarball_help|
+
+    .. program-output:: showyourwork tarball --help
+
+Like ``build``, the ``showyourwork tarball`` command builds your article, but
+also gathers all of the relevant files needed to build it using a standard
+TeX engine into a tarball called ``arxiv.tar.gz``. It's named that because
+you should be able to directly upload this tarball when submitting a paper
+to the `arXiv <https://arxiv.org/>`_ article service.

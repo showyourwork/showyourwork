@@ -33,19 +33,21 @@ run
 This will bring up the following prompt:
 
 
-.. code-block:: text
+.. raw:: html
 
+    <pre>
     Let's get you set up with a new repository. I'm going to create a folder called
 
-        article 
+        <span class="text-highlight">article</span>
 
     in the current working directory. If you haven't done this yet, please visit
 
-        https://github.com/new 
+        <a href="https://github.com/new"><span class="text-highlight">https://github.com/new</span></a>
 
     at this time and create an empty repository called
 
-        rodluger/article
+        <span class="text-highlight">rodluger/article</span>
+    </pre>
 
 
 As requested, if you haven't yet created the remote repository, go to
@@ -56,17 +58,19 @@ at this time, as ``showyourwork`` will set those up for you.
 Press any key to bring up the next prompt:
 
 
-.. code-block:: text
+.. raw:: html
 
-    I didn't find a ZENODO_TOKEN environment variable, so I'm not going to set up
+    <pre>
+    I didn't find a <span class="text-highlight">ZENODO_TOKEN</span> environment variable, so I'm not going to set up
     a Zenodo deposit for caching intermediate results. If you would like to enable
     this, please go to
 
-        https://zenodo.org/account/settings/applications/tokens/new
+        <a href="https://zenodo.org/account/settings/applications/tokens/new"><span class="text-highlight">https://zenodo.org/account/settings/applications/tokens/new</span></a>
 
     to create a new personal access token with deposit:actions and deposit:write
-    scopes, store it in a local ZENODO_TOKEN environment variable, and re-run this
+    scopes, store it in a local <span class="text-highlight">ZENODO_TOKEN</span> environment variable, and re-run this
     setup script.
+    </pre>
 
 
 The ``showyourwork`` workflow automatically caches the results of intermediate
@@ -78,10 +82,12 @@ now -- you can read up on how this all works at :doc:`zenodo`.
 Press any key to bring up the final prompt:
 
 
-.. code-block:: text
+.. raw:: html
 
-    You didn't provide an Overleaf project id (via the --overleaf command-line
+    <pre>
+    You didn't provide an Overleaf project id (via the <span class="text-highlight">--overleaf</span> command-line
     option), so I'm not going to set up Overleaf integration for this repository.
+    </pre>
 
 
 The workflow can also manage integration with an Overleaf project if that's how

@@ -8,10 +8,6 @@ from collections.abc import MutableMapping
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 
-# Snakemake config (available automagically)
-config = snakemake.config  # type:ignore
-
-
 def flatten_zenodo_contents(d, parent_key="", default_path=None):
     """
     Flatten the `contents` dictionary of a Zenodo entry, filling
@@ -492,37 +488,38 @@ def get_json_tree():
     return tree
 
 
-# Parse the `zenodo` key in the config
-parse_zenodo_datasets()
+if __name__ == "__main__":
 
+    # Snakemake config (available automagically)
+    config = snakemake.config  # type:ignore
 
-# Get the article tree
-config["tree"] = get_json_tree()
+    # Parse the `zenodo` key in the config
+    parse_zenodo_datasets()
 
+    # Get the article tree
+    config["tree"] = get_json_tree()
 
-# Make all of the graphics dependencies of the article
-config["dependencies"][config["ms_tex"]] = config["dependencies"].get(
-    config["ms_tex"], []
-)
-for figure_name in config["tree"]["figures"]:
-    graphics = config["tree"]["figures"][figure_name]["graphics"]
-    config["dependencies"][config["ms_tex"]].extend(
-        [Path(graphic).as_posix() for graphic in graphics]
+    # Make all of the graphics dependencies of the article
+    config["dependencies"][config["ms_tex"]] = config["dependencies"].get(
+        config["ms_tex"], []
     )
+    for figure_name in config["tree"]["figures"]:
+        graphics = config["tree"]["figures"][figure_name]["graphics"]
+        config["dependencies"][config["ms_tex"]].extend(
+            [Path(graphic).as_posix() for graphic in graphics]
+        )
 
+    # Gather the figure script & dataset info so we can access it on the TeX side
+    config["labels"] = {}
+    for label, value in config["tree"]["figures"].items():
+        script = value["script"]
+        if script is not None:
+            config["labels"][f"{label}_script"] = script
+        datasets = value["datasets"]
+        # Note: built-in max of 3 datasets will be displayed
+        for dataset, number in zip(datasets, ["One", "Two", "Three"]):
+            config["labels"][f"{label}_dataset{number}"] = dataset
 
-# Gather the figure script & dataset info so we can access it on the TeX side
-config["labels"] = {}
-for label, value in config["tree"]["figures"].items():
-    script = value["script"]
-    if script is not None:
-        config["labels"][f"{label}_script"] = script
-    datasets = value["datasets"]
-    # Note: built-in max of 3 datasets will be displayed
-    for dataset, number in zip(datasets, ["One", "Two", "Three"]):
-        config["labels"][f"{label}_dataset{number}"] = dataset
-
-
-# Save the config file
-with open(config["config_json"], "w") as f:
-    print(json.dumps(config, indent=4), file=f)
+    # Save the config file
+    with open(config["config_json"], "w") as f:
+        print(json.dumps(config, indent=4), file=f)

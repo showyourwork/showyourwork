@@ -24,7 +24,9 @@ Documentation
    latex
    zenodo
    overleaf
+   logging
    custom
+   migrating
    faqs
    api/showyourwork
    changelog

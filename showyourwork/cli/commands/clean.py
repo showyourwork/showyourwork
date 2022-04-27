@@ -5,7 +5,7 @@ import shutil
 
 def clean(options=""):
     """Clean the article build."""
-    for file in ["build.smk", "preprocess.smk"]:
+    for file in ["build.smk", "prep.smk"]:
         snakefile = paths.showyourwork().workflow / file
         snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --reason --cache"
         command = f"{snakemake} {options} -s {snakefile} --delete-all-output"

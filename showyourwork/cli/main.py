@@ -65,7 +65,7 @@ def entry_point(context, version):
 def build(snakemake_args):
     """Build an article in the current working directory."""
     ensure_top_level()
-    commands.preprocess(snakemake_args)
+    commands.preprocess()
     commands.build(snakemake_args)
 
 

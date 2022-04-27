@@ -4,7 +4,9 @@ from pathlib import Path
 
 
 # Add our module to the path
-sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
+ROOT = Path(__file__).absolute().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(1, str(ROOT / "showyourwork" / "workflow" / "scripts"))
 
 
 class RemoveSubmodulesHeading(StopIteration):
@@ -15,15 +17,75 @@ class RemoveContentsHeading(StopIteration):
     pass
 
 
-# Create our API autodoc pages w/ a little customization
+# Create our API autodoc pages
 for file in Path("api").rglob("*.rst"):
     file.unlink()
 subprocess.run("sphinx-apidoc -feMT -d 5 -o api ../showyourwork", shell=True)
+subprocess.run(
+    "sphinx-apidoc -feM -d 5 -o api ../showyourwork/workflow/scripts",
+    shell=True,
+)
+
+
+# Snakefile docs
+# TODO: Ingest docstrings from `.smk` files!
+rules = [
+    str(file.name)
+    for file in Path("../showyourwork/workflow/rules").glob("*.smk")
+]
+snakefiles = [
+    str(file.name) for file in Path("../showyourwork/workflow").glob("*.smk")
+]
+for file in rules + snakefiles:
+    subprocess.run(
+        f"""echo "{file}\n{'=' * len(file)}\n" > api/{file}.rst""",
+        shell=True,
+    )
+
+
+# Customize the table of contents
 with open("api/showyourwork.rst", "r") as f:
     lines = f.readlines()
-lines[0] = "Developer API\n"
+lines = (
+    [".. include:: ../api.rst\n"]
+    + [
+        "\n",
+        "The ``showyourwork`` module\n",
+        "---------------------------\n",
+    ]
+    + lines[2:]
+)
+with open("api/modules.rst", "r") as f:
+    new_lines = f.readlines()
+Path("api/modules.rst").unlink()
+lines += [
+    "\n",
+    "Workflow scripts\n",
+    "----------------\n",
+] + new_lines[2:]
+lines += [
+    "\n",
+    "Snakemake rules\n",
+    "---------------\n\n",
+    ".. toctree::\n",
+    "   :maxdepth: 5\n",
+    "\n   ",
+    "\n   ".join(rules),
+]
+lines += [
+    "\n\n",
+    "Snakefiles\n",
+    "----------\n\n",
+    ".. toctree::\n",
+    "   :maxdepth: 5\n",
+    "\n   ",
+    "\n   ".join(snakefiles),
+]
 with open("api/showyourwork.rst", "w") as f:
     f.writelines(lines)
+
+
+# Format each rst file to get rid of unnecessary headings, etc.
 for file in Path("api").rglob("*.rst"):
     with open(file, "r") as f:
         lines = f.readlines()
