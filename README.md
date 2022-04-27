@@ -13,5 +13,4 @@
 
 <h2>Coming soon</h2>
 
-This is the repository for the next version of `showyourwork`, to be released Spring 2022.
-If you're looking for the current release of `showyourwork`, please see [here](https://github.com/rodluger/showyourwork).
+This branch hosts the next version of `showyourwork`, to be released in May 2022.
