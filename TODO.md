@@ -1,8 +1,10 @@
 To-do
 -----
 
-- [ ] Zenodo deposits with lots of files; zenodo deposits with tarballs containing lots of files.
-      Consider supporting directories (instead of specific files) in the ``contents`` mapping of
+A list of things we should fix/implement before the first major release.
+
+- [ ] Regarding Zenodo deposits with tarballs containing lots of files:
+      consider supporting directories (instead of specific files) in the ``contents`` mapping of
       the config file.
 - [ ] Upgrade to revtex 4.2
 - [ ] Caching files on Zenodo sometimes prints a JSON response to the terminal; investigate
@@ -14,5 +16,6 @@ To-do
       in the DAG generation?
 - [ ] Add option to create new Zenodo deposit for a branch
 - [ ] Test uploads of very large files
-- [ ] Write documentation
+- [ ] On pip release, install showyourwork using pip in ``showyourwork-action/src/conda.js``
 - [ ] Implement showyourwork publish (for Zenodo)
+- [ ] Support .zip files on Zenodo

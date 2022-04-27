@@ -3,8 +3,9 @@ import hacks
 # -- Project information -----------------------------------------------------
 
 project = "showyourwork"
-copyright = "2022, Rodrigo Luger"
-author = "Rodrigo Luger"
+copyright = (
+    "2022, Rodrigo Luger"
+)
 
 # -- General configuration ---------------------------------------------------
 
@@ -22,7 +23,7 @@ html_sourcelink_suffix = ""
 html_title = "showyourwork"
 html_logo = "_static/logo.png"
 html_static_path = ["_static"]
-html_css_files = []
+html_css_files = ["css/custom.css"]
 html_theme_options = {
     "repository_url": "https://github.com/showyourwork/showyourwork",
     "repository_branch": "main",

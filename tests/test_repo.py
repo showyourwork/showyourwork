@@ -13,7 +13,39 @@ class TestDefault(TemporaryShowyourworkRepository):
 class TestZenodo(TemporaryShowyourworkRepository):
     """Test a repo that downloads data from Zenodo."""
 
-    pass
+    def customize(self):
+        """Add the necessary dependencies to the config file."""
+        with edit_yaml(self.cwd / "showyourwork.yml") as config:
+            config["dependencies"] = {
+                "src/scripts/TOI640.py": [
+                    "src/data/TOI640/planet.json",
+                    "src/data/TOI640/S06.txt",
+                    "src/data/TOI640/S06.json",
+                    "src/data/TOI640/S07.txt",
+                    "src/data/TOI640/S07.json",
+                ]
+            }
+            config["zenodo"] = {
+                "6468327": {
+                    "destination": "src/data/TOI640",
+                    "contents": {
+                        "README.md": None,
+                        "TOI640b.json": "src/data/TOI640/planet.json",
+                        "images.tar.gz": {
+                            "README.md": None,
+                            "S06": {"image.json": "src/data/TOI640/S06.json"},
+                            "S07": {"image.json": "src/data/TOI640/S07.json"},
+                        },
+                        "lightcurves.tar.gz": {
+                            "lightcurves": {
+                                "README.md": None,
+                                "S06": {"lc.txt:" "src/data/TOI640/S06.txt"},
+                                "S07": {"lc.txt": "src/data/TOI640/S07.txt"},
+                            }
+                        },
+                    },
+                }
+            }
 
 
 class TestOverleaf(TemporaryShowyourworkRepository):
