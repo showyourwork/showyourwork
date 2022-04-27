@@ -16,15 +16,16 @@ Documentation
 
    intro
    quickstart
+   cli
    layout
    config
-   Snakefile
+   snakefile
    action
    latex
-   local
+   zenodo
+   overleaf
    custom
    faqs
-   api
+   api/showyourwork
    changelog
-   update
    projects

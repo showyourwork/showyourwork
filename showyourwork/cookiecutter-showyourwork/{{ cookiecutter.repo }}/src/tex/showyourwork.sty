@@ -1,0 +1,12 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{showyourwork}[2022/01/12 Open source science articles]
+
+\IfFileExists{./showyourwork.tex}{
+    \input{showyourwork.tex}
+}{
+    \newcommand\GitHubURL{}
+    \newcommand\GitHubSHA{}
+    \newcommand\GitHubIcon{}
+    \newcommand\showyourwork{}
+    \newcommand\script[1]{}
+}

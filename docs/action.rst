@@ -1,1 +1,4 @@
-.. include:: ../showyourwork-action/README.rst
+The GitHub Action
+=================
+
+.. note:: Coming soon!

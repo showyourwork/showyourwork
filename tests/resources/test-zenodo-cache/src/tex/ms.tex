@@ -1,0 +1,37 @@
+% Define document class
+\documentclass[twocolumn]{aastex631}
+\usepackage{showyourwork}
+
+% Begin!
+\begin{document}
+
+% Title
+\title{A workflow for open source scientific articles}
+
+% Author list
+\author[0000-0002-0296-3826]{Rodrigo Luger}
+
+% Abstract with filler text
+\begin{abstract}
+    Hello! I am an abstract.
+\end{abstract}
+
+% Main body with filler text
+\section{Introduction}
+\label{sec:intro}
+
+Hello! I am some filler text.
+
+\begin{figure}[ht!]
+    \script{plot_dataset.py}
+    \begin{centering}
+        \includegraphics[width=\linewidth]{figures/dataset.pdf}
+        \caption{
+            Joint posterior distribution for a fake dataset.
+            This figure depends on an intermediate result (a dataset containing the posterior samples), which is automatically cached on \texttt{Zenodo}.
+        }
+        \label{fig:plot_dataset}
+    \end{centering}
+\end{figure}
+
+\end{document}

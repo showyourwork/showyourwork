@@ -1,8 +1,5 @@
 version: 2
 
-submodules:
-  include: all
-
 conda:
   environment: docs/environment.yml
 

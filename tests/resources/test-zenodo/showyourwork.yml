@@ -1,0 +1,33 @@
+showyourwork:
+  version: latest
+
+dependencies:
+  src/scripts/TOI640.py: 
+    - src/data/TOI640/planet.json
+    - src/data/TOI640/S06.txt
+    - src/data/TOI640/S06.json
+    - src/data/TOI640/S07.txt
+    - src/data/TOI640/S07.json
+
+zenodo:
+  6468327:
+    destination: src/data/TOI640                        # default folder to extract files to
+    contents:
+
+      README.md:                                        # auto extracted to `src/data/TOI640/README.md`
+      TOI640b.json: src/data/TOI640/planet.json         # rename the extracted file, just for fun
+
+      images.tar.gz:                                    # remote tarballs behave like folders w/ same name
+        README.md:                                      # auto extracted to `src/data/TOI640/images/README.md`
+        S06:                                            # subfolder
+          image.json: src/data/TOI640/S06.json          # rename and change destination folder
+        S07:                                            # subfolder
+          image.json: src/data/TOI640/S07.json          # rename and change destination folder
+
+      lightcurves.tar.gz:                               # another tarball
+        lightcurves:                                    # files are nested inside `lightcurves` in this tarball
+          README.md:                                    # auto extracted to `src/data/TOI640/lightcurves/lightcurves/README.md`
+          S06:                                          # subfolder
+            lc.txt: src/data/TOI640/S06.txt             # rename and change destination folder
+          S07:                                          # subfolder
+            lc.txt: src/data/TOI640/S07.txt             # rename and change destination folder

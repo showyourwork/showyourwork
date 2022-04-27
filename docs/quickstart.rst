@@ -1,245 +1,291 @@
 Quickstart
 ==========
 
-Follow the steps below to start a new open source article project with ``showyourwork``.
-If you already have an existing repository that you'd like to use, please check out the
-:doc:`faqs`.
 
-.. note::
+Install
+-------
 
-    This quickstart tutorial assumes you have a basic familiarity with Git, GitHub,
-    and LaTeX. If you're not familiar with any of these, check out these
-    introductory resources first:
-
-    - `Introduction to GitHub <https://lab.github.com/githubtraining/introduction-to-github>`_
-    - `What is Version Control? <https://git-scm.com/video/what-is-version-control>`_
-    - `What is Git? <https://git-scm.com/video/what-is-git>`_
-    - `Get Going with Git <https://git-scm.com/video/get-going>`_
-    - `Quick wins with Git <https://git-scm.com/video/quick-wins>`_
-    - `Getting started with TeX, LaTeX, and friends <https://www.tug.org/begin.html>`_
-
-
-1. Create a new repo
---------------------
-
-.. raw:: html
-
-    <p>
-       Click <a href="https://github.com/rodluger/showyourwork-template/generate">here</a>
-       to generate a fresh GitHub repository from the
-       <code class="docutils literal notranslate"><span class="pre">showyourwork</span></code>
-       template. You'll be prompted for a repository name, and optionally a description.
-    </p>
-
-    <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/repo-from-template.png" width="75%"/>
-    </div>
-
-    <div class="admonition warning">
-        <p class="admonition-title">Warning</p>
-        <p>
-            Don't check <span style="font-weight:bold;">Include all branches</span>.
-            The template repository has many branches used in the  
-            <code class="docutils literal notranslate"><span class="pre">showyourwork</span></code>
-            <a href="https://github.com/rodluger/showyourwork#test-suite">unit tests</a>
-            that will just end up clogging your repository.
-        </p>
-    </div>
-
-    <p>
-       GitHub will create a new repository based on
-       <code class="docutils literal notranslate"><span class="pre">showyourwork-template</span></code>.
-       This should only take a few seconds.
-    </p>
-
-    <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/generating.png" width="25%"/>
-    </div>
-
-    <p>
-        Once your repository is created, it should look something like this:
-    </p>
-
-    <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/fresh-repo.png" width="75%"/>
-    </div>
-
-    <p>
-        If you click on the <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/Actions.png" width="60px"/>
-        tab at the top of the page, you'll see that there's a GitHub action called
-        <code class="docutils literal notranslate"><span class="pre">article</span></code>
-        currently running. This action runs every time a new commit is pushed to the repository to re-compile the article PDF.
-        The first time it runs, it also does a bit of automatic formatting of the repo, including a re-write of the
-        <code class="docutils literal notranslate"><span class="pre">README.md</span></code>
-        file, so please wait to make edits to your repo until then. The first time the action runs, it needs to download
-        and install <a href="https://www.anaconda.com/products/individual">conda</a> and all the dependencies, so it usually
-        takes about five minutes.
-    </p>
-
-
-2. Edit the manuscript online
------------------------------
-
-
-.. raw:: html
-
-    <p>
-       After about five minutes, refresh the main page of your repository. If the action is done running,
-       you should see a new <code class="docutils literal notranslate"><span class="pre">README.md</span></code>
-       with badges at the top:
-    </p>
-
-    <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/banner.png" width="50%"/>
-    </div>
-
-    <p>
-       Your repository is now set up, and your article has been compiled into a PDF.
-       Click on the badge on the far right (<code class="docutils literal notranslate"><span class="pre">article pdf</span></code>)
-       to download it. There shouldn't be much in the pdf:
-    </p>
-
-    <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/article-abstract.png" width="75%"/>
-    </div>
-
-    Navigate to the LaTeX manuscript file <code class="docutils literal notranslate"><span class="pre">src/ms.tex</span></code>
-    on GitHub and click on the <code class="docutils literal notranslate"><span class="pre">Edit this file</span></code> button
-    (the pencil icon at the top right of the file). Change the title and author name to whatever you'd like, and commit your changes
-    directly to the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch.
-    If you click again on the <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/Actions.png" width="60px"/> tab,
-    you'll see that your commit triggered another article build. This one should run much faster, since everything is cached across
-    builds. When the action is done running, download your PDF once more and verify that your changes were incorporated.
-
-
-3. Clone the repository
------------------------
-
-Editing stuff online is useful for quick changes and easy fixes, but you'll probably want to do most of your
-development locally. Open a terminal, navigate to the directory of your choice, and clone your new repository
-by running
+To get started with ``showyourwork``, install it using the ``pip`` command:
 
 .. code-block:: bash
 
-    git clone https://github.com/<user>/<repo>
+    pip install showyourwork
 
-where ``<user>`` is your GitHub user name and ``<repo>`` is the name of your repository.
+You'll also need to have the ``conda`` package manager installed, which you
+can download from `this url <https://www.anaconda.com/products/distribution>`_.
 
-Edit the manuscript (``src/ms.tex``) by replacing the ``blindtext`` command in the abstract with a blurb about your project.
-After you make these edits, add, commit, and push your changes to GitHub:
+
+Setup
+-----
+
+To set up a blank article, simply execute the ``showyourwork setup`` command. This
+command accepts one positional argument: the "slug" of the GitHub repository
+for the article, which is a string in the form ``user/repo``. For example,
+to create a repository called ``article`` under the GitHub user ``rodluger``,
+run
+
 
 .. code-block:: bash
 
-    git add src/ms.tex
-    git commit -m "Minor edits to the manuscript"
-    git push
-
-Navigate to your repository on GitHub, and once again click on the Actions tab to verify that your article
-is building. Within a few minutes you should have an updated, fully synced PDF of your article.
+    showyourwork setup rodluger/article
 
 
-4. Add a figure
----------------
+This will bring up the following prompt:
 
-Figures can be included in the article by adding a Python script to the folder ``src/figures``.
-Create a script called ``mandelbrot.py`` in that directory and add the following code to it:
+
+.. code-block:: text
+
+    Let's get you set up with a new repository. I'm going to create a folder called
+
+        article 
+
+    in the current working directory. If you haven't done this yet, please visit
+
+        https://github.com/new 
+
+    at this time and create an empty repository called
+
+        rodluger/article
+
+
+As requested, if you haven't yet created the remote repository, go to
+`github.com/new <https://github.com/new>`_ in your browser to create an empty repository of
+the same name. There's no need to create a README, gitignore file, or LICENSE
+at this time, as ``showyourwork`` will set those up for you.
+
+Press any key to bring up the next prompt:
+
+
+.. code-block:: text
+
+    I didn't find a ZENODO_TOKEN environment variable, so I'm not going to set up
+    a Zenodo deposit for caching intermediate results. If you would like to enable
+    this, please go to
+
+        https://zenodo.org/account/settings/applications/tokens/new
+
+    to create a new personal access token with deposit:actions and deposit:write
+    scopes, store it in a local ZENODO_TOKEN environment variable, and re-run this
+    setup script.
+
+
+The ``showyourwork`` workflow automatically caches the results of intermediate
+steps in your pipeline on Zenodo, but only if it finds a ``ZENODO_TOKEN`` environment
+variable containing a valid Zenodo API token. Let's not worry about this for
+now -- you can read up on how this all works at :doc:`zenodo`.
+
+
+Press any key to bring up the final prompt:
+
+
+.. code-block:: text
+
+    You didn't provide an Overleaf project id (via the --overleaf command-line
+    option), so I'm not going to set up Overleaf integration for this repository.
+
+
+The workflow can also manage integration with an Overleaf project if that's how
+you prefer to write your TeX articles. To enable this, re-run ``showyourwork setup``
+with ``--overleaf=XXX``, where ``XXX`` is the 24-character project id of a
+blank Overleaf repository (you can grab this value from the URL of the project
+after creating it on Overleaf). Let's again skip this for now -- read all about it
+at :doc:`overleaf`.
+
+Finally, press any key to generate the repository. This will create a new folder
+in the current working directory with the same name as your repo (``article``, in
+the example above) and set up ``git`` tracking for it.
+
+
+Build locally
+-------------
+
+Your new repository is instantiated from a bare-bones template with the minimal
+``showyourwork`` layout, which you can read about at :doc:`layout`.
+The first thing you might want to do is edit the main TeX file, which is located
+at ``src/tex/ms.tex``. Give it a custom title, edit the author name, and replace
+some of the Lorem Ipsum placeholder text with something informative. Then,
+compile the article PDF by running
+
+.. code-block:: bash
+
+    showyourwork build
+
+
+or, as a shorthand, just
+
+
+.. code-block:: bash
+
+    showyourwork
+
+
+in the top level of your repository. The first time you run this, ``showyourwork``
+will set up a new ``conda`` environment and install a bunch of packages, so it
+could take one or two minutes. The workflow will then build your article PDF, 
+which by default is saved as ``ms.pdf`` in the top level of your repository:
+
+
+.. image:: _static/default_ms.png
+   :width: 60%
+   :align: center
+
+
+There's not much to see -- mostly placeholder text. One thing to note, though,
+is the blue GitHub icon in the right margin next to the abstract: this is a
+hyperlink pointing to your github repository (or, in this example, to
+``github.com/rodluger/article``.)
+
+Let's turn this into a proper scientific article by adding a figure. In
+``showyourwork``, all figures should be programmatically generated, so we start
+by creating a script to generate the figure. For simplicity, let's create a
+script ``random_numbers.py`` to generate and plot some random numbers:
 
 .. code-block:: python
 
-    """
-    Plot a pretty fractal. Adapted from
-    https://scipy-lectures.org/intro/numpy/auto_examples/plot_mandelbrot.html
-    """
-    import numpy as np
     import matplotlib.pyplot as plt
-    from numpy import newaxis
-    import copy
+    import numpy as np
+    import paths
 
-    def compute_mandelbrot(N_max, some_threshold, nx, ny):
-        x = np.linspace(-2, 1, nx)
-        y = np.linspace(-1.5, 1.5, ny)
-        c = x[:, newaxis] + 1j * y[newaxis, :]
-        z = c
-        with np.warnings.catch_warnings():
-            np.warnings.simplefilter("ignore")
-            for j in range(N_max):
-                z = z ** 2 + c
-            mandelbrot_set = abs(z) < some_threshold
-        return mandelbrot_set
+    # Generate some data
+    random_numbers = np.random.randn(100, 10)
 
-    fig = plt.figure(figsize=(8, 8))
-    mandelbrot_set = np.round(1 - compute_mandelbrot(500, 50.0, 601, 401))
-    tab10 = copy.copy(plt.get_cmap("tab10"))
-    tab10.set_over("w")
-    plt.imshow(
-        mandelbrot_set.T,
-        extent=[-2, 1, -1.5, 1.5],
-        interpolation="nearest",
-        cmap=tab10,
-        vmin=0,
-        vmax=0.9,
-    )
-    plt.gca().axis("off")
-    fig.savefig("mandelbrot.pdf", bbox_inches="tight")
+    # Plot and save
+    fig = plt.figure(figsize=(7, 6))
+    plt.plot(random_numbers)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    fig.savefig(paths.figures / "random_numbers.pdf", bbox_inches="tight", dpi=300)
 
-In the TeX file (``src/ms.tex``), include this figure within a ``figure`` environment:
 
-.. code-block:: latex
+By default, the ``showyourwork`` workflow expects figure scripts to be located in
+(or nested under) ``src/scripts``, so that's where we'll put this script. 
 
-    \begin{figure}
+
+.. important::
+
+    The default location for figure *output* (i.e., the generated ``.pdf`` figure files)
+    is in the ``src/tex/figures`` directory, so we need to make sure figure scripts
+    save their output into that folder, *regardless of where the script is executed
+    from*. The simplest way to do this is to import the
+    ``paths`` module, a file that is automatically included in the ``src/scripts``
+    directory when you create a new article repository with ``showyourwork``. This
+    module defines a few convenient paths, like ``figures`` and ``data``. These are instances of
+    ``pathlib.Path`` objects pointing to the absolute paths of various useful workflow
+    directories.
+
+
+Now that we've created our figure script, let's include the figure in our
+article by adding the following snippet in the body of ``src/tex/ms.tex``:
+
+.. code-block:: TeX
+
+    \begin{figure}[ht!]
+        \script{random_numbers.py}
         \begin{centering}
-            \includegraphics{figures/mandelbrot.pdf}
-            \caption{The Mandelbrot set.}
-            \label{fig:mandelbrot}
+            \includegraphics[width=\linewidth]{figures/random_numbers.pdf}
+            \caption{
+                Plot showing a bunch of random numbers.
+            }
+            \label{fig:random_numbers}
         \end{centering}
     \end{figure}
 
-The figure label (``fig:mandelbrot``) tells ``showyourwork`` to look for a script
-called ``mandelbrot.py`` to produce the PDF for this particular figure. No extra
-directions from the user are needed!
 
-Now add, commit, and push your changes to GitHub:
+Here we're using the standard ``figure`` environment and ``\includegraphics``
+command to include a PDF in our article. The one important bit of syntax that
+is specific to ``showyourwork`` is the ``\script`` command, which is how we
+tell ``showyourwork`` that the figure ``src/tex/figures/random_numbers.pdf``
+can be generated by running the script ``src/scripts/random_numbers.py``.
+Note that within the ``\script`` command, all paths are relative to 
+``src/scripts`` (where the workflow expects these scripts to be located);
+within calls to ``\includegraphics`` and other similar commands, paths
+are relative to the ``graphicspath``, which by default is ``src/tex/figures``.
+
+.. important::
+
+    Previous versions of ``showyourwork`` inferred the name of the figure 
+    script directly from the figure ``\label`` command. 
+    This functionality is now deprecated; users must now either use the ``\script``
+    command or define a custom ``Snakemake`` rule to generate a figure from
+    a script.
+
+
+If we now run ``showyourwork`` again, we'll get a message saying ``conda`` needs
+to download and install some more packages. Once that's done, a message will
+inform us the figure ``random_numbers.pdf`` is being built, and if that goes
+well, we'll get a recompiled article PDF that looks like this:
+
+.. image:: _static/default_ms_with_figure.png
+   :width: 60%
+   :align: center
+
+
+In addition to automatically building our figure for us, ``showyourwork`` has
+also included a GitHub icon in the margin next to its caption, which points to
+the script that generated it (in this case, ``random_numbers.py``). Importantly,
+the link points to the exact *version* of the script (i.e., to the specific
+commit SHA on GitHub) that was used to generate the figure.
+
+If you haven't yet pushed your changes to GitHub, that URL won't exist yet;
+so let's sync our changes with the remote next.
+
+
+Build on the remote
+-------------------
+
+Whenever you make a change to your article (add text, add a figure, edit
+a script), make sure to ``git add`` any new/modified files,
+commit your changes, and then push to the GitHub remote:
 
 .. code-block:: bash
 
-    git add src/figures/mandelbrot.py
-    git add src/ms.tex
-    git commit -m "Add a figure"
-    git push
-
-Navigate to your repository on GitHub, and once again click on the Actions tab to verify that your article
-is building. Within a few minutes you should have an updated, fully synced PDF of your article with the new
-rendered figure.
+    git add src/scripts/random_numbers.py
+    git add src/tex/ms.tex
+    git commit -m "added a new figure"
+    git push -u origin main
 
 
-5. Build the repository locally
--------------------------------
+.. note:: 
 
-It's also useful to be able to build your article PDF locally. To do this, you must have the
-``conda`` package manager installed; click
-`here <https://www.anaconda.com/products/individual>`_ if you don't already have it.
-Once ``conda`` is set up, you should be able to build your article by running
+    Note that we're only adding the figure *script*, not the figure file, to
+    the list of files tracked by ``git``. In fact, if you try to add the figure
+    file, you'll get an error:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    make
+        git add src/tex/figures/random_numbers.pdf
 
-as long as you're on Mac or Linux. This will finish setting up the git submodule
-for ``showyourwork``, install ``mamba`` and ``snakemake``
-for you (if you don't already have them), and invoke Snakemake to build your
-article PDF. You can also do all of this manually; see :doc:`local` for details.
+        The following paths are ignored by one of your .gitignore files:
+        src/tex/figures/random_numbers.pdf
+        Use -f if you really want to add them.
 
-The output file ``ms.pdf`` will be placed at the root of your repository; it should
-look very similar to the one generated by the GitHub Action. Note that by default,
-the various ``.gitignore`` files in your repository prevent you from committing this
-and other output files. Remember the basic philosophy behind ``showyourwork``: the
-``main`` branch of your article repository should only contain *inputs*. All output
-should either be generated on the fly or saved temporarily on the ``main-pdf``
-branch of your remote repository.
+.. |actions| image:: _static/actions_tab.png
+    :width: 60
+    :target: https://docs.github.com/en/actions
 
+As soon as you push your changes to GitHub, a GitHub Action will be triggered
+on your repository, which will build your article from scratch on the cloud.
+To track the build, click on the |actions| tab of your repository. The first
+time your article is built, the action will have to download and install
+``conda``, so it will likely take a few minutes. Subsequent builds take
+advantage of intelligent cross-build caching, so they will likely run
+faster.
 
-6. Read the docs!
------------------
+When the build is done, you can click on any of the badges on the front
+page of your repository:
 
-That's it for this quickstart tutorial. Please check out the rest of the documentation
-for more information on how to customize your workflow, debug issues, etc.
+.. image:: _static/badges.png
+   :width: 30%
+   :align: center
+
+.. raw:: html
+
+    <br/>
+
+these will take you to the build logs, the article tarball (containing the
+TeX files and all generated figures), and the compiled PDF of the article,
+respectively.
+
+That's it for this quickstart tutorial. Please check out the rest of the 
+documentation for more information on how to customize your workflow, 
+debug issues, etc.

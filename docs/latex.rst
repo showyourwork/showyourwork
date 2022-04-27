@@ -18,8 +18,8 @@ something like this:
     % Define document class
     \documentclass[twocolumn]{aastex631}
 
-    % Filler text
-    \usepackage{blindtext}
+    % Import showyourwork magic
+    \usepackage{showyourwork}
 
     % Begin!
     \begin{document}
@@ -28,145 +28,111 @@ something like this:
     \title{An open source scientific article}
 
     % Author list
-    \author[0000-0000-0000-0000]{First Author}
+    \author{First Author}
 
     % Abstract with filler text
     \begin{abstract}
-        \blindtext
+        Lorem ipsum...
     \end{abstract}
 
     % Main body with filler text
     \section{Introduction}
-    \Blindtext[4]
+    Lorem ipsum...
 
     \end{document}
 
-When you run ``make``, ``showyourwork`` generates a PDF that looks something like
+When you run ``showyourwork``, the workflow generates a PDF that looks something like
 this:
 
-.. raw:: html
+.. image:: _static/article-abstract.png
+   :width: 100%
+   :align: center
 
-    <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/article-abstract.png" width="100%"/>
-
-If you inspect the LaTeX source closely, you'll find nothing that actually instructs
-the compiler to add the ``showyourwork`` logo to the header or to add the two icons
-in the margin next to the abstract -- we don't even import any packages other than
-the ``blindtext`` package used to generate filler text. So what gives?
-
-When you execute your workflow, ``showyourwork`` dynamically generates a LaTeX style
-file from a `Jinja template <https://github.com/rodluger/showyourwork/blob/48600a04cece68092f0ba7533d93c8587de0d3dc/workflow/resources/templates/showyourwork.sty>`_
-and copies your manuscript to a temporary file that imports that stylesheet.
-This is all a bit hacky, but it's accomplishing a lot in the background, such as
-automatically figuring out which figures need margin icons and correctly determining
-the URL to link to (which depends on the figure scripts that generated them).
-There's no way to do this in plain LaTeX, so ``showyourwork`` outsources it
-to Python, which renders a one-time, customized ``showyourwork.sty`` stylesheet
-for that workflow run (which then gets deleted upon a successful build).
+When you execute your workflow, ``showyourwork`` dynamically embellishes the
+``showyourwork.sty`` file with all of the metadata needed to annotate the PDF
+with the custom margin icons linking to the repository and the scripts that
+generated the invididual figures.
 
 While most users don't have to worry about how any of this works, it's important to
-keep in mind that ``showyourwork`` is redefining certain LaTeX commands under
+keep in mind that this dynamically-generated style sheet redefines certain LaTeX commands under
 the hood, such as the ``abstract`` and ``figure`` environments and the
-``includegraphics`` and ``label`` commands. For instance, in order to include the
+``includegraphics`` command. For instance, in order to include the
 margin icons next to the abstract, ``showyourwork`` simply patches the ``abstract``
-command to include a ``marginnote``. But it's the behavior of the ``label``
-command that we should talk about in detail, since that's what ``showyourwork``
-uses to infer figure dependencies for your project.
+command to include a ``marginnote``. If you try to compile your PDF with a standard
+``TeX`` compiler (such as ``pdflatex``), things should work just fine (as long as
+the figures have all been previously generated), but you won't get any of the
+annotations mentioned above.
 
-The ``label`` command
----------------------
+The ``showyourwork`` style sheet also defines a few useful commands, the most
+important of which is the ``script`` command for specifying figure scripts.
+Let's talk about that next.
 
-As a general rule, you should always label your figure environments so that
-you can reference them later in the manuscript. But with ``showyourwork``,
-labeling figures is **required**. That's because the figure label actually
-tells ``showyourwork`` how to generate the figure. If you've poked around
-the :doc:`custom` page (in particular the :ref:`default figure generation <custom_default>`
-example), you already have a sense of how this works, but let's discuss it
-in detail here.
 
-Consider the following figure:
+The ``script`` command
+----------------------
 
-.. code-block:: latex
-
-    \begin{figure}
-        \begin{centering}
-            \includegraphics{figures/mandelbrot.pdf}
-            \caption{Hello world! This is a pretty visualization of the Mandelbrot set.}
-            \label{fig:fractals}
-        \end{centering}
-    \end{figure}
-
-This looks like regular LaTeX syntax, but to ``showyourwork`` it is specifying
-a very specific set of instructions. Specifically, ``showyourwork`` inspects
-the calls to ``\includegraphics`` and ``\label`` to infer that there exists a 
-script called ``src/figures/fractals.py`` that, when executed, generates a
-figure called ``src/figures/mandelbrot.pdf``. The key to all this is in the
-``\label`` command: 
-
-.. important::
-
-    If a figure label begins with ``fig:``, the workflow assumes that
-    the remainder of the label specifies the name of a script in the 
-    ``src/figures`` directory (without the extension)
-    that generates all of the figures mentioned in 
-    ``\includegraphics`` calls within the same figure environment.
-
-So, the fact that we labeled the figure ``fig:fractals`` means there should
-exist a script called ``fractals.py`` in the ``src/figures`` directory.
-Executing this script with Python will produce a file called ``mandelbrot.pdf`` in the
-same directory.
-
-.. important::
-
-    Figure scripts are always executed from the directory containing them.
-    It's important to keep that in mind if you have relative paths inside 
-    these scripts!
-
-There are several caveats to and variations on this, many of which we cover
-in the :doc:`custom` page (such as how to :ref:`include multiple figures in the same
-figure environment <custom_multi>`, how to :ref:`have several different figure environments,
-all including figures generated by the same Python script <custom_one_script_multi>`,
-or how to :ref:`specify non-Python scripts for figure generation <custom_non_python>`).
-But the most important thing to know is how to disable this functionality:
-
-.. important::
-
-    To prevent ``showyourwork`` from interpreting a figure label as the
-    name of a figure script, simply don't prefix it with ``fig:``.
-
-The recommended approach is to prefix the label with ``fig*:``, as in
+In a nutshell, the idea behind ``showyourwork`` is to have users place all the
+figure-generating scripts in the ``src/scripts`` directory, and the workflow
+will automatically execute them when generating the article PDF.
+However, it would be pretty wasteful to re-run *all* of the scripts every time
+we build the article PDF, since many of the scripts likely haven't changed 
+since the last time the article was built.
+It's therefore useful for ``showyourwork`` to know exactly which scripts generate
+which figures so it can optimize the build process.
+There are different ways the user can do this, but the easiest is to 
+call the ``\script`` command within a figure environment, as follows:
 
 .. code-block:: latex
 
     \begin{figure}
         \begin{centering}
             \includegraphics{figures/mandelbrot.pdf}
-            \caption{Hello world! This is a pretty visualization of the Mandelbrot set.}
-            \label{fig*:fractals}
+            \caption{This is a pretty visualization of the Mandelbrot set.}
+            \label{fig:mandelbrot}
+            \script{mandelbrot.py}
         \end{centering}
     \end{figure}
 
-In this case, ``showyourwork`` won't try to generate ``mandelbrot.pdf``, unless
-you provided specific instructions in the ``Snakefile`` 
-(see :ref:`custom figure scripts <custom_custom_scripts>`). If you haven't, and
-the file ``mandelbrot.pdf`` doesn't already exist, an error will be raised.
+Within this figure environment, we've declared the figure we wish to include
+(``figures/mandelbrot.pdf``, where the path is relative to the ``tex`` file), 
+the label we'll use to reference the figure
+(``fig:mandlebrot``), and the name of the script that generates all of the
+graphics in this environment (``mandelbrot.py``, which is relative to
+the ``src/scripts`` directory). Figure environments can only have a single
+``\script`` declaration, and must include a figure label. 
 
 .. important::
 
-    If a figure is labeled with the ``fig*:`` prefix, ``showyourwork`` will automatically
-    make it a dependency of the PDF; i.e., it will look for any possible way to
-    generate it from the rules defined in the workflow (and raise an error if it's
-    unable to). If neither the ``fig:`` or ``fig*:`` prefixes are present, users need
-    to manually make the figure a dependency of the article (via the ``dependencies``
-    key in the ``showyourwork.yml`` config file); otherwise, you'll probably get a LaTeX error
-    saying the figure can't be found at build time.
+    Previous versions of ``showyourwork`` inferred the name of the figure 
+    script directly from the label. This functionality is now deprecated,
+    and there are no longer any restrictions on the formatting of the
+    argument of the ``\label`` command within a figure environment.
 
-The other way to disable this functionality, recommended in cases where the
-figure can't be programmatically generated (such as a photograph, a drawing, 
-or a manually-created diagram), is to simply place the figure in the ``src/static``
-directory. Even if you label your figure with the ``fig:`` prefix, ``showyourwork``
-will never attempt to generate it if it lives in that folder.
+If a figure environment does not include a ``\script`` declaration, or
+if a figure is included outside of a figure environment, the user must
+provide a custom ``Snakemake`` rule to generate it (see :doc:`snakefile`), unless this figure
+is present in the ``src/static`` directory (see below).
+Otherwise, LaTeX will throw an error saying the figure can't be found at build time.
 
-There are a few other idiosyncrasies about the ``label`` command: it should always
+There are certain cases in which the user may want to override the ``showyourwork``
+functionality and provide custom rules to generate the figures. This may be the
+case if a single figure environment contains multiple figures generated by
+*different* scripts. In this case, the user should not provide a ``\script``
+declaration and instead define a rule in the ``Snakefile`` explicitly describing the
+relationship between the scripts and figures (see :doc:`snakefile` and :doc:`custom`
+for more details).
+
+There is one other use case worth mentioning: including a figure that can't be
+programmatically generated (such as a photograph, a drawing, or a manually-created diagram).
+This can be done by simply placing the figure in the ``src/static``
+directory (and committing it to the repo); no ``\script`` command is necessary
+within the figure environment. ``showyourwork`` will look in the ``src/static``
+directory and, if it finds the relevant file, it will automatically copy the figure
+over to the ``src/tex/figures`` directory so it can be ingested during the build.
+
+There are a few other idiosyncrasies about this whole procedure, mostly
+related to the use of the ``label`` command. Specifically, the ``\label``
+command in a figure environment should always
 come **after the caption** and should **never be inside the caption**. You'll
 run into warnings or errors if you try to do one of those things (since it
 messes up the way ``showyourwork`` builds the internal tree representation
@@ -190,10 +156,10 @@ and your PDF is compiled for you.
 
 .. code-block::
 
-    make arxiv
+    showyourwork tarball
 
-command, which renders a ready-to-use ``showyourwork.sty`` style file that
-gets automatically included in your texfile so you can build it using a 
+command, which places all the relevant class and style files in the ``src/tex``
+directory so you can build your article PDF using a 
 standard LaTeX compiler. Running this command packages everything up into
 a tarball, which you should be able to upload to arXiv straight away.
 
@@ -217,7 +183,7 @@ This command takes a single argument, which it places in the margin next
 to a figure caption. This can be used to include custom margin icons or to
 override the ``showyourwork``-generated icons. It should be included after
 any calls to ``\caption`` and before any calls to ``\label``. See
-:ref:`custom_margin_icons`.
+:doc:`custom`.
 
 ``\GitHubURL``
 ^^^^^^^^^^^^^^^

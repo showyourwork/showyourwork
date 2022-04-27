@@ -1,0 +1,14 @@
+showyourwork:
+  version: {{ cookiecutter.showyourwork_version }}
+  cache:
+    zenodo: {{ cookiecutter.zenodo_cache_concept_id }}
+
+{% if cookiecutter.overleaf_id -%}
+overleaf:
+  id: {{ cookiecutter.overleaf_id }}
+  push: 
+    - src/tex/figures
+  pull:
+    - src/tex/ms.tex
+    - src/tex/bib.bib
+{% endif %}

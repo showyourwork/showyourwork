@@ -1,0 +1,24 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build the article PDF
+    concurrency: showyourwork-${{ "{{" }} github.ref {{ "}}" }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build the article PDF
+        id: build
+        uses: showyourwork/showyourwork-action@v1
+        env:
+          ZENODO_TOKEN: ${{ "{{" }} secrets.ZENODO_TOKEN {{ "}}" }}
+          OVERLEAF_EMAIL: ${{ "{{" }} secrets.OVERLEAF_EMAIL {{ "}}" }}
+          OVERLEAF_PASSWORD: ${{ "{{" }} secrets.OVERLEAF_PASSWORD {{ "}}" }}
