@@ -8,7 +8,7 @@ author = "Rodrigo Luger"
 
 # -- General configuration ---------------------------------------------------
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.autodoc", "sphinxcontrib.programoutput"]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 master_doc = "index"

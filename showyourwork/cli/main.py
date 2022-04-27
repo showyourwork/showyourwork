@@ -1,5 +1,5 @@
 from . import commands
-from .. import git, exceptions
+from .. import git, exceptions, __version__
 import os
 import shutil
 import click
@@ -30,23 +30,30 @@ def show_banner():
         )
 
 
+def ensure_top_level():
+    # Ensure we're running the command in the top level of a git repo
+    root = os.path.realpath(git.get_repo_root())
+    here = os.path.realpath(".")
+    if 0:  # not root == here:
+        raise exceptions.ShowyourworkException(
+            "The `showyourwork` command must be called "
+            "from the top level of a git repo."
+        )
+
+
 @click.group(invoke_without_command=True)
+@click.option(
+    "--version", is_flag=True, help="Show the program version and exit."
+)
 @click.pass_context
-def entry_point(context):
+def entry_point(context, version):
     """Easily build open-source, reproducible scientific articles."""
     # Parse
-    if context.invoked_subcommand != "setup":
-        # Ensure we're running the command in the top level of a git repo
-        root = os.path.realpath(git.get_repo_root())
-        here = os.path.realpath(".")
-        if not root == here:
-            raise exceptions.ShowyourworkException(
-                "The `showyourwork` command must be called "
-                "from the top level of a git repo."
-            )
-        if context.invoked_subcommand is None:
-            # Default command is `build`
-            context.invoke(build)
+    if version:
+        print(__version__)
+    elif context.invoked_subcommand is None:
+        # Default command is `build`
+        context.invoke(build)
 
 
 @entry_point.command(
@@ -57,6 +64,7 @@ def entry_point(context):
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def build(snakemake_args):
     """Build an article in the current working directory."""
+    ensure_top_level()
     commands.preprocess(snakemake_args)
     commands.build(snakemake_args)
 
@@ -218,12 +226,14 @@ def setup(slug, yes, overleaf, ssh, showyourwork_version):
 @entry_point.command()
 def clean():
     """Clean the article build in the current working directory."""
+    ensure_top_level()
     commands.clean()
 
 
 @entry_point.command()
 def tarball():
     """Generate a tarball of the build in the current working directory."""
+    ensure_top_level()
     commands.preprocess()
     commands.tarball()
 
@@ -233,6 +243,7 @@ def tarball():
 @click.option("--update", is_flag=True)
 def cache(restore, update):
     """Update or restore the cache on GitHub Actions."""
+    ensure_top_level()
     if not restore != update:
         raise exceptions.ShowyourworkException(
             "Must provide either `--restore` or `--update`."
