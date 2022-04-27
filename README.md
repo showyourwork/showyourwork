@@ -6,7 +6,7 @@
     <a href="https://github.com/showyourwork/showyourwork/actions/workflows/tests.yml">
         <img src="https://github.com/showyourwork/showyourwork/actions/workflows/tests.yml/badge.svg" alt="tests"/>
     </a>
-    <a href="https://showyourwork-dev.readthedocs.io">
+    <a href="https://showyourwork.readthedocs.io/en/dev">
         <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue" alt="tests"/>
     </a>
 </p>
