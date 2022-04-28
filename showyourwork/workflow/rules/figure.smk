@@ -1,3 +1,8 @@
+"""
+Defines rules ``syw__figX`` to generate figure output, where ``X`` is the
+figure number.
+
+"""
 from showyourwork import paths
 
 

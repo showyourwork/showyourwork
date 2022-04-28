@@ -1,4 +1,4 @@
-Projects that use ``showyourwork``
+Projects that use |showyourwork|
 ==================================
 
 .. note:: Coming soon!

@@ -1,3 +1,7 @@
+"""
+Defines the rule ``syw__compile`` to build the article PDF.
+
+"""
 from showyourwork import paths
 
 

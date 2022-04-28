@@ -3,7 +3,7 @@ Zenodo integration
 
 .. note:: Coming soon!
 
-The ``showyourwork`` workflow automatically caches the results of intermediate
+The |showyourwork| workflow automatically caches the results of intermediate
 steps in your pipeline on Zenodo (see :doc:`zenodo` for details). In order to
 do this, it needs access to a Zenodo API token, which you can 
 `generate here <https://zenodo.org/account/settings/applications/tokens/new>`_

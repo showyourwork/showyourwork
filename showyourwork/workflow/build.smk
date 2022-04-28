@@ -1,3 +1,7 @@
+"""
+The Snakefile for the main article build step.
+
+"""
 from showyourwork import paths, exceptions, overleaf
 from showyourwork.patches import patch_snakemake_wait_for_files, patch_snakemake_logging
 from showyourwork.config import parse_config, get_run_type

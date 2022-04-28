@@ -265,7 +265,7 @@ The ``static`` directory
 
 This directory is meant to house figure files that can't be generated from
 scripts, such as photos, flowcharts, reproductions of figures in other papers, etc.
-If you place your figure in here, ``showyourwork`` will know not to try to
+If you place your figure in here, |showyourwork| will know not to try to
 generate it from any script.
 
 
@@ -321,7 +321,7 @@ long as you edit the corresponding setting (see :doc:`config`).
 The ``showyourwork.sty`` file
 *****************************
 
-This is the ``showyourwork`` TeX style sheet, which you should always include in
+This is the |showyourwork| TeX style sheet, which you should always include in
 your manuscript:
 
 .. code-block:: tex
@@ -329,8 +329,8 @@ your manuscript:
     \usepackage{showyourwork}
 
 If you peek inside, there's not much there: it's a placeholder stylesheet that
-imports all the ``showyourwork`` functionality from elsewhere if the article
-is built as part of the ``showyourwork`` workflow. If you compile your article
+imports all the |showyourwork| functionality from elsewhere if the article
+is built as part of the |showyourwork| workflow. If you compile your article
 with a standard TeX compiler (such as ``pdflatex`` or ``tectonic``), things will
 still work, but you won't benefit from any of the showyourwork functionality.
 
@@ -391,7 +391,7 @@ The ``showyourwork.yml`` config file
 ************************************
 
 This is the `Snakemake config file <https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html>`_
-for ``showyourwork``, where you can customize several aspects of the build. For
+for |showyourwork|, where you can customize several aspects of the build. For
 detailed information on this file, see :doc:`the showyourwork.yml file <config>`.
 
 
@@ -401,9 +401,9 @@ The ``Snakefile`` workflow
 **************************
 
 The ``Snakefile`` contains custom instructions to build your article
-from the files in your repository. If you're not familiar with the ``Snakemake``
+from the files in your repository. If you're not familiar with the Snakemake
 workflow management system, read up on it `here <https://snakemake.readthedocs.io>`_.
-By default, the ``Snakefile`` is empty: ``showyourwork`` takes care of everything
+By default, the ``Snakefile`` is empty: |showyourwork| takes care of everything
 for you. For custom workflows, you can add rules to your ``Snakefile``, such
 as instructions on how to build custom figures, to download datasets, etc; see
 :doc:`custom`.

@@ -22,7 +22,7 @@
 Command line interface
 ======================
 
-The ``showyourwork`` package implements a single command-line utility:
+The |showyourwork| package implements a single command-line utility:
 ``showyourwork``, which allows users to set up, configure, and build their
 open source article. Below we describe this command and discuss its various
 subcommands.
@@ -35,7 +35,7 @@ subcommands.
 
     .. program-output:: showyourwork --help
 
-Running ``showyourwork`` (without any arguments) is a shortcut for ``showyourwork build``
+Running |showyourwork| (without any arguments) is a shortcut for ``showyourwork build``
 (see :ref:`syw_build` below).
 
 
@@ -89,7 +89,7 @@ Running the ``setup`` command as above should bring up the following prompt:
 As requested, if you haven't yet created the remote repository, go to
 `github.com/new <https://github.com/new>`_ in your browser to create an empty 
 repository of the same name. There's no need to create a README, gitignore file, 
-or LICENSE at this time, as ``showyourwork`` will set those up for you.
+or LICENSE at this time, as |showyourwork| will set those up for you.
 
 Press any key to bring up the next prompt. What you see next depends on whether
 or not the ``$ZENODO_TOKEN`` environment variable is set.
@@ -118,7 +118,7 @@ you should see the following message:
     </pre>
 
     
-The ``showyourwork`` workflow automatically caches the results of intermediate
+The |showyourwork| workflow automatically caches the results of intermediate
 steps in your pipeline on Zenodo, but only if it finds a ``$ZENODO_TOKEN`` 
 environment
 variable containing a valid Zenodo API token. If you would like to enable this
@@ -193,11 +193,11 @@ hit ``Ctrl+C`` and run
 
 where you should replace ``62150dd16134ef045f81d1c8`` with the 24-character id 
 of a new (blank) Overleaf project. Once you create a new Overleaf project, you
-can grab the id from the last bit of the project's URL. Note that ``showyourwork``
+can grab the id from the last bit of the project's URL. Note that |showyourwork|
 requires the Overleaf project to be empty, otherwise it will refuse to set up
 the integration. For more information on how this integration works, and what
 to do if you have an existing Overleaf project you'd like to integrate with
-``showyourwork``, please see :doc:`overleaf`.
+|showyourwork|, please see :doc:`overleaf`.
 
 
 Step 3B
@@ -214,7 +214,7 @@ haven't configured your Overleaf credentials, you'll get the following message:
     going to set up Overleaf integration for this repository.
     </pre>
 
-To allow ``showyourwork`` to push to/pull from your Overleaf project, create
+To allow |showyourwork| to push to/pull from your Overleaf project, create
 the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` and 
 populate them with your Overleaf email address and password, respectively;
 then re-run the setup command.
@@ -289,7 +289,7 @@ may run
 
 to run the workflow using two cores (see the `snakemake docs <https://snakemake.readthedocs.io/en/stable/executing/cli.html>`_
 for details). Additional arguments can also be provided, like ``--verbose`` to increase
-the verbosity of the ``snakemake`` logs (see :doc:`logging`), or ``--force`` and ``--forceall`` to
+the verbosity of the Snakemake logs (see :doc:`logging`), or ``--force`` and ``--forceall`` to
 force the re-execution of the rule that builds the manuscript or *all* of the rules
 in the workflow, respectively (regardless of whether the outputs are up to date
 or not). Positional arguments are also allowed; for instance, to only build a specific
@@ -299,17 +299,17 @@ figure, you may run, e.g.,
 
     showyourwork build --force src/tex/figures/figure.pdf
 
-You can check out the complete list of ``snakemake`` arguments and options
+You can check out the complete list of Snakemake arguments and options
 at the `snakemake documentation <https://snakemake.readthedocs.io/en/stable/executing/cli.html#all-options>`_.
 
 .. warning::
 
-    Not all ``snakemake`` options are compatible with ``showyourwork``. If you
+    Not all Snakemake options are compatible with |showyourwork|. If you
     run into issues when specifying custom options, please 
     `let us know <https://github.com/showyourwork/showyourwork/issues/new>`_.
 
-Note that the build process in ``showyourwork`` happens in two steps, each of
-which executes a separate ``snakemake`` workflow. The first
+Note that the build process in |showyourwork| happens in two steps, each of
+which executes a separate Snakemake workflow. The first
 step is a preprocessing step that parses the user config file and does a quick
 first-pass compiling of the TeX manuscript to look for ``\includegraphics``
 and ``\script`` calls, which it uses to build the graph of dependencies for
@@ -317,13 +317,13 @@ your article. The second step is the main step, in which all of the dependencies
 are built (if needed) and the final article PDF is generated. Arguments
 passed to ``showyourwork build`` are ingested *only* during the second step.
 
-Finally, ``showyourwork`` takes full advantage
-of the dependency tracking and caching functionality of ``snakemake``. When
+Finally, |showyourwork| takes full advantage
+of the dependency tracking and caching functionality of Snakemake. When
 running ``showyourwork build``, only files whose upstream dependencies have
 changed (since the last build) will be re-generated. This is true *even when
 running on GitHub Actions*; the ``showyourwork-action`` caches results across
 runs to minimize compute time for the build. We even go a step further, and
-extend the ``snakemake`` functionality to allow caching of intermediate
+extend the Snakemake functionality to allow caching of intermediate
 dependencies on Zenodo; read about it at :doc:`zenodo`.
 
 
@@ -348,7 +348,7 @@ Manual clean
 If ``showyourwork clean`` didn't remove all of the output, you can manually
 delete all the programmatically-generated figures and datasets by removing
 everything in the ``src/tex/figures`` and ``src/data`` folders
-(assuming you're respecting the ``showyourwork`` conventions; see :doc:`layout`):
+(assuming you're respecting the |showyourwork| conventions; see :doc:`layout`):
 
 .. code-block:: bash
 

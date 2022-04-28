@@ -1,3 +1,8 @@
+"""
+Defines the rule ``syw__preprocess`` to parse the config and build the
+workflow graph.
+
+"""
 from showyourwork import paths
 
 

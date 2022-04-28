@@ -1,3 +1,7 @@
+"""
+Defines the rule ``syw__arxiv`` to generate a tarball for arXiv submission.
+
+"""
 from showyourwork import paths
 
 

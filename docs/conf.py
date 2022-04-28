@@ -13,6 +13,11 @@ extensions = ["sphinx.ext.autodoc", "sphinxcontrib.programoutput"]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 master_doc = "index"
+rst_epilog = """
+.. |showyourwork| raw:: html
+    
+    <span style="color:red; font-weight:bold;">showyourwork!</span>
+"""
 
 # -- Options for HTML output -------------------------------------------------
 

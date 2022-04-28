@@ -7,9 +7,11 @@
    </div>
    <br/><br/>
 
-
 Documentation
 =============
+
+Welcome to |showyourwork|, a workflow management tool for open source scientific articles.
+
 
 .. toctree::
    :maxdepth: 1

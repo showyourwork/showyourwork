@@ -1,3 +1,7 @@
+"""
+The Snakefile for the article pre-processing step.
+
+"""
 from showyourwork import paths, overleaf
 from showyourwork.config import parse_config, get_run_type
 from showyourwork.patches import patch_snakemake_logging

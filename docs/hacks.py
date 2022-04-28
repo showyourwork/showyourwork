@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from pathlib import Path
+import re
 
 
 # Add our module to the path
@@ -28,7 +29,7 @@ subprocess.run(
 
 
 # Snakefile docs
-# TODO: Ingest docstrings from `.smk` files!
+# Ingest docstrings from the `.smk` files
 rules = [
     str(file.name)
     for file in Path("../showyourwork/workflow/rules").glob("*.smk")
@@ -37,10 +38,19 @@ snakefiles = [
     str(file.name) for file in Path("../showyourwork/workflow").glob("*.smk")
 ]
 for file in rules + snakefiles:
-    subprocess.run(
-        f"""echo "{file}\n{'=' * len(file)}\n" > api/{file}.rst""",
-        shell=True,
-    )
+    if file in rules:
+        with open(Path("../showyourwork/workflow/rules") / file, "r") as f:
+            contents = f.read()
+    else:
+        with open(Path("../showyourwork/workflow") / file, "r") as f:
+            contents = f.read()
+    docstring = re.match('"""((?s).*?)"""', contents)
+    if docstring:
+        docstring = docstring.groups()[0]
+    else:
+        docstring = ""
+    with open(f"api/{file}.rst", "w") as f:
+        f.write(f"{file}\n{'=' * len(file)}\n\n{docstring}")
 
 
 # Customize the table of contents
