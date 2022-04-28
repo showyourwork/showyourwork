@@ -2,6 +2,7 @@ import subprocess
 import sys
 from pathlib import Path
 import re
+import requests
 
 
 # Add our module to the path
@@ -18,6 +19,17 @@ class RemoveContentsHeading(StopIteration):
     pass
 
 
+# Import the GitHub Action README
+url = "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
+r = requests.get(url, allow_redirects=True)
+content = r.content.decode()
+content = "The GitHub action\n=================\n\n" + "\n".join(
+    content.split("\n")[10:]
+)
+with open("action.rst", "w") as f:
+    f.write(content)
+
+
 # Create our API autodoc pages
 for file in Path("api").rglob("*.rst"):
     file.unlink()
@@ -28,8 +40,7 @@ subprocess.run(
 )
 
 
-# Snakefile docs
-# Ingest docstrings from the `.smk` files
+# Snakefile docs: ingest docstrings from the `.smk` files
 rules = [
     str(file.name)
     for file in Path("../showyourwork/workflow/rules").glob("*.smk")
@@ -53,7 +64,7 @@ for file in rules + snakefiles:
         f.write(f"{file}\n{'=' * len(file)}\n\n{docstring}")
 
 
-# Customize the table of contents
+# Customize the API table of contents
 with open("api/showyourwork.rst", "r") as f:
     lines = f.readlines()
 lines = (
@@ -95,7 +106,7 @@ with open("api/showyourwork.rst", "w") as f:
     f.writelines(lines)
 
 
-# Format each rst file to get rid of unnecessary headings, etc.
+# Format each API rst file to get rid of unnecessary headings, etc.
 for file in Path("api").rglob("*.rst"):
     with open(file, "r") as f:
         lines = f.readlines()

@@ -15,6 +15,5 @@ A list of things we should fix/implement before the first major release.
       in the DAG generation?
 - [ ] Add option to create new Zenodo deposit for a branch
 - [ ] Test uploads of very large files
-- [ ] On pip release, install showyourwork using pip in ``showyourwork-action/src/conda.js``
 - [ ] Implement showyourwork publish (for Zenodo)
 - [ ] Support .zip files on Zenodo

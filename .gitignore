@@ -9,3 +9,4 @@ showyourwork.egg-info
 htmlcov
 junit
 **/sitecustomize.py
+dist/*
