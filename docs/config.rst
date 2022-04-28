@@ -202,8 +202,6 @@ repository. Exact names are required; no glob syntax allowed.
 
 .. _config.scripts:
 
-.. _config_scripts:
-
 ``scripts``
 ^^^^^^^^^^^
 
@@ -251,7 +249,7 @@ notebook as follows:
 
 .. _config.showyourwork:
 
-|showyourwork|
+``showyourwork``
 ^^^^^^^^^^^^^^^^
 
 **Type:** ``mapping``
@@ -330,6 +328,41 @@ package. Options are (from most recommended to least recommended):
 
   showyourwork:
     version: 1.0.1
+
+
+.. _config.style:
+
+``style``
+^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Specifies custom modifications to the article stylesheet.
+
+**Required:** no
+
+
+.. _config.style.show_git_sha_or_tag:
+
+``style.show_git_sha_or_tag``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Show the git SHA in the article PDF header.
+If the HEAD commit corresponds to a git tag, show the tag name in the
+header.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  style:
+    show_git_sha_or_tag: true
 
 
 .. _config.verbose:
