@@ -6,7 +6,6 @@ A list of things we should fix/implement before the first major release.
 - [ ] Regarding Zenodo deposits with tarballs containing lots of files:
       consider supporting directories (instead of specific files) in the ``contents`` mapping of
       the config file.
-- [ ] Caching files on Zenodo sometimes prints a JSON response to the terminal; investigate
 - [ ] Don't show errors on make clean
 - [ ] Histeresis when adding a new figure to the tex, building, and _then_ adding the script
 - [ ] Histeresis when building article, adding a free-floating figure (with no Snakemake rule),
