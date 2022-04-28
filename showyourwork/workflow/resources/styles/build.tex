@@ -61,16 +61,25 @@
 \let\oldmaketitle\maketitle
 \def\maketitle{%
     \let\oldLaTeX\LaTeX
+    \let\oldtoday\today
     \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
+    \ifcsname gitHeader\endcsname
+      \renewcommand{\today}{\oldtoday.~\gitHeader}
+    \fi
     \oldmaketitle
     \let\LaTeX\oldLaTeX
+    \let\today\oldtoday
 }
 
 % MNRAS hack for displaying showyourwork logo
 \@ifclassloaded{mnras}{
   \ifx\CUP@mtlplain@loaded\undefined
     \def\@printed{Preprint \tod@y\
-      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version}
+      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version
+      \ifcsname gitHeader\endcsname
+        \,(\gitHeader)
+      \fi
+      }
   \else
     \def\@printed{}
   \fi

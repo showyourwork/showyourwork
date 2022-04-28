@@ -49,3 +49,17 @@ def get_repo_sha():
 
     """
     return get_stdout(["git", "rev-parse", "HEAD"], callback=callback)
+
+
+def get_repo_tag():
+    """
+    Return a tag name if the HEAD corresponds to a tagged version.
+
+    """
+    tag = get_stdout(
+        ["git", "describe", "--exact-match", "--tags", "HEAD"],
+        callback=callback,
+    ).strip()
+    if tag == "unknown":
+        tag = ""
+    return tag

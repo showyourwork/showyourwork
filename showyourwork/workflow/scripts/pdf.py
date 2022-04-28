@@ -11,7 +11,6 @@ if __name__ == "__main__":
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
 
-
     # Metadata file jinja template
     TEMPLATE = r"""
     ((* if github_actions *))
@@ -20,14 +19,18 @@ if __name__ == "__main__":
     \OnGithubActionsfalse
     ((* endif *))
     \def\syw@url{((- git_url -))}
-    \def\syw@sha{((- git_sha-))}
-    \def\syw@runid{((- github_runid-))}
+    \def\syw@sha{((- git_sha -))}
+    \def\syw@runid{((- github_runid -))}
 
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}
     ((* endfor *))
-    """
 
+    % Check if the Git tag is set (i.e. is it an empty string)
+    ((* if sha_tag_header != "" *))
+    \newcommand{\gitHeader}{((- sha_tag_header -))}
+    ((* endif *))
+    """
 
     # Custom jinja environment for LaTeX
     ENV = Environment(
@@ -42,12 +45,10 @@ if __name__ == "__main__":
         loader=BaseLoader(),
     )
 
-
     # Generate the stylesheet metadata file
     with open(str(Path(snakemake.config["stylesheet_meta_file"])), "w") as f:
         meta = ENV.from_string(TEMPLATE).render(**snakemake.config)
         print(meta, file=f)
-
 
     # Build the paper
     compile_tex(
@@ -55,7 +56,6 @@ if __name__ == "__main__":
         output_dir=paths.user().compile,
         stylesheet=paths.showyourwork().resources / "styles" / "build.tex",
     )
-
 
     # Copy the PDF to the user dir
     shutil.copy(

@@ -160,10 +160,7 @@ def parse_config():
     # These get recorded in a JSON file which is loaded as
     # the main config file in the build stage, so all these
     # settings are available in both stages.
-    if (
-        Path(snakemake.workflow.workflow.main_snakefile).name
-        == "prep.smk"
-    ):
+    if Path(snakemake.workflow.workflow.main_snakefile).name == "prep.smk":
 
         #
         # -- User settings --
@@ -203,6 +200,12 @@ def parse_config():
         #: Overleaf
         config["overleaf"] = as_dict(config.get("overleaf", {}))
         parse_overleaf()
+
+        #: Latex style customization
+        config["style"] = config.get("style", {})
+        config["style"]["show_git_sha_or_tag"] = config["style"].get(
+            "show_git_sha_or_tag", False
+        )
 
         #
         # -- Internal settings --
@@ -284,3 +287,12 @@ def parse_config():
     config["git_branch"] = git.get_repo_branch()
     config["github_actions"] = os.getenv("CI", "false") == "true"
     config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
+    config["git_tag"] = git.get_repo_tag()
+    if config["style"]["show_git_sha_or_tag"]:
+        if config["git_tag"] != "":
+            config["sha_tag_header"] = f'Git tag: {config["git_tag"]}'
+        else:
+            # The git default short hash is the first 7 characters:
+            config["sha_tag_header"] = f'Git commit: {config["git_sha"][:7]}'
+    else:
+        config["sha_tag_header"] = ""
