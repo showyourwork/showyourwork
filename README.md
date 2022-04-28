@@ -14,6 +14,17 @@
 </a>
 </p>
 
+<br/>
+<h2></h2><br/>
+<p align="center">
+    ⚡⚡⚡ 
+    <strong>showyourwork</strong> is getting a major update in early May.
+    Check out the <a href="https://github.com/showyourwork/showyourwork/tree/dev">dev branch</a> for details.
+    ⚡⚡⚡
+</p>
+<h2></h2>
+<br/>
+    
 <h2>Overview</h2>
 <p align="justify">
 This repository is intended to help authors publish the code that generated the figures and results in a scientific article. It ensures that the compiled article PDF is always in sync with all of the code used to generate it, and that any user that clones the repository can reproduce the PDF <i>from scratch</i> by running
