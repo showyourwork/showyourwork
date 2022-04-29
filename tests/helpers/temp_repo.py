@@ -157,7 +157,17 @@ class TemporaryShowyourworkRepository:
     def build_local(self):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
-        get_stdout("CI=false showyourwork build", shell=True, cwd=self.cwd)
+
+        def callback(code, stdout, stderr):
+            if code != 0:
+                raise Exception(stdout + "\n" + stderr)
+
+        get_stdout(
+            "CI=false showyourwork build",
+            shell=True,
+            cwd=self.cwd,
+            callback=callback,
+        )
 
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self):

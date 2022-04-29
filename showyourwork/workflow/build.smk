@@ -64,10 +64,21 @@ if (paths.user().temp / "config.json").exists():
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
+    include: "rules/fallback.smk"
 
 
     # Resolve ambiguities in rule order
     ruleorder: syw__compile > syw__arxiv
+    other_rules = []
+    fallback_rules = []
+    for r in snakemake.workflow.workflow.rules:
+        if r.name.startswith("syw__fallback__"):
+            fallback_rules.append(r)
+        else:
+            other_rules.append(r)
+    for sr in other_rules:
+        for fr in fallback_rules:
+            snakemake.workflow.workflow.ruleorder(sr.name, fr.name)
 
 
     # Include custom rules defined by the user

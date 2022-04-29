@@ -32,6 +32,10 @@ class MissingFigureOutputError(ShowyourworkException):
     pass
 
 
+class MissingDependencyError(ShowyourworkException):
+    pass
+
+
 class FigureGenerationError(ShowyourworkException):
     pass
 

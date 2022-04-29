@@ -51,10 +51,9 @@ class TestZenodo(TemporaryShowyourworkRepository):
 class TestOverleaf(TemporaryShowyourworkRepository):
     """Test a repo that integrates with an Overleaf project."""
 
-    overleaf_id = "6262c032aae5421d6d945acf"
-
-    use_local_showyourwork = True
+    # No need to test this on CI
     local_build_only = True
+    overleaf_id = "6262c032aae5421d6d945acf"
 
     def startup(self):
         """Wipe the Overleaf remote to start fresh."""
@@ -199,3 +198,78 @@ class TestZenodoDirCache(TemporaryShowyourworkRepository):
             config["dependencies"] = {
                 "src/scripts/plot_dataset.py": "src/data/dataset"
             }
+
+
+class TestFallbackRules(TemporaryShowyourworkRepository):
+    """Test the fallback rules that inform the user about missing article dependencies."""
+
+    # No need to test this on CI
+    local_build_only = True
+
+    def add_figure_environment(self):
+        ms = self.cwd / "src" / "tex" / "ms.tex"
+        with open(ms, "r") as f:
+            ms_orig = f.read()
+        with open(ms, "w") as f:
+            ms_new = ms_orig.replace(
+                r"\end{document}",
+                "\n".join(
+                    [
+                        r"\begin{figure}[ht!]",
+                        r"\script{random_numbers.py}",
+                        r"\begin{centering}",
+                        r"\includegraphics[width=\linewidth]{figures/random_numbers.pdf}",
+                        r"\caption{Random numbers.}",
+                        r"\label{fig:random_numbers}",
+                        r"\end{centering}",
+                        r"\end{figure}",
+                        "",
+                        r"\end{document}",
+                    ]
+                ),
+            )
+            print(ms_new, file=f)
+
+    def add_figure_script(self):
+        with open(
+            self.cwd / "src" / "scripts" / "random_numbers.py", "w"
+        ) as f:
+            print(
+                "\n".join(
+                    [
+                        "import matplotlib.pyplot as plt",
+                        "import numpy as np",
+                        "import paths",
+                        "random_numbers = np.random.randn(100, 10)",
+                        "fig = plt.figure(figsize=(7, 6))",
+                        "plt.plot(random_numbers)",
+                        "fig.savefig(paths.figures / 'random_numbers.pdf', bbox_inches='tight', dpi=300)",
+                    ]
+                ),
+                file=f,
+            )
+
+    def build_local(self):
+        # Build a blank article
+        super().build_local()
+
+        # Add a figure environment to the tex file w/ a script command,
+        # but don't actually create the script. The build should fail
+        # with an informative message.
+        self.add_figure_environment()
+        try:
+            super().build_local()
+        except Exception as e:
+            if (
+                not "No rule to generate src/tex/figures/random_numbers.pdf"
+                in str(e)
+            ):
+                raise Exception("Incorrect exception message.")
+        else:
+            raise Exception(
+                "Expected failure, but article build step succeeded."
+            )
+
+        # Now add the script. The build should succeed
+        self.add_figure_script()
+        super().build_local()

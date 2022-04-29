@@ -17,6 +17,7 @@ Welcome to |showyourwork|, a workflow management tool for open source scientific
    :maxdepth: 1
 
    intro
+   install
    quickstart
    cli
    layout
