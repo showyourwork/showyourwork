@@ -14,4 +14,4 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - run: :
+      - run: echo ""
