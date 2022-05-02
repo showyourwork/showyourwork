@@ -2,6 +2,7 @@ from . import exceptions
 from .logging import get_logger
 from .patches import patch_snakemake_cache
 from .config import get_run_type
+from .git import get_repo_branch
 import json
 import requests
 
@@ -31,9 +32,10 @@ def process_user_rules():
     # Patch the Snakemake caching functionality so we
     # can cache things on Zenodo
     cached_deps = []
-    if snakemake.workflow.config["showyourwork"]["cache"]["zenodo"]:
+    branch = get_repo_branch()
+    if snakemake.workflow.config["showyourwork"]["cache"][branch]:
         patch_snakemake_cache(
-            snakemake.workflow.config["showyourwork"]["cache"]["zenodo"]
+            snakemake.workflow.config["showyourwork"]["cache"][branch]
         )
 
     # Process each user rule
@@ -56,7 +58,7 @@ def process_user_rules():
             raise exceptions.RunDirectiveNotAllowedInUserRules(ur.name)
 
         # Record any cached output
-        if snakemake.workflow.config["showyourwork"]["cache"]["zenodo"]:
+        if snakemake.workflow.config["showyourwork"]["cache"][branch]:
             if ur.ruleinfo.cache:
                 for file in ur.output:
                     cached_deps.append(str(file))
@@ -75,9 +77,7 @@ def process_user_rules():
     try:
 
         # Grab the Zenodo id for this repo
-        concept_id = snakemake.workflow.config["showyourwork"]["cache"][
-            "zenodo"
-        ]
+        concept_id = snakemake.workflow.config["showyourwork"]["cache"][branch]
 
         # Check that the record has been published
         if concept_id:

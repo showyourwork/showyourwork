@@ -281,26 +281,29 @@ containing internal settings.
 **Required:** no
 
 
-.. _config.showyourwork.cache.zenodo:
+.. _config.showyourwork.cache.branch:
 
-``showyourwork.cache.zenodo``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``showyourwork.cache.<branch>``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``str`` or ``int``
 
 **Description:** The concept id of the Zenodo deposit used to cache intermediate
-steps in the workflow. This value is populated by ``showyourwork setup`` and
+steps in the workflow for a particular branch. This value is populated by 
+``showyourwork setup`` and/or ``showyourwork zenodo --create`` and
 should not generally be edited by the user. See :doc:`zenodo` for details.
 
 **Required:** no
 
 **Example:**
 
+Zenodo caching for the ``main`` branch:
+
 .. code-block:: yaml
 
   showyourwork:
     cache:
-        zenodo: 6471264
+        main: 6471264
 
 
 .. _config.showyourwork.version:
@@ -395,7 +398,7 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 
 **Type:** ``mapping``
 
-**Description:** A mapping declaring datasets to be download from Zenodo.
+**Description:** A mapping declaring static datasets to be download from Zenodo.
 Nested under this keyword should be a sequence of mappings labeled by the
 deposit version ids of Zenodo datasets.
 See below for details.
@@ -403,6 +406,13 @@ See below for details.
 **Required:** no
 
 **Example:**
+
+The following block shows how to tell |showyourwork| about two files,
+``TOI640b.json`` and ``KeplerRot-LAMOST.csv``, each of which is hosted
+on a Zenodo deposit with a different version ID. Note that the user should
+separately provide :ref:`config.dependencies` information for each of these
+files, so |showyourwork| knows which scripts require these files.
+
 
 .. code-block:: yaml
 
@@ -413,6 +423,8 @@ See below for details.
     5794178:
       contents:
         KeplerRot-LAMOST.csv: src/data/KeplerRot-LAMOST.csv
+
+See below for the syntax of the ``contents`` section of the ``zenodo`` mapping.
 
 
 .. _config.zenodo.version_id:
@@ -535,6 +547,10 @@ extracted, and mapped to local files:
                 lc.txt: src/data/TOI640/S06.txt      # rename and change destination folder
               S07:                                   # subfolder
                 lc.txt: src/data/TOI640/S07.txt      # rename and change destination folder
+
+
+Recall that users must separately provide dependency information for each
+of these files via the :ref:`config.dependencies` key.
 
 
 .. _config.zenodo.version_id.destination:

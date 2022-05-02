@@ -118,7 +118,7 @@ class TemporaryShowyourworkRepository:
             shell=True,
         )
 
-        # Get the Zenodo cache concept id (if any)
+        # Get the Zenodo cache concept id for the main branch (if any)
         user_config = yaml.load(
             jinja2.Environment(loader=jinja2.FileSystemLoader(self.cwd))
             .get_template("showyourwork.yml")
@@ -126,7 +126,7 @@ class TemporaryShowyourworkRepository:
             Loader=yaml.CLoader,
         )
         self._concept_id = (
-            user_config.get("showyourwork", {}).get("cache", {}).get("zenodo")
+            user_config.get("showyourwork", {}).get("cache", {}).get("main")
         )
 
     def create_remote(self):

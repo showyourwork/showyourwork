@@ -43,6 +43,8 @@ Running |showyourwork| (without any arguments) is a shortcut for ``showyourwork 
 (see :ref:`syw_build` below).
 
 
+.. _syw_setup:
+
 ``showyourwork setup``
 ----------------------
 

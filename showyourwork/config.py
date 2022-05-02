@@ -174,9 +174,6 @@ def parse_config():
         config["showyourwork"]["cache"] = config["showyourwork"].get(
             "cache", {}
         )
-        config["showyourwork"]["cache"]["zenodo"] = config["showyourwork"][
-            "cache"
-        ].get("zenodo", None)
 
         #: Verbosity
         config["verbose"] = config.get("verbose", False)
@@ -296,3 +293,6 @@ def parse_config():
             config["sha_tag_header"] = f'Git commit: {config["git_sha"][:7]}'
     else:
         config["sha_tag_header"] = ""
+    config["showyourwork"]["cache"][config["git_branch"]] = config[
+        "showyourwork"
+    ]["cache"].get(config["git_branch"], None)

@@ -68,6 +68,8 @@ important of which is the ``script`` command for specifying figure scripts.
 Let's talk about that next.
 
 
+.. _latex_script:
+
 The ``script`` command
 ----------------------
 
