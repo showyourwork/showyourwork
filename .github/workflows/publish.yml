@@ -1,0 +1,17 @@
+name: wheels
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version
+        required: true
+
+jobs:
+  build:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - run: :
