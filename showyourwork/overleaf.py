@@ -39,6 +39,16 @@ OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
 \end{document}"""
 
 
+def check_for_rate_limit(code, stdout, stderr):
+    if stdout:
+        logger.debug(stdout)
+    if code != 0:
+        if "Rate limit exceeded" in stderr:
+            raise exceptions.OverleafRateLimitExceeded()
+        else:
+            raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+
+
 def get_overleaf_credentials(
     overleaf_email="OVERLEAF_EMAIL",
     overleaf_password="OVERLEAF_PASSWORD",
@@ -90,7 +100,9 @@ def clone(project_id, path=None):
         if stdout:
             logger.debug(stdout)
         if code != 0:
-            if "Authentication failed" in stderr:
+            if "Rate limit exceeded" in stderr:
+                raise exceptions.OverleafRateLimitExceeded()
+            elif "Authentication failed" in stderr:
                 raise exceptions.OverleafAuthenticationError()
             else:
                 raise exceptions.CalledProcessError(stdout + "\n" + stderr)
@@ -144,6 +156,7 @@ def wipe_remote(project_id):
                     ["git", "push", url, "master"],
                     cwd=cwd,
                     secrets=[overleaf_email, overleaf_password],
+                    callback=check_for_rate_limit
                 )
 
         get_stdout(
@@ -255,6 +268,7 @@ def setup_remote(project_id, path=None, maxsz=500):
         ["git", "push", url, "master"],
         cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_email, overleaf_password],
+        callback=check_for_rate_limit
     )
 
 
@@ -354,6 +368,7 @@ def push_files(files, project_id, path=None):
         ["git", "push", url, "master"],
         cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_email, overleaf_password],
+        callback=check_for_rate_limit
     )
 
 
@@ -474,7 +489,9 @@ def pull_files(
 
     def callback(code, stdout, stderr):
         if code == 0:
-            logger.info("Overleaf changes committed to the repo. Don't forget to push!")
+            logger.info(
+                "Overleaf changes committed to the repo. Don't forget to push!"
+            )
         else:
             if (
                 "Your branch is up to date" in stdout + stderr

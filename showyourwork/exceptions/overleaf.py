@@ -16,6 +16,10 @@ class OverleafError(OverleafException):
     pass
 
 
+class OverleafRateLimitExceeded(OverleafException):
+    pass
+
+
 class MissingOverleafCredentials(OverleafException):
     def __init__(self, **kwargs):
         message = (

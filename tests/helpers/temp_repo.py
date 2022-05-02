@@ -87,7 +87,7 @@ class TemporaryShowyourworkRepository:
             version = str(Path(showyourwork.__file__).parents[1])
         else:
             version = get_repo_sha()
-        options = f"--yes --showyourwork-version={version} "
+        options = f"--quiet --showyourwork-version={version} "
         if not self.zenodo_cache:
             # Disable zenodo caching
             command = f"ZENODO_TOKEN='' {command}"

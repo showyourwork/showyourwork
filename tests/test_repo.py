@@ -1,7 +1,9 @@
 from helpers import TemporaryShowyourworkRepository, edit_yaml
 from showyourwork import overleaf, exceptions
+from showyourwork.logging import get_logger
 from showyourwork.subproc import get_stdout
 from tempfile import NamedTemporaryFile
+import time
 
 
 class TestDefault(TemporaryShowyourworkRepository):
@@ -55,9 +57,22 @@ class TestOverleaf(TemporaryShowyourworkRepository):
     local_build_only = True
     overleaf_id = "6262c032aae5421d6d945acf"
 
+    # Overeleaf rate limit error re-try settings
+    auth_retries = 1
+    auth_sleep = 60
+
     def startup(self):
         """Wipe the Overleaf remote to start fresh."""
-        overleaf.wipe_remote(self.overleaf_id)
+        for n in range(self.auth_retries):
+            try:
+                overleaf.wipe_remote(self.overleaf_id)
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            else:
+                break
 
     def customize(self):
         """Customize the build to test all Overleaf functionality."""
@@ -91,7 +106,17 @@ class TestOverleaf(TemporaryShowyourworkRepository):
                 ),
             )
             print(ms_new, file=f)
-        overleaf.push_files([ms], self.overleaf_id, path=self.cwd)
+        for n in range(self.auth_retries):
+            try:
+                overleaf.push_files([ms], self.overleaf_id, path=self.cwd)
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            else:
+                break
+
         get_stdout("git checkout -- src/tex/ms.tex", shell=True, cwd=self.cwd)
 
     def check_build(self):
@@ -118,9 +143,21 @@ class TestOverleaf(TemporaryShowyourworkRepository):
         assert figure.exists()
 
         # Check that the figure is present on the remote
-        overleaf.pull_files(
-            [figure], self.overleaf_id, path=self.cwd, error_if_missing=True
-        )
+        for n in range(self.auth_retries):
+            try:
+                overleaf.pull_files(
+                    [figure],
+                    self.overleaf_id,
+                    path=self.cwd,
+                    error_if_missing=True,
+                )
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            else:
+                break
 
         # Check that an exception is raised if we try to overwrite a file
         # with uncommitted changes
@@ -129,17 +166,23 @@ class TestOverleaf(TemporaryShowyourworkRepository):
             ms_orig = f.read()
         with open(ms, "w") as f:
             f.write(r"% dummy comment\n" + ms_orig)
-        try:
-            overleaf.pull_files(
-                [ms],
-                self.overleaf_id,
-                path=self.cwd,
-                error_if_local_changes=True,
-            )
-        except exceptions.OverleafError as e:
-            pass
-        else:
-            raise Exception("Failed to raise exception!")
+        for n in range(self.auth_retries):
+            try:
+                overleaf.pull_files(
+                    [ms],
+                    self.overleaf_id,
+                    path=self.cwd,
+                    error_if_local_changes=True,
+                )
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            except exceptions.OverleafError as e:
+                break
+            else:
+                raise Exception("Failed to raise exception!")
 
         # Commit the changes and check that the exception is still raised
         get_stdout(
@@ -147,17 +190,23 @@ class TestOverleaf(TemporaryShowyourworkRepository):
             cwd=self.cwd,
             shell=True,
         )
-        try:
-            overleaf.pull_files(
-                [ms],
-                self.overleaf_id,
-                path=self.cwd,
-                error_if_local_changes=True,
-            )
-        except exceptions.OverleafError as e:
-            pass
-        else:
-            raise Exception("Failed to raise exception!")
+        for n in range(self.auth_retries):
+            try:
+                overleaf.pull_files(
+                    [ms],
+                    self.overleaf_id,
+                    path=self.cwd,
+                    error_if_local_changes=True,
+                )
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            except exceptions.OverleafError as e:
+                break
+            else:
+                raise Exception("Failed to raise exception!")
 
         # Amend the commit message with the magical `[showyourwork]` label
         # and check that the merge works
@@ -166,12 +215,21 @@ class TestOverleaf(TemporaryShowyourworkRepository):
             cwd=self.cwd,
             shell=True,
         )
-        overleaf.pull_files(
-            [ms],
-            self.overleaf_id,
-            path=self.cwd,
-            error_if_local_changes=True,
-        )
+        for n in range(self.auth_retries):
+            try:
+                overleaf.pull_files(
+                    [ms],
+                    self.overleaf_id,
+                    path=self.cwd,
+                    error_if_local_changes=True,
+                )
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            else:
+                break
 
 
 class TestZenodoCache(TemporaryShowyourworkRepository):
