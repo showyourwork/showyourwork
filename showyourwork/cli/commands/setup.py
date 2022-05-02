@@ -3,6 +3,7 @@ from ...subproc import get_stdout
 from ...logging import get_logger
 from cookiecutter.main import cookiecutter
 from packaging import version
+from lastversion import latest
 import time
 from pathlib import Path
 import shutil
@@ -22,7 +23,9 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
     # Get current stable version
     if showyourwork_version is None:
         if version.parse(__version__).is_devrelease:
-            showyourwork_version = "latest"
+            showyourwork_version = str(
+                latest("https://pypi.org/project/showyourwork")
+            )
         else:
             showyourwork_version = version.parse(__version__).base_version
 
@@ -54,7 +57,11 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
     try:
         get_stdout("git init -q", shell=True, cwd=repo)
         get_stdout("git add .", shell=True, cwd=repo)
-        get_stdout("git commit -q -m '[showyourwork] first commit'", shell=True, cwd=repo)
+        get_stdout(
+            "git commit -q -m '[showyourwork] first commit'",
+            shell=True,
+            cwd=repo,
+        )
         get_stdout("git branch -M main", shell=True, cwd=repo)
         if ssh:
             get_stdout(

@@ -24,6 +24,7 @@ setup(
         "requests",
         "cookiecutter",
         "packaging",
+        "lastversion",
     ],
     extras_require={
         "tests": ["pytest", "pytest-asyncio-cooperative"],

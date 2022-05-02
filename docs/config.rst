@@ -313,12 +313,10 @@ should not generally be edited by the user. See :doc:`zenodo` for details.
 **Description:** The version of the |showyourwork| package required to build
 the article, populated automatically when ``showyouwork setup`` is run. Users
 may, however, change this to upgrade/downgrade to a different version of the
-package. Options are (from most recommended to least recommended): 
+package. Options are:
 
 - any pip-installable version number (e.g., ``1.0.1``)
 - a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `<github.com/showyourwork/showyourwork>`_ repo
-- the string ``latest`` (for the latest commit on GitHub)
-- the absolute path to a local installation of |showyourwork|.
 
 **Required:** yes
 

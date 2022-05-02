@@ -49,13 +49,6 @@ def run_in_env(command, **kwargs):
     if not syw_spec:
         # No specific version provided; default to any
         syw_spec = "showyourwork"
-    elif syw_spec == "latest":
-        # Install latest commit on github
-        sha = get_stdout(
-            f"git ls-remote https://github.com/showyourwork/showyourwork.git | grep refs/heads/main | cut -f 1",
-            shell=True,
-        ).replace("\n", "")
-        syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{sha}#egg=showyourwork"
     elif re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
         # This is an actual package version
         syw_spec = f"showyourwork=={syw_spec}"
