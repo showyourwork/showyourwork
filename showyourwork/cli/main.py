@@ -43,7 +43,7 @@ def ensure_top_level():
 
 @click.group(invoke_without_command=True)
 @click.option(
-    "--version", is_flag=True, help="Show the program version and exit."
+    "-v", "--version", is_flag=True, help="Show the program version and exit."
 )
 @click.pass_context
 def entry_point(context, version):
@@ -82,103 +82,106 @@ def validate_slug(context, param, slug):
 
     if "/" in slug and len(slug.split("/")) == 2:
 
-        # Introductory message
         user, repo = slug.split("/")
-        click.echo(
-            "Let's get you set up with a new repository. "
-            "I'm going to create a folder called\n\n"
-            + click.style(f"    {repo} ", fg="blue")
-            + "\n\nin the current working directory. "
-            "If you haven't done this yet, please visit\n\n"
-            + click.style("    https://github.com/new ", fg="blue")
-            + "\n\nat this time and create an empty repository called\n\n"
-            + click.style(f"    {slug}\n", fg="blue")
-        )
-        pause()
 
-        # Check Zenodo credentials
-        if os.getenv("ZENODO_TOKEN"):
-            click.echo(
-                "\nI found a "
-                + click.style("ZENODO_TOKEN", fg="blue")
-                + " environment variable, so I'm going to create a Zenodo\n"
-                + "deposit draft where intermediate results will be cached. "
-                + "In order for this to\n"
-                + "work on GitHub Actions, please go to\n\n"
-                + click.style(
-                    f"    https://github.com/{slug}/settings/secrets/actions/new\n\n",
-                    fg="blue",
-                )
-                + "at this time and create a "
-                + click.style("ZENODO_TOKEN", fg="blue")
-                + " secret with your Zenodo access token.\n"
-            )
-        else:
-            click.echo(
-                "\nI didn't find a "
-                + click.style("ZENODO_TOKEN", fg="blue")
-                + " environment variable, so I'm not going to set up\n"
-                + "a Zenodo deposit for caching intermediate results. If you "
-                + "would like to enable\nthis, please go to\n\n"
-                + click.style(
-                    f"    https://zenodo.org/account/settings/applications/tokens/new\n\n",
-                    fg="blue",
-                )
-                + "to create a new personal access token with "
-                + click.style("deposit:actions", fg="blue")
-                + " and "
-                + click.style("deposit:write\n", fg="blue")
-                + "scopes, store it in a local "
-                + click.style("ZENODO_TOKEN", fg="blue")
-                + " environment "
-                + "variable, and re-run this\nsetup script.\n"
-            )
-        pause()
+        if not context.params.get("quiet"):
 
-        # Check Overleaf credentials
-        if not context.params.get("overleaf"):
+            # Greeting
             click.echo(
-                "\nYou didn't provide an Overleaf project id "
-                + "(via the "
-                + click.style("--overleaf", fg="blue")
-                + " command-line\noption), "
-                + "so I'm not going to set up "
-                + "Overleaf integration for this repository.\n"
+                "Let's get you set up with a new repository. "
+                "I'm going to create a folder called\n\n"
+                + click.style(f"    {repo} ", fg="blue")
+                + "\n\nin the current working directory. "
+                "If you haven't done this yet, please visit\n\n"
+                + click.style("    https://github.com/new ", fg="blue")
+                + "\n\nat this time and create an empty repository called\n\n"
+                + click.style(f"    {slug}\n", fg="blue")
             )
-        else:
-            if os.getenv("OVERLEAF_EMAIL") and os.getenv("OVERLEAF_PASSWORD"):
+            pause()
+
+            # Check Zenodo credentials
+            if os.getenv("ZENODO_TOKEN"):
                 click.echo(
-                    "\nYou provided an Overleaf project id, and "
-                    "I found both "
-                    + click.style("OVERLEAF_EMAIL", fg="blue")
-                    + " and\n"
-                    + click.style("OVERLEAF_PASSWORD", fg="blue")
-                    + " environment variables, so I'm going to set up "
-                    + "Overleaf\nintegration for this repository. "
+                    "\nI found a "
+                    + click.style("ZENODO_TOKEN", fg="blue")
+                    + " environment variable, so I'm going to create a Zenodo\n"
+                    + "deposit draft where intermediate results will be cached. "
                     + "In order for this to\n"
                     + "work on GitHub Actions, please go to\n\n"
                     + click.style(
                         f"    https://github.com/{slug}/settings/secrets/actions/new\n\n",
                         fg="blue",
                     )
-                    + "at this time and create "
-                    + click.style("OVERLEAF_EMAIL", fg="blue")
-                    + " and "
-                    + click.style("OVERLEAF_PASSWORD", fg="blue")
-                    + " secrets with\nyour Overleaf credentials.\n"
+                    + "at this time and create a "
+                    + click.style("ZENODO_TOKEN", fg="blue")
+                    + " secret with your Zenodo access token.\n"
                 )
             else:
                 click.echo(
-                    "\nIt looks like you provided an Overleaf project id, but "
-                    "I didn't find an\n"
-                    + click.style("OVERLEAF_EMAIL", fg="blue")
-                    + " and/or an "
-                    + click.style("OVERLEAF_PASSWORD", fg="blue")
+                    "\nI didn't find a "
+                    + click.style("ZENODO_TOKEN", fg="blue")
+                    + " environment variable, so I'm not going to set up\n"
+                    + "a Zenodo deposit for caching intermediate results. If you "
+                    + "would like to enable\nthis, please go to\n\n"
+                    + click.style(
+                        f"    https://zenodo.org/account/settings/applications/tokens/new\n\n",
+                        fg="blue",
+                    )
+                    + "to create a new personal access token with "
+                    + click.style("deposit:actions", fg="blue")
+                    + " and "
+                    + click.style("deposit:write\n", fg="blue")
+                    + "scopes, store it in a local "
+                    + click.style("ZENODO_TOKEN", fg="blue")
                     + " environment "
-                    + "variable, so I'm not\ngoing to set up "
+                    + "variable, and re-run this\nsetup script.\n"
+                )
+            pause()
+
+            # Check Overleaf credentials
+            if not context.params.get("overleaf"):
+                click.echo(
+                    "\nYou didn't provide an Overleaf project id "
+                    + "(via the "
+                    + click.style("--overleaf", fg="blue")
+                    + " command-line\noption), "
+                    + "so I'm not going to set up "
                     + "Overleaf integration for this repository.\n"
                 )
-        pause()
+            else:
+                if os.getenv("OVERLEAF_EMAIL") and os.getenv("OVERLEAF_PASSWORD"):
+                    click.echo(
+                        "\nYou provided an Overleaf project id, and "
+                        "I found both "
+                        + click.style("OVERLEAF_EMAIL", fg="blue")
+                        + " and\n"
+                        + click.style("OVERLEAF_PASSWORD", fg="blue")
+                        + " environment variables, so I'm going to set up "
+                        + "Overleaf\nintegration for this repository. "
+                        + "In order for this to\n"
+                        + "work on GitHub Actions, please go to\n\n"
+                        + click.style(
+                            f"    https://github.com/{slug}/settings/secrets/actions/new\n\n",
+                            fg="blue",
+                        )
+                        + "at this time and create "
+                        + click.style("OVERLEAF_EMAIL", fg="blue")
+                        + " and "
+                        + click.style("OVERLEAF_PASSWORD", fg="blue")
+                        + " secrets with\nyour Overleaf credentials.\n"
+                    )
+                else:
+                    click.echo(
+                        "\nIt looks like you provided an Overleaf project id, but "
+                        "I didn't find an\n"
+                        + click.style("OVERLEAF_EMAIL", fg="blue")
+                        + " and/or an "
+                        + click.style("OVERLEAF_PASSWORD", fg="blue")
+                        + " environment "
+                        + "variable, so I'm not\ngoing to set up "
+                        + "Overleaf integration for this repository.\n"
+                    )
+            pause()
 
         return slug
 
@@ -190,12 +193,21 @@ def validate_slug(context, param, slug):
 @entry_point.command()
 @click.argument("slug", callback=validate_slug)
 @click.option(
+    "-y",
     "--yes",
     is_flag=True,
     default=False,
     help="Accept all `Press any key to continue` prompts automatically.",
 )
 @click.option(
+    "-q",
+    "--quiet",
+    is_flag=True,
+    default=False,
+    help="Don't prompt the user, and don't display informational output.",
+)
+@click.option(
+    "-o",
     "--overleaf",
     help="Overleaf project id to sync with (optional). Requires Overleaf "
     "credentials, provided as the environment variables and GitHub repository "
@@ -203,16 +215,18 @@ def validate_slug(context, param, slug):
     default=None,
 )
 @click.option(
+    "-s",
     "--ssh",
     is_flag=True,
     help="Use ssh to authenticate with GitHub? Default is to use https.",
 )
 @click.option(
+    "-v",
     "--showyourwork-version",
     help="Version of showyourwork to use. Default is the current version.",
     default=None,
 )
-def setup(slug, yes, overleaf, ssh, showyourwork_version):
+def setup(slug, yes, quiet, overleaf, ssh, showyourwork_version):
     """
     Set up a new article repository in the current working directory.
 
@@ -239,8 +253,8 @@ def tarball():
 
 
 @entry_point.command(hidden=True)
-@click.option("--restore", is_flag=True)
-@click.option("--update", is_flag=True)
+@click.option("-r", "--restore", is_flag=True)
+@click.option("-u", "--update", is_flag=True)
 def cache(restore, update):
     """Update or restore the cache on GitHub Actions."""
     ensure_top_level()
