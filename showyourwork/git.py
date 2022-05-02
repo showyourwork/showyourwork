@@ -43,6 +43,14 @@ def get_repo_branch():
     return get_stdout(["git", "branch", "--show-current"], callback=callback)
 
 
+def get_repo_slug():
+    """
+    Return the current repository slug ("user/repo").
+
+    """
+    return "/".join(get_repo_url().split("/")[-2:])
+
+
 def get_repo_sha():
     """
     Return the SHA for the current git commit.

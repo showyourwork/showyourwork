@@ -391,6 +391,10 @@ def download_file_from_record(record, file, rule_name, tarball=False):
 
 
 def delete_deposit(concept_id, zenodo_url="zenodo.org"):
+    """
+    Deletes the draft associated with `concept_id` on Zenodo.
+
+    """
     # Logger
     logger = get_logger()
 
@@ -408,13 +412,57 @@ def delete_deposit(concept_id, zenodo_url="zenodo.org"):
         },
     )
     try:
-        data = r.json()[0]
+        for data in r.json():
+            if not data["submitted"]:
+                break
+        else:
+            raise exceptions.ZenodoRecordNotFound(concept_id)
     except:
         raise exceptions.ZenodoRecordNotFound(concept_id)
     version_id = data["id"]
     parse_request(
         requests.delete(
             f"https://{zenodo_url}/api/deposit/depositions/{version_id}",
+            params={
+                "access_token": access_token,
+            },
+        )
+    )
+
+
+def publish_deposit(concept_id, zenodo_url="zenodo.org"):
+    """
+    Publishes the draft associated with `concept_id` on Zenodo.
+
+    """
+    # Logger
+    logger = get_logger()
+
+    # Get the Zenodo token
+    access_token = get_access_token(error_if_missing=False)
+
+    # Grab the version id
+    logger.debug(f"Publishing Zenodo deposit {concept_id}...")
+    r = requests.get(
+        f"https://{zenodo_url}/api/deposit/depositions",
+        params={
+            "q": f"conceptrecid:{concept_id}",
+            "all_versions": 1,
+            "access_token": access_token,
+        },
+    )
+    try:
+        for data in r.json():
+            if not data["submitted"]:
+                break
+        else:
+            raise exceptions.ZenodoRecordNotFound(concept_id)
+    except:
+        raise exceptions.ZenodoRecordNotFound(concept_id)
+    version_id = data["id"]
+    parse_request(
+        requests.post(
+            f"https://{zenodo_url}/api/deposit/depositions/{version_id}/actions/publish",
             params={
                 "access_token": access_token,
             },

@@ -10,7 +10,7 @@ class ZenodoError(ZenodoException):
         self, status="", message="An error occurred while accessing Zenodo."
     ):
         super().__init__(
-            f"Zenodo error{' ' * bool(len(status))}{status}: {message}"
+            f"Zenodo error{' ' * bool(len(str(status)))}{status}: {message}"
         )
 
 

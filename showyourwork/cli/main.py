@@ -149,7 +149,9 @@ def validate_slug(context, param, slug):
                     + "Overleaf integration for this repository.\n"
                 )
             else:
-                if os.getenv("OVERLEAF_EMAIL") and os.getenv("OVERLEAF_PASSWORD"):
+                if os.getenv("OVERLEAF_EMAIL") and os.getenv(
+                    "OVERLEAF_PASSWORD"
+                ):
                     click.echo(
                         "\nYou provided an Overleaf project id, and "
                         "I found both "
@@ -250,6 +252,26 @@ def tarball():
     ensure_top_level()
     commands.preprocess()
     commands.tarball()
+
+
+@entry_point.command()
+@click.option(
+    "-p", "--publish", is_flag=False, flag_value="auto", default=None
+)
+@click.option("-c", "--create", is_flag=False, flag_value="auto", default=None)
+@click.option("-d", "--delete", is_flag=False, flag_value="auto", default=None)
+def zenodo(publish, create, delete):
+    """
+    Create, publish, or delete a Zenodo deposit.
+
+    """
+    ensure_top_level()
+    option_set = [int(x != None) for x in [publish, create, delete]]
+    if sum(option_set) != 1:
+        raise exceptions.ShowyourworkException(
+            "Must provide either `--create`, `--delete`, or `--publish`."
+        )
+    commands.zenodo(publish, create, delete)
 
 
 @entry_point.command(hidden=True)

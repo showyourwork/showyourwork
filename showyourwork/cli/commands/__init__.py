@@ -4,3 +4,4 @@ from .clean import clean
 from .tarball import tarball
 from .preprocess import preprocess
 from .cache import cache_restore, cache_update
+from .zenodo import zenodo
