@@ -108,9 +108,12 @@ def run_in_env(command, **kwargs):
     # Command to activate our environment
     conda_activate = f"{conda_setup} && conda activate {paths.user().env}"
 
+    # Command to get the path to the showyourwork install
+    get_syw_path = """SYW_PATH=$(python -c "import showyourwork; from pathlib import Path; print(Path(showyourwork.__file__).parent)")"""
+
     # Run
     return subprocess.run(
-        f"{conda_activate} && {command}",
+        f"{conda_activate} && {get_syw_path} && {command}",
         shell=True,
         **kwargs,
     )

@@ -1,4 +1,4 @@
-name: wheels
+name: publish
 on:
   release:
     types:
