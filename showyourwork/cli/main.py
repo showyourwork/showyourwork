@@ -5,33 +5,11 @@ import shutil
 import click
 
 
-BANNER = r"""
-         _                                                             _    _ 
-     ___| |__   _____      ___   _  ___  _   _ _ ____      _____  _ __| | _| |
-    / __| '_ \ / _ \ \ /\ / / | | |/ _ \| | | | '__\ \ /\ / / _ \| '__| |/ / |
-    \__ \ | | | (_) \ V  V /| |_| | (_) | |_| | |   \ V  V / (_) | |  |   <|_|
-    |___/_| |_|\___/ \_/\_/  \__, |\___/ \__,_|_|    \_/\_/ \___/|_|  |_|\_(_)
-                             |___/                                            
-"""
-
-
-def show_banner():
-    try:
-        terminal_size = shutil.get_terminal_size().columns
-    except:
-        terminal_size = 0
-    if terminal_size > 77:
-        click.echo(
-            click.style(
-                BANNER,
-                fg="red",
-                bold=True,
-            )
-        )
-
-
 def ensure_top_level():
-    # Ensure we're running the command in the top level of a git repo
+    """
+    Ensures we're running commands in the top level of a git repo.
+
+    """
     root = os.path.realpath(git.get_repo_root())
     here = os.path.realpath(".")
     if 0:  # not root == here:
@@ -43,7 +21,10 @@ def ensure_top_level():
 
 @click.group(invoke_without_command=True)
 @click.option(
-    "-v", "--version", is_flag=True, help="Show the program version and exit."
+    "-v",
+    "--version",
+    is_flag=True,
+    help="Show the program version and exit.",
 )
 @click.pass_context
 def entry_point(context, version):
@@ -215,6 +196,7 @@ def validate_slug(context, param, slug):
     "credentials, provided as the environment variables and GitHub repository "
     "secrets OVERLEAF_EMAIL and OVERLEAF_PASSWORD.",
     default=None,
+    type=type("PROJECT_ID", (str,), {}),
 )
 @click.option(
     "-s",
@@ -227,6 +209,7 @@ def validate_slug(context, param, slug):
     "--showyourwork-version",
     help="Version of showyourwork to use. Default is the current version.",
     default=None,
+    type=type("VERSION", (str,), {}),
 )
 def setup(slug, yes, quiet, overleaf, ssh, showyourwork_version):
     """
@@ -256,13 +239,38 @@ def tarball():
 
 @entry_point.command()
 @click.option(
-    "-p", "--publish", is_flag=False, flag_value="auto", default=None
+    "-p",
+    "--publish",
+    is_flag=False,
+    flag_value="auto",
+    default=None,
+    type=type("CONCEPT_ID", (str,), {}),
+    help="Publish the latest draft of a Zenodo deposit with given CONCEPT_ID. "
+    "Leave blank to infer from the config file.",
 )
-@click.option("-c", "--create", is_flag=False, flag_value="auto", default=None)
-@click.option("-d", "--delete", is_flag=False, flag_value="auto", default=None)
+@click.option(
+    "-c",
+    "--create",
+    is_flag=False,
+    flag_value="auto",
+    default=None,
+    type=type("BRANCH", (str,), {}),
+    help="Create a Zenodo deposit draft to cache results from the given BRANCH. "
+    "Leave blank to use the current branch.",
+)
+@click.option(
+    "-d",
+    "--delete",
+    is_flag=False,
+    flag_value="auto",
+    default=None,
+    type=type("CONCEPT_ID", (str,), {}),
+    help="Delete the latest draft of a Zenodo deposit with given CONCEPT_ID. "
+    "Leave blank to infer from the config file.",
+)
 def zenodo(publish, create, delete):
     """
-    Create, publish, or delete a Zenodo deposit.
+    Create, publish, or delete a Zenodo cache deposit.
 
     """
     ensure_top_level()

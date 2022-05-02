@@ -18,6 +18,10 @@
 
     <span style="font-family:var(--pst-font-family-monospace);">showyourwork tarball --help</span>
 
+.. |showyourwork_zenodo_help| raw:: html
+
+    <span style="font-family:var(--pst-font-family-monospace);">showyourwork zenodo --help</span>
+
 
 Command line interface
 ======================
@@ -400,3 +404,16 @@ also gathers all of the relevant files needed to build it using a standard
 TeX engine into a tarball called ``arxiv.tar.gz``. It's named that because
 you should be able to directly upload this tarball when submitting a paper
 to the `arXiv <https://arxiv.org/>`_ article service.
+
+
+.. _syw_zenodo:
+
+``showyourwork zenodo``
+-----------------------
+
+.. admonition:: |showyourwork_zenodo_help|
+
+    .. program-output:: showyourwork zenodo --help
+
+Utilities for creating, deleting, and publishing the Zenodo deposit drafts used
+to cache intermediate results from your workflow; see :doc:`zenodo`.
