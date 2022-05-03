@@ -2,6 +2,7 @@ from showyourwork import exceptions
 from showyourwork.logging import get_logger
 import sys
 import tarfile
+from zipfile import ZipFile
 from pathlib import Path
 import tempfile
 import shutil
@@ -40,9 +41,29 @@ if __name__ == "__main__":
                 # Move it to target destination
                 shutil.move(Path(TEMP) / compressed_file, extracted_file)
 
+    # Zip files
+    elif zipfile.endswith(".zip"):
+        
+        # Open the tarball
+        with ZipFile.open(zipfile) as f:
+
+            # Extract into a temp folder
+            with tempfile.TemporaryDirectory() as TEMP:
+
+                try:
+
+                    f.extract(compressed_file, TEMP.name)
+
+                except Exception as e:
+
+                    raise exceptions.TarballExtractionError(str(e))
+
+                # Move it to target destination
+                shutil.move(Path(TEMP) / compressed_file, extracted_file)
+
     else:
 
         # TODO: Support zip files
         raise exceptions.NotImplementedError(
-            "Archives ending in .zip are not currently supported. Functionality coming soon!"
+            "Unsupported archive file type."
         )

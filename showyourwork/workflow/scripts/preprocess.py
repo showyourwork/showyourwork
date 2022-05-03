@@ -372,22 +372,22 @@ def get_json_tree():
         # If any of the dependencies exists in a Zenodo deposit, infer
         # its URL here so we can add margin links to the PDF
         datasets = []
-        for host in ["zenodo", "zenodo_sandbox"]:
-            for deposit_id in config[host]:
-                url = f"https://{zenodo.zenodo_url[host]}/record/{deposit_id}"
-                for dep in dependencies:
-                    if dep in config[host][deposit_id]["contents"].values():
-                        datasets.append(url)
-                    else:
-                        for zip_file in config[host][deposit_id]["zip_files"]:
-                            if (
-                                dep
-                                in config[host][deposit_id]["zip_files"][
-                                    zip_file
-                                ].values()
-                            ):
-                                datasets.append(url)
-                                break
+        for doi in config["datasets"]:
+            deposit = Zenodo(doi)
+            url = f"https://{deposit.url}/record/{deposit.deposit_id}"
+            for dep in dependencies:
+                if dep in config["datasets"][doi]["contents"].values():
+                    datasets.append(url)
+                else:
+                    for zip_file in config["datasets"][doi]["zip_files"]:
+                        if (
+                            dep
+                            in config["datasets"][doi]["zip_files"][
+                                zip_file
+                            ].values()
+                        ):
+                            datasets.append(url)
+                            break
         datasets = list(set(datasets))
 
         # Format the command by replacing placeholders

@@ -28,7 +28,7 @@ class TestZenodo(TemporaryShowyourworkRepository):
                 ]
             }
             config["zenodo"] = {
-                "6468327": {
+                "10.5281/zenodo.6468327": {
                     "destination": "src/data/TOI640",
                     "contents": {
                         "README.md": None,

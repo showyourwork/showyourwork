@@ -19,8 +19,7 @@ except ModuleNotFoundError:
 
 
 # Supported tarball extensions
-# TODO: Support zip files
-zip_exts = ["tar", "tar.gz"]
+zip_exts = ["tar", "tar.gz", "zip"]
 
 
 def require_access_token(method):
@@ -36,14 +35,14 @@ def require_access_token(method):
 services = {
     "zenodo": {
         "url": "zenodo.org",
-        "doi_prefix": "10.5281",
+        "doi_prefix": "10.5281/zenodo.",
         "token_name": "ZENODO_TOKEN",
         "path": lambda: paths.user().zenodo,
         "name": "Zenodo",
     },
     "sandbox": {
         "url": "sandbox.zenodo.org",
-        "doi_prefix": "10.5072",
+        "doi_prefix": "10.5072/zenodo.",
         "token_name": "SANDBOX_TOKEN",
         "path": lambda: paths.user().sandbox,
         "name": "Zenodo Sandbox",
@@ -65,16 +64,17 @@ class Zenodo:
             self.path = service["path"]
             self.service = service["name"]
             self.doi = self._create(**kwargs)
-            _, self.deposit_id = self.doi.split("/")
+            self.deposit_id = self.doi.split(self.doi_prefix)[1]
 
         else:
 
             # Parse the DOI
             self.doi = doi_or_service
             try:
-                self.doi_prefix, self.deposit_id = self.doi.split("/")
                 for service in services.values():
-                    if self.doi_prefix == service["doi_prefix"]:
+                    if self.doi.startswith(service["doi_prefix"]):
+                        self.doi_prefix = service["doi_prefix"]
+                        self.deposit_id = self.doi.split(self.doi_prefix)[1]
                         self.url = service["url"]
                         self.token_name = service["token_name"]
                         self.access_token = self._get_access_token()
@@ -195,7 +195,7 @@ class Zenodo:
                 headers={"Content-Type": "application/json"},
             )
         )
-        doi = f"{self.doi_prefix}/{data['conceptrecid']}"
+        doi = f"{self.doi_prefix}{data['conceptrecid']}"
         logger.info(f"Created draft with concept DOI {doi} on {self.service}.")
         return doi
 
