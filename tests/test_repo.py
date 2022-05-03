@@ -27,7 +27,7 @@ class TestZenodo(TemporaryShowyourworkRepository):
                     "src/data/TOI640/S07.json",
                 ]
             }
-            config["zenodo"] = {
+            config["datasets"] = {
                 "10.5281/zenodo.6468327": {
                     "destination": "src/data/TOI640",
                     "contents": {

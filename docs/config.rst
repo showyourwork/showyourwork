@@ -266,7 +266,7 @@ containing internal settings.
   showyourwork:
     version: 1.0.1
     cache:
-        zenodo: 6471264
+        main: 10.5281/zenodo.6468327
 
 
 .. _config.showyourwork.cache:
@@ -288,9 +288,10 @@ containing internal settings.
 
 **Type:** ``str`` or ``int``
 
-**Description:** The concept id of the Zenodo deposit used to cache intermediate
-steps in the workflow for a particular branch. This value is populated by 
-``showyourwork setup`` and/or ``showyourwork zenodo --create`` and
+**Description:** The concept DOI of the Zenodo or Zenodo Sandbox deposit 
+used to cache intermediate steps in the workflow for a particular branch. 
+This value is populated by ``showyourwork setup`` and/or 
+``showyourwork cache create`` and
 should not generally be edited by the user. See :doc:`zenodo` for details.
 
 **Required:** no
@@ -303,7 +304,7 @@ Zenodo caching for the ``main`` branch:
 
   showyourwork:
     cache:
-        main: 6471264
+        main: 10.5281/zenodo.6468327
 
 
 .. _config.showyourwork.version:
@@ -391,16 +392,17 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
   verbose: true
 
 
-.. _config.zenodo:
+.. _config.datasets:
 
-``zenodo``
-^^^^^^^^^^
+``datasets``
+^^^^^^^^^^^^
 
 **Type:** ``mapping``
 
-**Description:** A mapping declaring static datasets to be download from Zenodo.
+**Description:** A mapping declaring static datasets to be download from Zenodo
+or Zenodo Sandbox.
 Nested under this keyword should be a sequence of mappings labeled by the
-deposit version ids of Zenodo datasets.
+deposit version ids of Zenodo or Zenodo Sandbox datasets.
 See below for details.
 
 **Required:** no
@@ -416,31 +418,26 @@ files, so |showyourwork| knows which scripts require these files.
 
 .. code-block:: yaml
 
-  zenodo:
-    6468327:
+  datasets:
+    10.5281/zenodo.6468327:
       contents:
         TOI640b.json: src/data/TOI640b.json
-    5794178:
+    10.5281/zenodo.5794178:
       contents:
         KeplerRot-LAMOST.csv: src/data/KeplerRot-LAMOST.csv
 
-See below for the syntax of the ``contents`` section of the ``zenodo`` mapping.
+See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
 
 
-.. _config.zenodo.version_id:
+.. _config.datasets.doi:
 
-``zenodo.<version_id>``
-^^^^^^^^^^^^^^^^^^^^^^^
+``datasets.<doi>``
+^^^^^^^^^^^^^^^^^^
 
 **Type:** ``mapping``
 
 **Description:** 
-The Zenodo version id for the deposit (an integer).
-This is equal to the last part of 
-the deposit's static DOI. For example,
-a deposit with DOI ``10.5281/zenodo.5749987`` has ``id`` equal to ``5749987``.
-This is also the last part of the url for the corresponding record
-(`<zenodo.org/record/5749987>`_). 
+The Zenodo or Zenodo Sandbox version DOI for the deposit.
 
 .. note::
     
@@ -461,37 +458,37 @@ This is also the last part of the url for the corresponding record
 
         <br/>
 
-    You can see that the ``id`` ``6468327`` corresponds to a specific version (``1``)
-    of the deposit, while the ``id`` ``6468326`` corresponds to *all* versions of
+    You can see that the DOI ``10.5281/zenodo.6468327`` corresponds to a specific version (``1``)
+    of the deposit, while the DOI ``10.5281/zenodo.6468326`` corresponds to *all* versions of
     the deposit (it's listed under "Cite all versions?"). 
-    The former is a "version" id, while the latter is a "concept" id.
+    The former is a "version" DOI, while the latter is a "concept" DOI.
     You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
 
 **Required:** no
 
 **Example:**
 
-If the version id for a deposit containing the file ``TOI640b.json`` is ``6468327``,
+If the version DOI for a deposit containing the file ``TOI640b.json`` is ``10.5281/zenodo.6468327``,
 we would specify the following in the config file:
 
 .. code-block:: yaml
 
-  zenodo:
-    6468327:
+  datasets:
+    10.5281/zenodo.6468327:
       contents:
         TOI640b.json: src/data/TOI640b.json
 
-See below for the syntax of the ``contents`` section of the ``zenodo`` mapping.
+See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
 
 
-.. _config.zenodo.version_id.contents:
+.. _config.datasets.doi.contents:
 
-``zenodo.<version_id>.contents``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``datasets.<doi>.contents``
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``mapping``
 
-**Description:** Specifies a mapping between files in a Zenodo deposit and local
+**Description:** Specifies a mapping between files in a Zenodo or Zenodo Sandbox deposit and local
 files. The ``contents`` field must contain key-value pairs of the form
 
 .. code-block:: yaml
@@ -525,8 +522,8 @@ extracted, and mapped to local files:
 
 .. code-block:: yaml
 
-    zenodo:
-      6468327:
+    datasets:
+      10.5281/zenodo.6468327:
         destination: src/data/TOI640                 # default folder to extract files to
         contents:
 
@@ -553,10 +550,10 @@ Recall that users must separately provide dependency information for each
 of these files via the :ref:`config.dependencies` key.
 
 
-.. _config.zenodo.version_id.destination:
+.. _config.datasets.doi.destination:
 
-``zenodo.<version_id>.destination``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``datasets.<doi>.destination``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``str``
 
@@ -569,30 +566,11 @@ deposit to.
 
 **Example:**
 
-The following will extract all files in the Zenodo deposit with id ``6468327``
+The following will extract all files in the Zenodo deposit with doi ``10.5281/zenodo.6468327``
 to ``src/data`` (subfolders will be preserved).
 
 .. code-block:: yaml
 
-    zenodo:
-      6468327:
+    datasets:
+      10.5281/zenodo.6468327:
         destination: src/data
-        
-
-.. _config.zenodo_sandbox:
-
-``zenodo_sandbox``
-^^^^^^^^^^^^^^^^^^
-
-**Type:** ``mapping``
-
-**Description:** A list of datasets to be download from
-Zenodo Sandbox. This mapping behaves in the same way and accepts all the same
-arguments as the :ref:`zenodo <config.zenodo>` key above, but it interfaces with
-`<sandbox.zenodo.org>`_ (instead of `<zenodo.org>`_). Zenodo Sandbox works in
-the same way as Zenodo, but is meant for testing purposes only: deposits hosted
-in the Sandbox may be deleted at any time. Hosting datasets here is useful
-during development of your project; just make sure to switch over to
-``zenodo`` when you're ready to publish your paper!
-
-**Required:** no
