@@ -39,7 +39,7 @@ The **showyourwork-action** accepts any of the following inputs, all of which ar
 Environment variables
 ---------------------
 
-There are a few environment variables that may be needed on the ``showyourwork`` side. These include :code:`$ZENODO_TOKEN` (a Zenodo API token that can be used to authenticate when publishing or downloading Zenodo deposits) and :code:`$OVERLEAF_EMAIL` and :code:`$OVERLEAF_PASSWORD` (credentials for accessing and modifying an Overleaf project repository).
+There are a few environment variables that may be needed on the ``showyourwork`` side. These include :code:`$ZENODO_TOKEN` and :code:`$SANDBOX_TOKEN` (API tokens that can be used to authenticate when publishing or downloading Zenodo/Zenodo Sandbox deposits) and :code:`$OVERLEAF_EMAIL` and :code:`$OVERLEAF_PASSWORD` (credentials for accessing and modifying an Overleaf project repository).
 These should be provided through `Action secrets <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_ using the :code:`env:` directive (see the example below).
 
 Concurrency
@@ -78,5 +78,6 @@ Below is a complete example of a ``.github/workflows/build.yml`` file.
           uses: showyourwork/showyourwork-action@v1
           env:
             ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+            SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
             OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
             OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}

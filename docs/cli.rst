@@ -18,15 +18,9 @@
 
     <span style="font-family:var(--pst-font-family-monospace);">showyourwork tarball --help</span>
 
-.. |showyourwork_zenodo_help| raw:: html
+.. |showyourwork_cache_help| raw:: html
 
-    <span style="font-family:var(--pst-font-family-monospace);">showyourwork zenodo --help</span>
-
-
-.. warning::
-
-    This page is out of date. Please check back later for an up-to-date version!
-
+    <span style="font-family:var(--pst-font-family-monospace);">showyourwork cache --help</span>
  
 
 Command line interface
@@ -112,34 +106,12 @@ or not the ``$ZENODO_TOKEN`` environment variable is set.
 Step 2A
 ^^^^^^^
 
-If the ``$ZENODO_TOKEN`` environment variable is not set,
-you should see the following message:
+If you didn't request Zenodo caching functionality (see below), you'll see the
+following the message:
 
-.. raw:: html
+.. warning::
 
-    <pre>
-    I didn't find a <span class="text-highlight">ZENODO_TOKEN</span> environment variable, so I'm not going to set up
-    a Zenodo deposit for caching intermediate results. If you would like to enable
-    this, please go to
-
-        <a href="https://zenodo.org/account/settings/applications/tokens/new"><span class="text-highlight">https://zenodo.org/account/settings/applications/tokens/new</span></a>
-
-    to create a new personal access token with deposit:actions and deposit:write
-    scopes, store it in a local <span class="text-highlight">ZENODO_TOKEN</span> environment variable, and re-run this
-    setup script.
-    </pre>
-
-    
-The |showyourwork| workflow automatically caches the results of intermediate
-steps in your pipeline on Zenodo, but only if it finds a ``$ZENODO_TOKEN`` 
-environment
-variable containing a valid Zenodo API token. If you would like to enable this
-caching, exit out of the command by pressing ``Ctrl+C``, create a personal
-access token on Zenodo with ``deposit:actions:`` and ``deposit:write`` scopes
-at
-`this page <https://zenodo.org/account/settings/applications/tokens/new>`_,
-and save the token in an environment variable called ``$ZENODO_TOKEN``. Then 
-re-run the ``setup`` command and check out :ref:`syw_setup_step2b` below.
+    Docs coming soon!
 
 
 .. _syw_setup_step2b:
@@ -147,26 +119,12 @@ re-run the ``setup`` command and check out :ref:`syw_setup_step2b` below.
 Step 2B
 ^^^^^^^
 
-If you set up a ``$ZENODO_TOKEN`` environment variable (see :ref:`syw_setup_step2a`), you should
-instead see the following message:
+If instead you passed one of the ``--cache-on-sandbox`` or ``--cache-on-zenodo`` flags,
+you'll see the following message:
 
-.. raw:: html
+.. warning::
 
-    <pre>
-    I found a <span class="text-highlight">ZENODO_TOKEN</span> environment variable, so I'm going to create a Zenodo
-    deposit draft where intermediate results will be cached. In order for this to
-    work on GitHub Actions, please go to
-
-        <span class="text-highlight">https://github.com/rodluger/article/settings/secrets/actions/new</span>
-
-    at this time and create a <span class="text-highlight">ZENODO_TOKEN</span> secret with your Zenodo access token.
-    </pre>
-
-
-As instructed in the message, go to your GitHub repository and create a "secret",
-a secure variable that can be accessed by the GitHub Action that builds your
-article on the cloud. Name this secret ``ZENODO_TOKEN`` and provide your
-Zenodo API token (see above for details).
+    Docs coming soon!
 
 .. warning::
 
@@ -178,8 +136,7 @@ in place to prevent them from getting exposed to the outside world) at the
 `GitHub documentation <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_.
 
 Press any key to bring up the next prompt. What you see next depends on whether
-or not you specified the ``--overleaf`` option, and whether or not the environment
-variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` are set.
+or not you specified the ``--overleaf`` option.
 
 
 .. _syw_setup_step3a:
@@ -215,48 +172,18 @@ to do if you have an existing Overleaf project you'd like to integrate with
 Step 3B
 ^^^^^^^
 
-If you specified the ``--overleaf`` option (see :ref:`syw_setup_step3a`), but you
-haven't configured your Overleaf credentials, you'll get the following message:
+If you specified the ``--overleaf`` option (see :ref:`syw_setup_step3a`),
+you'll get the following message:
 
-.. raw:: html
+.. warning::
 
-    <pre>
-    It looks like you provided an Overleaf project id, but I didn't find an
-    <span class="text-highlight">OVERLEAF_EMAIL</span> and/or an <span class="text-highlight">OVERLEAF_PASSWORD</span> environment variable, so I'm not
-    going to set up Overleaf integration for this repository.
-    </pre>
+    Docs coming soon!
 
 To allow |showyourwork| to push to/pull from your Overleaf project, create
 the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` and 
 populate them with your Overleaf email address and password, respectively;
 then re-run the setup command.
 Again, take care to never actually commit this information to your repository!
-
-
-Step 3C
-^^^^^^^
-
-Finally, if you specified the ``--overleaf`` option *and* provided credentials
-via the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` (see above), 
-you'll get the following message:
-
-.. raw:: html
-
-    <pre>
-    You provided an Overleaf project id, and I found both <span class="text-highlight">OVERLEAF_EMAIL</span> and
-    <span class="text-highlight">OVERLEAF_PASSWORD</span> environment variables, so I'm going to set up Overleaf
-    integration for this repository. In order for this to
-    work on GitHub Actions, please go to
-
-        <span class="text-highlight">https://github.com/rodluger/article/settings/secrets/actions/new</span>
-
-    at this time and create <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with
-    your Overleaf credentials.
-    </pre>
-
-In order for the integration to work on GitHub Actions, you'll have to set the
-repository secrets ``OVERLEAF_EMAIL`` and ``OVERLEAF_PASSWORD``, just as we
-did for the ``ZENODO_TOKEN`` above.
 
 
 Step 4
@@ -414,14 +341,14 @@ you should be able to directly upload this tarball when submitting a paper
 to the `arXiv <https://arxiv.org/>`_ article service.
 
 
-.. _syw_zenodo:
+.. _syw_cache:
 
-``showyourwork zenodo``
------------------------
+``showyourwork cache``
+----------------------
 
-.. admonition:: |showyourwork_zenodo_help|
+.. admonition:: |showyourwork_cache_help|
 
-    .. program-output:: showyourwork zenodo --help
+    .. program-output:: showyourwork cache --help
 
 Utilities for creating, deleting, and publishing the Zenodo deposit drafts used
 to cache intermediate results from your workflow; see :doc:`zenodo`.

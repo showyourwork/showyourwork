@@ -24,7 +24,7 @@ Zenodo, |showyourwork| does all the communicating back-and-forth for you. All
 you need to do is specify the ID of the (public) archive and some information about the
 files your workflow needs in the ``showyourwork.yml`` config file.
 For detailed information about how to work with static Zenodo datasets, please
-check out :ref:`config.zenodo`.
+check out :ref:`config.datasets`.
 
 
 Dynamic datasets
@@ -79,8 +79,8 @@ Actions, you'll also have to provide this value as a secret (name it
 If you've done all that, the next time you create a new article repository
 using :ref:`syw_setup`, |showyourwork| will automatically create a Zenodo
 draft deposit which it will use to cache your intermediate results. Note that
-you can also manually create a draft deposit by running ``showyourwork zenodo --create``
-(see :ref:`syw_zenodo` for details).
+you can also manually create a draft deposit by running ``showyourwork cache create``
+(see :ref:`syw_cache` for details).
 
 
 Intermediate results

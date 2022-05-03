@@ -106,7 +106,7 @@ See below for the syntax of the ``contents`` section of the ``datasets`` mapping
 .. _config.datasets.doi.contents:
 
 ``datasets.<doi>.contents``
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``mapping``
 
