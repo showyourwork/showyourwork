@@ -42,17 +42,17 @@ if __name__ == "__main__":
                 shutil.move(Path(TEMP) / compressed_file, extracted_file)
 
     # Zip files
-    elif zipfile.endswith(".zip"):
-        
+    elif zipfile.name.endswith(".zip"):
+
         # Open the tarball
-        with ZipFile.open(zipfile) as f:
+        with ZipFile(zipfile, "r") as f:
 
             # Extract into a temp folder
             with tempfile.TemporaryDirectory() as TEMP:
 
                 try:
 
-                    f.extract(compressed_file, TEMP.name)
+                    f.extract(compressed_file, TEMP)
 
                 except Exception as e:
 
@@ -63,7 +63,4 @@ if __name__ == "__main__":
 
     else:
 
-        # TODO: Support zip files
-        raise exceptions.NotImplementedError(
-            "Unsupported archive file type."
-        )
+        raise exceptions.NotImplementedError("Unsupported archive file type.")

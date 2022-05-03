@@ -28,7 +28,7 @@ class TestZenodo(TemporaryShowyourworkRepository):
                 ]
             }
             config["datasets"] = {
-                "10.5281/zenodo.6468327": {
+                "10.5281/zenodo.6515864": {
                     "destination": "src/data/TOI640",
                     "contents": {
                         "README.md": None,
@@ -38,7 +38,7 @@ class TestZenodo(TemporaryShowyourworkRepository):
                             "S06": {"image.json": "src/data/TOI640/S06.json"},
                             "S07": {"image.json": "src/data/TOI640/S07.json"},
                         },
-                        "lightcurves.tar.gz": {
+                        "lightcurves.zip": {
                             "lightcurves": {
                                 "README.md": None,
                                 "S06": {"lc.txt": "src/data/TOI640/S06.txt"},

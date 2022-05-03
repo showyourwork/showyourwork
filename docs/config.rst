@@ -14,6 +14,190 @@ customize several aspects of the workflow. Below is a list of all
 available options.
 
 
+.. _config.datasets:
+
+``datasets``
+^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** A mapping declaring static datasets to be downloaded from Zenodo
+or Zenodo Sandbox.
+Nested under this keyword should be a sequence of mappings labeled by the
+deposit version DOIs of Zenodo or Zenodo Sandbox datasets.
+See below for details.
+
+**Required:** no
+
+**Example:**
+
+The following block shows how to tell |showyourwork| about two files,
+``TOI640b.json`` and ``KeplerRot-LAMOST.csv``, each of which is hosted
+on a Zenodo deposit with a different version DOI. Note that the user should
+separately provide :ref:`config.dependencies` information for each of these
+files, so |showyourwork| knows which scripts require these files.
+
+
+.. code-block:: yaml
+
+  datasets:
+    10.5281/zenodo.6468327:
+      contents:
+        TOI640b.json: src/data/TOI640b.json
+    10.5281/zenodo.5794178:
+      contents:
+        KeplerRot-LAMOST.csv: src/data/KeplerRot-LAMOST.csv
+
+See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
+
+
+.. _config.datasets.doi:
+
+``datasets.<doi>``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** 
+The Zenodo or Zenodo Sandbox version DOI for the deposit.
+
+.. note::
+    
+    Zenodo makes a distinction 
+    between *version* DOIs and *concept* DOIs. Version DOIs are static, and tied
+    to a specific version of a deposit (the way you'd expect a DOI to behave); this is
+    what you should provide here.
+    Concept DOIs, on the other hand, point to *all* versions of a given record,
+    and always resolve to the *latest* version.
+    Check out the sidebar on the 
+    `web page for this sample deposit <https://zenodo.org/record/6468327>`_:
+
+    .. image:: _static/zenodo_dois.png
+       :width: 50%
+       :align: center
+
+    .. raw:: html
+
+        <br/>
+
+    You can see that the DOI ``10.5281/zenodo.6468327`` corresponds to a specific version (``1``)
+    of the deposit, while the DOI ``10.5281/zenodo.6468326`` corresponds to *all* versions of
+    the deposit (it's listed under "Cite all versions?"). 
+    The former is a "version" DOI, while the latter is a "concept" DOI.
+    You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
+
+**Required:** no
+
+**Example:**
+
+If the version DOI for a deposit containing the file ``TOI640b.json`` is ``10.5281/zenodo.6468327``,
+we would specify the following in the config file:
+
+.. code-block:: yaml
+
+  datasets:
+    10.5281/zenodo.6468327:
+      contents:
+        TOI640b.json: src/data/TOI640b.json
+
+See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
+
+
+.. _config.datasets.doi.contents:
+
+``datasets.<doi>.contents``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Specifies a mapping between files in a Zenodo or Zenodo Sandbox deposit and local
+files. The ``contents`` field must contain key-value pairs of the form
+
+.. code-block:: yaml
+
+    remote-file: path-to-local-file
+
+where ``remote-file`` is the name of the file on the remote (the Zenodo deposit)
+and ``path-to-local-file`` is the path to the file on disk, relative to the
+top level of the repository. The ``path-to-local-file`` may be omitted, in which
+case the file name is preserved and the file is downloaded to the default
+``destination`` (see the option of the same name below).
+
+If the remote file is a tarball, instead of a local path, users should provide
+a directory tree mapping that specifies the contents of the tarball and where they
+should be extracted to. The workflow will automatically extract them. See the
+example below for details.
+
+.. note::
+
+    The ``contents`` section need only specify files used by the workflow; if
+    there are additional files in the Zenodo deposit that are not needed by
+    the workflow, they need not be listed. However, files that required by
+    the workflow must be listed explicitly; glob syntax is not allowed.
+
+**Required:** no
+
+**Example:**
+
+The following example shows all the various ways in which Zenodo files can be downloaded,
+extracted, and mapped to local files:
+
+.. code-block:: yaml
+
+    datasets:
+      10.5281/zenodo.6468327:
+        destination: src/data/TOI640                 # default folder to extract files to
+        contents:
+
+          README.md:                                 # auto extracted to `src/data/TOI640/README.md`
+          TOI640b.json: src/data/TOI640/planet.json  # rename the extracted file, just for fun
+
+          images.tar.gz:                             # remote tarballs behave like folders w/ same name
+            README.md:                               # auto extracted to `src/data/TOI640/images/README.md`
+            S06:                                     # subfolder
+              image.json: src/data/TOI640/S06.json   # rename and change destination folder
+            S07:                                     # subfolder
+              image.json: src/data/TOI640/S07.json   # rename and change destination folder
+
+          lightcurves.tar.gz:                        # another tarball
+            lightcurves:                             # files are nested inside `lightcurves` in this tarball
+              README.md:                             # auto extracted to `src/data/TOI640/lightcurves/lightcurves/README.md`
+              S06:                                   # subfolder
+                lc.txt: src/data/TOI640/S06.txt      # rename and change destination folder
+              S07:                                   # subfolder
+                lc.txt: src/data/TOI640/S07.txt      # rename and change destination folder
+
+
+Recall that users must separately provide dependency information for each
+of these files via the :ref:`config.dependencies` key.
+
+
+.. _config.datasets.doi.destination:
+
+``datasets.<doi>.destination``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The default destination to extract the contents of the Zenodo
+deposit to.
+
+**Required:** no
+
+**Default:** ``src/data``
+
+**Example:**
+
+The following will extract all files in the Zenodo deposit with doi ``10.5281/zenodo.6468327``
+to ``src/data`` (subfolders will be preserved).
+
+.. code-block:: yaml
+
+    datasets:
+      10.5281/zenodo.6468327:
+        destination: src/data
+
+
 .. _config.dependencies:
 
 ``dependencies``
@@ -390,187 +574,3 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 .. code-block:: yaml
 
   verbose: true
-
-
-.. _config.datasets:
-
-``datasets``
-^^^^^^^^^^^^
-
-**Type:** ``mapping``
-
-**Description:** A mapping declaring static datasets to be download from Zenodo
-or Zenodo Sandbox.
-Nested under this keyword should be a sequence of mappings labeled by the
-deposit version ids of Zenodo or Zenodo Sandbox datasets.
-See below for details.
-
-**Required:** no
-
-**Example:**
-
-The following block shows how to tell |showyourwork| about two files,
-``TOI640b.json`` and ``KeplerRot-LAMOST.csv``, each of which is hosted
-on a Zenodo deposit with a different version ID. Note that the user should
-separately provide :ref:`config.dependencies` information for each of these
-files, so |showyourwork| knows which scripts require these files.
-
-
-.. code-block:: yaml
-
-  datasets:
-    10.5281/zenodo.6468327:
-      contents:
-        TOI640b.json: src/data/TOI640b.json
-    10.5281/zenodo.5794178:
-      contents:
-        KeplerRot-LAMOST.csv: src/data/KeplerRot-LAMOST.csv
-
-See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
-
-
-.. _config.datasets.doi:
-
-``datasets.<doi>``
-^^^^^^^^^^^^^^^^^^
-
-**Type:** ``mapping``
-
-**Description:** 
-The Zenodo or Zenodo Sandbox version DOI for the deposit.
-
-.. note::
-    
-    Zenodo makes a distinction 
-    between *version* DOIs and *concept* DOIs. Version DOIs are static, and tied
-    to a specific version of a deposit (the way you'd expect a DOI to behave); this is
-    what you should provide here.
-    Concept DOIs, on the other hand, point to *all* versions of a given record,
-    and always resolve to the *latest* version.
-    Check out the sidebar on the 
-    `web page for this sample deposit <https://zenodo.org/record/6468327>`_:
-
-    .. image:: _static/zenodo_dois.png
-       :width: 50%
-       :align: center
-
-    .. raw:: html
-
-        <br/>
-
-    You can see that the DOI ``10.5281/zenodo.6468327`` corresponds to a specific version (``1``)
-    of the deposit, while the DOI ``10.5281/zenodo.6468326`` corresponds to *all* versions of
-    the deposit (it's listed under "Cite all versions?"). 
-    The former is a "version" DOI, while the latter is a "concept" DOI.
-    You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
-
-**Required:** no
-
-**Example:**
-
-If the version DOI for a deposit containing the file ``TOI640b.json`` is ``10.5281/zenodo.6468327``,
-we would specify the following in the config file:
-
-.. code-block:: yaml
-
-  datasets:
-    10.5281/zenodo.6468327:
-      contents:
-        TOI640b.json: src/data/TOI640b.json
-
-See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
-
-
-.. _config.datasets.doi.contents:
-
-``datasets.<doi>.contents``
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``mapping``
-
-**Description:** Specifies a mapping between files in a Zenodo or Zenodo Sandbox deposit and local
-files. The ``contents`` field must contain key-value pairs of the form
-
-.. code-block:: yaml
-
-    remote-file: path-to-local-file
-
-where ``remote-file`` is the name of the file on the remote (the Zenodo deposit)
-and ``path-to-local-file`` is the path to the file on disk, relative to the
-top level of the repository. The ``path-to-local-file`` may be omitted, in which
-case the file name is preserved and the file is downloaded to the default
-``destination`` (see the option of the same name below).
-
-If the remote file is a tarball, instead of a local path, users should provide
-a directory tree mapping that specifies the contents of the tarball and where they
-should be extracted to. The workflow will automatically extract them. See the
-example below for details.
-
-.. note::
-
-    The ``contents`` section need only specify files used by the workflow; if
-    there are additional files in the Zenodo deposit that are not needed by
-    the workflow, they need not be listed. However, files that required by
-    the workflow must be listed explicitly; glob syntax is not allowed.
-
-**Required:** no
-
-**Example:**
-
-The following example shows all the various ways in which Zenodo files can be downloaded,
-extracted, and mapped to local files:
-
-.. code-block:: yaml
-
-    datasets:
-      10.5281/zenodo.6468327:
-        destination: src/data/TOI640                 # default folder to extract files to
-        contents:
-
-          README.md:                                 # auto extracted to `src/data/TOI640/README.md`
-          TOI640b.json: src/data/TOI640/planet.json  # rename the extracted file, just for fun
-
-          images.tar.gz:                             # remote tarballs behave like folders w/ same name
-            README.md:                               # auto extracted to `src/data/TOI640/images/README.md`
-            S06:                                     # subfolder
-              image.json: src/data/TOI640/S06.json   # rename and change destination folder
-            S07:                                     # subfolder
-              image.json: src/data/TOI640/S07.json   # rename and change destination folder
-
-          lightcurves.tar.gz:                        # another tarball
-            lightcurves:                             # files are nested inside `lightcurves` in this tarball
-              README.md:                             # auto extracted to `src/data/TOI640/lightcurves/lightcurves/README.md`
-              S06:                                   # subfolder
-                lc.txt: src/data/TOI640/S06.txt      # rename and change destination folder
-              S07:                                   # subfolder
-                lc.txt: src/data/TOI640/S07.txt      # rename and change destination folder
-
-
-Recall that users must separately provide dependency information for each
-of these files via the :ref:`config.dependencies` key.
-
-
-.. _config.datasets.doi.destination:
-
-``datasets.<doi>.destination``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** The default destination to extract the contents of the Zenodo
-deposit to.
-
-**Required:** no
-
-**Default:** ``src/data``
-
-**Example:**
-
-The following will extract all files in the Zenodo deposit with doi ``10.5281/zenodo.6468327``
-to ``src/data`` (subfolders will be preserved).
-
-.. code-block:: yaml
-
-    datasets:
-      10.5281/zenodo.6468327:
-        destination: src/data

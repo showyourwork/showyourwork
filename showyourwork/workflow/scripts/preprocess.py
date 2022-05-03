@@ -96,7 +96,7 @@ def parse_datasets():
 
         # Handle files inside zipfiles, tarballs, etc.
         entry["zip_files"] = {}
-        tmp_path = service.path().relative_to(paths.user().repo)
+        tmp_path = deposit.path().relative_to(paths.user().repo)
         for source in list(contents.keys()):
 
             # Ensure the target is not a list
