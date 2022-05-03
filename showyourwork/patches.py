@@ -7,7 +7,7 @@ to update the code in this file.
 
 """
 from . import paths, exceptions
-from .zenodo import download_file_from_zenodo, upload_file_to_zenodo
+from .zenodo import Zenodo
 from .logging import get_logger, ColorizingStreamHandler
 import logging
 import time
@@ -57,7 +57,7 @@ def get_snakemake_variable(name, default=None):
     return default
 
 
-def patch_snakemake_cache(concept_id):
+def patch_snakemake_cache(doi):
     """
     Patches the Snakemake cache functionality to
 
@@ -71,6 +71,9 @@ def patch_snakemake_cache(concept_id):
 
     # The instance we'll patch
     output_file_cache = snakemake.workflow.workflow.output_file_cache
+
+    # Instantiate our interface
+    deposit = Zenodo(doi)
 
     if output_file_cache is not None:
 
@@ -87,22 +90,20 @@ def patch_snakemake_cache(concept_id):
                 tarball = True
             else:
                 tarball = False
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
+            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
+                job
+            ):
                 if not cachefile.exists():
                     # Attempt to download from Zenodo
                     try:
                         logger.info(
-                            f"Searching Zenodo file cache: {outputfile}..."
+                            f"Searching remote file cache: {outputfile}..."
                         )
-                        download_file_from_zenodo(
-                            cachefile,
-                            job.rule.name,
-                            concept_id,
-                            tarball=tarball,
-                            zenodo_url="zenodo.org",
+                        deposit.download_file(
+                            cachefile, job.rule.name, tarball=tarball
                         )
                         logger.info(
-                            f"Restoring from Zenodo cache: {outputfile}..."
+                            f"Restoring from remote cache: {outputfile}..."
                         )
                     except exceptions.FileNotFoundOnZenodo:
                         # Cache miss; not fatal
@@ -120,14 +121,14 @@ def patch_snakemake_cache(concept_id):
                     logger.info(f"Restoring from local cache: {outputfile}...")
                     # Always ensure the cached file on Zenodo is the latest
                     # local cache hit. (If it is, this is a no-op)
-                    logger.info(f"Syncing file with Zenodo cache: {outputfile}...")
+                    logger.info(
+                        f"Syncing file with remote cache: {outputfile}..."
+                    )
                     try:
-                        upload_file_to_zenodo(
+                        deposit.upload_file(
                             cachefile,
                             job.rule.name,
-                            concept_id,
                             tarball=tarball,
-                            zenodo_url="zenodo.org",
                         )
                     except exceptions.ZenodoException as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
@@ -147,15 +148,13 @@ def patch_snakemake_cache(concept_id):
             else:
                 tarball = False
 
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
-                logger.info(f"Caching output file on Zenodo: {outputfile}...")
+            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
+                job
+            ):
+                logger.info(f"Caching output file on remote: {outputfile}...")
                 try:
-                    upload_file_to_zenodo(
-                        cachefile,
-                        job.rule.name,
-                        concept_id,
-                        tarball=tarball,
-                        zenodo_url="zenodo.org",
+                    deposit.upload_file(
+                        cachefile, job.rule.name, tarball=tarball
                     )
                 except exceptions.ZenodoException as e:
                     # NOTE: we treate all Zenodo caching errors as non-fatal

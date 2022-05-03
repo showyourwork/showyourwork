@@ -1,5 +1,5 @@
 from showyourwork import exceptions
-from showyourwork.zenodo import Zenodo, Sandbox
+from showyourwork.zenodo import services
 from showyourwork.logging import get_logger
 import sys
 import subprocess
@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     # Get params
     doi = snakemake.params["doi"]
-    deposit_id = doi.split("/")[-1]
+    doi_prefix, deposit_id = doi.split("/")
     remote_file = snakemake.params["remote_file"]
     output = snakemake.output[0]
 
@@ -19,10 +19,12 @@ if __name__ == "__main__":
     logger = get_logger()
 
     # Get service url
-    if doi.startswith(Zenodo.doi_prefix):
-        url = Zenodo.url
+    for service in services.values():
+        if doi_prefix == service["doi_prefix"]:
+            url = service["url"]
+            break
     else:
-        url = Sandbox.url
+        raise exceptions.ZenodoDownloadError()
 
     # Download it
     progress_bar = ["--progress-bar"] if not config["github_actions"] else []

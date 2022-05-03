@@ -1,5 +1,5 @@
 from showyourwork import paths, exceptions, zenodo
-from showyourwork.zenodo import Zenodo, Sandbox
+from showyourwork.zenodo import Zenodo
 from showyourwork.tex import compile_tex
 import sys
 import json
@@ -67,32 +67,22 @@ def parse_datasets():
     for doi, entry in config["datasets"].items():
 
         # Parse the DOI to get the Zenodo ID
-        try:
-            doi_prefix, deposit_id = doi.split("/")
-            if doi_prefix == Zenodo.doi_prefix:
-                service = Zenodo
-            elif doi_prefix == Sandbox.doi_prefix:
-                service = Sandbox
-            else:
-                raise Exception()
-            deposit_id = int(deposit_id)
-        except:
-            raise exceptions.InvalidZenodoDOI(doi)
+        deposit = Zenodo(doi)
 
         # Require that this is a static *version* ID
-        entry["id_type"] = service.get_id_type(deposit_id=deposit_id)
+        entry["id_type"] = deposit.get_id_type()
         if entry["id_type"] != "version":
             if entry["id_type"] == "concept":
                 raise exceptions.InvalidZenodoIdType(
                     "Error parsing the config. "
-                    f"Zenodo id {deposit_id} seems to be a concept id."
+                    f"{doi} seems to be a concept DOI."
                     "Datasets should be specified using their static "
-                    "version id instead."
+                    "version DOI instead."
                 )
             else:
                 raise exceptions.InvalidZenodoIdType(
                     "Error parsing the config. "
-                    f"Zenodo id {deposit_id} is not a valid version id."
+                    f"{doi} is not a valid version DOI."
                 )
 
         # Deposit contents
@@ -134,7 +124,7 @@ def parse_datasets():
 
                 # We'll store the zipfile in a temporary directory
                 contents[zip_file] = (
-                    tmp_path / str(deposit_id) / zip_file
+                    tmp_path / str(deposit.deposit_id) / zip_file
                 ).as_posix()
 
         entry["contents"] = contents
