@@ -40,6 +40,15 @@ class ZenodoRecordNotFound(ZenodoException):
         super().__init__(message)
 
 
+class InvalidZenodoDOI(ZenodoException):
+    def __init__(self, doi):
+        message = (
+            f"The provided `doi` {doi} does "
+            f"not seem to be a valid Zenodo DOI."
+        )
+        super().__init__(message)
+
+
 class ZenodoUploadError(ZenodoException):
     def __init__(self):
         super().__init__(

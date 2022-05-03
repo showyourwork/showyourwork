@@ -4,13 +4,28 @@ from collections import OrderedDict, ChainMap
 import os
 import re
 import sys
+import jinja2
+import yaml
 
 try:
     import snakemake
 except ModuleNotFoundError:
     snakemake = None
 
-__all__ = ["parse_config", "get_run_type"]
+__all__ = ["parse_config", "get_run_type", "render_config"]
+
+
+def render_config(cwd="."):
+    """
+    Render any jinja templates in `showyourwork.yml` and save to a
+    temporary YAML file.
+
+    """
+    with open(paths.user().temp / "showyourwork.yml", "w") as f:
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(cwd))
+        config = env.get_template("showyourwork.yml").render()
+        print(config, file=f)
+    return yaml.safe_load(config)
 
 
 def get_run_type():
@@ -191,8 +206,7 @@ def parse_config():
         config["dependencies"] = as_dict(config.get("dependencies", {}))
 
         #: Zenodo datasets
-        config["zenodo"] = as_dict(config.get("zenodo", {}))
-        config["zenodo_sandbox"] = as_dict(config.get("zenodo_sandbox", {}))
+        config["datasets"] = as_dict(config.get("datasets", {}))
 
         #: Overleaf
         config["overleaf"] = as_dict(config.get("overleaf", {}))

@@ -3,17 +3,8 @@ The Snakefile for the article pre-processing step.
 
 """
 from showyourwork import paths, overleaf
-from showyourwork.config import parse_config, get_run_type
+from showyourwork.config import render_config, parse_config, get_run_type
 from showyourwork.patches import patch_snakemake_logging
-import snakemake
-from pathlib import Path
-import sys
-import os
-import jinja2
-
-
-# Require Snakemake >= this version
-snakemake.utils.min_version("6.15.5")
 
 
 # Working directory is the top level of the user repo
@@ -25,9 +16,7 @@ run_type = get_run_type()
 
 
 # User config. Allow Jinja2 templating syntax.
-with open(paths.user().temp / "showyourwork.yml", "w") as f:
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
-    print(env.get_template("showyourwork.yml").render(), file=f)
+render_config()
 configfile: (paths.user().temp / "showyourwork.yml").as_posix()
 
 

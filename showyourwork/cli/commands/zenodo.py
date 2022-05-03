@@ -1,55 +1,50 @@
-from ...git import get_repo_branch, get_repo_slug
-from ...zenodo import delete_deposit, create_deposit, publish_deposit
+from ...git import get_repo_branch
+from ...zenodo import Zenodo
+from ...config import render_config
 from ... import paths, exceptions, logging
 import json
 
 
-def zenodo(publish_arg, create_arg, delete_arg):
-    logger = logging.get_logger()
-    if publish_arg != None:
-        if publish_arg == "auto":
-            try:
-                branch = get_repo_branch()
-                with open(paths.user().temp / "config.json", "r") as f:
-                    config = json.load(f)
-                    concept_id = config["showyourwork"]["cache"][branch]
-            except:
-                raise exceptions.ShowyourworkException(
-                    "Unable to infer the current Zenodo deposit ID. "
-                    "Please provide it as an argument to `--delete`."
-                )
-        else:
-            concept_id = publish_arg
-        publish_deposit(concept_id)
-        logger.info(f"Zenodo deposit {concept_id} published.")
-    elif create_arg != None:
-        if create_arg == "auto":
+def zenodo_publish(doi):
+    if doi is None:
+        try:
             branch = get_repo_branch()
-        else:
-            branch = create_arg
-        slug = get_repo_slug()
-        title = f"Data for {slug} [{branch}]"
-        concept_id = create_deposit(title)
-        logger.info(
-            f"Zenodo deposit {concept_id} created. "
-            f"Please add the entry `{branch}: {concept_id}` to the `cache` section of the config file."
-        )
-    elif delete_arg != None:
-        if delete_arg == "auto":
-            try:
-                branch = get_repo_branch()
-                with open(paths.user().temp / "config.json", "r") as f:
-                    config = json.load(f)
-                    concept_id = config["showyourwork"]["cache"][branch]
-            except:
-                raise exceptions.ShowyourworkException(
-                    "Unable to infer the current Zenodo deposit ID. "
-                    "Please provide it as an argument to `--delete`."
-                )
-        else:
-            concept_id = delete_arg
-        delete_deposit(concept_id)
-        logger.info(
-            f"Zenodo deposit {concept_id} deleted. "
-            "Please remove the corresponding `cache` entry from the config file."
-        )
+            config = render_config()
+            doi = config["showyourwork"]["cache"][branch]
+        except:
+            raise exceptions.ShowyourworkException(
+                "Unable to infer the current Zenodo deposit ID. "
+                "Please provide it using the `--doi` option."
+            )
+    Zenodo(doi).publish()
+    logging.get_logger().info(
+        f"Zenodo deposit draft with DOI {doi} published."
+    )
+
+
+def zenodo_create(branch, service):
+    if branch is None:
+        branch = get_repo_branch()
+    deposit = Zenodo(service, branch=branch)
+    logging.get_logger().info(
+        f"Please add the entry `{branch}: {deposit.doi}` to the `cache` section of the config file."
+    )
+
+
+def zenodo_delete(doi):
+    logger = logging.get_logger()
+    if doi is None:
+        try:
+            branch = get_repo_branch()
+            config = render_config()
+            doi = config["showyourwork"]["cache"][branch]
+        except:
+            raise exceptions.ShowyourworkException(
+                "Unable to infer the current Zenodo deposit ID. "
+                "Please provide it using the `--doi` option."
+            )
+    Zenodo(doi).delete()
+    logging.get_logger().info(
+        f"Zenodo deposit draft with DOI {doi} deleted. "
+        "Please remove the corresponding `cache` entry from the config file."
+    )

@@ -1,7 +1,7 @@
 showyourwork:
   version: {{ cookiecutter.showyourwork_version }}
   cache:
-    main: {{ cookiecutter.zenodo_cache_concept_id }}
+    main: {{ cookiecutter.cache_doi }}
 
 {% if cookiecutter.overleaf_id -%}
 overleaf:

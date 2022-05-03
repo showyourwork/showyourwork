@@ -232,10 +232,10 @@ class TestOverleaf(TemporaryShowyourworkRepository):
                 break
 
 
-class TestZenodoCache(TemporaryShowyourworkRepository):
+class TestSandboxCache(TemporaryShowyourworkRepository):
     """Test the Zenodo caching feature."""
 
-    zenodo_cache = True
+    sandbox_cache = True
 
     def customize(self):
         """Add the necessary dependencies to the config file."""
@@ -245,10 +245,10 @@ class TestZenodoCache(TemporaryShowyourworkRepository):
             }
 
 
-class TestZenodoDirCache(TemporaryShowyourworkRepository):
+class TestSandboxDirCache(TemporaryShowyourworkRepository):
     """Test the Zenodo caching feature for entire directories."""
 
-    zenodo_cache = True
+    sandbox_cache = True
 
     def customize(self):
         """Add the necessary dependencies to the config file."""

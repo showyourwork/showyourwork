@@ -1,17 +1,16 @@
 import showyourwork
 from showyourwork import gitapi
+from showyourwork.config import render_config
 from showyourwork.logging import get_logger
 from showyourwork.git import get_repo_sha
 from showyourwork.subproc import get_stdout
-from showyourwork.zenodo import delete_deposit
+from showyourwork.zenodo import Zenodo
 import logging
 from pathlib import Path
 import shutil
 import asyncio
 import pytest
 import re
-import yaml
-import jinja2
 import os
 
 
@@ -28,6 +27,7 @@ class TemporaryShowyourworkRepository:
 
     # Editable class settings
     zenodo_cache = False
+    sandbox_cache = False
     overleaf_id = None
     action_wait = 240
     action_max_tries = 10
@@ -36,7 +36,7 @@ class TemporaryShowyourworkRepository:
     local_build_only = False
 
     # Internal
-    _concept_id = None
+    _concept_doi = None
 
     @property
     def repo(self):
@@ -88,9 +88,12 @@ class TemporaryShowyourworkRepository:
         else:
             version = get_repo_sha()
         options = f"--quiet --showyourwork-version={version} "
-        if not self.zenodo_cache:
-            # Disable zenodo caching
-            command = f"ZENODO_TOKEN='' {command}"
+        if self.sandbox_cache:
+            # Enable zenodo sandbox caching
+            options += "--cache-on-sandbox"
+        elif self.zenodo_cache:
+            # Enable zenodo caching
+            options += "--cache-on-zenodo"
         if self.overleaf_id:
             # Enable overleaf syncing
             options += f"--overleaf={self.overleaf_id}"
@@ -118,15 +121,12 @@ class TemporaryShowyourworkRepository:
             shell=True,
         )
 
-        # Get the Zenodo cache concept id for the main branch (if any)
-        user_config = yaml.load(
-            jinja2.Environment(loader=jinja2.FileSystemLoader(self.cwd))
-            .get_template("showyourwork.yml")
-            .render(),
-            Loader=yaml.CLoader,
-        )
-        self._concept_id = (
-            user_config.get("showyourwork", {}).get("cache", {}).get("main")
+        # Get the Zenodo cache concept doi for the main branch (if any)
+        self._concept_doi = (
+            render_config(cwd=self.cwd)
+            .get("showyourwork", {})
+            .get("cache", {})
+            .get("main")
         )
 
     def create_remote(self):
@@ -220,12 +220,12 @@ class TemporaryShowyourworkRepository:
 
     def delete_zenodo(self):
         """Delete the Zenodo deposit associated with the temp repo."""
-        if self._concept_id:
+        if self._concept_doi:
             print(
                 f"[{self.repo}] Deleting Zenodo deposit "
-                f"with concept id {self._concept_id}..."
+                f"with concept DOI {self._concept_doi}..."
             )
-            delete_deposit(self._concept_id)
+            Zenodo(self._concept_doi).delete()
 
     def delete_remote(self):
         """Delete the remote repo."""

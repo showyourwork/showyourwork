@@ -1,4 +1,5 @@
 from showyourwork import paths, exceptions, zenodo
+from showyourwork.zenodo import Zenodo, Sandbox
 from showyourwork.tex import compile_tex
 import sys
 import json
@@ -8,9 +9,9 @@ from collections.abc import MutableMapping
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 
-def flatten_zenodo_contents(d, parent_key="", default_path=None):
+def flatten_dataset_contents(d, parent_key="", default_path=None):
     """
-    Flatten the `contents` dictionary of a Zenodo entry, filling
+    Flatten the `contents` dictionary of a dataset entry, filling
     in default mappings and removing zipfile extensions from the target path.
 
     Adapted from https://stackoverflow.com/a/6027615
@@ -24,15 +25,14 @@ def flatten_zenodo_contents(d, parent_key="", default_path=None):
     elif type(d) is list:
         raise exceptions.ConfigError(
             "Error parsing the config. "
-            "Something is not formatted correctly in either the `zenodo` or "
-            "`zenodo_sandbox` field."
+            "Something is not formatted correctly in the `datasets` field."
         )
 
     for k, v in d.items():
         new_key = (Path(parent_key) / k).as_posix() if parent_key else k
         if isinstance(v, MutableMapping):
             items.extend(
-                flatten_zenodo_contents(
+                flatten_dataset_contents(
                     v, new_key, default_path=default_path
                 ).items()
             )
@@ -57,90 +57,87 @@ def flatten_zenodo_contents(d, parent_key="", default_path=None):
     return dict(items)
 
 
-def parse_zenodo_datasets():
+def parse_datasets():
     """
-    Parse the `zenodo` and `zenodo_sandbox` keys in the config file and
+    Parse the `datasets` keys in the config file and
     populate entries with custom metadata.
 
     """
-    for host in ["zenodo", "zenodo_sandbox"]:
 
-        if host == "zenodo":
-            tmp_path = paths.user().zenodo.relative_to(paths.user().repo)
-        else:
-            tmp_path = paths.user().zenodo_sandbox.relative_to(
-                paths.user().repo
-            )
+    for doi, entry in config["datasets"].items():
 
-        for deposit_id, entry in config[host].items():
+        # Parse the DOI to get the Zenodo ID
+        try:
+            doi_prefix, deposit_id = doi.split("/")
+            if doi_prefix == Zenodo.doi_prefix:
+                service = Zenodo
+            elif doi_prefix == Sandbox.doi_prefix:
+                service = Sandbox
+            else:
+                raise Exception()
+            deposit_id = int(deposit_id)
+        except:
+            raise exceptions.InvalidZenodoDOI(doi)
 
-            try:
-                deposit_id = int(deposit_id)
-            except:
-                raise exceptions.ZenodoRecordNotFound(deposit_id)
+        # Require that this is a static *version* ID
+        entry["id_type"] = service.get_id_type(deposit_id=deposit_id)
+        if entry["id_type"] != "version":
+            if entry["id_type"] == "concept":
+                raise exceptions.InvalidZenodoIdType(
+                    "Error parsing the config. "
+                    f"Zenodo id {deposit_id} seems to be a concept id."
+                    "Datasets should be specified using their static "
+                    "version id instead."
+                )
+            else:
+                raise exceptions.InvalidZenodoIdType(
+                    "Error parsing the config. "
+                    f"Zenodo id {deposit_id} is not a valid version id."
+                )
 
-            # Require that this is a static *version* ID
-            entry["id_type"] = zenodo.get_id_type(
-                deposit_id=deposit_id, zenodo_url=zenodo.zenodo_url[host]
-            )
-            if entry["id_type"] != "version":
-                if entry["id_type"] == "concept":
-                    raise exceptions.InvalidZenodoIdType(
-                        "Error parsing the config. "
-                        f"Zenodo id {deposit_id} seems to be a concept id."
-                        "Datasets should be specified using their static "
-                        "version id instead."
-                    )
+        # Deposit contents
+        entry["destination"] = entry.get(
+            "destination",
+            str(paths.user().data.relative_to(paths.user().repo)),
+        )
+        contents = flatten_dataset_contents(
+            entry.get("contents", {}), default_path=entry["destination"]
+        )
+
+        # Handle files inside zipfiles, tarballs, etc.
+        entry["zip_files"] = {}
+        tmp_path = service.path().relative_to(paths.user().repo)
+        for source in list(contents.keys()):
+
+            # Ensure the target is not a list
+            target = contents[source]
+            if type(target) is list:
+                raise exceptions.ZenodoContentsError(
+                    "Error parsing the config. "
+                    "The `contents` field of a Zenodo deposit must be "
+                    "provided as a mapping, not as a list."
+                )
+
+            # If it's a file inside a zipfile, add it to a separate entry in the config
+            zip_file = Path(source).parts[0]
+            if len(Path(source).parts) > 1 and any(
+                [zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]
+            ):
+                new_source = Path(*Path(source).parts[1:]).as_posix()
+                if zip_file in entry["zip_files"].keys():
+                    entry["zip_files"][zip_file].update({new_source: target})
                 else:
-                    raise exceptions.InvalidZenodoIdType(
-                        "Error parsing the config. "
-                        f"Zenodo id {deposit_id} is not a valid version id."
-                    )
+                    entry["zip_files"][zip_file] = {new_source: target}
 
-            # Deposit contents
-            entry["destination"] = entry.get(
-                "destination",
-                str(paths.user().data.relative_to(paths.user().repo)),
-            )
-            contents = flatten_zenodo_contents(
-                entry.get("contents", {}), default_path=entry["destination"]
-            )
+                # Remove it from the `contents` entry
+                del contents[source]
 
-            # Handle files inside zipfiles, tarballs, etc.
-            entry["zip_files"] = {}
-            for source in list(contents.keys()):
+                # We'll store the zipfile in a temporary directory
+                contents[zip_file] = (
+                    tmp_path / str(deposit_id) / zip_file
+                ).as_posix()
 
-                # Ensure the target is not a list
-                target = contents[source]
-                if type(target) is list:
-                    raise exceptions.ZenodoContentsError(
-                        "Error parsing the config. "
-                        "The `contents` field of a Zenodo deposit must be "
-                        "provided as a mapping, not as a list."
-                    )
-
-                # If it's a file inside a zipfile, add it to a separate entry in the config
-                zip_file = Path(source).parts[0]
-                if len(Path(source).parts) > 1 and any(
-                    [zip_file.endswith(f".{ext}") for ext in zenodo.zip_exts]
-                ):
-                    new_source = Path(*Path(source).parts[1:]).as_posix()
-                    if zip_file in entry["zip_files"].keys():
-                        entry["zip_files"][zip_file].update(
-                            {new_source: target}
-                        )
-                    else:
-                        entry["zip_files"][zip_file] = {new_source: target}
-
-                    # Remove it from the `contents` entry
-                    del contents[source]
-
-                    # We'll host the zipfile in a temporary directory
-                    contents[zip_file] = (
-                        tmp_path / str(deposit_id) / zip_file
-                    ).as_posix()
-
-            entry["contents"] = contents
+        entry["contents"] = contents
 
 
 def check_figure_format(figure):
@@ -493,8 +490,8 @@ if __name__ == "__main__":
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
 
-    # Parse the `zenodo` key in the config
-    parse_zenodo_datasets()
+    # Parse the `datasets` key in the config
+    parse_datasets()
 
     # Get the article tree
     config["tree"] = get_json_tree()

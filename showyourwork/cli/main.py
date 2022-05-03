@@ -1,8 +1,10 @@
 from . import commands
-from .. import git, exceptions, __version__
+from .. import git, exceptions, zenodo, __version__
+from textwrap import TextWrapper
 import os
 import shutil
 import click
+import re
 
 
 def ensure_top_level():
@@ -12,11 +14,46 @@ def ensure_top_level():
     """
     root = os.path.realpath(git.get_repo_root())
     here = os.path.realpath(".")
-    if 0:  # not root == here:
+    if not root == here:
         raise exceptions.ShowyourworkException(
             "The `showyourwork` command must be called "
             "from the top level of a git repo."
         )
+
+
+def echo(text="", **kwargs):
+    """
+    Print a message to screen with some custom formatting.
+
+    This may be the ugliest function I've ever written in my life.
+
+    """
+    try:
+        terminal_size = shutil.get_terminal_size().columns
+    except:
+        terminal_size = 80
+    wrapper = TextWrapper(
+        width=terminal_size,
+        drop_whitespace=True,
+        initial_indent="",
+    )
+    text = text.replace("\n", " ")
+    text = re.sub("``(.*?)``\s*", r"<SPLIT><BR><TAB>`\1`<BR><SPLIT>", text)
+    lines = [
+        line.strip() for line in text.split("<SPLIT>") if line.strip() != ""
+    ]
+    for n, text in enumerate(lines):
+        while "  " in text:
+            text = text.replace("  ", " ")
+        text = wrapper.fill(text)
+        L, R = click.style("><", fg="blue").split("><")
+        text = re.sub("`(.*?)`", L + r"\1" + R, text)
+        text = text.replace("<TAB>", "    ")
+        text = text.replace("<BR>", "\n")
+        if n == len(lines) - 1:
+            if text.endswith("\n"):
+                text = text[:-1]
+        click.echo(text, **kwargs)
 
 
 @click.group(invoke_without_command=True)
@@ -55,9 +92,7 @@ def validate_slug(context, param, slug):
         if context.params.get("yes"):
             pass
         else:
-            click.echo(
-                "Press any key to continue, or Ctrl+C to abort...", nl=False
-            )
+            click.echo("\nPress any key to continue, or Ctrl+C to abort...")
             click.getchar()
             click.echo()
 
@@ -68,102 +103,77 @@ def validate_slug(context, param, slug):
         if not context.params.get("quiet"):
 
             # Greeting
-            click.echo(
-                "Let's get you set up with a new repository. "
-                "I'm going to create a folder called\n\n"
-                + click.style(f"    {repo} ", fg="blue")
-                + "\n\nin the current working directory. "
-                "If you haven't done this yet, please visit\n\n"
-                + click.style("    https://github.com/new ", fg="blue")
-                + "\n\nat this time and create an empty repository called\n\n"
-                + click.style(f"    {slug}\n", fg="blue")
+            echo(
+                f"""
+                Let's get you set up with a new repository. I'm going to create
+                a folder called ``{repo}`` in the current working directory. If
+                you haven't done this yet, please visit
+                ``https://github.com/new`` at this time and create an empty
+                repository called ``{slug}``
+                """
             )
             pause()
 
             # Check Zenodo credentials
-            if os.getenv("ZENODO_TOKEN"):
-                click.echo(
-                    "\nI found a "
-                    + click.style("ZENODO_TOKEN", fg="blue")
-                    + " environment variable, so I'm going to create a Zenodo\n"
-                    + "deposit draft where intermediate results will be cached. "
-                    + "In order for this to\n"
-                    + "work on GitHub Actions, please go to\n\n"
-                    + click.style(
-                        f"    https://github.com/{slug}/settings/secrets/actions/new\n\n",
-                        fg="blue",
-                    )
-                    + "at this time and create a "
-                    + click.style("ZENODO_TOKEN", fg="blue")
-                    + " secret with your Zenodo access token.\n"
+            cache_on_sandbox = context.params.get("cache_on_sandbox")
+            cache_on_zenodo = context.params.get("cache_on_zenodo")
+            if not (cache_on_sandbox or cache_on_zenodo):
+                echo(
+                    """
+                    You didn't provide a caching service (via the
+                    `--cache-on-sandbox` or `--cache-on-zenodo` command-line
+                    options), so I'm not going to set up remote caching for
+                    this repository.
+                    """
                 )
             else:
-                click.echo(
-                    "\nI didn't find a "
-                    + click.style("ZENODO_TOKEN", fg="blue")
-                    + " environment variable, so I'm not going to set up\n"
-                    + "a Zenodo deposit for caching intermediate results. If you "
-                    + "would like to enable\nthis, please go to\n\n"
-                    + click.style(
-                        f"    https://zenodo.org/account/settings/applications/tokens/new\n\n",
-                        fg="blue",
-                    )
-                    + "to create a new personal access token with "
-                    + click.style("deposit:actions", fg="blue")
-                    + " and "
-                    + click.style("deposit:write\n", fg="blue")
-                    + "scopes, store it in a local "
-                    + click.style("ZENODO_TOKEN", fg="blue")
-                    + " environment "
-                    + "variable, and re-run this\nsetup script.\n"
+                if cache_on_sandbox:
+                    service = zenodo.services["sandbox"]
+                elif cache_on_zenodo:
+                    service = zenodo.services["zenodo"]
+                echo(
+                    f"""
+                    You requested remote caching on {service["name"]}, so I'm
+                    going to create a deposit draft where intermediate results
+                    will be cached. Please make sure at this time that you have
+                    defined the `{service["token_name"]}` environment variable
+                    containing your API key for {service["name"]}. If you don't
+                    have one, visit
+                    ``https://{service['url']}/account/settings/applications/tokens/new``
+                    to create a new personal access token with
+                    `deposit:actions` and `deposit:write` scopes and store it
+                    in the environment variable `{service["token_name"]}`. In
+                    order for this to work on GitHub Actions, you'll also have
+                    to visit
+                    ``https://github.com/{slug}/settings/secrets/actions/new``
+                    at this time to create a `{service["token_name"]}` secret
+                    with your API access token.
+                    """
                 )
             pause()
 
             # Check Overleaf credentials
             if not context.params.get("overleaf"):
-                click.echo(
-                    "\nYou didn't provide an Overleaf project id "
-                    + "(via the "
-                    + click.style("--overleaf", fg="blue")
-                    + " command-line\noption), "
-                    + "so I'm not going to set up "
-                    + "Overleaf integration for this repository.\n"
+                echo(
+                    f"""
+                    You didn't provide an Overleaf project id (via the 
+                    `--overleaf` command-line option), so I'm not going to set 
+                    up Overleaf integration for this repository.
+                    """
                 )
             else:
-                if os.getenv("OVERLEAF_EMAIL") and os.getenv(
-                    "OVERLEAF_PASSWORD"
-                ):
-                    click.echo(
-                        "\nYou provided an Overleaf project id, and "
-                        "I found both "
-                        + click.style("OVERLEAF_EMAIL", fg="blue")
-                        + " and\n"
-                        + click.style("OVERLEAF_PASSWORD", fg="blue")
-                        + " environment variables, so I'm going to set up "
-                        + "Overleaf\nintegration for this repository. "
-                        + "In order for this to\n"
-                        + "work on GitHub Actions, please go to\n\n"
-                        + click.style(
-                            f"    https://github.com/{slug}/settings/secrets/actions/new\n\n",
-                            fg="blue",
-                        )
-                        + "at this time and create "
-                        + click.style("OVERLEAF_EMAIL", fg="blue")
-                        + " and "
-                        + click.style("OVERLEAF_PASSWORD", fg="blue")
-                        + " secrets with\nyour Overleaf credentials.\n"
-                    )
-                else:
-                    click.echo(
-                        "\nIt looks like you provided an Overleaf project id, but "
-                        "I didn't find an\n"
-                        + click.style("OVERLEAF_EMAIL", fg="blue")
-                        + " and/or an "
-                        + click.style("OVERLEAF_PASSWORD", fg="blue")
-                        + " environment "
-                        + "variable, so I'm not\ngoing to set up "
-                        + "Overleaf integration for this repository.\n"
-                    )
+                echo(
+                    f"""
+                    You provided an Overleaf project id, so I'm going to set up 
+                    Overleaf integration for this repository. Please make sure 
+                    at this time that you have defined the `OVERLEAF_EMAIL` and 
+                    `OVERLEAF_PASSWORD` environment variables. In order for 
+                    this to work on GitHub Actions, please go to
+                    ``https://github.com/{slug}/settings/secrets/actions/new``
+                    at this time and create `OVERLEAF_EMAIL` and 
+                    `OVERLEAF_PASSWORD` secrets with your Overleaf credentials.
+                    """
+                )
             pause()
 
         return slug
@@ -190,6 +200,20 @@ def validate_slug(context, param, slug):
     help="Don't prompt the user, and don't display informational output.",
 )
 @click.option(
+    "-x",
+    "--cache-on-sandbox",
+    is_flag=True,
+    default=False,
+    help="Set up intermediate result caching on Zenodo Sandbox.",
+)
+@click.option(
+    "-z",
+    "--cache-on-zenodo",
+    is_flag=True,
+    default=False,
+    help="Set up intermediate result caching on Zenodo.",
+)
+@click.option(
     "-o",
     "--overleaf",
     help="Overleaf project id to sync with (optional). Requires Overleaf "
@@ -211,7 +235,16 @@ def validate_slug(context, param, slug):
     default=None,
     type=type("VERSION", (str,), {}),
 )
-def setup(slug, yes, quiet, overleaf, ssh, showyourwork_version):
+def setup(
+    slug,
+    yes,
+    quiet,
+    cache_on_sandbox,
+    cache_on_zenodo,
+    overleaf,
+    ssh,
+    showyourwork_version,
+):
     """
     Set up a new article repository in the current working directory.
 
@@ -219,7 +252,13 @@ def setup(slug, yes, quiet, overleaf, ssh, showyourwork_version):
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    commands.setup(slug, overleaf, ssh, showyourwork_version)
+    if cache_on_sandbox:
+        cache_service = "sandbox"
+    elif cache_on_zenodo:
+        cache_service = "zenodo"
+    else:
+        cache_service = None
+    commands.setup(slug, cache_service, overleaf, ssh, showyourwork_version)
 
 
 @entry_point.command()
@@ -237,62 +276,74 @@ def tarball():
     commands.tarball()
 
 
-@entry_point.command()
+@entry_point.group()
+@click.pass_context
+def cache(ctx):
+    pass
+
+
+@cache.command()
+@click.pass_context
 @click.option(
-    "-p",
-    "--publish",
-    is_flag=False,
-    flag_value="auto",
+    "-b",
+    "--branch",
+    required=False,
     default=None,
-    type=type("CONCEPT_ID", (str,), {}),
-    help="Publish the latest draft of a Zenodo deposit with given CONCEPT_ID. "
-    "Leave blank to infer from the config file.",
+    help="Which branch to create the deposit for. Default is current branch.",
 )
 @click.option(
-    "-c",
-    "--create",
-    is_flag=False,
-    flag_value="auto",
-    default=None,
-    type=type("BRANCH", (str,), {}),
-    help="Create a Zenodo deposit draft to cache results from the given BRANCH. "
-    "Leave blank to use the current branch.",
+    "-s",
+    "--service",
+    type=click.Choice(["zenodo", "sandbox"], case_sensitive=False),
+    required=False,
+    default="sandbox",
+    help="Which archive service to use. Default is `sandbox`.",
 )
+def create(ctx, branch, service):
+    """Create a Zenodo deposit draft for the given branch."""
+    ensure_top_level()
+    commands.zenodo_create(branch, service)
+
+
+@cache.command()
+@click.pass_context
 @click.option(
     "-d",
-    "--delete",
-    is_flag=False,
-    flag_value="auto",
+    "--doi",
+    required=False,
     default=None,
-    type=type("CONCEPT_ID", (str,), {}),
-    help="Delete the latest draft of a Zenodo deposit with given CONCEPT_ID. "
-    "Leave blank to infer from the config file.",
+    help="The concept DOI of the draft. Default is to infer from the config file.",
 )
-def zenodo(publish, create, delete):
-    """
-    Create, publish, or delete a Zenodo cache deposit.
-
-    """
+def delete(ctx, doi):
+    """Delete the latest draft of a Zenodo deposit with given DOI."""
     ensure_top_level()
-    option_set = [int(x != None) for x in [publish, create, delete]]
-    if sum(option_set) != 1:
-        raise exceptions.ShowyourworkException(
-            "Must provide either `--create`, `--delete`, or `--publish`."
-        )
-    commands.zenodo(publish, create, delete)
+    commands.zenodo_delete(doi)
 
 
-@entry_point.command(hidden=True)
-@click.option("-r", "--restore", is_flag=True)
-@click.option("-u", "--update", is_flag=True)
-def cache(restore, update):
-    """Update or restore the cache on GitHub Actions."""
+@cache.command()
+@click.pass_context
+@click.option(
+    "-d",
+    "--doi",
+    required=False,
+    default=None,
+    help="The concept DOI of the draft. Default is to infer from the config file.",
+)
+def publish(ctx, doi):
+    """Publish the latest draft of a Zenodo deposit with given DOI."""
     ensure_top_level()
-    if not restore != update:
-        raise exceptions.ShowyourworkException(
-            "Must provide either `--restore` or `--update`."
-        )
-    if restore:
-        commands.cache_restore()
-    else:
-        commands.cache_update()
+    commands.zenodo_publish(doi)
+
+
+@cache.command(hidden=True)  # used internally
+@click.pass_context
+def restore(ctx):
+    ensure_top_level()
+    commands.cache_restore()
+
+
+@cache.command(hidden=True)  # used internally
+@click.pass_context
+def update(ctx):
+    ensure_top_level()
+    commands.cache_update()

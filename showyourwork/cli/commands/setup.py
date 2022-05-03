@@ -1,6 +1,7 @@
-from ... import paths, zenodo, exceptions, overleaf, __version__
+from ... import paths, exceptions, overleaf, __version__
 from ...subproc import get_stdout
 from ...logging import get_logger
+from ...zenodo import Zenodo
 from cookiecutter.main import cookiecutter
 from packaging import version
 from lastversion import latest
@@ -10,7 +11,7 @@ import shutil
 import subprocess
 
 
-def setup(slug, overleaf_id, ssh, showyourwork_version):
+def setup(slug, cache_service, overleaf_id, ssh, showyourwork_version):
     """Set up a new article repo."""
     # Parse the slug
     user, repo = slug.split("/")
@@ -29,14 +30,13 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
         else:
             showyourwork_version = version.parse(__version__).base_version
 
-    # Create a Zenodo deposit draft for this repo if the user
-    # set the ZENODO_TOKEN environment variable
-    if zenodo.get_access_token(error_if_missing=False):
-        zenodo_cache_concept_id = zenodo.create_deposit(
-            f"Data for {slug} [main]", zenodo_url="zenodo.org"
-        )
+    # Create a Zenodo deposit draft for this repo
+    if cache_service:
+        deposit = Zenodo(cache_service, slug=slug, branch="main")
+        cache_doi = deposit.doi
     else:
-        zenodo_cache_concept_id = ""
+        deposit = None
+        cache_doi = ""
 
     # Set up the repo
     cookiecutter(
@@ -47,7 +47,7 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
             "repo": repo,
             "name": name,
             "showyourwork_version": showyourwork_version,
-            "zenodo_cache_concept_id": zenodo_cache_concept_id,
+            "cache_doi": cache_doi,
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
         },
@@ -77,9 +77,9 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
             )
     except Exception as e:
         logger = get_logger()
-        if zenodo_cache_concept_id:
-            logger.error("Deleting Zenodo deposit...")
-            zenodo.delete_deposit(zenodo_cache_concept_id)
+        if deposit:
+            logger.error("Deleting cache deposit...")
+            deposit.delete()
         logger.error(f"Deleting directory {repo}...")
         shutil.rmtree(repo)
         raise e
@@ -90,9 +90,9 @@ def setup(slug, overleaf_id, ssh, showyourwork_version):
             overleaf.setup_remote(overleaf_id, path=Path(repo).absolute())
         except Exception as e:
             logger = get_logger()
-            if zenodo_cache_concept_id:
-                logger.error("Deleting Zenodo deposit...")
-                zenodo.delete_deposit(zenodo_cache_concept_id)
+            if deposit:
+                logger.error("Deleting cache deposit...")
+                deposit.delete()
             logger.error(f"Deleting directory {repo}...")
             shutil.rmtree(repo)
             raise e

@@ -57,10 +57,10 @@ class user:
         self.zenodo.mkdir(exist_ok=True)
         self.zenodo_ids = self.zenodo / "ids"
         self.zenodo_ids.mkdir(exist_ok=True)
-        self.zenodo_sandbox = self.temp / "zenodo_sandbox"
-        self.zenodo_sandbox.mkdir(exist_ok=True)
-        self.zenodo_sandbox_ids = self.zenodo_sandbox / "ids"
-        self.zenodo_sandbox_ids.mkdir(exist_ok=True)
+        self.sandbox = self.temp / "sandbox"
+        self.sandbox.mkdir(exist_ok=True)
+        self.sandbox_ids = self.sandbox / "ids"
+        self.sandbox_ids.mkdir(exist_ok=True)
         self.overleaf = self.temp / "overleaf"
         self.overleaf.mkdir(exist_ok=True)
         self.flags = self.temp / "flags"
