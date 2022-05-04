@@ -24,16 +24,15 @@ it should have the following overall layout:
         }
         .directory-list a {
           border-bottom: 1px solid transparent;
-          color: #888;
+          color: rgba(var(--pst-color-link),1);
           text-decoration: none;
           transition: all 0.2s ease;
         }
         .directory-list a:hover {
           font-weight: bold;
         }
-        .directory-list .folder,
         .directory-list .folder > a {
-          color: #777;
+          color: rgba(var(--pst-color-link),1);
         }
         .directory-list li:before {
           margin-right: 10px;
@@ -107,6 +106,7 @@ it should have the following overall layout:
           <li><a href="#readme">README.md</a></li>
           <li><a href="#config">showyourwork.yml</a></li>
           <li><a href="#snakefile">Snakefile</a></li>
+          <li><a href="#zenodoconfig">zenodo.yml</a></li>
         </ul>
       </div>
 
@@ -409,3 +409,12 @@ as instructions on how to build custom figures, to download datasets, etc; see
 :doc:`custom`.
 Note, finally, that this file is written in a language that's a straightforward
 superset of Python, so any regular Python commands and syntax is valid in it.
+
+
+.. _zenodoconfig:
+
+The ``zenodo.yml`` config file
+******************************
+
+This is a config file used to store Zenodo caching information. This file is
+entirely managed by |showyourwork|, so users should not edit it manually.

@@ -103,7 +103,7 @@ def as_dict(x, depth=0, maxdepth=30):
     Replaces nested instances of OrderedDicts with regular dicts in a dictionary.
 
     This is useful when parsing a config generated from a YAML file with
-    inconsistent use of `-`s.
+    inconsistent use of hyphens.
 
     """
     if depth == 0 and not x:

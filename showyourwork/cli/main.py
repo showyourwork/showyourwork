@@ -115,21 +115,21 @@ def validate_slug(context, param, slug):
             pause()
 
             # Check Zenodo credentials
-            cache_on_sandbox = context.params.get("cache_on_sandbox")
-            cache_on_zenodo = context.params.get("cache_on_zenodo")
-            if not (cache_on_sandbox or cache_on_zenodo):
+            cache = context.params.get("cache")
+            sandbox = context.params.get("sandbox")
+            if not cache:
                 echo(
                     """
-                    You didn't provide a caching service (via the
-                    `--cache-on-sandbox` or `--cache-on-zenodo` command-line
-                    options), so I'm not going to set up remote caching for
+                    You didn't request remote caching (via the
+                    `--cache` command-line option), 
+                    so I'm not going to set up remote caching for
                     this repository.
                     """
                 )
             else:
-                if cache_on_sandbox:
+                if sandbox:
                     service = zenodo.services["sandbox"]
-                elif cache_on_zenodo:
+                else:
                     service = zenodo.services["zenodo"]
                 echo(
                     f"""
@@ -234,7 +234,7 @@ def validate_slug(context, param, slug):
 )
 @click.option(
     "-v",
-    "--showyourwork-version",
+    "--version",
     help="Version of showyourwork to use. Default is the current version.",
     default=None,
     type=type("VERSION", (str,), {}),

@@ -54,7 +54,8 @@ Running |showyourwork| (without any arguments) is a shortcut for ``showyourwork 
 
 The ``setup`` subcommand sets up an open source article repository from scratch
 in the current working directory. This is an interactive command (unless you
-provide the ``--yes`` option; see below). Let's step through what it does here.
+provide the ``--yes`` or ``--quiet`` options; see below). 
+Let's step through what it does here.
 
 To set up a new open source article repository, run
 
@@ -98,7 +99,7 @@ repository of the same name. There's no need to create a README, gitignore file,
 or LICENSE at this time, as |showyourwork| will set those up for you.
 
 Press any key to bring up the next prompt. What you see next depends on whether
-or not the ``$ZENODO_TOKEN`` environment variable is set.
+or not you provided the ``--cache`` option.
 
 
 .. _syw_setup_step2a:
@@ -109,9 +110,12 @@ Step 2A
 If you didn't request Zenodo caching functionality (see below), you'll see the
 following the message:
 
-.. warning::
+.. raw:: html
 
-    Docs coming soon!
+    <pre>
+    You didn't provide a caching service (via the <span class="text-highlight">--cache</span>
+    command-line option), so I'm not going to set up remote caching for this repository.
+    </pre>
 
 
 .. _syw_setup_step2b:
@@ -119,12 +123,36 @@ following the message:
 Step 2B
 ^^^^^^^
 
-If instead you passed one of the ``--cache-on-sandbox`` or ``--cache-on-zenodo`` flags,
-you'll see the following message:
+If instead you passed the ``--cache`` flag, you'll see the following message:
 
-.. warning::
+.. raw:: html
 
-    Docs coming soon!
+    <pre>
+    You requested remote caching on Zenodo, so I'm going to create a deposit draft where 
+    intermediate results will be cached. Please make sure at this time that you have 
+    defined the <span class="text-highlight">ZENODO_TOKEN</span> environment variable containing your API key for Zenodo. 
+    If you don't have one, visit
+
+        <span class="text-highlight">https://zenodo.org/account/settings/applications/tokens/new</span>
+
+    to create a new personal access token with <span class="text-highlight">deposit:actions</span> and <span class="text-highlight">deposit:write</span> 
+    scopes and store it in the environment variable <span class="text-highlight">ZENODO_TOKEN</span>. In order for 
+    this to work on GitHub Actions, you'll also have to visit
+
+        <span class="text-highlight">https://github.com/tmp/tmp/settings/secrets/actions/new</span>
+
+    at this time to create a <span class="text-highlight">ZENODO_TOKEN</span> secret with your API access token.
+    </pre>
+
+Note that, in addition to the ``--cache`` flag, which enables caching on Zenodo,
+users may also provide the ``--sandbox`` flag, which switches the host to Zenodo
+Sandbox. Zenodo Sandbox behaves in exactly the same way as Zenodo, but it is
+explicitly meant as a test bed for dataset archiving. While deposits on Sandbox get assigned
+DOIs, they are no *actual* registered DOIs and have a limited lifespan.
+Sandbox is therefore a great choice for debugging and development; read more about
+it at :doc:`zenodo`. Note that if you choose the ``--sandbox`` option, you'll need
+a Zenodo Sandbox API token stored int the ``SANDBOX_TOKEN`` environment variable
+and GitHub Actions secret.
 
 .. warning::
 
@@ -175,9 +203,19 @@ Step 3B
 If you specified the ``--overleaf`` option (see :ref:`syw_setup_step3a`),
 you'll get the following message:
 
-.. warning::
+.. raw:: html
 
-    Docs coming soon!
+    <pre>
+    You provided an Overleaf project id, so I'm going to set up Overleaf integration 
+    for this repository. Please make sure at this time that you have defined the 
+    <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> environment variables. In order for this to
+    work on GitHub Actions, please go to
+
+        <span class="text-highlight">https://github.com/tmp/tmp/settings/secrets/actions/new</span>
+
+    at this time and create <span class="text-highlight">OVERLEAF_EMAIL and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with your 
+    Overleaf credentials.
+    </pre>
 
 To allow |showyourwork| to push to/pull from your Overleaf project, create
 the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` and 

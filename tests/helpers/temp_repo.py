@@ -90,7 +90,7 @@ class TemporaryShowyourworkRepository:
             version = str(Path(showyourwork.__file__).parents[1])
         else:
             version = get_repo_sha()
-        options = f"--quiet --showyourwork-version={version} "
+        options = f"--quiet --version={version} "
         if self.sandbox_cache:
             # Enable zenodo sandbox caching
             options += "--cache --sandbox"

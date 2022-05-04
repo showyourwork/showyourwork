@@ -1,8 +1,3 @@
-.. warning::
-
-    This page is out of date. Please check back later for an up-to-date version!
-
-
 Zenodo integration
 ==================
 
@@ -49,11 +44,6 @@ the output you get follows determinstically from the given inputs*.
 Before we get into how this works and how to take advantage of it, let's
 discuss how to set up the integration by generating a Zenodo API token.
 
-.. 
-
-    We'll use the Zenodo Sandbox service, since that's better suited to our toy example
-    (deposits on Sandbox don't get a bona fide DOI, and are deleted periodically,
-    so it's a good service to use when caching temporary results).
 
 Setting up Zenodo integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,11 +55,6 @@ you're using Zenodo Sandbox, you can generate it
 `here <https://sandbox.zenodo.org/account/settings/applications/tokens/new>`__.
 In either case, you'll need to set up an account first if you don't already have one.
 
-
-TODO!
-
-
-
 Name the token something informative and make
 sure to give it ``deposit:actions`` and ``deposit:write`` permissions. Copy the
 token and store it somewhere secure. 
@@ -80,6 +65,8 @@ token and store it somewhere secure.
     repository!
 
 Then, on your local computer, create an environment variable called ``$ZENODO_TOKEN``
+(if you'd like to use Zenodo) or ``$SANDBOX_TOKEN`` (if you'd like to use Zenodo
+Sandbox)
 with value equal to the corresponding token. You can either do this manually in the terminal, e.g.,
 
 .. code-block:: bash
@@ -90,14 +77,16 @@ or by adding that line to your shell config file (``.bashrc``, ``.zshrc``, etc.)
 and re-starting your session.
 In order for |showyourwork| to have access to Zenodo when running on GitHub
 Actions, you'll also have to provide this value as a secret (name it
-``ZENODO_TOKEN``); read more about those 
+``ZENODO_TOKEN`` or ``SANDBOX_TOKEN``, depending on which service you want to use); 
+read more about those 
 `here <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_.
 
 If you've done all that, the next time you create a new article repository
-using :ref:`syw_setup`, |showyourwork| will automatically create a Zenodo
-draft deposit which it will use to cache your intermediate results. Note that
+using :ref:`syw_setup`, pass the ``--cache`` option and |showyourwork| will automatically create a Zenodo
+draft deposit which it will use to cache your intermediate results (pass ``--sandbox``
+as well to instead use Zenodo Sandbox). Note that
 you can also manually create a draft deposit by running ``showyourwork cache create``
-(see :ref:`syw_cache` for details).
+(see :ref:`syw_cache`, and below, for details).
 
 
 Intermediate results
@@ -295,19 +284,27 @@ users with access to your account can see their files.
 
 .. note::
 
-    If you switch branches, you can create a new deposit for that branch by
-    running
+    If you switch branches, or if you set up a repository without caching
+    functionality and would like to add it, you can create a new Zenodo deposit 
+    for the current branch by running
 
     .. code-block:: bash
 
-        showyourwork zenodo --create
+        showyourwork cache create
 
     .. raw:: html
 
         <br/>
 
-    and following the instructions on the screen to add the relevant bit
-    of information to your ``showyourwork.yml`` config file.
+    To instead use Zenodo Sandbox, run
+
+    .. code-block:: bash
+
+        showyourwork cache create --sandbox
+
+    .. raw:: html
+
+        <br/>
 
 
 Publishing the cache
@@ -315,11 +312,12 @@ Publishing the cache
 
 When you're ready to publish or distribute your article to the outside world
 --and you're confident the inputs to your cached rules won't change again--
-you should publish your draft deposit. You can do this either on Zenodo or by running
+you should publish your draft deposit for the current branch. 
+You can do this either on Zenodo or by running
 
 .. code-block:: bash
 
-    showyourwork zenodo --publish
+    showyourwork cache publish
 
 
 in the top level of your repo. This will publish your deposit, giving it a 
@@ -332,26 +330,25 @@ Once you do this, anyone can take advantage of the caching functionality.
     will result in a new draft being created. Future runs of your workflow
     will be able to restore the cache from any of the published versions or
     from the latest draft, so this could be convenient in cases where you'd like
-    to have a few different sets of inputs cached. **However, published Zenodo
-    deposits are permanent!** There is no way to delete a Zenodo deposit once
+    to have a few different sets of inputs cached. 
+
+.. warning::
+
+    Published Zenodo deposits are permanent! There is no way to delete a Zenodo deposit once
     it's published, as it now has a perennial DOI associated with it. Therefore,
     it is important that users be responsible in their use of this service!
+    If you find it useful to publish the cache for your repository frequently,
+    please consider using Zenodo Sandbox instead.
 
 
 Deleting the cache
 ^^^^^^^^^^^^^^^^^^
 
-You can delete the latest cache draft on Zenodo by running
+You can delete the latest cache draft for the current branch by running
 
 .. code-block:: bash
 
-    showyourwork zenodo --delete
+    showyourwork cache delete
 
-.. raw:: html
-
-    <br/>
-
-and following the instructions on the screen to remove the relevant bit
-of information from your ``showyourwork.yml`` config file. Note that,
-as we mentioned above, you can't delete Zenodo deposits once they have
+Note that, as we mentioned above, you can't delete Zenodo deposits once they have
 been published!
