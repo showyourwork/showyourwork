@@ -388,5 +388,17 @@ to the `arXiv <https://arxiv.org/>`_ article service.
 
     .. program-output:: showyourwork cache --help
 
+    .. raw:: html
+
+        <br/>
+
+    **Subcommand documentation:**
+
+    .. program-output:: showyourwork cache create --help
+
+    .. program-output:: showyourwork cache delete --help
+
+    .. program-output:: showyourwork cache publish --help
+
 Utilities for creating, deleting, and publishing the Zenodo deposit drafts used
 to cache intermediate results from your workflow; see :doc:`zenodo`.
