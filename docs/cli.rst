@@ -213,7 +213,7 @@ you'll get the following message:
 
         <span class="text-highlight">https://github.com/tmp/tmp/settings/secrets/actions/new</span>
 
-    at this time and create <span class="text-highlight">OVERLEAF_EMAIL and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with your 
+    at this time and create <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with your 
     Overleaf credentials.
     </pre>
 

@@ -81,8 +81,8 @@ with open("api/modules.rst", "r") as f:
 Path("api/modules.rst").unlink()
 lines += [
     "\n",
-    "Workflow scripts\n",
-    "----------------\n",
+    "Snakemake workflow scripts\n",
+    "--------------------------\n",
 ] + new_lines[2:]
 lines += [
     "\n",

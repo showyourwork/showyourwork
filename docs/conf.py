@@ -3,9 +3,7 @@ import hacks
 # -- Project information -----------------------------------------------------
 
 project = "showyourwork"
-copyright = (
-    "2022, Rodrigo Luger"
-)
+copyright = "2022, Rodrigo Luger"
 
 # -- General configuration ---------------------------------------------------
 
@@ -16,7 +14,7 @@ master_doc = "index"
 rst_epilog = """
 .. |showyourwork| raw:: html
     
-    <span style="color:red; font-weight:bold;">showyourwork!</span>
+    <span style="color:red; font-weight:bold; font-style:italic;">showyourwork!</span>
 """
 
 # -- Options for HTML output -------------------------------------------------
