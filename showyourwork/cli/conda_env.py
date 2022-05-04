@@ -45,7 +45,7 @@ def run_in_env(command, **kwargs):
         .render(),
         Loader=yaml.CLoader,
     )
-    syw_spec = user_config.get("showyourwork", {}).get("version", None)
+    syw_spec = user_config.get("version", None)
     if not syw_spec:
         # No specific version provided; default to any
         syw_spec = "showyourwork"

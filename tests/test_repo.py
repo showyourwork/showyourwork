@@ -1,5 +1,6 @@
-from helpers import TemporaryShowyourworkRepository, edit_yaml
+from helpers import TemporaryShowyourworkRepository
 from showyourwork import overleaf, exceptions
+from showyourwork.config import edit_yaml
 from showyourwork.logging import get_logger
 from showyourwork.subproc import get_stdout
 from tempfile import NamedTemporaryFile
@@ -235,6 +236,7 @@ class TestOverleaf(TemporaryShowyourworkRepository):
 class TestSandboxCache(TemporaryShowyourworkRepository):
     """Test the Zenodo caching feature."""
 
+    # Enable Sandbox caching
     sandbox_cache = True
 
     def customize(self):
@@ -248,6 +250,7 @@ class TestSandboxCache(TemporaryShowyourworkRepository):
 class TestSandboxDirCache(TemporaryShowyourworkRepository):
     """Test the Zenodo caching feature for entire directories."""
 
+    # Enable Sandbox caching
     sandbox_cache = True
 
     def customize(self):

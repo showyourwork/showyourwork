@@ -1,7 +1,4 @@
-showyourwork:
-  version: {{ cookiecutter.showyourwork_version }}
-  cache:
-    main: {{ cookiecutter.cache_doi }}
+version: {{ cookiecutter.showyourwork_version }}
 
 {% if cookiecutter.overleaf_id -%}
 overleaf:

@@ -1,0 +1,2 @@
+cache:
+  main: {{ cookiecutter.cache_doi }}

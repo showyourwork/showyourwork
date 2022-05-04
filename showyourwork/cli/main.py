@@ -308,31 +308,31 @@ def create(ctx, branch, service):
 @cache.command()
 @click.pass_context
 @click.option(
-    "-d",
-    "--doi",
+    "-b",
+    "--branch",
     required=False,
     default=None,
-    help="The concept DOI of the draft. Default is to infer from the config file.",
+    help="Branch whose deposit is to be deleted. Default is current branch.",
 )
-def delete(ctx, doi):
-    """Delete the latest draft of a Zenodo deposit with given DOI."""
+def delete(ctx, branch):
+    """Delete the latest draft of a Zenodo deposit."""
     ensure_top_level()
-    commands.zenodo_delete(doi)
+    commands.zenodo_delete(branch)
 
 
 @cache.command()
 @click.pass_context
 @click.option(
-    "-d",
-    "--doi",
+    "-b",
+    "--branch",
     required=False,
     default=None,
-    help="The concept DOI of the draft. Default is to infer from the config file.",
+    help="Branch whose deposit is to be published. Default is current branch.",
 )
-def publish(ctx, doi):
-    """Publish the latest draft of a Zenodo deposit with given DOI."""
+def publish(ctx, branch):
+    """Publish the latest draft of a Zenodo deposit."""
     ensure_top_level()
-    commands.zenodo_publish(doi)
+    commands.zenodo_publish(branch)
 
 
 @cache.command(hidden=True)  # used internally

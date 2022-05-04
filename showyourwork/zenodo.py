@@ -428,7 +428,9 @@ class Zenodo:
         logger = get_logger()
 
         # Grab the version id
-        logger.debug(f"Deleting {self.service} deposit {self.deposit_id}...")
+        logger.info(
+            f"Deleting {self.service} deposit with concept DOI {self.doi}..."
+        )
         r = requests.get(
             f"https://{self.url}/api/deposit/depositions",
             params={
@@ -454,6 +456,7 @@ class Zenodo:
                 },
             )
         )
+        logger.info(f"Successfully deleted deposit {self.doi}.")
 
     @require_access_token
     def publish(self):
@@ -465,7 +468,9 @@ class Zenodo:
         logger = get_logger()
 
         # Grab the version id
-        logger.debug(f"Publishing {self.service} deposit {self.deposit_id}...")
+        logger.info(
+            f"Publishing {self.service} deposit with concept DOI {self.doi}..."
+        )
         r = requests.get(
             f"https://{self.url}/api/deposit/depositions",
             params={
@@ -491,6 +496,7 @@ class Zenodo:
                 },
             )
         )
+        logger.info(f"Successfully published deposit {self.doi}.")
 
     def download_file(self, file, rule_name, tarball=False):
         # Logger

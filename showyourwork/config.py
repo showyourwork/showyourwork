@@ -1,6 +1,7 @@
 from . import paths, git, exceptions
 from pathlib import Path
 from collections import OrderedDict, ChainMap
+from contextlib import contextmanager
 import os
 import re
 import sys
@@ -12,20 +13,49 @@ try:
 except ModuleNotFoundError:
     snakemake = None
 
-__all__ = ["parse_config", "get_run_type", "render_config"]
+
+@contextmanager
+def edit_yaml(file):
+    """A context used to edit a YAML file in place."""
+    if Path(file).exists():
+        with open(file, "r") as f:
+            contents = yaml.load(f, Loader=yaml.CLoader)
+    else:
+        contents = {}
+    try:
+        yield contents
+    finally:
+        with open(file, "w") as f:
+            print(yaml.dump(contents, Dumper=yaml.CDumper), file=f)
 
 
 def render_config(cwd="."):
     """
-    Render any jinja templates in `showyourwork.yml` and save to a
-    temporary YAML file.
+    Render any jinja templates in `showyourwork.yml`, combine with
+    `zenodo.yml`, and save the processed config to a temporary YAML file.
+
+    This temporary YAML file is then used as the configfile for the Snakemake
+    workflow.
+
+    Returns the config as a dictionary.
 
     """
+    # Render the user's config file to a dict
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(cwd))
+    config = env.get_template("showyourwork.yml").render()
+    config = yaml.safe_load(config)
+
+    # Merge with the zenodo config file, if present
+    file = Path(cwd) / "zenodo.yml"
+    if file.exists():
+        with open(file, "r") as f:
+            config.update(yaml.safe_load(f.read()))
+
+    # Save to a temporary YAML file
     with open(paths.user().temp / "showyourwork.yml", "w") as f:
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(cwd))
-        config = env.get_template("showyourwork.yml").render()
-        print(config, file=f)
-    return yaml.safe_load(config)
+        yaml.dump(config, f)
+
+    return config
 
 
 def get_run_type():
@@ -181,14 +211,8 @@ def parse_config():
         # -- User settings --
         #
 
-        #: Showyourwork meta-settings
-        config["showyourwork"] = config.get("showyourwork", {})
-        config["showyourwork"]["version"] = config["showyourwork"].get(
-            "version", None
-        )
-        config["showyourwork"]["cache"] = config["showyourwork"].get(
-            "cache", {}
-        )
+        #: Showyourwork version
+        config["version"] = config.get("version", None)
 
         #: Verbosity
         config["verbose"] = config.get("verbose", False)
@@ -221,6 +245,9 @@ def parse_config():
         #
         # -- Internal settings --
         #
+
+        # Cache settings
+        config["cache"] = config.get("cache", {})
 
         # Path to the user repo
         config["user_abspath"] = paths.user().repo.as_posix()
@@ -307,6 +334,6 @@ def parse_config():
             config["sha_tag_header"] = f'Git commit: {config["git_sha"][:7]}'
     else:
         config["sha_tag_header"] = ""
-    config["showyourwork"]["cache"][config["git_branch"]] = config[
-        "showyourwork"
-    ]["cache"].get(config["git_branch"], None)
+    config["cache"][config["git_branch"]] = config["cache"].get(
+        config["git_branch"], None
+    )

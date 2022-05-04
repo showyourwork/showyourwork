@@ -25,6 +25,9 @@ class TemporaryShowyourworkRepository:
 
     """
 
+    # Local debug mode
+    debug = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
+
     # Editable class settings
     zenodo_cache = False
     sandbox_cache = False
@@ -32,8 +35,8 @@ class TemporaryShowyourworkRepository:
     action_wait = 240
     action_max_tries = 10
     action_interval = 60
-    use_local_showyourwork = False
-    local_build_only = False
+    use_local_showyourwork = debug
+    local_build_only = debug
 
     # Internal
     _concept_doi = None
