@@ -247,7 +247,7 @@ def setup(
     sandbox,
     overleaf,
     ssh,
-    showyourwork_version,
+    version,
 ):
     """
     Set up a new article repository in the current working directory.
@@ -268,7 +268,7 @@ def setup(
             )
         else:
             cache_service = None
-    commands.setup(slug, cache_service, overleaf, ssh, showyourwork_version)
+    commands.setup(slug, cache_service, overleaf, ssh, version)
 
 
 @entry_point.command()
