@@ -6,10 +6,12 @@
 Zenodo integration
 ==================
 
-|showyourwork| integrates with the `Zenodo <https://zenodo.org>`_ service to
+|showyourwork| integrates with the `Zenodo <https://zenodo.org>`_ and
+`Zenodo Sandbox <https://sandbox.zenodo.org>`_ services to
 easily allow users to host datasets and simulation results used in the
 workflow. There are two main ways in which this integration occurs: with
 static datasets and with dynamic datasets.
+
 
 Static datasets
 ---------------
@@ -31,13 +33,14 @@ Dynamic datasets
 ----------------
 
 The |showyourwork| workflow has the ability to cache the results of intermediate
-steps in your pipeline on Zenodo. This is useful for workflows that entail
+steps in your pipeline on either Zenodo or Zenodo Sandbox. 
+This is useful for workflows that entail
 running lengthy computations, simulations, etc., that third-party users may
 not want to run on their own. It's also useful for builds on GitHub Actions,
 which has limited compute resources and a timeout of a few hours. 
 
 The way |showyourwork| deals with these cases is to cache these lengthy
-computations on Zenodo alongside a record of all the
+computations on Zenodo or Zenodo Sandbox alongside a record of all the
 inputs that went into generating the cached output. If, on subsequent runs
 of the workflow, the inputs remain unchanged, |showyourwork| will simply
 download the cached results from Zenodo, *maintaining the guarantee that
@@ -46,13 +49,27 @@ the output you get follows determinstically from the given inputs*.
 Before we get into how this works and how to take advantage of it, let's
 discuss how to set up the integration by generating a Zenodo API token.
 
+.. 
+
+    We'll use the Zenodo Sandbox service, since that's better suited to our toy example
+    (deposits on Sandbox don't get a bona fide DOI, and are deleted periodically,
+    so it's a good service to use when caching temporary results).
 
 Setting up Zenodo integration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In order for |showyourwork| to communicate with Zenodo, it needs access to a Zenodo API token, which you can 
-`generate here <https://zenodo.org/account/settings/applications/tokens/new>`_
-(you'll need to set up a Zenodo account first if you don't already have one).
+In order for |showyourwork| to communicate with Zenodo, it needs access to an API token.
+If you're using Zenodo, you can generate a token 
+`here <https://zenodo.org/account/settings/applications/tokens/new>`__, and if
+you're using Zenodo Sandbox, you can generate it
+`here <https://sandbox.zenodo.org/account/settings/applications/tokens/new>`__.
+In either case, you'll need to set up an account first if you don't already have one.
+
+
+TODO!
+
+
+
 Name the token something informative and make
 sure to give it ``deposit:actions`` and ``deposit:write`` permissions. Copy the
 token and store it somewhere secure. 

@@ -492,7 +492,7 @@ class Zenodo:
             )
         )
 
-    def download_file(self, file, rule_name, concept_id, tarball=False):
+    def download_file(self, file, rule_name, tarball=False):
         # Logger
         logger = get_logger()
 
@@ -503,8 +503,9 @@ class Zenodo:
 
         # Check for an existing draft; if found, check for the file in
         # that draft and return if found.
+        concept_id = self.deposit_id
         logger.debug(
-            f"Attempting to access {self.service} deposit {concept_id}..."
+            f"Attempting to access {self.service} deposit with DOI {self.doi}..."
         )
         r = requests.get(
             f"https://{self.url}/api/deposit/depositions",
@@ -536,7 +537,7 @@ class Zenodo:
                         except exceptions.FileNotFoundOnZenodo:
                             exceptions.restore_trace()
                             logger.debug(
-                                f"File {rule_name} not found in deposit {concept_id}."
+                                f"File {rule_name} not found in deposit with DOI {self.doi}."
                             )
                         else:
                             return
@@ -552,11 +553,11 @@ class Zenodo:
                             logger.debug(data["message"])
             else:
                 logger.debug(
-                    f"Failed to access {self.service} deposit {concept_id}."
+                    f"Failed to access {self.service} deposit with DOI {self.doi}."
                 )
         else:
             logger.debug(
-                f"Failed to access {self.service} deposit {concept_id}."
+                f"Failed to access {self.service} deposit with DOI {self.doi}."
             )
             try:
                 data = r.json()
@@ -567,7 +568,7 @@ class Zenodo:
 
         # Check for a published record
         logger.debug(
-            f"Attempting to access {self.service} record {concept_id}..."
+            f"Attempting to access {self.service} record with DOI {self.doi}..."
         )
         r = requests.get(f"https://{self.url}/api/records/{concept_id}")
         if r.status_code > 204:
@@ -593,7 +594,7 @@ class Zenodo:
             r = requests.get(
                 f"https://{self.url}/api/records",
                 params={
-                    "q": f'conceptdoi:"{self.doi_prefix}/zenodo.{concept_id}"',
+                    "q": f'conceptdoi:"{self.doi_prefix}{concept_id}"',
                     "access_token": self.access_token,
                     "all_versions": 1,
                 },
@@ -604,7 +605,7 @@ class Zenodo:
                 except:
                     records = []
                     logger.debug(
-                        f"File {rule_name} not found in record {concept_id}."
+                        f"File {rule_name} not found in record with DOI {self.doi}."
                     )
                 for record in records[::-1]:
                     try:
@@ -614,7 +615,7 @@ class Zenodo:
                     except exceptions.FileNotFoundOnZenodo:
                         exceptions.restore_trace()
                         logger.debug(
-                            f"File {rule_name} not found in record {concept_id}."
+                            f"File {rule_name} not found in record with DOI {self.doi}."
                         )
                     else:
                         return
@@ -636,12 +637,13 @@ class Zenodo:
         raise exceptions.FileNotFoundOnZenodo(file.name)
 
     @require_access_token
-    def upload_file(self, file, rule_name, concept_id, tarball=False):
+    def upload_file(self, file, rule_name, tarball=False):
         # Logger
         logger = get_logger()
 
         # Check if a draft already exists, and create it if not.
         # If authentication fails, return with a gentle warning
+        concept_id = self.deposit_id
         r = requests.get(
             f"https://{self.url}/api/deposit/depositions",
             params={

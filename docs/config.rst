@@ -123,7 +123,7 @@ top level of the repository. The ``path-to-local-file`` may be omitted, in which
 case the file name is preserved and the file is downloaded to the default
 ``destination`` (see the option of the same name below).
 
-If the remote file is a tarball, instead of a local path, users should provide
+If the remote file is a zipfile or a tarball, instead of a local path, users may provide
 a directory tree mapping that specifies the contents of the tarball and where they
 should be extracted to. The workflow will automatically extract them. See the
 example below for details.
