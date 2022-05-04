@@ -200,18 +200,22 @@ def validate_slug(context, param, slug):
     help="Don't prompt the user, and don't display informational output.",
 )
 @click.option(
-    "-x",
-    "--cache-on-sandbox",
+    "-c",
+    "--cache",
     is_flag=True,
     default=False,
-    help="Set up intermediate result caching on Zenodo Sandbox.",
+    help="Set up intermediate result caching on Zenodo. Requires a Zenodo "
+    "API token provided as the environment variable and Github repository "
+    "secret ZENODO_TOKEN.",
 )
 @click.option(
-    "-z",
-    "--cache-on-zenodo",
+    "-x",
+    "--sandbox",
     is_flag=True,
     default=False,
-    help="Set up intermediate result caching on Zenodo.",
+    help="Use Zenodo Sandbox to cache results (if `--cache` was provided). "
+    "Requires a Zenodo Sandbox API token provided as the environment variable "
+    "and Github repository secret SANDBOX_TOKEN.",
 )
 @click.option(
     "-o",
@@ -239,8 +243,8 @@ def setup(
     slug,
     yes,
     quiet,
-    cache_on_sandbox,
-    cache_on_zenodo,
+    cache,
+    sandbox,
     overleaf,
     ssh,
     showyourwork_version,
@@ -252,12 +256,18 @@ def setup(
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    if cache_on_sandbox:
-        cache_service = "sandbox"
-    elif cache_on_zenodo:
-        cache_service = "zenodo"
+    if cache:
+        if sandbox:
+            cache_service = "sandbox"
+        else:
+            cache_service = "zenodo"
     else:
-        cache_service = None
+        if sandbox:
+            raise exceptions.ShowyourworkException(
+                "Must provide the `--cache` option if `--sandbox` is provided."
+            )
+        else:
+            cache_service = None
     commands.setup(slug, cache_service, overleaf, ssh, showyourwork_version)
 
 
@@ -292,16 +302,24 @@ def cache(ctx):
     help="Which branch to create the deposit for. Default is current branch.",
 )
 @click.option(
-    "-s",
-    "--service",
-    type=click.Choice(["zenodo", "sandbox"], case_sensitive=False),
-    required=False,
-    default="sandbox",
-    help="Which archive service to use. Default is `sandbox`.",
+    "-x",
+    "--sandbox",
+    is_flag=True,
+    help="Use Zenodo Sandbox for caching.",
 )
-def create(ctx, branch, service):
-    """Create a Zenodo deposit draft for the given branch."""
+def create(ctx, branch, sandbox):
+    """
+    Create a Zenodo deposit draft for the given branch.
+
+    Requires a Zenodo or Zenodo Sandbox API token provided as the
+    environment variable and Github repository secret ZENODO_TOKEN
+    or SANDBOX_TOKEN.
+    """
     ensure_top_level()
+    if sandbox:
+        service = "sandbox"
+    else:
+        service = "zenodo"
     commands.zenodo_create(branch, service)
 
 
@@ -315,7 +333,13 @@ def create(ctx, branch, service):
     help="Branch whose deposit is to be deleted. Default is current branch.",
 )
 def delete(ctx, branch):
-    """Delete the latest draft of a Zenodo deposit."""
+    """
+    Delete the latest draft of a Zenodo deposit.
+
+    Requires a Zenodo or Zenodo Sandbox API token provided as the
+    environment variable and Github repository secret ZENODO_TOKEN
+    or SANDBOX_TOKEN.
+    """
     ensure_top_level()
     commands.zenodo_delete(branch)
 
@@ -330,7 +354,13 @@ def delete(ctx, branch):
     help="Branch whose deposit is to be published. Default is current branch.",
 )
 def publish(ctx, branch):
-    """Publish the latest draft of a Zenodo deposit."""
+    """
+    Publish the latest draft of a Zenodo deposit.
+
+    Requires a Zenodo or Zenodo Sandbox API token provided as the
+    environment variable and Github repository secret ZENODO_TOKEN
+    or SANDBOX_TOKEN.
+    """
     ensure_top_level()
     commands.zenodo_publish(branch)
 

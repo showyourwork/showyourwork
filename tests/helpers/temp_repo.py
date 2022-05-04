@@ -93,10 +93,10 @@ class TemporaryShowyourworkRepository:
         options = f"--quiet --showyourwork-version={version} "
         if self.sandbox_cache:
             # Enable zenodo sandbox caching
-            options += "--cache-on-sandbox"
+            options += "--cache --sandbox"
         elif self.zenodo_cache:
             # Enable zenodo caching
-            options += "--cache-on-zenodo"
+            options += "--cache"
         if self.overleaf_id:
             # Enable overleaf syncing
             options += f"--overleaf={self.overleaf_id}"

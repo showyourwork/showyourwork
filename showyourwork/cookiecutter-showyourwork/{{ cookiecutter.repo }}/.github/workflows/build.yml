@@ -17,7 +17,7 @@ jobs:
 
       - name: Build the article PDF
         id: build
-        uses: showyourwork/showyourwork-action@dev # DEBUG
+        uses: showyourwork/showyourwork-action@v1
         env:
           ZENODO_TOKEN: ${{ "{{" }} secrets.ZENODO_TOKEN {{ "}}" }}
           SANDBOX_TOKEN: ${{ "{{" }} secrets.SANDBOX_TOKEN {{ "}}" }}
