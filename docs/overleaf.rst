@@ -12,7 +12,7 @@ Overleaf integration
 Overview
 --------
 
-As of version ``1.0``, |showyourwork| allows users to integrate their projects 
+|showyourwork| now allows users to integrate their projects 
 with `Overleaf <https://www.overleaf.com>`__, which can greatly facilitate collaborative
 article writing in LaTeX.
 While Overleaf supports integration with git and GitHub in 

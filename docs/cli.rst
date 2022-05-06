@@ -319,48 +319,29 @@ your config file or missing dependencies, this command may fail silently, in
 which case some of the output may remain after running it.
 
 
-Manual clean
-^^^^^^^^^^^^
+Force clean
+^^^^^^^^^^^
 
-If ``showyourwork clean`` didn't remove all of the output, you can manually
-delete all the programmatically-generated figures and datasets by removing
-everything in the ``src/tex/figures`` and ``src/data`` folders
-(assuming you're respecting the |showyourwork| conventions; see :doc:`layout`):
-
-.. code-block:: bash
-
-    rm -r src/tex/figures/**/*.*
-    rm -r src/data/**/*.*
-
-You may also have to manually remove the hidden ``.showyourwork`` folder, which
-keeps track of repository metadata and caches certain files:
-
-.. code-block:: bash
-
-    rm -r .showyourwork
+If ``showyourwork clean`` didn't remove all of the output, you can force
+the deletion of all the programmatically-generated figures and datasets by 
+passing the ``--force`` option, which will remove
+everything in the ``src/tex/figures``, ``src/data``, and temporary
+``.showyourwork`` folders
+(assuming you're respecting the |showyourwork| conventions; see :doc:`layout`).
 
 
 Deep clean
 ^^^^^^^^^^
 
-If you want to start over from scratch, you can also delete the hidden ``.snakemake``
-folder at the root of your repository:
-
-.. code-block:: bash
-
-    rm -r .snakemake
-
-This houses the ``conda`` environments for your build (among other things), so
+If you want to start over from scratch, you can also pass the ``--deep`` option
+for a deep clean. This removes
+the hidden ``.snakemake`` folder, which houses the ``conda`` environments 
+for your build (among other things), so
 deleting it will force a re-install of all packages used in your workflow.
-
-Finally, there's one more hidden folder to know about, a ``.showyourwork``
+This option also removes the ``.showyourwork``
 folder located in your ``$HOME`` path, which also houses ``conda`` environments
 used at different stages of the build step. You can safely remove it at any time
-(at the cost of a longer runtime the next time you execute ``showyourwork``):
-
-.. code-block:: bash
-
-    rm -r ~/.showyourwork
+(at the cost of a longer runtime the next time you execute ``showyourwork``).
 
 
 .. _syw_tarball:

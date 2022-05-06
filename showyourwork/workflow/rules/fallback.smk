@@ -1,10 +1,10 @@
 """
 Defines the ``syw__fallback__`` rules.
 
-These are fallback rules for manuscript dependencies, which raise an error
-if they ever get invoked. Implementing these is necessary because of certain
-edge cases involving the behavior of Snakemake when dependencies aren't
-present.
+These are fallback rules for manuscript dependencies, which get invoked
+if no other valid rule is found. Implementing these is necessary because 
+of certain edge cases involving the behavior of Snakemake when dependencies 
+aren't present.
 
 For example, suppose the user runs ``showyourwork`` and successfully builds
 their article, ``ms.pdf``. They then add a figure environment to the ``ms.tex``
@@ -22,8 +22,8 @@ output of the modified ``ms.tex`` file). But that rule is ineligible for the
 workflow run because one of its other dependencies (``figure.py``) does not
 exist. The default behavior of Snakemake in this case is to skip this rule 
 without throwing an error, since there may be other rules that can still
-complete the job successfully. But it finds none, so the workflow simply completes
-with the message "Nothing to be done".
+complete the job successfully. But it finds none, so the workflow simply 
+completes with the message "Nothing to be done".
 
 This may be the intended behavior in some cases (I'm not sure!), but in our
 case it's not: the workflow should fail and inform the user that there is no
@@ -33,17 +33,80 @@ So, long story short, this Snakefile implements individual rules for each
 of the direct dependencies of the manuscript, which get assigned the
 lowest possible priority in the main Snakefile. If one of these rules 
 gets executed (when there are no other rules that can generate that
-dependency), they simply throw an error informing the user about the problem.
+dependency), the default behavior is to simply throw an error informing 
+the user about the problem.
+
+Users can choose to disable this behavior (by setting ``rule_fallback: skip``
+in the config file) or to modify it to produce a placeholder output file
+(by setting ``rule_fallback: placeholder``.)
 
 """
-from showyourwork import exceptions
+from showyourwork import paths, exceptions
 
 
-for dep in config["dependencies"][config["ms_tex"]]:
-    rule:
-        name:
-            f"syw__fallback__{dep}"
-        output:
-            dep
-        run:
-            raise exceptions.MissingDependencyError(f"No rule to generate {dep}.")
+if config["rule_fallback"] == "fail":
+    
+    # Fail informatively
+    for dep in config["dependencies"][config["ms_tex"]]:
+
+        rule:
+            name:
+                f"syw__fallback__{dep}"
+            output:
+                dep
+            run:
+                raise exceptions.MissingDependencyError(
+                    f"No rule to generate {dep}. This usually happens when "
+                    "one or more of the dependencies of this file are missing "
+                    "(and Snakemake doesn't know how to generate them). If "
+                    "you're not sure why this error is being thrown, try "
+                    "setting `rule_fallback: skip` in the config file to get "
+                    "a more informative error from Snakemake about possible "
+                    "missing dependencies."
+                )
+
+elif config["rule_fallback"] == "placeholder":
+
+    # Generate a placeholder figure
+    for dep in config["dependencies"][config["ms_tex"]]:
+
+        ext = dep.split(".")[-1]
+        placeholder = paths.showyourwork().placeholders / f"placeholder.{ext}"
+        if placeholder.exists():
+            
+            # Copy our standard placeholder over
+            rule:
+                name:
+                    f"syw__fallback__{dep}"
+                message:
+                    f"No valid rule found for {dep}; using a placeholder..."
+                output:
+                    dep
+                params:
+                    placeholder=placeholder
+                shell:
+                    f"cp {{params.placeholder}} {{output[0]}}"
+
+        else:
+
+            # We don't know how to generate a placeholder for this file, so
+            # fallback to `fail`
+            rule:
+                name:
+                    f"syw__fallback__{dep}"
+                output:
+                    dep
+                run:
+                    raise exceptions.MissingDependencyError(
+                        f"No rule to generate {dep}. This usually happens when "
+                        "one or more of the dependencies of this file are missing "
+                        "(and Snakemake doesn't know how to generate them). If "
+                        "you're not sure why this error is being thrown, try "
+                        "setting `rule_fallback: skip` in the config file to get "
+                        "a more informative error from Snakemake about possible "
+                        "missing dependencies."
+                    )
+else:
+
+    # Leave our fate up to the gods
+    pass

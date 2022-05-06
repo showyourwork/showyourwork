@@ -221,9 +221,16 @@ def parse_config():
         config["ms_name"] = config.get("ms_name", "ms")
 
         #: Custom script execution rules
+        # Note that these are strings with placeholder values like `script`
+        # inside curly braces; these get formatted later, in `preprocess.py`
+        # Note also that since we execute everything from the root of the
+        # repo, matplotlib won't by default use the `matplotlibrc` file in
+        # the scripts directory, so we need to pass it as the special env
+        # var $MATPLOTLIBRC.
         config["scripts"] = as_dict(config.get("scripts", {}))
         config["scripts"]["py"] = config["scripts"].get(
-            "py", "python {script}"
+            "py",
+            f"MATPLOTLIBRC={paths.user().scripts} " + "python {script}",
         )
 
         #: Custom script dependencies
@@ -241,6 +248,15 @@ def parse_config():
         config["style"]["show_git_sha_or_tag"] = config["style"].get(
             "show_git_sha_or_tag", False
         )
+
+        #: Enable fallback rules?
+        config["rule_fallback"] = config.get("rule_fallback", "fail").lower()
+        if not config["rule_fallback"] in ["fail", "skip", "placeholder"]:
+            raise exceptions.ConfigError(
+                "Error parsing the config. "
+                "Setting `rule_fallback` must be one of "
+                "`fail`, `skip`, or `placeholder`."
+            )
 
         #
         # -- Internal settings --

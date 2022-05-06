@@ -11,6 +11,7 @@ class showyourwork:
         self.rules = self.workflow / "rules"
         self.checkpoints = self.workflow / "checkpoints"
         self.resources = self.workflow / "resources"
+        self.placeholders = self.resources / "placeholders"
         self.envs = self.workflow / "envs"
         self.cookiecutter = self.module / "cookiecutter-showyourwork"
 

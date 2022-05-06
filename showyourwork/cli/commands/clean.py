@@ -1,10 +1,11 @@
 from ... import paths
 from ..conda_env import run_in_env
 from pathlib import Path
+import subprocess
 import shutil
 
 
-def clean(options=""):
+def clean(force, deep, options=""):
     """Clean the article build."""
     for file in ["build.smk", "prep.smk"]:
         snakefile = snakefile = Path("${SYW_PATH}") / "workflow" / file
@@ -15,3 +16,17 @@ def clean(options=""):
         (paths.user().repo / "arxiv.tar.gz").unlink()
     if paths.user().temp.exists():
         shutil.rmtree(paths.user().temp)
+    if force:
+        for file in paths.user().figures.rglob("*.*"):
+            if file.name != ".gitignore":
+                file.unlink()
+        for file in paths.user().data.rglob("*.*"):
+            if file.name != ".gitignore":
+                file.unlink()
+        if paths.user().temp.exists():
+            shutil.rmtree(paths.user().temp)
+    if deep:
+        if (paths.user().repo / ".snakemake").exists():
+            shutil.rmtree(paths.user().repo / ".snakemake")
+        if paths.user().home_temp.exists():
+            shutil.rmtree(paths.user().home_temp)

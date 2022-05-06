@@ -272,10 +272,22 @@ def setup(
 
 
 @entry_point.command()
-def clean():
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    help="Forcefully remove everything in the `src/tex/figures` and `src/data` directories.",
+)
+@click.option(
+    "-d",
+    "--deep",
+    is_flag=True,
+    help="Forcefully remove the `.snakemake` and `~/.showyourwork` directories.",
+)
+def clean(force, deep):
     """Clean the article build in the current working directory."""
     ensure_top_level()
-    commands.clean()
+    commands.clean(force, deep)
 
 
 @entry_point.command()
