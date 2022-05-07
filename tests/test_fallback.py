@@ -40,11 +40,11 @@ class TestFallbackRules(
         super().build_local()
 
 
-@pytest.mark.xfail("Should we hack Snakemake to fix this?")
+@pytest.mark.xfail(reason="This is a Snakemake 'feature'.")
 class TestDeletedScript(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
-    """Test the fallback rules that inform the user about missing article dependencies."""
+    """Test the behavior of the workflow when the user deletes a figure script."""
 
     # No need to test this on CI
     local_build_only = True
