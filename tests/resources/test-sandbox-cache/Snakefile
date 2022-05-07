@@ -1,7 +1,0 @@
-rule generate_dataset:
-    output:
-        "src/data/dataset.npz"
-    cache:
-        True
-    script:
-        "src/scripts/generate_dataset.py"

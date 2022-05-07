@@ -384,46 +384,24 @@ repository. Exact names are required; no glob syntax allowed.
             - src/tex/figures
 
 
-.. _config.rule_fallback:
+.. _config.fallback_rules:
 
-``rule_fallback``
-^^^^^^^^^^^^^^^^^
+``fallback_rules``
+^^^^^^^^^^^^^^^^^^
 
-**Type:** ``str``
+**Type:** ``bool``
 
-**Description:** Configures the behavior of the workflow when |showyourwork|
-can't figure out how to generate a given output. Options are 
-``fail``, ``skip``, and ``placeholder``. The default behavior is ``fail``:
-if there is no rule specified in the Snakefile and no ``\script`` command
-in the TeX file able to generate the given file, an error will
-be thrown. This error may also be thrown if a rule exists, but one or more
-of its dependencies are missing and Snakemake does not know how to generate
-them. This could happen, for instance, if the user defines a ``\script``
-command in the TeX file but forgets to create the associated script, if
-there is a dataset dependency that can't be found, if there is a typo in the
-file name or path, etc. In these cases, the failure message may not indicate
-why exactly the rule failed. In order to debug, users can set this option to
-``skip``, in which case a fallback rule will not be generated and Snakemake
-will handle the exception, printing out a list of the missing dependencies.
-Note that this is not the default option in |showyourwork| because of edge
-cases in which the absence of a valid rule to generate an output fails to
-trigger an error; read more about that at :doc:`api/fallback.smk`.
-
-Finally, users may also set this option to ``placeholder``, in which case
-the workflow will use a placeholder (if the file is a figure with a known
-extension) whenever it is unable to generate one from the available rules. 
-This can also be useful for debugging, or as a quick-and-dirty way of getting
-the manuscript to compile.
+**Description:** TODO!
 
 **Required:** no
 
-**Default:** ``fail``
+**Default:** ``true``
 
 **Example:**
 
 .. code-block:: yaml
 
-  rule_fallback: placeholder
+  fallback_rules: true
 
 
 .. _config.scripts:

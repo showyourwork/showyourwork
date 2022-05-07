@@ -70,15 +70,6 @@ class TemporaryShowyourworkRepository:
         """Subclass me to run post-build local checks."""
         pass
 
-    def copy_files(self):
-        """Copy files over from the template repo, if it exists."""
-        if (RESOURCES / self.repo).exists():
-            for file in (RESOURCES / self.repo).rglob("*"):
-                if not file.is_dir():
-                    target = self.cwd / file.relative_to(RESOURCES / self.repo)
-                    target.parents[0].mkdir(exist_ok=True, parents=True)
-                    shutil.copy(file, target)
-
     def create_local(self):
         """Create the repo locally."""
         # Delete any local repos
@@ -275,9 +266,6 @@ class TemporaryShowyourworkRepository:
             # Set up the repo
             self.create_local()
 
-            # Copy files from the template
-            self.copy_files()
-
             # Customize the repo
             self.customize()
 
@@ -315,3 +303,115 @@ class TemporaryShowyourworkRepository:
 
             # Always run this last
             self.teardown()
+
+
+class ShowyourworkRepositoryActions:
+    def add_figure_environment(self, add_script=True):
+        """Adds a figure environment to the TeX file that includes `test_figure.pdf`."""
+        ms = self.cwd / "src" / "tex" / "ms.tex"
+        with open(ms, "r") as f:
+            ms_orig = f.read()
+        with open(ms, "w") as f:
+            ms_new = ms_orig.replace(
+                r"\end{document}",
+                "\n".join(
+                    [
+                        r"\begin{figure}[ht!]",
+                        r"\script{test_figure.py}" if add_script else "",
+                        r"\begin{centering}",
+                        r"\includegraphics[width=\linewidth]{figures/test_figure.pdf}",
+                        r"\caption{A test figure.}",
+                        r"\label{fig:test_figure}",
+                        r"\end{centering}",
+                        r"\end{figure}",
+                        "",
+                        r"\end{document}",
+                    ]
+                ),
+            )
+            print(ms_new, file=f)
+
+    def add_figure_script(self, load_data=False, batch=False):
+        """Creates a figure script `test_figure.py` that generates `test_figure.pdf`."""
+        if load_data:
+            if batch:
+                get_data = "data = np.array([np.load(paths.data / 'test_data' / f'test_data{n:02d}.npz')['data'] for n in range(50)])"
+            else:
+                get_data = "data = np.load(paths.data / 'test_data.npz')"
+        else:
+            get_data = "data = np.random.randn(100, 10)"
+        with open(self.cwd / "src" / "scripts" / "test_figure.py", "w") as f:
+            print(
+                "\n".join(
+                    [
+                        "import matplotlib.pyplot as plt",
+                        "import numpy as np",
+                        "import paths",
+                        "np.random.seed(0)",
+                        get_data,
+                        "fig = plt.figure(figsize=(7, 6))",
+                        "plt.plot(data)",
+                        "fig.savefig(paths.figures / 'test_figure.pdf', bbox_inches='tight', dpi=300)",
+                    ]
+                ),
+                file=f,
+            )
+
+    def add_pipeline_script(self, batch=False):
+        """Creates a pipeline script `test_data.py` that generates test data."""
+        if batch:
+            gen_data = "\n".join(
+                [
+                    "(paths.data / 'test_data').mkdir(exist_ok=True)",
+                    "for n in range(50):",
+                    "    np.random.seed(n)",
+                    "    data = np.random.randn(100)",
+                    "    np.savez(paths.data / 'test_data' / f'test_data{n:02d}.npz', data=data)",
+                ]
+            )
+        else:
+            gen_data = "\n".join(
+                [
+                    "data = np.random.randn(100, 10)",
+                    "np.savez(paths.data / 'test_data.npz', data=data)",
+                ]
+            )
+        with open(self.cwd / "src" / "scripts" / "test_data.py", "w") as f:
+            print(
+                "\n".join(
+                    [
+                        "import numpy as np",
+                        "import paths",
+                        "import os",
+                        "if os.getenv('CI', 'false') == 'true':",
+                        "    raise Exception('Output should have been downloaded from Zenodo.')",
+                        "np.random.seed(0)",
+                        gen_data,
+                    ]
+                ),
+                file=f,
+            )
+
+    def add_pipeline_rule(self, batch=False):
+        """Adds a Snakemake rule to generate test data from `test_data.py`."""
+        with open(self.cwd / "Snakefile", "r") as f:
+            contents = f.read()
+        with open(self.cwd / "Snakefile", "w") as f:
+            print(contents, file=f)
+            print("\n", file=f)
+            print(
+                "\n".join(
+                    [
+                        "rule generate_data:",
+                        "    output:",
+                        "        directory('src/data/test_data')"
+                        if batch
+                        else "        'src/data/test_data.npz'",
+                        "    cache:",
+                        "        True",
+                        "    script:",
+                        "        'src/scripts/test_data.py'",
+                    ]
+                ),
+                file=f,
+            )

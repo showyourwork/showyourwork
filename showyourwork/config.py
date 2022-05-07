@@ -250,13 +250,7 @@ def parse_config():
         )
 
         #: Enable fallback rules?
-        config["rule_fallback"] = config.get("rule_fallback", "fail").lower()
-        if not config["rule_fallback"] in ["fail", "skip", "placeholder"]:
-            raise exceptions.ConfigError(
-                "Error parsing the config. "
-                "Setting `rule_fallback` must be one of "
-                "`fail`, `skip`, or `placeholder`."
-            )
+        config["fallback_rules"] = config.get("fallback_rules", True)
 
         #
         # -- Internal settings --
