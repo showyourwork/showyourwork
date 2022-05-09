@@ -9,6 +9,7 @@ to update the code in this file.
 from . import paths, exceptions
 from .zenodo import Zenodo
 from .logging import get_logger, ColorizingStreamHandler
+import inspect
 import logging
 import time
 import types
@@ -41,6 +42,30 @@ class SnakemakeFormatter(logging.Formatter):
             message = message.replace(key, value)
         record.message = message
         return message
+
+
+def patch_snakemake_missing_input_leniency():
+    """
+    Patches snakemake to raise an error if there are no producers for
+    any of the output files in the DAG.
+
+    """
+    _dag_debug = snakemake.dag.logger.dag_debug
+
+    def dag_debug(msg):
+        if type(msg) is dict:
+            if "No producers found, but file is present on disk" in msg.get(
+                "msg", ""
+            ):
+                file = msg["file"]
+                msg = str(msg["exception"])
+                raise exceptions.MissingDependencyError(
+                    f"File {file} is present on disk, but there "
+                    f"is no valid rule to generate it.\n{msg}"
+                )
+        _dag_debug(msg)
+
+    snakemake.dag.logger.dag_debug = dag_debug
 
 
 def get_snakemake_variable(name, default=None):

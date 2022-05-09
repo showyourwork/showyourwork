@@ -249,8 +249,8 @@ def parse_config():
             "show_git_sha_or_tag", False
         )
 
-        #: Enable fallback rules?
-        config["fallback_rules"] = config.get("fallback_rules", True)
+        #: Require inputs to all rules to be present on disk for build to pass?
+        config["require_inputs"] = config.get("require_inputs", True)
 
         #
         # -- Internal settings --

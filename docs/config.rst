@@ -384,14 +384,14 @@ repository. Exact names are required; no glob syntax allowed.
             - src/tex/figures
 
 
-.. _config.fallback_rules:
+.. _config.require_inputs:
 
-``fallback_rules``
+``require_inputs``
 ^^^^^^^^^^^^^^^^^^
 
 **Type:** ``bool``
 
-**Description:** TODO!
+**Description:** 
 
 **Required:** no
 
@@ -401,7 +401,7 @@ repository. Exact names are required; no glob syntax allowed.
 
 .. code-block:: yaml
 
-  fallback_rules: true
+    require_inputs: true
 
 
 .. _config.scripts:

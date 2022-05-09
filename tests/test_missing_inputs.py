@@ -3,13 +3,12 @@ from helpers import (
     ShowyourworkRepositoryActions,
 )
 from showyourwork import exceptions
-import pytest
 
 
-class TestFallbackRules(
+class TestMissingScript(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
-    """Test the fallback rules that inform the user about missing article dependencies."""
+    """Test the behavior of the workflow when the user forgets to add a figure script."""
 
     # No need to test this on CI
     local_build_only = True
@@ -25,10 +24,7 @@ class TestFallbackRules(
         try:
             super().build_local()
         except Exception as e:
-            if (
-                not "No rule to generate src/tex/figures/test_figure.pdf"
-                in str(e)
-            ):
+            if not "src/scripts/test_figure.py" in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
             raise Exception(
@@ -40,7 +36,6 @@ class TestFallbackRules(
         super().build_local()
 
 
-@pytest.mark.xfail(reason="This is a Snakemake 'feature'.")
 class TestDeletedScript(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
@@ -64,10 +59,7 @@ class TestDeletedScript(
         try:
             super().build_local()
         except Exception as e:
-            if (
-                not "No rule to generate src/tex/figures/test_figure.pdf"
-                in str(e)
-            ):
+            if not "src/scripts/test_figure.py" in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
             raise Exception(

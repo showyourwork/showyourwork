@@ -1,6 +1,6 @@
 from . import exceptions
 from .logging import get_logger
-from .patches import patch_snakemake_cache
+from .patches import patch_snakemake_cache, get_snakemake_variable
 from .config import get_run_type
 from .git import get_repo_branch
 import json
@@ -10,9 +10,6 @@ try:
     import snakemake
 except ModuleNotFoundError:
     snakemake = None
-
-
-__all__ = ["process_user_rules"]
 
 
 def process_user_rules():

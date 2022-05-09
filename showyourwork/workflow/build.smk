@@ -3,7 +3,7 @@ The Snakefile for the main article build step.
 
 """
 from showyourwork import paths, exceptions, overleaf
-from showyourwork.patches import patch_snakemake_wait_for_files, patch_snakemake_logging
+from showyourwork.patches import patch_snakemake_wait_for_files, patch_snakemake_logging, patch_snakemake_missing_input_leniency
 from showyourwork.config import parse_config, get_run_type
 from showyourwork.logging import get_logger
 from showyourwork.userrules import process_user_rules
@@ -57,21 +57,10 @@ if (paths.user().temp / "config.json").exists():
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
-    include: "rules/fallback.smk"
 
 
     # Resolve ambiguities in rule order
     ruleorder: syw__compile > syw__arxiv
-    other_rules = []
-    fallback_rules = []
-    for r in snakemake.workflow.workflow.rules:
-        if r.name.startswith("syw__fallback__"):
-            fallback_rules.append(r)
-        else:
-            other_rules.append(r)
-    for sr in other_rules:
-        for fr in fallback_rules:
-            snakemake.workflow.workflow.ruleorder(sr.name, fr.name)
 
 
     # Include custom rules defined by the user
@@ -81,6 +70,13 @@ if (paths.user().temp / "config.json").exists():
 
     # Hack to display a custom message when a figure output is missing
     patch_snakemake_wait_for_files()
+
+
+    # Snakemake workflows complete successfully if there's no rule to generate
+    # a given file but it is present on disk. This is bad for third-party
+    # reproducibility, so here we hack it to require all inputs to be present.
+    if config["require_inputs"]:
+        patch_snakemake_missing_input_leniency()
 
 
 else:
