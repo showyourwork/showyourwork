@@ -55,6 +55,9 @@ def run_in_env(command, **kwargs):
     elif re.match("[0-9a-f]{5,40}", syw_spec):
         # This is a commit SHA
         syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{syw_spec}#egg=showyourwork"
+    elif syw_spec in ["main", "dev"]:
+        # This is a branch on github
+        syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{syw_spec}#egg=showyourwork"
     else:
         # Assume it's a local path to the package
         if not Path(syw_spec).is_absolute():
