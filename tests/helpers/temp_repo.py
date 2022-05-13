@@ -29,8 +29,7 @@ class TemporaryShowyourworkRepository:
     debug = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
     # Editable class settings
-    zenodo_cache = False
-    sandbox_cache = False
+    cache = False
     overleaf_id = None
     action_wait = 240
     action_max_tries = 10
@@ -39,7 +38,7 @@ class TemporaryShowyourworkRepository:
     local_build_only = debug
 
     # Internal
-    _concept_doi = None
+    _sandbox_concept_doi = None
 
     @property
     def repo(self):
@@ -82,10 +81,7 @@ class TemporaryShowyourworkRepository:
         else:
             version = get_repo_sha()
         options = f"--quiet --version={version} "
-        if self.sandbox_cache:
-            # Enable zenodo sandbox caching
-            options += "--cache --sandbox"
-        elif self.zenodo_cache:
+        if self.cache:
             # Enable zenodo caching
             options += "--cache"
         if self.overleaf_id:
@@ -115,12 +111,12 @@ class TemporaryShowyourworkRepository:
             shell=True,
         )
 
-        # Get the Zenodo cache concept doi for the main branch (if any)
-        self._concept_doi = (
+        # Get the Zenodo Sandbox cache concept doi for the main branch (if any)
+        self._sandbox_concept_doi = (
             render_config(cwd=self.cwd)
-            .get("showyourwork", {})
             .get("cache", {})
-            .get("main")
+            .get("main", {})
+            .get("sandbox")
         )
 
     def create_remote(self):
@@ -214,12 +210,12 @@ class TemporaryShowyourworkRepository:
 
     def delete_zenodo(self):
         """Delete the Zenodo deposit associated with the temp repo."""
-        if self._concept_doi:
+        if self._sandbox_concept_doi:
             print(
-                f"[{self.repo}] Deleting Zenodo deposit "
-                f"with concept DOI {self._concept_doi}..."
+                f"[{self.repo}] Deleting Zenodo Sandbox deposit "
+                f"with concept DOI {self._sandbox_concept_doi}..."
             )
-            Zenodo(self._concept_doi).delete()
+            Zenodo(self._sandbox_concept_doi).delete()
 
     def delete_remote(self):
         """Delete the remote repo."""

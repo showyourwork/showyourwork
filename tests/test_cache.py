@@ -11,7 +11,7 @@ class TestSandboxCache(
     """Test the Zenodo caching feature."""
 
     # Enable Sandbox caching
-    sandbox_cache = True
+    cache = True
 
     def customize(self):
         """Add all necessary files for the build."""
@@ -38,7 +38,7 @@ class TestSandboxDirCache(TemporaryShowyourworkRepository, ShowyourworkRepositor
     """Test the Zenodo caching feature for entire directories."""
 
     # Enable Sandbox caching
-    sandbox_cache = True
+    cache = True
 
     def customize(self):
         """Add all necessary files for the build."""

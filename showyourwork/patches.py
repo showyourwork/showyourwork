@@ -82,13 +82,13 @@ def get_snakemake_variable(name, default=None):
     return default
 
 
-def patch_snakemake_cache(doi):
+def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     """
     Patches the Snakemake cache functionality to
 
         - Add custom logging messages
-        - Attempt to download the cache file from Zenodo on `fetch()`
-        - Uploads the cache file to Zenodo on `store()`
+        - Attempt to download the cache file from Zenodo or Zenodo Sandbox on `fetch()`
+        - Uploads the cache file to Zenodo Sandbox on `store()`
 
     """
     # Get the showyourwork logger
@@ -97,10 +97,17 @@ def patch_snakemake_cache(doi):
     # The instance we'll patch
     output_file_cache = snakemake.workflow.workflow.output_file_cache
 
-    # Instantiate our interface
-    deposit = Zenodo(doi)
-
     if output_file_cache is not None:
+
+        # Instantiate our interfaces
+        if zenodo_doi is not None:
+            zenodo = Zenodo(zenodo_doi)
+        else:
+            zenodo = None
+        if sandbox_doi is not None:
+            sandbox = Zenodo(sandbox_doi)
+        else:
+            sandbox = None
 
         # Make a copy of the original methods
         _fetch = output_file_cache.fetch
@@ -118,18 +125,31 @@ def patch_snakemake_cache(doi):
             for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
                 job
             ):
-                if not cachefile.exists():
-                    # Attempt to download from Zenodo
+                file_exists = cachefile.exists()
+                if not file_exists:
+                    # Attempt to download from Zenodo and then Zenodo Sandbox
                     try:
                         logger.info(
                             f"Searching remote file cache: {outputfile}..."
                         )
-                        deposit.download_file(
-                            cachefile, job.rule.name, tarball=tarball
-                        )
-                        logger.info(
-                            f"Restoring from remote cache: {outputfile}..."
-                        )
+                        try:
+                            if zenodo is None:
+                                raise exceptions.FileNotFoundOnZenodo(None)
+                            zenodo.download_file(
+                                cachefile, job.rule.name, tarball=tarball
+                            )
+                            file_exists = True
+                            logger.info(
+                                f"Restoring from Zenodo cache: {outputfile}..."
+                            )
+                        except exceptions.FileNotFoundOnZenodo:
+                            sandbox.download_file(
+                                cachefile, job.rule.name, tarball=tarball
+                            )
+                            file_exists = True
+                            logger.info(
+                                f"Restoring from Zenodo Sandbox cache: {outputfile}..."
+                            )
                     except exceptions.FileNotFoundOnZenodo:
                         # Cache miss; not fatal
                         exceptions.restore_trace()
@@ -143,14 +163,23 @@ def patch_snakemake_cache(doi):
                         logger.error(str(e))
                         logger.warn(f"Running rule from scratch...")
                 else:
+                    # We're good
                     logger.info(f"Restoring from local cache: {outputfile}...")
-                    # Always ensure the cached file on Zenodo is the latest
-                    # local cache hit. (If it is, this is a no-op)
+
+                # If the file exists (either restored from the local cache or
+                # from the Zenodo cache), we sync it back so that the latest
+                # draft on Zenodo Sandbox is always fully up to date. Note that
+                # we check the hash before uploading, so if it's already up to
+                # date, this is a no-op. Note that GitHub Actions runs should
+                # never update the cache
+                if file_exists and not snakemake.workflow.config.get(
+                    "github_actions"
+                ):
                     logger.info(
-                        f"Syncing file with remote cache: {outputfile}..."
+                        f"Syncing file with Zenodo Sandbox cache: {outputfile}..."
                     )
                     try:
-                        deposit.upload_file(
+                        sandbox.upload_file(
                             cachefile,
                             job.rule.name,
                             tarball=tarball,
@@ -167,26 +196,32 @@ def patch_snakemake_cache(doi):
             # Call the original method
             result = _store(job)
 
-            # See note in `fetch()` about tarballs
-            if job.output[0].is_directory:
-                tarball = True
-            else:
-                tarball = False
+            # GitHub Actions runs should never update the cache
+            if not snakemake.workflow.config.get("github_actions"):
 
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
-                job
-            ):
-                logger.info(f"Caching output file on remote: {outputfile}...")
-                try:
-                    deposit.upload_file(
-                        cachefile, job.rule.name, tarball=tarball
+                # See note in `fetch()` about tarballs
+                if job.output[0].is_directory:
+                    tarball = True
+                else:
+                    tarball = False
+
+                for (
+                    outputfile,
+                    cachefile,
+                ) in self.get_outputfiles_and_cachefiles(job):
+                    logger.info(
+                        f"Caching output file on remote: {outputfile}..."
                     )
-                except exceptions.ZenodoException as e:
-                    # NOTE: we treate all Zenodo caching errors as non-fatal
-                    exceptions.restore_trace()
-                    logger.error(str(e))
+                    try:
+                        sandbox.upload_file(
+                            cachefile, job.rule.name, tarball=tarball
+                        )
+                    except exceptions.ZenodoException as e:
+                        # NOTE: we treate all Zenodo caching errors as non-fatal
+                        exceptions.restore_trace()
+                        logger.error(str(e))
 
-            return result
+                return result
 
         # Apply them
         output_file_cache.fetch = types.MethodType(fetch, output_file_cache)

@@ -345,5 +345,11 @@ def parse_config():
     else:
         config["sha_tag_header"] = ""
     config["cache"][config["git_branch"]] = config["cache"].get(
-        config["git_branch"], None
+        config["git_branch"], {}
     )
+    config["cache"][config["git_branch"]]["zenodo"] = config["cache"][
+        config["git_branch"]
+    ].get("zenodo", None)
+    config["cache"][config["git_branch"]]["sandbox"] = config["cache"][
+        config["git_branch"]
+    ].get("sandbox", None)

@@ -28,10 +28,12 @@ def process_user_rules():
 
     # Patch the Snakemake caching functionality so we
     # can cache things on Zenodo
-    cached_deps = []
     branch = get_repo_branch()
-    if snakemake.workflow.config["cache"][branch]:
-        patch_snakemake_cache(snakemake.workflow.config["cache"][branch])
+    cache_zenodo_doi = snakemake.workflow.config["cache"][branch]["zenodo"]
+    cache_sandbox_doi = snakemake.workflow.config["cache"][branch]["sandbox"]
+    cached_deps = []
+    if cache_zenodo_doi or cache_sandbox_doi:
+        patch_snakemake_cache(cache_zenodo_doi, cache_sandbox_doi)
 
     # Process each user rule
     for ur in user_rules:
@@ -53,7 +55,7 @@ def process_user_rules():
             raise exceptions.RunDirectiveNotAllowedInUserRules(ur.name)
 
         # Record any cached output
-        if snakemake.workflow.config["cache"][branch]:
+        if cache_zenodo_doi or cache_sandbox_doi:
             if ur.ruleinfo.cache:
                 for file in ur.output:
                     cached_deps.append(str(file))
@@ -69,34 +71,10 @@ def process_user_rules():
     # Add some metadata containing the link to the Zenodo cache record
     # which we can access on the LaTeX side to provide margin links
     # for figures that depend on cached datasets
-    try:
-
-        # Grab the Zenodo id for this repo
-        concept_id = snakemake.workflow.config["cache"][branch]
-
-        # Check that the record has been published
-        if concept_id:
-            zenodo_cache_url = f"https://zenodo.org/record/{concept_id}"
-            r = requests.get(f"https://zenodo.org/api/record/{concept_id}")
-            data = r.json()
-            if r.status_code > 204:
-                zenodo_cache_url = None
-                get_logger().warn(
-                    f"Zenodo cache record {concept_id} "
-                    "not yet published for this repository."
-                )
-                raise Exception()
-        else:
-            raise Exception()
-
-    except:
-
-        # Fail silently
-        pass
-
-    else:
+    if cache_zenodo_doi:
 
         # Add the metadata to the config (accessed in `pdf.py`)
+        zenodo_cache_url = f"https://zenodo.org/record/{cache_zenodo_doi}"
         labels = {}
         for figscript in snakemake.workflow.config["dependencies"]:
             for dep in snakemake.workflow.config["dependencies"][figscript]:
@@ -109,3 +87,12 @@ def process_user_rules():
                         ):
                             labels[label[:-6] + "cache"] = zenodo_cache_url
         snakemake.workflow.config["labels"].update(labels)
+
+    else:
+
+        if cache_sandbox_doi:
+            # There's a Sandbox deposit but no Zenodo deposit; remind
+            # the user to publish the deposit
+            get_logger().warn(
+                f"Zenodo cache not yet published for this repository."
+            )

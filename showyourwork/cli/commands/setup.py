@@ -11,7 +11,7 @@ import shutil
 import subprocess
 
 
-def setup(slug, cache_service, overleaf_id, ssh, showyourwork_version):
+def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
     """Set up a new article repo."""
     # Parse the slug
     user, repo = slug.split("/")
@@ -31,12 +31,12 @@ def setup(slug, cache_service, overleaf_id, ssh, showyourwork_version):
             showyourwork_version = version.parse(__version__).base_version
 
     # Create a Zenodo deposit draft for this repo
-    if cache_service:
-        deposit = Zenodo(cache_service, slug=slug, branch="main")
-        cache_doi = deposit.doi
+    if cache:
+        deposit_sandbox = Zenodo("sandbox", slug=slug, branch="main")
+        cache_sandbox_doi = deposit_sandbox.doi
     else:
-        deposit = None
-        cache_doi = ""
+        deposit_sandbox = None
+        cache_sandbox_doi = ""
 
     # Set up the repo
     cookiecutter(
@@ -47,7 +47,7 @@ def setup(slug, cache_service, overleaf_id, ssh, showyourwork_version):
             "repo": repo,
             "name": name,
             "showyourwork_version": showyourwork_version,
-            "cache_doi": cache_doi,
+            "cache_sandbox_doi": cache_sandbox_doi,
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
         },
@@ -77,9 +77,9 @@ def setup(slug, cache_service, overleaf_id, ssh, showyourwork_version):
             )
     except Exception as e:
         logger = get_logger()
-        if deposit:
+        if cache:
             logger.error("Deleting cache deposit...")
-            deposit.delete()
+            deposit_sandbox.delete()
         logger.error(f"Deleting directory {repo}...")
         shutil.rmtree(repo)
         raise e
@@ -90,9 +90,9 @@ def setup(slug, cache_service, overleaf_id, ssh, showyourwork_version):
             overleaf.setup_remote(overleaf_id, path=Path(repo).absolute())
         except Exception as e:
             logger = get_logger()
-            if deposit:
+            if cache:
                 logger.error("Deleting cache deposit...")
-                deposit.delete()
+                deposit_sandbox.delete()
             logger.error(f"Deleting directory {repo}...")
             shutil.rmtree(repo)
             raise e

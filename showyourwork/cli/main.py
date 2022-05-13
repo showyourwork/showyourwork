@@ -1,5 +1,5 @@
 from . import commands
-from .. import git, exceptions, zenodo, __version__
+from .. import git, exceptions, __version__
 from textwrap import TextWrapper
 import os
 import shutil
@@ -116,7 +116,6 @@ def validate_slug(context, param, slug):
 
             # Check Zenodo credentials
             cache = context.params.get("cache")
-            sandbox = context.params.get("sandbox")
             if not cache:
                 echo(
                     """
@@ -127,27 +126,24 @@ def validate_slug(context, param, slug):
                     """
                 )
             else:
-                if sandbox:
-                    service = zenodo.services["sandbox"]
-                else:
-                    service = zenodo.services["zenodo"]
                 echo(
                     f"""
-                    You requested remote caching on {service["name"]}, so I'm
-                    going to create a deposit draft where intermediate results
-                    will be cached. Please make sure at this time that you have
-                    defined the `{service["token_name"]}` environment variable
-                    containing your API key for {service["name"]}. If you don't
-                    have one, visit
-                    ``https://{service['url']}/account/settings/applications/tokens/new``
+                    You requested remote caching, so I'm
+                    going to create a deposit draft on Zenodo Sandbox
+                    where intermediate results will be cached. 
+                    Please make sure at this time that you have defined the 
+                    `SANDBOX_TOKEN` environment variable
+                    containing your API key for the service. If you don't
+                    have this key, visit
+                    ``https://sandbox.zenodo.org/account/settings/applications/tokens/new``
                     to create a new personal access token with
                     `deposit:actions` and `deposit:write` scopes and store it
-                    in the environment variable `{service["token_name"]}`. In
-                    order for this to work on GitHub Actions, you'll also have
-                    to visit
+                    in the environment variable `SANDBOX_TOKEN`. 
+                    In order for caching to work 
+                    on GitHub Actions, you'll also have to visit
                     ``https://github.com/{slug}/settings/secrets/actions/new``
-                    at this time to create a `{service["token_name"]}` secret
-                    with your API access token.
+                    at this time to create a corresponding repository secret
+                    with the same name containing the API key.
                     """
                 )
             pause()
@@ -204,25 +200,16 @@ def validate_slug(context, param, slug):
     "--cache",
     is_flag=True,
     default=False,
-    help="Set up intermediate result caching on Zenodo. Requires a Zenodo "
-    "API token provided as the environment variable and Github repository "
-    "secret ZENODO_TOKEN.",
-)
-@click.option(
-    "-x",
-    "--sandbox",
-    is_flag=True,
-    default=False,
-    help="Use Zenodo Sandbox to cache results (if `--cache` was provided). "
-    "Requires a Zenodo Sandbox API token provided as the environment variable "
-    "and Github repository secret SANDBOX_TOKEN.",
+    help="Set up intermediate result caching on Zenodo Sandbox. "
+    "Requires a Zenodo Sandbox API token provided as the "
+    "environment variable and GitHub repository secret `SANDBOX_TOKEN`.",
 )
 @click.option(
     "-o",
     "--overleaf",
     help="Overleaf project id to sync with (optional). Requires Overleaf "
     "credentials, provided as the environment variables and GitHub repository "
-    "secrets OVERLEAF_EMAIL and OVERLEAF_PASSWORD.",
+    "secrets `OVERLEAF_EMAIL` and `OVERLEAF_PASSWORD`.",
     default=None,
     type=type("PROJECT_ID", (str,), {}),
 )
@@ -244,7 +231,6 @@ def setup(
     yes,
     quiet,
     cache,
-    sandbox,
     overleaf,
     ssh,
     version,
@@ -256,19 +242,7 @@ def setup(
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    if cache:
-        if sandbox:
-            cache_service = "sandbox"
-        else:
-            cache_service = "zenodo"
-    else:
-        if sandbox:
-            raise exceptions.ShowyourworkException(
-                "Must provide the `--cache` option if `--sandbox` is provided."
-            )
-        else:
-            cache_service = None
-    commands.setup(slug, cache_service, overleaf, ssh, version)
+    commands.setup(slug, cache, overleaf, ssh, version)
 
 
 @entry_point.command()
@@ -313,26 +287,15 @@ def cache(ctx):
     default=None,
     help="Which branch to create the deposit for. Default is current branch.",
 )
-@click.option(
-    "-x",
-    "--sandbox",
-    is_flag=True,
-    help="Use Zenodo Sandbox for caching.",
-)
-def create(ctx, branch, sandbox):
+def create(ctx, branch):
     """
-    Create a Zenodo deposit draft for the given branch.
+    Create a Zenodo Sandbox deposit draft for the given branch.
 
-    Requires a Zenodo or Zenodo Sandbox API token provided as the
-    environment variable and Github repository secret ZENODO_TOKEN
-    or SANDBOX_TOKEN.
+    Requires a Zenodo Sandbox API token provided as the
+    environment variable and Github repository secret `SANDBOX_TOKEN`.
     """
     ensure_top_level()
-    if sandbox:
-        service = "sandbox"
-    else:
-        service = "zenodo"
-    commands.zenodo_create(branch, service)
+    commands.zenodo_create(branch)
 
 
 @cache.command()
@@ -346,14 +309,39 @@ def create(ctx, branch, sandbox):
 )
 def delete(ctx, branch):
     """
-    Delete the latest draft of a Zenodo deposit.
+    Delete the latest draft of a Zenodo Sandbox deposit.
 
-    Requires a Zenodo or Zenodo Sandbox API token provided as the
-    environment variable and Github repository secret ZENODO_TOKEN
-    or SANDBOX_TOKEN.
+    Requires a Zenodo Sandbox API token provided as the
+    environment variable and Github repository secret `SANDBOX_TOKEN`.
     """
     ensure_top_level()
     commands.zenodo_delete(branch)
+
+
+@cache.command()
+@click.pass_context
+@click.option(
+    "-b",
+    "--branch",
+    required=False,
+    default=None,
+    help="Branch whose deposit is to be frozen. Default is current branch.",
+)
+def freeze(ctx, branch):
+    """
+    Publishes the current Zenodo Sandbox deposit draft for the given branch
+    to Zenodo Sandbox.
+
+    Useful for preserving the current cache state even when changes are made
+    to the rule inputs. Note that Zenodo Sandbox storage is temporary, so if
+    you'd like to publish your cache on Zenodo, you should call ``publish``
+    instead.
+
+    Requires a Zenodo Sandbox API token provided as the
+    environment variable and Github repository secret `SANDBOX_TOKEN`.
+    """
+    ensure_top_level()
+    commands.zenodo_freeze(branch)
 
 
 @cache.command()
@@ -367,11 +355,12 @@ def delete(ctx, branch):
 )
 def publish(ctx, branch):
     """
-    Publish the latest draft of a Zenodo deposit.
+    Publishes the current Zenodo Sandbox deposit draft for the given branch
+    to Zenodo for permanent, public storage. This action assigns a permanent,
+    static DOI to the deposit, which cannot be deleted or undone.
 
-    Requires a Zenodo or Zenodo Sandbox API token provided as the
-    environment variable and Github repository secret ZENODO_TOKEN
-    or SANDBOX_TOKEN.
+    Requires a Zenodo API token provided as the environment variable
+    `ZENODO_TOKEN`.
     """
     ensure_top_level()
     commands.zenodo_publish(branch)
