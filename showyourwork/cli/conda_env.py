@@ -68,6 +68,9 @@ def run_in_env(command, **kwargs):
             raise exceptions.ShowyourworkNotFoundError(syw_spec)
         syw_spec = f"-e {syw_spec}"
 
+    # DEBUG
+    print(syw_spec)
+
     # Copy the showyourwork environment file to a temp location,
     # and add the user's requested showyourwork version as a dependency
     # so we can import it within Snakemake
