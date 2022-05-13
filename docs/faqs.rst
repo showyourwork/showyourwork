@@ -30,6 +30,7 @@ go to
 
     <pre>
     https://github.com/<span class="text-highlight">$USER/$REPO</span>/settings/actions
+    </pre>
 
 and change the permissions to ``permissive``:
 
