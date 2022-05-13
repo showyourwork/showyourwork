@@ -2,8 +2,7 @@ name: build
 
 on:
   push:
-  #pull_request_target:
-  #  types: [opened, synchronize, reopened, labeled]
+  pull_request:
 
 jobs:
   build:
@@ -12,10 +11,9 @@ jobs:
     concurrency: showyourwork-${{ "{{" }} github.ref {{ "}}" }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ "{{" }} github.event.pull_request.head.sha {{ "}}" }}
 
       - name: Build the article PDF
         id: build
