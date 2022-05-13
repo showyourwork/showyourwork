@@ -27,6 +27,7 @@ Welcome to |showyourwork|, a workflow management tool for open source scientific
    latex
    zenodo
    overleaf
+   pull_requests
    logging
    custom
    migrating

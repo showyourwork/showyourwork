@@ -391,7 +391,14 @@ repository. Exact names are required; no glob syntax allowed.
 
 **Type:** ``bool``
 
-**Description:** 
+**Description:** If there is no valid rule to generate a given output file
+(because of, e.g., a missing input file), but the output file itself is present on disk,
+Snakemake will not by default raise an error. This can be useful for running
+workflows locally, but it can compromise the reproducibility of a workflow when
+a third party attempts to run it. Therefore, the default behavior in |showyourwork|
+is to require all output files to be programmatically generatable when running
+the workflow, *even if* the output files exist on disk already. Otherwise, an
+error is thrown. Set this option to ``false`` to override this behavior.
 
 **Required:** no
 
