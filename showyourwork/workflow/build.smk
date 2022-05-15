@@ -7,6 +7,7 @@ from showyourwork.patches import patch_snakemake_wait_for_files, patch_snakemake
 from showyourwork.config import parse_config, get_run_type
 from showyourwork.logging import get_logger
 from showyourwork.userrules import process_user_rules
+from showyourwork.git import get_repo_branch
 import snakemake
 
 
@@ -90,7 +91,7 @@ onsuccess:
 
 
     # Overleaf sync: push changes
-    if run_type == "build":
+    if run_type == "build" and get_repo_branch() == "main":
         overleaf.push_files(config["overleaf"]["push"], config["overleaf"]["id"])
 
 

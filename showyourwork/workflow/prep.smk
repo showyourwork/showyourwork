@@ -5,6 +5,7 @@ The Snakefile for the article pre-processing step.
 from showyourwork import paths, overleaf
 from showyourwork.config import render_config, parse_config, get_run_type
 from showyourwork.patches import patch_snakemake_logging
+from showyourwork.git import get_repo_branch
 
 
 # Working directory is the top level of the user repo
@@ -56,7 +57,7 @@ onstart:
 
     
     # Overleaf sync: pull in changes
-    if run_type == "preprocess":
+    if run_type == "preprocess" and get_repo_branch() == "main":
         overleaf.pull_files(
             config["overleaf"]["pull"], 
             config["overleaf"]["id"]

@@ -252,6 +252,11 @@ def parse_config():
         #: Require inputs to all rules to be present on disk for build to pass?
         config["require_inputs"] = config.get("require_inputs", True)
 
+        #: Allow cached rules to run on CI if there's a cache miss?
+        config["run_cache_rules_on_ci"] = config.get(
+            "run_cache_rules_on_ci", False
+        )
+
         #
         # -- Internal settings --
         #

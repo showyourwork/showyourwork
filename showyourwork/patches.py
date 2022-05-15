@@ -118,6 +118,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             # If the cache file is a directory, we must tar it up
             # Recall that cacheable jobs can only have a _single_ output
             # (unless using multiext), so checking the first output should suffice
+            config = snakemake.workflow.config
             if job.output[0].is_directory:
                 tarball = True
             else:
@@ -156,12 +157,28 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         logger.warn(
                             f"Required version of file not found in cache: {outputfile}."
                         )
-                        logger.warn(f"Running rule from scratch...")
+                        if config.get("github_actions") and not config.get(
+                            "run_cache_rules_on_ci"
+                        ):
+                            raise exceptions.ShowyourworkException(
+                                f"Cache for {outputfile} not found, and "
+                                "`run_cache_rules_on_ci` is set to `False`."
+                            )
+                        else:
+                            logger.warn(f"Running rule from scratch...")
                     except exceptions.ZenodoException as e:
                         # NOTE: we treat all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
                         logger.error(str(e))
-                        logger.warn(f"Running rule from scratch...")
+                        if config.get("github_actions") and not config.get(
+                            "run_cache_rules_on_ci"
+                        ):
+                            raise exceptions.ShowyourworkException(
+                                f"Cache for {outputfile} not found, and "
+                                "`run_cache_rules_on_ci` is set to `False`."
+                            )
+                        else:
+                            logger.warn(f"Running rule from scratch...")
                 else:
                     # We're good
                     logger.info(f"Restoring from local cache: {outputfile}...")

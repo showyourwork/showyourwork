@@ -180,7 +180,7 @@ in the ``push`` and ``pull`` fields. To understand what these mean, read on!
 Pushing and pulling
 -------------------
 
-Coming soon!
+Coming soon! Only enabled for the ``main`` branch.
 
 
 .. _conflicts:

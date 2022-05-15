@@ -411,6 +411,29 @@ error is thrown. Set this option to ``false`` to override this behavior.
     require_inputs: true
 
 
+.. _config.run_cache_rules_on_ci:
+
+``run_cache_rules_on_ci``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Allow cacheable rules to run on GitHub Actions if the cached
+output is not available? Default is ``false``, which prevents potentially
+computationally expensive rules from running on the cloud. In this case, 
+cache misses result in an error when running on GitHub Actions only.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+    run_cache_rules_on_ci: false
+
+
 .. _config.scripts:
 
 ``scripts``
