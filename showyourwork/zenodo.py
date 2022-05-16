@@ -11,6 +11,7 @@ import os
 import json
 from pathlib import Path
 import subprocess
+import shutil
 
 try:
     import snakemake
@@ -710,3 +711,232 @@ class Zenodo:
             )
 
         self.upload_file_to_draft(draft, file, rule_name, tarball=tarball)
+
+    @require_access_token
+    def _download_latest_draft(self):
+        # Logger
+        logger = get_logger()
+
+        # Grab the deposit
+        concept_id = self.deposit_id
+        logger.debug(
+            f"Attempting to access {self.service} deposit with DOI {self.doi}..."
+        )
+        r = requests.get(
+            f"https://{self.url}/api/deposit/depositions",
+            params={
+                "q": f"conceptrecid:{concept_id}",
+                "all_versions": 1,
+                "access_token": self.access_token,
+            },
+        )
+        if r.status_code <= 204:
+            try:
+                data = r.json()
+            except:
+                raise exceptions.ZenodoError(
+                    message=f"Error accessing latest draft for DOI {self.doi}."
+                )
+
+            # Look for a draft
+            if len(data):
+                data = data[0]
+                draft_url = data.get("links", {}).get("latest_draft", None)
+                if not draft_url and not data["submitted"]:
+                    draft_url = data["links"]["self"]
+
+                # Create a new draft if needed
+                if not draft_url:
+                    r = requests.post(
+                        f"https://{self.url}/api/deposit/depositions/{data['id']}/actions/newversion",
+                        params={"access_token": self.access_token},
+                    )
+                    try:
+                        data = r.json()
+                    except:
+                        raise exceptions.ZenodoError(
+                            message=f"Error accessing latest draft for DOI {self.doi}."
+                        )
+                    draft_url = data["links"]["latest_draft"]
+
+                # Grab the draft
+                r = requests.get(
+                    draft_url,
+                    params={"access_token": self.access_token},
+                )
+                if r.status_code <= 204:
+                    draft = r.json()
+                else:
+                    raise exceptions.ZenodoError(
+                        message=f"Error accessing latest draft for DOI {self.doi}."
+                    )
+            else:
+                raise exceptions.ZenodoError(
+                    message=f"Error accessing latest draft for DOI {self.doi}."
+                )
+        else:
+            raise exceptions.ZenodoError(
+                message=f"Error accessing latest draft for DOI {self.doi}."
+            )
+
+        # Local folder to save to
+        cache_folder = self.path() / f"{self.deposit_id}" / "download"
+        if cache_folder.exists():
+            shutil.rmtree(cache_folder)
+        cache_folder.mkdir(exist_ok=True, parents=True)
+
+        # Get metadata & store on disk
+        metadata = draft["metadata"]
+        with open(cache_folder / ".metadata.json", "w") as f:
+            json.dump(metadata, f)
+
+        # Download all files
+        data = parse_request(
+            requests.get(
+                draft["links"]["files"],
+                params={"access_token": self.access_token},
+            )
+        )
+        for entry in data:
+            url = entry["links"]["download"]
+            try:
+                res = subprocess.run(
+                    [
+                        "curl",
+                        "-f",
+                        f"{url}?access_token={self.access_token}",
+                        "--progress-bar",
+                        "--output",
+                        entry["filename"],
+                    ],
+                    cwd=cache_folder,
+                )
+            except:
+                raise exceptions.ZenodoDownloadError()
+
+        # Return path to cache folder
+        return cache_folder
+
+    @require_access_token
+    def copy_draft(self, target_doi_or_service, **kwargs):
+        # Logger
+        logger = get_logger()
+        logger.info(f"Downloading files from {self.doi}...")
+
+        # Download the current draft
+        cache_folder = self._download_latest_draft()
+
+        # The target deposit (creates if needed)
+        target_deposit = Zenodo(target_doi_or_service, **kwargs)
+
+        # Grab the target deposit
+        r = requests.get(
+            f"https://{target_deposit.url}/api/deposit/depositions",
+            params={
+                "q": f"conceptrecid:{target_deposit.deposit_id}",
+                "all_versions": 1,
+                "access_token": target_deposit.access_token,
+            },
+        )
+        if r.status_code <= 204:
+            try:
+                data = r.json()
+            except:
+                raise exceptions.ZenodoError(
+                    message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                )
+
+            # Look for a draft
+            if len(data):
+                data = data[0]
+                draft_url = data.get("links", {}).get("latest_draft", None)
+                if not draft_url and not data["submitted"]:
+                    draft_url = data["links"]["self"]
+
+                # Create a new draft if needed
+                if not draft_url:
+                    r = requests.post(
+                        f"https://{target_deposit.url}/api/deposit/depositions/{data['id']}/actions/newversion",
+                        params={"access_token": target_deposit.access_token},
+                    )
+                    try:
+                        data = r.json()
+                    except:
+                        raise exceptions.ZenodoError(
+                            message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                        )
+                    draft_url = data["links"]["latest_draft"]
+
+                # Grab the draft
+                r = requests.get(
+                    draft_url,
+                    params={"access_token": target_deposit.access_token},
+                )
+                if r.status_code <= 204:
+                    draft = r.json()
+                else:
+                    raise exceptions.ZenodoError(
+                        message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                    )
+            else:
+                raise exceptions.ZenodoError(
+                    message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                )
+        else:
+            raise exceptions.ZenodoError(
+                message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+            )
+
+        # Get the bucket to upload files to
+        bucket_url = draft["links"]["bucket"]
+
+        # Upload metadata
+        with open(cache_folder / ".metadata.json", "r") as f:
+            metadata = json.load(f)
+        metadata = {
+            "metadata": {
+                "title": metadata["title"],
+                "upload_type": "dataset",
+                "description": metadata["description"],
+                "creators": [{"name": "showyourwork"}],
+                "notes": metadata.get("notes", "{}"),
+            }
+        }
+        parse_request(
+            requests.put(
+                draft["links"]["latest_draft"],
+                params={"access_token": target_deposit.access_token},
+                data=json.dumps(metadata),
+                headers={"Content-Type": "application/json"},
+            )
+        )
+
+        # Upload files
+        logger.info(f"Uploading files to {target_deposit.doi}...")
+        for file in cache_folder.glob("*.*"):
+
+            if file.name == ".metadata.json":
+                continue
+
+            try:
+                res = subprocess.run(
+                    [
+                        "curl",
+                        "-f",
+                        "--progress-bar",
+                        "-o",
+                        "/dev/null",
+                        "--upload-file",
+                        file.name,
+                        "--request",
+                        "PUT",
+                        f"{bucket_url}/{file.name}?access_token={target_deposit.access_token}",
+                    ],
+                    cwd=cache_folder,
+                )
+            except:
+                raise exceptions.ZenodoUploadError()
+
+        # We're done
+        logger.info(f"Successfully copied {self.doi} to {target_deposit.doi}.")
+        return target_deposit.doi

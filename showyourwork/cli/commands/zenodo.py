@@ -5,11 +5,40 @@ from ... import paths, exceptions, logging
 import json
 
 
-def zenodo_publish(branch):
+def zenodo_publish(branch, debug=False):
+    # Ensure there's a sandbox cache record for this branch
     if branch is None:
         branch = get_repo_branch()
-    # TODO
-    raise NotImplementedError("Coming soon!")
+    try:
+        with edit_yaml("zenodo.yml") as config:
+            sandbox_doi = config["cache"][branch]["sandbox"]
+            assert sandbox_doi is not None
+    except:
+        raise exceptions.ShowyourworkException(
+            f"Zenodo Sandbox deposit not found for branch {branch}."
+        )
+    sandbox = Zenodo(sandbox_doi)
+
+    # Get the Zenodo doi, or create one if needed
+    with edit_yaml("zenodo.yml") as config:
+        zenodo_doi = config["cache"].get(branch, {}).get("zenodo", None)
+        if debug:
+            service = "sandbox"
+        else:
+            service = "zenodo"
+        if zenodo_doi is None:
+            zenodo_doi = sandbox.copy_draft(service, branch=branch)
+        else:
+            zenodo_doi = sandbox.copy_draft(zenodo_doi, branch=branch)
+    zenodo = Zenodo(zenodo_doi)
+
+    # Publish the latest draft
+    zenodo.publish()
+
+    # Fill in the config
+    with edit_yaml("zenodo.yml") as config:
+        config["cache"][branch] = config["cache"].get(branch, {})
+        config["cache"][branch]["zenodo"] = zenodo_doi
 
 
 def zenodo_freeze(branch):
