@@ -66,7 +66,11 @@ class TestDirCache(
         self.add_figure_environment()
 
 
-@pytest.mark.skipif("TEST_CACHE" not in get_commit_message())
+@pytest.mark.skipif(
+    "TEST_CACHE" not in get_commit_message(),
+    reason="test generates a (semi-)permanent deposit on Zenodo Sandbox, "
+    "so it should not be run too often",
+)
 class TestCacheFreeze(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
