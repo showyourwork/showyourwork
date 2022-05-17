@@ -23,7 +23,7 @@ def zenodo_publish(branch):
     # Get the Zenodo doi, or create one if needed
     with edit_yaml("zenodo.yml") as config:
         zenodo_doi = config["cache"].get(branch, {}).get("zenodo", None)
-        if "PYTEST_CURRENT_TEST" in os.environ:
+        if "SANDBOX_ONLY" in os.environ:
             # Publish to Sandbox if we're in a test run
             service = "sandbox"
         else:

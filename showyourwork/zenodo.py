@@ -915,7 +915,7 @@ class Zenodo:
 
         # Upload files
         logger.info(f"Uploading files to {target_deposit.doi}...")
-        for file in cache_folder.glob("*.*"):
+        for file in cache_folder.glob("*"):
 
             if file.name == ".metadata.json":
                 continue
