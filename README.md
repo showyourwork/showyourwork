@@ -18,7 +18,7 @@
 <h2></h2><br/>
 <p align="center">
     ⚡⚡⚡ 
-    <strong>showyourwork</strong> is getting a major update in late May / early June.
+    <strong>showyourwork</strong> is getting a major update in early June.
     Check out the <a href="https://github.com/showyourwork/showyourwork/tree/dev">dev branch</a> for details.
     ⚡⚡⚡
 </p>
