@@ -3,9 +3,10 @@ from ...zenodo import Zenodo
 from ...config import edit_yaml
 from ... import paths, exceptions, logging
 import json
+import os
 
 
-def zenodo_publish(branch, debug=False):
+def zenodo_publish(branch):
     # Ensure there's a sandbox cache record for this branch
     if branch is None:
         branch = get_repo_branch()
@@ -22,7 +23,8 @@ def zenodo_publish(branch, debug=False):
     # Get the Zenodo doi, or create one if needed
     with edit_yaml("zenodo.yml") as config:
         zenodo_doi = config["cache"].get(branch, {}).get("zenodo", None)
-        if debug:
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            # Publish to Sandbox if we're in a test run
             service = "sandbox"
         else:
             service = "zenodo"

@@ -23,8 +23,6 @@ def clean(force, deep, options=""):
         for file in paths.user().data.rglob("*.*"):
             if file.name != ".gitignore":
                 file.unlink()
-        if paths.user().temp.exists():
-            shutil.rmtree(paths.user().temp)
     if deep:
         if (paths.user().repo / ".snakemake").exists():
             shutil.rmtree(paths.user().repo / ".snakemake")

@@ -683,6 +683,8 @@ class Zenodo:
             )
             return
         draft_url = data.get("links", {}).get("latest_draft", None)
+        if not draft_url and not data["submitted"]:
+            draft_url = data["links"]["self"]
         if draft_url:
 
             # Draft exists
@@ -698,7 +700,7 @@ class Zenodo:
             # Create a new draft
             data = parse_request(
                 requests.post(
-                    data["links"]["newversion"],
+                    f"https://{self.url}/api/deposit/depositions/{data['id']}/actions/newversion",
                     params={"access_token": self.access_token},
                 )
             )

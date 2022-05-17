@@ -22,6 +22,12 @@ def get_repo_root():
     )
 
 
+def get_commit_message():
+    return get_stdout(
+        "git log -1 --pretty=%B", shell=True, callback=callback
+    )
+
+
 def get_repo_url():
     """
     Return the repository URL.

@@ -144,7 +144,7 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
         )
 
-    def build_local(self):
+    def build_local(self, pre=""):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
 
@@ -153,7 +153,7 @@ class TemporaryShowyourworkRepository:
                 raise Exception(stdout + "\n" + stderr)
 
         get_stdout(
-            "CI=false showyourwork build",
+            f"{pre} CI=false showyourwork build",
             shell=True,
             cwd=self.cwd,
             callback=callback,
@@ -353,7 +353,7 @@ class ShowyourworkRepositoryActions:
                 file=f,
             )
 
-    def add_pipeline_script(self, batch=False):
+    def add_pipeline_script(self, batch=False, seed=0):
         """Creates a pipeline script `test_data.py` that generates test data."""
         if batch:
             gen_data = "\n".join(
@@ -379,9 +379,9 @@ class ShowyourworkRepositoryActions:
                         "import numpy as np",
                         "import paths",
                         "import os",
-                        "if os.getenv('CI', 'false') == 'true':",
+                        "if os.getenv('CI', 'false') == 'true' or os.getenv('SYW_NO_RUN', 'false') == 'true':",
                         "    raise Exception('Output should have been downloaded from Zenodo.')",
-                        "np.random.seed(0)",
+                        f"np.random.seed({seed})",
                         gen_data,
                     ]
                 ),
