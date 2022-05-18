@@ -1,7 +1,7 @@
 .. :changelog:
 
-0.3.0 (May 2022)
-++++++++++++++++
+0.3.0 (June 2022)
++++++++++++++++++
 
 - Brand new release, featuring a complete re-write of the workflow.
 - Stay tuned!

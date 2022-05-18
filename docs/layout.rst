@@ -62,6 +62,8 @@ it should have the following overall layout:
               <li class="folder">workflow
                 <ul>
                   <li><a href="#build">build.yml</a></li>
+                  <li><a href="#build-pull-request">build-pull-request.yml</a></li>
+                  <li><a href="#process-pull-request">process-pull-request.yml</a></li>
                 </ul>
               </li>
             </ul>
@@ -158,6 +160,32 @@ You can add other steps to this workflow or configure the action settings (see :
 have to tweak this file.
 Check out the `GitHub documentation <https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions>`_ for
 more information on configuring workflows.
+
+
+.. _build-pull-request:
+
+The ``build-pull-request.yml`` file
+***********************************
+
+The contents of this file are identical to those of :ref:`build`, except this workflow
+is triggered only on pull requests. The reason for separating this out is that pull
+request builds need a little bit of post-processing, which we can accomplish with
+a special ``workflow_run`` trigger activated on runs of this workflow. See below
+for details.
+
+
+.. _process-pull-request:
+
+The ``process-pull-request.yml`` file
+*************************************
+
+Pull request builds only get read access to the repository, so they can't upload the
+article PDF anywhere. Instead, they generate a workflow artifact. This workflow
+runs whenever a pull request build completes successfully. It downloads the build
+artifact and force-pushes the article PDF to a special branch called (by default) 
+``pull-request-<NUMBER>-pdf``, where ``<NUMBER>`` is the number of the pull request.
+This workflow also posts a comment in the PR discussion with a link to the PDF
+for convenience.
 
 
 .. _src:

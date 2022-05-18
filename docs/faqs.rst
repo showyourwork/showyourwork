@@ -1,7 +1,7 @@
 FAQs
 ====
 
-.. note:: Coming soon!
+.. note:: This page is still under construction. More FAQs will be added shortly!
 
 Permissions errors in GitHub Actions
 ------------------------------------
@@ -39,6 +39,17 @@ and change the permissions to ``permissive``:
    :align: center
 
 
-Set ``CI=true`` environment variable to debug remote build.
+Debugging remote builds
+-----------------------
 
-To install TeX, see here: https://github.com/showyourwork/showyourwork/blob/f5a9332cb4b1d134bb2103fae2e2853da04fe501/showyourwork-action/src/tex.js
+Set ``CI=true`` environment variable to mimic the behavior on GitHub Actions locally.
+More information on this soon.
+
+
+Installing LaTeX
+----------------
+
+To install TeX for access in (say) Python scripts (e.g., for rendering LaTeX expressions
+with ``matplotlib``), see 
+`here <https://github.com/showyourwork/showyourwork/blob/f5a9332cb4b1d134bb2103fae2e2853da04fe501/showyourwork-action/src/tex.js>`__.
+More information on this soon.

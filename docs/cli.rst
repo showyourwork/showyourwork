@@ -379,6 +379,8 @@ to the `arXiv <https://arxiv.org/>`_ article service.
 
     .. program-output:: showyourwork cache delete --help
 
+    .. program-output:: showyourwork cache freeze --help
+
     .. program-output:: showyourwork cache publish --help
 
 Utilities for creating, deleting, and publishing the Zenodo deposit drafts used

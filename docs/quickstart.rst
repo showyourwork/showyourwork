@@ -61,21 +61,14 @@ Press any key to bring up the next prompt:
 .. raw:: html
 
     <pre>
-    I didn't find a <span class="text-highlight">ZENODO_TOKEN</span> environment variable, so I'm not going to set up
-    a Zenodo deposit for caching intermediate results. If you would like to enable
-    this, please go to
-
-        <a href="https://zenodo.org/account/settings/applications/tokens/new"><span class="text-highlight">https://zenodo.org/account/settings/applications/tokens/new</span></a>
-
-    to create a new personal access token with deposit:actions and deposit:write
-    scopes, store it in a local <span class="text-highlight">ZENODO_TOKEN</span> environment variable, and re-run this
-    setup script.
+    You didn't provide a caching service (via the <span class="text-highlight">--cache</span>
+    command-line option), so I'm not going to set up remote caching for this repository.
     </pre>
 
 
 The |showyourwork| workflow automatically caches the results of intermediate
-steps in your pipeline on Zenodo, but only if it finds a ``ZENODO_TOKEN`` environment
-variable containing a valid Zenodo API token. Let's not worry about this for
+steps in your pipeline on Zenodo, but only if the user requests it via the ``--cache``
+option. Let's not worry about this for
 now -- you can read up on how this all works at :doc:`zenodo`.
 
 
