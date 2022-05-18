@@ -1,0 +1,5 @@
+# Nothing should be tracked in this folder...
+*
+
+# Except the gitignore file itself!
+!.gitignore

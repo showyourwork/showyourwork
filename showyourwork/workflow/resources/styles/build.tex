@@ -1,0 +1,215 @@
+% Imports
+\RequirePackage{mathtools} % equation tags
+\RequirePackage{xcolor} % custom colors
+\RequirePackage{hyperref} % url links
+\RequirePackage{suffix} % allows definition of starred commmands
+\RequirePackage{ifxetex}
+\RequirePackage{fontawesome5} % FontAwesome symbols
+\RequirePackage{letltxmacro} % command redefinitions
+\RequirePackage{xstring} % string manipulation
+\RequirePackage{catchfile} % read file into macro
+\RequirePackage{totcount} % count total number of errors
+\RequirePackage[notref, notcite]{showkeys} % get label refs
+\RequirePackage{marginnote} % margin notes
+\RequirePackage{xspace} % better spacing after icons
+\RequirePackage{graphicx} % includegraphics
+\RequirePackage{stackengine} % stacking figure links
+
+% Is this running on GitHub Actions?
+\newif\ifOnGithubActions
+
+% Key-value pairs used to assemble the hyperlinks for figures
+% See https://tex.stackexchange.com/a/48931
+\def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{#2}}
+\def\usevalue#1{%
+\ifcsname syw@data@#1\endcsname%
+  \csname syw@data@#1\expandafter\endcsname%
+\else%
+  KEYNOTFOUND%
+\fi%
+}
+
+% Import metadata
+\IfFileExists{./showyourwork-metadata.tex}{
+    \input{showyourwork-metadata.tex}
+}{
+  \OnGithubActionsfalse
+  \def\syw@url{https://github.com/showyourwork/showyourwork-example}
+  \def\syw@sha{dev}
+  \def\syw@runid{0}
+}
+
+% Log figure script commands (a no-op in the build step)
+\newcommand\script[1]{}
+
+% Showyourwork logo
+% We can only use our custom font if running XeTeX / LuaTeX
+\ifxetex
+  \usepackage{fontspec}
+  \defaultfontfeatures{Extension = .otf}
+  \newfontfamily\ShowYourWorkFont{showyourwork.otf}
+  \newcommand{\showyourwork}{%
+    {\ShowYourWorkFont\color{red}\smash{show your work!}}\xspace
+  }
+\else
+  \newcommand{\showyourwork}{%
+      \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
+  }
+\fi
+
+% Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
+\let\oldmaketitle\maketitle
+\def\maketitle{%
+    \let\oldLaTeX\LaTeX
+    \let\oldtoday\today
+    \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
+    \ifcsname gitHeader\endcsname
+      \renewcommand{\today}{\oldtoday.~\gitHeader}
+    \fi
+    \oldmaketitle
+    \let\LaTeX\oldLaTeX
+    \let\today\oldtoday
+}
+
+% MNRAS hack for displaying showyourwork logo
+\@ifclassloaded{mnras}{
+  \ifx\CUP@mtlplain@loaded\undefined
+    \def\@printed{Preprint \tod@y\
+      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version
+      \ifcsname gitHeader\endcsname
+        \,(\gitHeader)
+      \fi
+      }
+  \else
+    \def\@printed{}
+  \fi
+}{}
+
+% A&A hack for displaying showyourwork logo + abstract links
+\@ifclassloaded{aa}{
+  \renewcommand*\aa@manuscriptname{%
+    \LaTeX
+    \hspace{\stretch{1}}%
+    \smash{\stackunder[0.5em]{\copyright ESO \the\year}{%
+        \href{\syw@url/tree/\syw@sha/}{%
+          \color{sywBlue}%
+          \faGithub%
+        }%
+        \ifOnGithubActions
+          \hspace{3pt}%
+          \href{\syw@url/actions/runs/\syw@runid/}{%
+            \color{sywGreen}%
+            \faCheckCircle%
+          }%
+        \fi
+      }
+    }
+  }
+}{}
+
+% Custom margin icon
+\newcommand\marginicon[1]{
+  \renewcommand\showkeyslabelformat[1]{#1}%
+}
+
+% Define custom colors
+\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
+\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
+\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
+\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
+
+% User-facing commands
+\newcommand\GitHubURL{\syw@url}
+\newcommand\GitHubSHA{\syw@sha}
+\newcommand\GitHubIcon{\faGithub\xspace}
+
+% Add a GitHub link to the end of the abstract
+\let\oldabstract\abstract
+\let\oldendabstract\endabstract
+\renewenvironment{abstract}{%
+  \oldabstract%
+}{%
+  % AASTex631 hack to reduce margin separation
+  % in the abstract of a two-column document
+  %\ifcsname if@two@col\endcsname%
+  %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
+  %\fi%
+  \marginnote{%
+    \href{\syw@url/tree/\syw@sha/}{%
+      \color{sywBlue}%
+      \faGithub%
+    }%
+    \ifOnGithubActions
+      \hspace{3pt}%
+      \href{\syw@url/actions/runs/\syw@runid/}{%
+        \color{sywGreen}%
+        \faCheckCircle%
+      }%
+    \fi
+  }
+  \oldendabstract%
+}
+
+
+% Hack `showkeys' to show margin links for figures
+% See https://tex.stackexchange.com/a/580553
+\renewcommand\showkeyslabelformat[1]{%
+  \normalfont%
+  \stackon[3pt]{%
+    \IfEq*{\usevalue{#1_script}}{KEYNOTFOUND}{}{%
+      \raisebox{0pt}[5pt][5pt]{%
+        \href{\syw@url/blob/\syw@sha/\usevalue{#1_script}}{%
+          \color{sywBlue}\faGithub%
+        }%
+      }%
+    }%
+  }{%
+    \IfEq*{\usevalue{#1_cache}}{KEYNOTFOUND}{}{%
+      \stackon[3pt]{%
+        \raisebox{0pt}[5pt][5pt]{%
+          \href{\usevalue{#1_cache}}{%
+            \color{sywBlue}\faCloudDownload%
+          }%
+        }%
+      }{%
+        \stackon[3pt]{%
+          \syw@DatasetIcon{1}%
+        }{%
+          \syw@DatasetIcon{2}%
+        }%
+      }%
+    }{%
+      \stackon[3pt]{%
+        \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{%        
+          \raisebox{0pt}[5pt][5pt]{%
+            \href{\usevalue{#1_datasetOne}}{%
+              \color{sywBlue}\faDatabase%
+            }%
+          }%
+        }%
+      }{%
+        \stackon[3pt]{%
+          \IfEq*{\usevalue{#1_datasetTwo}}{KEYNOTFOUND}{}{%        
+            \raisebox{0pt}[5pt][5pt]{%
+              \href{\usevalue{#1_datasetTwo}}{%
+                \color{sywBlue}\faDatabase%
+              }%
+            }%
+          }%
+        }{%
+          \IfEq*{\usevalue{#1_datasetThree}}{KEYNOTFOUND}{}{%        
+            \raisebox{0pt}[5pt][5pt]{%
+              \href{\usevalue{#1_datasetThree}}{%
+                \color{sywBlue}\faDatabase%
+              }%
+            }%
+          }%
+        }%
+      }%
+    }%
+  }%
+}
+
+% Set the graphics path for all figures
+\graphicspath{{./}{./figures/}}

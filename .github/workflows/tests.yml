@@ -1,0 +1,50 @@
+name: tests
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Run tests
+    concurrency: showyourwork-${{ github.ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up python
+        id: setup_python
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.9"
+      
+      - name: Install showyourwork
+        id: install
+        if: steps.setup_python.outcome == 'success'
+        shell: bash -l {0}
+        run: |
+          python -m pip install -U pip
+          python -m pip install -e ".[tests]"
+
+      - name: Run tests
+        id: tests
+        if: steps.install.outcome == 'success'
+        shell: bash -l {0}
+        run: python -m pytest
+        env:
+          ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+          SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
+          OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
+          OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+
+      - name: Publish tests
+        id: publish_tests
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "junit/*.xml"

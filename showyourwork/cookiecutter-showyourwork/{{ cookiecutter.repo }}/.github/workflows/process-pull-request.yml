@@ -1,0 +1,14 @@
+name: process pull request
+
+on:
+  workflow_run:
+    workflows: [build pull request]
+    types: [completed]
+
+jobs:
+  process-pr:
+    runs-on: ubuntu-latest
+    name: Process pull request
+    steps:
+      - name: Process pull request
+        uses: showyourwork/showyourwork-action/process-pull-request@v1

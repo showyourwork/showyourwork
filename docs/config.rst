@@ -1,88 +1,204 @@
 .. raw:: html
 
-  <style>
-    section p {
-      margin-bottom: 0px;
-    }
-  </style>
+    <style>
+        li p {
+            margin-bottom: 0px;
+        }
+    </style>
 
-The ``showyourwork.yml`` file
-=============================
+The ``showyourwork.yml`` config file
+====================================
 
-This is the configuration file for ``showyourwork``, allowing you to
+This is the configuration file for |showyourwork|, allowing you to
 customize several aspects of the workflow. Below is a list of all
 available options.
 
 
-``arxiv_tarball_exclude``
-^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _config.datasets:
 
-**Type:** ``list``
+``datasets``
+^^^^^^^^^^^^
 
-**Description:** List of of files/paths to exclude from the arXiv tarball.
-By default, ``showyourwork`` will never include ``python`` scripts, ``matplotlibrc``
-config files, ``python`` and ``showyourwork`` temporaries, or ``.gitignore``
-files in the tarball. It will also automatically exclude datasets that are
-uploaded to/downloaded from Zenodo. This option is useful if there are other
-files in your repository -- such as static datasets or other kinds of scripts --
-that don't need to be included in the tarball. Note that glob syntax is allowed,
-and all paths should be relative to the root of your repository.
+**Type:** ``mapping``
 
-**Required:** no
-
-**Default:** ``[]``
-
-**Example:**
-
-.. code-block:: yaml
-
-  arxiv_tarball_exclude:
-    - src/data/dataset.dat
-    - src/ms.bib
-    - src/**/*.sh
-
-
-``CI``
-^^^^^^
-
-**Type:** ``bool``
-
-**Description:** Flag indicating whether or not this is a GitHub Actions continuous
-integration (CI) build. This is set automatically, but can be overridden here
-for debugging purposes.
+**Description:** A mapping declaring static datasets to be downloaded from Zenodo
+or Zenodo Sandbox.
+Nested under this keyword should be a sequence of mappings labeled by the
+deposit version DOIs of Zenodo or Zenodo Sandbox datasets.
+See below for details.
 
 **Required:** no
 
-**Default:** (inferred automatically)
-
 **Example:**
+
+The following block shows how to tell |showyourwork| about two files,
+``TOI640b.json`` and ``KeplerRot-LAMOST.csv``, each of which is hosted
+on a Zenodo deposit with a different version DOI. Note that the user should
+separately provide :ref:`config.dependencies` information for each of these
+files, so |showyourwork| knows which scripts require these files.
+
 
 .. code-block:: yaml
 
-  CI: false
+  datasets:
+    10.5281/zenodo.6468327:
+      contents:
+        TOI640b.json: src/data/TOI640b.json
+    10.5281/zenodo.5794178:
+      contents:
+        KeplerRot-LAMOST.csv: src/data/KeplerRot-LAMOST.csv
+
+See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
 
 
-``dag``
-^^^^^^^
+.. _config.datasets.doi:
 
-**Type:** ``bool``
+``datasets.<doi>``
+^^^^^^^^^^^^^^^^^^
 
-**Description:** Set to ``true`` to turn on DAG (directed acyclic graph) generation.
-The DAG is a graph showing the dependencies among the inputs and outputs of
-your project. While ``Snakemake`` generates a complete DAG of the build process
-(see :doc:`local`), setting this flag to ``true`` will generate a custom, compact
-graph showing the dependencies among ``showyourwork``-managed figures and datasets.
+**Type:** ``mapping``
+
+**Description:** 
+The Zenodo or Zenodo Sandbox version DOI for the deposit.
+
+.. note::
+    
+    Zenodo makes a distinction 
+    between *version* DOIs and *concept* DOIs. Version DOIs are static, and tied
+    to a specific version of a deposit (the way you'd expect a DOI to behave); this is
+    what you should provide here.
+    Concept DOIs, on the other hand, point to *all* versions of a given record,
+    and always resolve to the *latest* version.
+    Check out the sidebar on the 
+    `web page for this sample deposit <https://zenodo.org/record/6468327>`_:
+
+    .. image:: _static/zenodo_dois.png
+       :width: 50%
+       :align: center
+
+    .. raw:: html
+
+        <br/>
+
+    You can see that the DOI ``10.5281/zenodo.6468327`` corresponds to a specific version (``1``)
+    of the deposit, while the DOI ``10.5281/zenodo.6468326`` corresponds to *all* versions of
+    the deposit (it's listed under "Cite all versions?"). 
+    The former is a "version" DOI, while the latter is a "concept" DOI.
+    You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
 
 **Required:** no
 
-**Default:** ``false``
-
 **Example:**
+
+If the version DOI for a deposit containing the file ``TOI640b.json`` is ``10.5281/zenodo.6468327``,
+we would specify the following in the config file:
 
 .. code-block:: yaml
 
-  dag: true
+  datasets:
+    10.5281/zenodo.6468327:
+      contents:
+        TOI640b.json: src/data/TOI640b.json
 
+See below for the syntax of the ``contents`` section of the ``datasets`` mapping.
+
+
+.. _config.datasets.doi.contents:
+
+``datasets.<doi>.contents``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Specifies a mapping between files in a Zenodo or Zenodo Sandbox deposit and local
+files. The ``contents`` field must contain key-value pairs of the form
+
+.. code-block:: yaml
+
+    remote-file: path-to-local-file
+
+where ``remote-file`` is the name of the file on the remote (the Zenodo deposit)
+and ``path-to-local-file`` is the path to the file on disk, relative to the
+top level of the repository. The ``path-to-local-file`` may be omitted, in which
+case the file name is preserved and the file is downloaded to the default
+``destination`` (see the option of the same name below).
+
+If the remote file is a zipfile or a tarball, instead of a local path, users may provide
+a directory tree mapping that specifies the contents of the tarball and where they
+should be extracted to. The workflow will automatically extract them. See the
+example below for details.
+
+.. note::
+
+    The ``contents`` section need only specify files used by the workflow; if
+    there are additional files in the Zenodo deposit that are not needed by
+    the workflow, they need not be listed. However, files that required by
+    the workflow must be listed explicitly; glob syntax is not allowed.
+
+**Required:** no
+
+**Example:**
+
+The following example shows all the various ways in which Zenodo files can be downloaded,
+extracted, and mapped to local files:
+
+.. code-block:: yaml
+
+    datasets:
+      10.5281/zenodo.6468327:
+        destination: src/data/TOI640                 # default folder to extract files to
+        contents:
+
+          README.md:                                 # auto extracted to `src/data/TOI640/README.md`
+          TOI640b.json: src/data/TOI640/planet.json  # rename the extracted file, just for fun
+
+          images.tar.gz:                             # remote tarballs behave like folders w/ same name
+            README.md:                               # auto extracted to `src/data/TOI640/images/README.md`
+            S06:                                     # subfolder
+              image.json: src/data/TOI640/S06.json   # rename and change destination folder
+            S07:                                     # subfolder
+              image.json: src/data/TOI640/S07.json   # rename and change destination folder
+
+          lightcurves.tar.gz:                        # another tarball
+            lightcurves:                             # files are nested inside `lightcurves` in this tarball
+              README.md:                             # auto extracted to `src/data/TOI640/lightcurves/lightcurves/README.md`
+              S06:                                   # subfolder
+                lc.txt: src/data/TOI640/S06.txt      # rename and change destination folder
+              S07:                                   # subfolder
+                lc.txt: src/data/TOI640/S07.txt      # rename and change destination folder
+
+
+Recall that users must separately provide dependency information for each
+of these files via the :ref:`config.dependencies` key.
+
+
+.. _config.datasets.doi.destination:
+
+``datasets.<doi>.destination``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The default destination to extract the contents of the Zenodo
+deposit to.
+
+**Required:** no
+
+**Default:** ``src/data``
+
+**Example:**
+
+The following will extract all files in the Zenodo deposit with doi ``10.5281/zenodo.6468327``
+to ``src/data`` (subfolders will be preserved).
+
+.. code-block:: yaml
+
+    datasets:
+      10.5281/zenodo.6468327:
+        destination: src/data
+
+
+.. _config.dependencies:
 
 ``dependencies``
 ^^^^^^^^^^^^^^^^
@@ -105,26 +221,27 @@ executes the script.
 **Default:** ``[]``
 
 **Example:**
-Tell ``showyourwork`` that the figure script ``my_figure.py`` depends on
-a helper script called ``helper_script.py``:
+Tell |showyourwork| that the figure script ``my_figure.py`` depends on
+the helper script ``utils/helper_script.py``:
 
 .. code-block:: yaml
 
   dependencies:
-    src/figures/my_figure.py:
-      - src/figures/utils/helper_script.py
+    src/scripts/my_figure.py:
+      - src/scripts/utils/helper_script.py
 
-See :ref:`custom_script_deps`. You can also
-specify a dependency on a programmatically-generated file:
+You can also specify a dependency on a programmatically-generated file:
 
 .. code-block:: yaml
 
   dependencies:
-    src/figures/fibonacci.py:
+    src/scripts/fibonacci.py:
         - src/data/fibonacci.dat
 
-See :ref:`custom_dataset_deps`. Finally,
-dependencies of the manuscript file are also allowed:
+provided ``data/fibonacci.dat`` is defined in a ``zenodo`` deposit (see below)
+or instructions for generating it are provided in the ``Snakefile``.
+
+Finally, dependencies of the manuscript file are also allowed:
 
 .. code-block:: yaml
 
@@ -132,20 +249,179 @@ dependencies of the manuscript file are also allowed:
     src/ms.tex:
         - src/answer.tex
 
-See :ref:`custom_ms_deps`.
+
+.. _config.ms:
+
+``ms``
+^^^^^^
+
+**Type:** ``str``
+
+**Description:** Path to the main TeX manuscript. Change this if you'd prefer to
+name your manuscript something other than ``src/tex/ms.tex``. Note that you should still
+keep it in the ``src/tex`` directory. Note also that the compiled PDF file will
+have the same name (e.g., ``src/tex/article.tex`` will generate ``article.pdf``
+in the repository root) .
+
+**Required:** no
+
+**Default:** ``src/tex/ms.tex``
+
+**Example:**
+
+.. code-block:: yaml
+
+  ms: src/tex/article.tex
 
 
-``download_only``
+.. _config.overleaf:
+
+``overleaf``
+^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Settings pertaining to Overleaf integration. See below for details,
+and make sure to check out :doc:`overleaf`.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+    overleaf:
+        id: 62150dd16134ef045f81d1c8
+        auto-commit: true
+        push: 
+            - src/tex/figures
+        pull:
+            - src/tex/ms.tex
+            - src/tex/bib.bib
+
+
+.. _config.overleaf.id:
+
+``overleaf.id``
+^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The id of the Overleaf project to integrate with. This can
+be obtained from the URL of the project, e.g.:
+
+.. code-block:: bash
+
+    https://www.overleaf.com/project/6262c032aae5421d6d945acf
+
+in this case, the id is ``6262c032aae5421d6d945acf``.
+
+.. warning::
+
+    Please read the :doc:`Overlaf <overleaf>` integration docs before
+    manually adding/changing this value, as you could risk losing
+    changes to your local document or to your Overleaf document the
+    next time you build!
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+    overleaf:
+        id: 62150dd16134ef045f81d1c8
+
+
+.. _config.overleaf.pull:
+
+``overleaf.pull``
 ^^^^^^^^^^^^^^^^^
 
 **Type:** ``bool``
 
-**Description:** If set to ``true``, will never attempt to generate figure
-dependencies if they are hosted on Zenodo (instead, showyourwork downloads them). 
-This behavior is similar to setting ``CI`` to ``true`` and is especially
-useful for third-party users who have cloned the repository and don't want
-to re-run expensive simulation steps, or don't have the authorization to
-upload files to the Zenodo deposit.
+**Description:** A list of files and/or folders to be pulled from the Overleaf project before
+every build. These should be files that are only ever modified on Overleaf, such as 
+the TeX manuscript and other TeX files. Paths should be relative to the top level of the
+repository. Exact names are required; no glob syntax allowed.
+
+**Required:** no
+
+**Default:** ``[]``
+
+**Example:**
+
+.. code-block:: yaml
+
+    overleaf:
+        pull:
+            - src/tex/ms.tex
+            - src/tex/bib.bib
+
+
+.. _config.overleaf.push:
+
+``overleaf.push``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** A list of files and/or folders to be pushed to the Overleaf project after
+every build. These should be files that are programmatically generated by the build, such
+as the figure files. Paths should be relative to the top level of the
+repository. Exact names are required; no glob syntax allowed.
+
+**Required:** no
+
+**Default:** ``[]``
+
+**Example:**
+
+.. code-block:: yaml
+
+    overleaf:
+        push:
+            - src/tex/figures
+
+
+.. _config.require_inputs:
+
+``require_inputs``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** If there is no valid rule to generate a given output file
+(because of, e.g., a missing input file), but the output file itself is present on disk,
+Snakemake will not by default raise an error. This can be useful for running
+workflows locally, but it can compromise the reproducibility of a workflow when
+a third party attempts to run it. Therefore, the default behavior in |showyourwork|
+is to require all output files to be programmatically generatable when running
+the workflow, *even if* the output files exist on disk already. Otherwise, an
+error is thrown. Set this option to ``false`` to override this behavior.
+
+**Required:** no
+
+**Default:** ``true``
+
+**Example:**
+
+.. code-block:: yaml
+
+    require_inputs: true
+
+
+.. _config.run_cache_rules_on_ci:
+
+``run_cache_rules_on_ci``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Allow cacheable rules to run on GitHub Actions if the cached
+output is not available? Default is ``false``, which prevents potentially
+computationally expensive rules from running on the cloud. In this case, 
+cache misses result in an error when running on GitHub Actions only.
 
 **Required:** no
 
@@ -155,76 +431,31 @@ upload files to the Zenodo deposit.
 
 .. code-block:: yaml
 
-  download_only: true
+    run_cache_rules_on_ci: false
 
 
-``figexts``
-^^^^^^^^^^^
-
-**Type:** ``list``
-
-**Description:** List of recognized figure extensions. 
-
-**Required:** no
-
-**Default:** ``[pdf, png, eps, jpg, jpeg, gif, svg, tiff]``
-
-**Example:**
-
-.. code-block:: yaml
-
-  figexts:
-    - pdf
-    - png
-
-
-``ms``
-^^^^^^
-
-**Type:** ``str``
-
-**Description:** Path to the main TeX manuscript. Change this if you'd prefer to
-name your manuscript something other than ``src/ms.tex``. Note that you should still
-keep it in the ``src/`` directory. Note also that the compiled PDF will still be named
-``ms.pdf`` regardless of this setting.
-
-**Required:** no
-
-**Default:** ``src/ms.tex``
-
-**Example:**
-
-.. code-block:: yaml
-
-  ms: src/article.tex
-
-See :ref:`custom_ms_name`.
-
-
-.. _config_scripts:
+.. _config.scripts:
 
 ``scripts``
 ^^^^^^^^^^^
 
-**Type:** ``list``
+**Type:** ``mapping``
 
-**Description:** List of script extensions and instructions on how to execute 
-them to generate output. By default, ``showyourwork`` expects output files
+**Description:** Mapping of script extensions to instructions on how to execute 
+them to generate output. By default, |showyourwork| expects output files
 (e.g., figures or datasets) to
 be generated by executing the corresponding scripts with ``python``. You can add custom
 rules here to produce output from scripts with other extensions, or change
 the behavior for executing ``python`` scripts (such as adding command line
 options, for instance). Each entry under ``scripts`` should be a file extension,
 and under each one should be a string specifying how to generate the output file
-from the input script. The following placeholders are recognized by ``showyourwork``
+from the input script. The following placeholders are recognized by |showyourwork|
 and expand as follows at runtime:
 
 - ``{script}``: The full path to the input script.
-- ``{script.path}``: The full path to the directory containing the input script.
-- ``{script.name}``: The name of the input script (without the path).
-- ``{output}``: The full path to the output file.
-- ``{output.path}``: The full path to the directory containing the output file.
-- ``{output.name}``: The name of the output file (without the path).
+- ``{output}``: The full path to the output file (i.e., the generated figure). If the script generates more than one file, this expands to a space-separated list of outputs.
+- ``{datasets}``: A space-separated list of all the Zenodo datasets required by the current script.
+- ``{dependencies}``: A space-separated list of all the dependencies (including datasets) of the current script.
 
 **Required:** no
 
@@ -235,45 +466,43 @@ following specification in the ``yaml`` file:
 
   scripts:
     py:
-      cd {script.path} && python {script.name}
+      python {script}
 
 That is, ``python`` is used to execute all scripts that end in ``.py``. 
 
-.. important::
-
-  By default, ``showyourwork`` always does a ``cd`` into the directory 
-  containing the script and executes it from within that directory; therefore,
-  any relative paths within ``python`` scripts will be relative to the directory
-  containing the script.
-
 **Example:**
-We can tell ``showyourwork`` how to generate figures from Graphviz ``.gv``
-files as follows:
+We can tell |showyourwork| how to generate figures by executing a Jupyter
+notebook as follows:
 
 .. code-block:: yaml
 
   scripts:
-    gv:
-      dot -Tpdf {script} > {output}
-
-or, to run it from the directory containing the script (as discussed above),
-
-.. code-block:: yaml
-
-  scripts:
-    gv:
-      cd {script.path} && dot -Tpdf {script.name} > {output}
-
-See :ref:`custom_non_python`.
+    ipynb:
+      jupyter execute {script}
 
 
-``tectonic_latest``
-^^^^^^^^^^^^^^^^^^^
+.. _config.style:
+
+``style``
+^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Specifies custom modifications to the article stylesheet.
+
+**Required:** no
+
+
+.. _config.style.show_git_sha_or_tag:
+
+``style.show_git_sha_or_tag``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``bool``
 
-**Description:** Use the latest version of ``tectonic`` (built from source) instead
-of the most recent stable version? You shouldn't normally have to edit this entry.
+**Description:** Show the git SHA in the article PDF header.
+If the HEAD commit corresponds to a git tag, show the tag name in the
+header.
 
 **Required:** no
 
@@ -283,37 +512,23 @@ of the most recent stable version? You shouldn't normally have to edit this entr
 
 .. code-block:: yaml
 
-  tectonic_latest: true
+  style:
+    show_git_sha_or_tag: true
 
 
-``tectonic_os``
-^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** Operating system used for choosing which ``tectonic``
-binary to install (only if ``tectonic_latest`` is ``true``). 
-This is usually determined automatically, but can be
-overridden. Options are ``x86_64-unknown-linux-gnu``, ``x86_64-apple-darwin``,
-or ``x86_64-pc-windows-msvc``.
-
-**Required:** no
-
-**Default:** (inferred automatically)
-
-**Example:**
-
-.. code-block:: yaml
-
-  tectonic_os: x86_64-apple-darwin
-
+.. _config.verbose:
 
 ``verbose``
 ^^^^^^^^^^^
 
 **Type:** ``bool``
 
-**Description:** Enable verbose output? Useful for debugging runs.
+**Description:** Enable verbose output? Useful for debugging runs. By default,
+|showyourwork| suppresses nearly all Snakemake output, sending it directly
+to the log file (see :doc:`logging`). Setting ``verbose: true`` results in all
+Snakemake output being printed to the screen as well. Note that you can
+crank up the verbosity even more by passing the ``--verbose`` argument to
+``snakemake build``, which makes Snakemake itself more talkative.
 
 **Required:** no
 
@@ -325,360 +540,26 @@ or ``x86_64-pc-windows-msvc``.
 
   verbose: true
 
-.. _zenodo_key:
 
-``zenodo``
-^^^^^^^^^^
+.. _config.version:
 
-**Type:** ``list``
-
-**Description:** A list of datasets to be download from and/or uploaded to
-Zenodo. Each entry should be the path to a dataset, followed by keys
-specifying information about the Zenodo deposit. These keys depend on the use
-case. If the deposit already exists (i.e., it was uploaded manually), then
-users should only specify the deposit *version* :ref:`id <zenodo.dataset.id>`. 
-If the deposit does not exist, and users would like ``showyourwork`` to upload 
-it/download it from Zenodo, they should specify the deposit *concept*
-:ref:`id <zenodo.dataset.id>` instead (see :ref:`id <zenodo.dataset.id>` below for
-more details).
-Additionally, users should specify the following keys 
-(most of which are optional): :ref:`script <zenodo.dataset.script>`,
-:ref:`title <zenodo.dataset.title>`,
-:ref:`description <zenodo.dataset.description>`,
-and :ref:`creators <zenodo.dataset.creators>`.
-Finally, if the deposit is a tarball consisting of many datasets, users should
-also specify the tarball :ref:`contents <zenodo.dataset.contents>`.
-In both cases (manually uploaded and ``showyourwork``-managed datasets),
-a :ref:`token_name <zenodo.dataset.token_name>` key is also accepted.
-
-.. note::
-
-    For ``showyourwork``-managed datasets, the ``script`` that generates the
-    dataset will be executed when running the workflow locally (but only if there
-    are changes to the dataset's dependencies).
-    When running on GitHub Actions, on the other hand, the script will **never** be
-    executed; instead, ``showyourwork`` will always download the dataset from
-    Zenodo. The idea here is to prevent the workflow from executing expensive
-    operations on the cloud. In order for this to work, however, a deposit must
-    exist, so you must run your workflow at least once locally before pushing
-    the changes to GitHub.
-
-**Required:** no
-
-**Default:** ``[]``
-
-**Example:**
-See :ref:`custom_dataset_deps`,
-:ref:`custom_simulation_deps`,
-:ref:`custom_tarballs`,
-and
-:ref:`custom_tarballs_advanced`.
-
-
-.. _zenodo.dataset.contents:
-
-``zenodo.<dataset>.contents``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``list``
-
-**Description:** If ``<dataset>`` is a ``.tar.gz`` file, users should provide
-a list of the contents of the tarball. 
-If this is a static tarball that was manually uploaded to Zenodo 
-(i.e., the provided ``id`` is a version id), this should be a list of full
-paths to the files to be created when the tarball is extracted.
-See below for details.
-If, on the other hand, this tarball is managed by
-``showyourwork`` (i.e., the provided ``id`` is a concept id), this should be 
-a list of the full paths of all the files to include in the tarball.
-These should be located in the ``src/data`` folder (or nested within it).
-Note that instructions for generating these individual files
-should be provided separately, either via the :ref:`script <zenodo.dataset.script>`
-key or via a custom ``rule`` in the ``Snakefile``.
-
-For static tarballs, users need to be careful when providing file paths.
-``showyourwork`` will extract the tarball from the top-level directory of your
-repository and attempt to generate all of the files listed in ``contents``,
-either by respecting the file path within the tarball or by treating it as a
-path relative to the ``src/data`` directory.
-
-For example, consider the Zenodo-hosted file ``results.tar.gz``, whose contents
-are
-
-.. code-block::
-
-  src/data/results.tar.gz
-    ├── src/data/results_00.dat
-    └── src/data/results_01.dat
-    
-We can specify the following settings for it in ``showyourwork.yml``:
-
-.. code-block:: yaml
-
-  zenodo:
-    - src/data/results.tar.gz:
-        contents:
-            - src/data/results_00.dat
-            - src/data/results_01.dat
-
-which will unpack the files ``results_00.dat`` and ``results_01.dat`` into the
-``src/data`` folder. In this case, the source and destination paths are the same
-(i.e., the path inside the tarball is the path we extract the files to). But
-things will also work if we have a tarball with purely relative paths:
-
-.. code-block::
-
-  src/data/other_results.tar.gz
-    ├── other_results_00.dat
-    └── other_results_01.dat
-
-and we specify the following in ``showyourwork.yml``:
-
-.. code-block:: yaml
-
-  zenodo:
-    - src/data/other_results.tar.gz:
-        contents:
-            - src/data/other_results_00.dat
-            - src/data/other_results_01.dat
-
-In this case, the source and destination paths are different, but ``showyourwork``
-knows how to handle it. 
-
-Note that if you have files within nested folders inside your tarball, things
-should still work as long as you extract them into the ``src/data`` directory.
-Note that there is no need to specify the nested directories in ``contents``:
-just the full path to the files; intermediate directories will be created as needed.
-
-**Required:** yes, but only if ``<dataset>`` is a ``.tar.gz`` tarball.
-
-**Default:**
-
-**Example:**
-See :ref:`custom_tarballs`.
-
-
-.. _zenodo.dataset.creators:
-
-``zenodo.<dataset>.creators``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``list``
-
-**Description:** A list of creators to be listed on the Zenodo record and associated
-with the record DOI.
-
-**Required:** no
-
-**Default:** The GitHub username of the current user
-
-**Example:**
-See :ref:`custom_simulation_deps`.
-
-
-.. _zenodo.dataset.description:
-
-``zenodo.<dataset>.description``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``version``
+^^^^^^^^^^^
 
 **Type:** ``str``
 
-**Description:** A detailed description of the file, how it was generated, and
-how it should be used, to be displayed on the Zenodo record page.
+**Description:** The version of the |showyourwork| package required to build
+the article, populated automatically when ``showyouwork setup`` is run. Users
+may, however, change this to upgrade/downgrade to a different version of the
+package. Options are:
 
-**Required:** no
-
-**Default:** ``"File uploaded from <repository-name>"``
-
-**Example:**
-See :ref:`custom_simulation_deps`.
-
-
-.. _zenodo.dataset.id:
-
-``zenodo.<dataset>.id``
-^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``int``
-
-**Description:** A Zenodo ``id`` for a given deposit is the last part of its DOI. For example,
-a deposit with DOI ``10.5281/zenodo.5749987`` has ``id`` equal to ``5749987``.
-This is also the last part of the url for the corresponding record
-(`<https://zenodo.org/record/5749987>`_). Importantly, Zenodo makes a distinction 
-between *version* DOIs and *concept* DOIs. Version DOIs are static, and tied
-to a specific version of a deposit (the way you'd expect a DOI to behave).
-This is the type of ``id`` you should provide if you manually uploaded a dataset
-to Zenodo and only ever want ``showyourwork`` to download it.
-Concept DOIs, on the other hand, point to *all* versions of a given record,
-and always resolve to the *latest* version. If you want ``showyourwork``
-to manage the dataset for you by generating it, uploading it, and downloading
-it, this is the kind of ``id`` you should provide.
-Check out the sidebar on the 
-`web page for the deposit in the example above <https://zenodo.org/record/5749987>`_:
-
-.. raw:: html
-
-    <div align="center" style="margin-bottom: 17.25px;">
-        <img src="https://raw.githubusercontent.com/rodluger/showyourwork/img/dois.png" width="40%"/>
-    </div>
-
-You can see that the ``id`` ``5749987`` corresponds to a specific version (``19``)
-of the deposit, while the ``id`` ``5662426`` corresponds to *all* versions of
-the deposit (it's listed under "Cite all versions?"). 
-The former is a "version" id, while the latter is a "concept" id.
-You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
-
-.. note::
-
-  If you're just getting started and want a concept ``id`` for a fresh draft
-  of a new Zenodo deposit, run
-
-  .. code-block:: bash
-
-    make reserve
-
-  .. raw:: html
-
-    <br>
-
-  from the top level of your repo. This will pre-reserve a concept ``id`` for
-  you (assuming you're properly authenticated) and print it to the terminal.
+- any pip-installable version number (e.g., ``0.3.0``)
+- a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `<github.com/showyourwork/showyourwork>`_ repo
 
 **Required:** yes
 
-**Default:** 
-
 **Example:**
-The following snippet
 
 .. code-block:: yaml
 
-  zenodo:
-    - src/data/results.tar.gz:
-        id: 5749987
-
-tells ``showyourwork`` to download the file ``results.tar.gz`` from
-the static Zenodo deposit at `<https://zenodo.org/record/5749987>`_ 
-(version 19 of the deposit, as mentioned above). This file must already
-exist, and ``showyourwork`` won't ever attempt to re-generate it or
-re-upload it to Zenodo because it recognizes ``5749987`` as a *version* id.
-
-.. raw:: html
-
-    <br>
-
-Alternatively, we could specify the following:
-
-.. code-block:: yaml
-
-  zenodo:
-    - src/data/results.tar.gz:
-        id: 5662426
-        script: src/analysis/generate_results.py
-
-In this case, the ``id`` is a *concept* id, corresponding to all versions of
-the deposit, and ``showyourwork`` will take over management of the deposit.
-Note that we also provided a ``script`` instructing ``showyourwork`` how to
-generate new versions of the deposit. Whenever ``generate_results.py`` or
-any of its dependencies are modified, ``showyourwork`` will re-generate 
-``results.tar.gz`` **and re-upload it to Zenodo under the same concept id**
-when running the workflow locally.
-This will create a new version DOI under the same concept DOI.
-Note that in order for this to work, you must be properly authenticated;
-see :ref:`token_name <zenodo.dataset.token_name>` below.
-For a more detailed example, see :ref:`custom_dataset_deps`.
-
-
-.. _zenodo.dataset.script:
-
-``zenodo.<dataset>.script``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** The path to the ``python`` script that generates the ``<dataset>``
-(or, if ``<dataset>`` is a tarball, the script that generates its contents).
-Note that this *must* be a ``python`` script, even if custom script instructions
-are provided via the :ref:`scripts <config_scripts>` key. To define custom rules for
-generating the dataset, see the 
-:ref:`custom_tarballs_advanced` example.
-
-**Required:** yes, unless a custom ``rule`` is provided in the ``Snakefile``
-
-**Default:**
-
-**Example:**
-See :ref:`custom_simulation_deps`.
-
-
-.. _zenodo.dataset.title:
-
-``zenodo.<dataset>.title``
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** The title of the Zenodo deposit.
-
-**Required:** no
-
-**Default:** ``"<repository-name>:<dataset>"``
-
-**Example:**
-See :ref:`custom_simulation_deps`.
-
-
-.. _zenodo.dataset.token_name:
-
-``zenodo.<dataset>.token_name``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** The name of the environment variable containing the
-Zenodo access token.
-To obtain this token, create a `Zenodo account <https://zenodo.org/signup>`_ 
-(if you don't have one already) and
-generate a `personal access token <https://zenodo.org/account/settings/applications/tokens/new/>`_.
-Make sure to give it at least ``deposit:actions`` and ``deposit:write`` scopes, and store it somewhere
-safe. Then, assign your token to an environment variable called ``ZENODO_TOKEN`` (or whatever
-you set ``token_name`` to). I export mine from within my ``.zshrc`` or ``.bashrc`` config file so that 
-it's always available in all terminals.
-
-.. warning::
-
-    Never include your personal access tokens in any files committed to GitHub!
-
-
-**Required:** no
-
-**Default:** ``ZENODO_TOKEN``
-
-**Example:**
-See :ref:`custom_simulation_deps`.
-
-
-``zenodo_sandbox``
-^^^^^^^^^^^^^^^^^^
-
-**Type:** ``list``
-
-**Description:** A list of datasets to be download from and/or uploaded to
-Zenodo Sandbox. This key behaves in the same way and accepts all the same
-arguments as the :ref:`zenodo <zenodo_key>` key above, but it interfaces with
-`<sandbox.zenodo.org>`_ (instead of `<zenodo.org>`_). Zenodo Sandbox works in
-the same way as Zenodo, but is meant for testing purposes only: deposits hosted
-in the Sandbox may be deleted at any time. Hosting datasets here is useful
-during development of your project; just make sure to switch over to
-``zenodo`` when you're ready to publish your paper!
-
-**Required:** no
-
-**Default:** ``[]``
-
-**Example:**
-See :ref:`custom_dataset_deps`,
-:ref:`custom_simulation_deps`,
-:ref:`custom_tarballs`,
-and
-:ref:`custom_tarballs_advanced`.
+  version: 0.3.0

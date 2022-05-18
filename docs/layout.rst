@@ -1,7 +1,7 @@
 Repository layout
 =================
 
-If you created your repository from the `showyourwork template <https://github.com/rodluger/showyourwork-template/generate>`_,
+If you created your repository via `showyourwork setup <local>`_,
 it should have the following overall layout:
 
 .. raw:: html
@@ -24,18 +24,15 @@ it should have the following overall layout:
         }
         .directory-list a {
           border-bottom: 1px solid transparent;
-          color: #888;
+          color: rgba(var(--pst-color-link),1);
           text-decoration: none;
           transition: all 0.2s ease;
         }
         .directory-list a:hover {
-          border-color: #eee;
-          color: #000;
-        }
-        .directory-list .folder,
-        .directory-list .folder > a {
-          color: #777;
           font-weight: bold;
+        }
+        .directory-list .folder > a {
+          color: rgba(var(--pst-color-link),1);
         }
         .directory-list li:before {
           margin-right: 10px;
@@ -64,12 +61,12 @@ it should have the following overall layout:
             <ul>
               <li class="folder">workflow
                 <ul>
-                  <li><a href="#workflow">showyourwork.yml</a></li>
+                  <li><a href="#build">build.yml</a></li>
+                  <li><a href="#build-pull-request">build-pull-request.yml</a></li>
+                  <li><a href="#process-pull-request">process-pull-request.yml</a></li>
                 </ul>
               </li>
             </ul>
-          </li>
-          <li class="folder"><a href="#showyourwork">showyourwork</a>
           </li>
           <li class="folder"><a href="#src">src</a>
             <ul>
@@ -78,10 +75,11 @@ it should have the following overall layout:
                   <li><a href="#gitignore">.gitignore</a></li>
                 </ul>
               </li>
-              <li class="folder"><a href="#figures">figures</a>
+              <li class="folder"><a href="#scripts">scripts</a>
                 <ul>
                   <li><a href="#gitignore">.gitignore</a></li>
                   <li><a href="#matplotlibrc">matplotlibrc</a></li>
+                  <li><a href="#paths">paths.py</a></li>
                 </ul>
               </li>
               <li class="folder"><a href="#static">static</a>
@@ -89,19 +87,28 @@ it should have the following overall layout:
                   <li><a href="#gitignore">.gitignore</a></li>
                 </ul>
               </li>
-              <li><a href="#gitignore">.gitignore</a></li>
-              <li><a href="#bibliography">bib.bib</a></li>
-              <li><a href="#manuscript">ms.tex</a></li>
+              <li class="folder"><a href="#tex">tex</a>
+                <ul>
+                  <li class="folder"><a href="#figures">figures</a>
+                    <ul>
+                      <li><a href="#gitignore">.gitignore</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#gitignore">.gitignore</a></li>
+                  <li><a href="#bibliography">bib.bib</a></li>
+                  <li><a href="#manuscript">ms.tex</a></li>
+                  <li><a href="#style">showyourwork.sty</a></li>
+                </ul>
+              </li>
             </ul>
           </li>
           <li><a href="#gitignore">.gitignore</a></li>
-          <li><a href="#gitmodules">.gitmodules</a></li>
+          <li><a href="#environment">environment.yml</a></li>
           <li><a href="#license">LICENSE</a></li>
           <li><a href="#readme">README.md</a></li>
-          <li><a href="#makefile">Makefile</a></li>
-          <li><a href="#snakefile">Snakefile</a></li>
-          <li><a href="#environment">environment.yml</a></li>
           <li><a href="#config">showyourwork.yml</a></li>
+          <li><a href="#snakefile">Snakefile</a></li>
+          <li><a href="#zenodoconfig">zenodo.yml</a></li>
         </ul>
       </div>
 
@@ -118,10 +125,10 @@ them.
     </style>
 
 
-.. _workflow:
+.. _build:
 
-The ``.github/workflows/showyourwork.yml`` file
-***********************************************
+The ``build.yml`` file
+**********************
 
 This is the configuration file for the workflow that builds your article on GitHub Actions.
 It instructs GitHub Actions to build the article every time a commit is pushed to the
@@ -140,7 +147,6 @@ The workflow tells GitHub to checkout the repository:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        submodules: recursive
 
 and run the custom ``showyourwork-action`` to build the article:
 
@@ -148,40 +154,39 @@ and run the custom ``showyourwork-action`` to build the article:
 
     - name: Build the article PDF
       id: build
-      uses: ./showyourwork/showyourwork-action
+      uses: showyourwork/showyourwork-action@v1
 
 You can add other steps to this workflow or configure the action settings (see :doc:`action`), but most users shouldn't
 have to tweak this file.
 Check out the `GitHub documentation <https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions>`_ for
 more information on configuring workflows.
 
-.. _showyourwork:
 
-The ``showyourwork`` submodule
-******************************
+.. _build-pull-request:
 
-This is a `Git submodule <https://git-scm.com/book/en/v2/Git-Tools-Submodules>`_
-that contains the ``showyourwork`` workflow, which manages the entire build process
-for your article. You should not edit this submodule directly. However, you can
-update it to the latest version of ``showyourwork`` by running
+The ``build-pull-request.yml`` file
+***********************************
 
-.. code-block:: bash
+The contents of this file are identical to those of :ref:`build`, except this workflow
+is triggered only on pull requests. The reason for separating this out is that pull
+request builds need a little bit of post-processing, which we can accomplish with
+a special ``workflow_run`` trigger activated on runs of this workflow. See below
+for details.
 
-    git submodule update --remote
 
-in the top level of your repository, or switch to a specific version of the
-workflow (say ``v0.1.0``) by running
+.. _process-pull-request:
 
-.. code-block:: bash
+The ``process-pull-request.yml`` file
+*************************************
 
-    pushd showyourwork
-    git fetch --all --tags
-    git checkout tags/v0.1.0
-    popd
+Pull request builds only get read access to the repository, so they can't upload the
+article PDF anywhere. Instead, they generate a workflow artifact. This workflow
+runs whenever a pull request build completes successfully. It downloads the build
+artifact and force-pushes the article PDF to a special branch called (by default) 
+``pull-request-<NUMBER>-pdf``, where ``<NUMBER>`` is the number of the pull request.
+This workflow also posts a comment in the PR discussion with a link to the PDF
+for convenience.
 
-again in the top level of your repository. Make sure to push your changes
-to the remote afterwards. Check out :doc:`update` for more
-information.
 
 .. _src:
 
@@ -189,11 +194,13 @@ The ``src`` directory
 *********************
 
 This directory contains the source code for building your article. This includes
-the LaTeX manuscript, the bibliography file, and the scripts and supplementary
-files needed to produce all of the article figures. Figure scripts and auxiliary
-code should be placed in the ``figures`` directory and (small) datasets and
-committed figures (if absolutely necessary!) should be placed in the ``static``
-directory. See below for details.
+the LaTeX manuscript, the bibliography file, and the scripts
+needed to produce all of the article figures. Figure scripts and auxiliary
+code should be placed in the ``scripts`` directory; datasets should be 
+programmatically generated or downloaded into the ``data`` directory; static
+figures (if absolutely necessary!) should be placed in the ``static``
+directory; and TeX files should be placed in the ``tex`` directory. 
+See below for details.
 
 
 .. _data:
@@ -202,32 +209,34 @@ The ``data`` directory
 ************************
 
 This directory is included in the template as a convenience. It is meant to
-house temporary (non-tracked) datasets, such as those downloaded from Zenodo.
+house temporary (non-tracked) datasets, such as those downloaded from Zenodo
+or programmatically generated by a pipeline script.
 By default, nothing in this directory is tracked by ``git``.
 
 
-.. _figures:
+.. _gitignore:
 
-The ``figures`` directory
+The ``.gitignore`` files
+************************
+
+The ``.gitignore`` files prevent you from committing certain kinds of files.
+You can add entries to these files, but you shouldn't have to remove any.
+In general, you should never commit figures (``.pdf``, ``.png``, ``.tiff``, etc),
+LaTeX temporaries (``.log``, ``.aux``, ``.blg``, etc), or any kind of output.
+In some cases, it might make sense to include one of these files (say, a ``.png``
+photograph that can't be generated programatically from a script). To commit
+something that's disallowed by a ``.gitignore`` file, just use the ``-f`` or ``--force``
+option when adding the file to ``git``.
+
+
+.. _scripts:
+
+The ``scripts`` directory
 *************************
 
 This directory should contain all of the scripts needed to produce the figures
-in your article. The names of these scripts should match the figure labels in
-the manuscript file (see :doc:`here <custom>` for details), although you can override
-this behavior by providing custom workflow rules (see :doc:`custom`).
-You can have other stuff in this directory as well (such as auxiliary scripts
-or procedurally-generated datasets).
-
-
-.. _static:
-
-The ``static`` directory
-************************
-
-This directory is meant to house figure files that can't be generated from
-scripts, such as photos, flowcharts, reproductions of figures in other papers, etc.
-If you place your figure in here, ``showyourwork`` will know not to try to
-generate it from any script.
+and/or datasets used in the generation of
+your article.
 
 
 .. _matplotlibrc:
@@ -247,6 +256,68 @@ which tells ``matplotlib`` to render figures using the non-interactive backend
 ``agg``. You can change this and add additional config options, but note that
 if the figures are generated using an interactive backend, this will likely
 cause the GitHub Action to fail!
+
+
+.. _paths:
+
+The ``paths.py`` file
+*********************
+
+This file is included as a convenience to make it easy for scripts to load and save files
+from/to the correct directories. It defines variables such as ```data``, ``figures``,
+``scripts``, etc.; these are ``pathlib.Path`` instances corresponding to the absolute
+path to the directories of the same name in your repository.
+As an example, the following code
+
+.. code-block:: python
+
+    import paths
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    data = np.loadtxt(paths.data / "dataset.txt")
+    fig = plt.figure()
+    plt.plot(data)
+    fig.savefig(paths.figures / "figure.pdf")
+    
+loads a dataset called ``dataset.txt`` from the :ref:`data<data>` directory, plots it,
+and saves the figure as ``figure.pdf`` in the :ref:`figures<figures>` directory.
+All paths declared in the ``paths`` module are absolute, so the above script will
+work regardless of what directory it is executed from.
+
+
+.. _static:
+
+The ``static`` directory
+************************
+
+This directory is meant to house figure files that can't be generated from
+scripts, such as photos, flowcharts, reproductions of figures in other papers, etc.
+If you place your figure in here, |showyourwork| will know not to try to
+generate it from any script.
+
+
+.. _tex:
+
+The ``tex`` directory
+*********************
+
+This is the directory containing the TeX manuscript, your bibliography, and any
+other auxiliary files used in building the article PDF, such as custom class
+files or TeX style sheets. The contents of this folder can be synced to/from
+an Overleaf project (see :doc:`overleaf`). The subfolder ``figures`` (see below)
+contains the actual figure files to be included in the article build.
+
+
+.. _figures:
+
+The ``figures`` directory
+*************************
+
+This directory contains the figure output (the files generated by the figure
+scripts) that gets included in your final article PDF. The ``.gitignore`` file
+in this directory prevents anything in it from being tracked by ``git``, as
+all figures should be programmatically generated on the fly.
 
 
 .. _bibliography:
@@ -269,94 +340,27 @@ change the article class to whatever you'd like, although you may have to includ
 (and commit) the ``.sty`` stylesheet if it's not in the standard TeXLive distribution.
 You can also import whatever packages you want in ``ms.tex`` -- the ``tectonic``
 typesetting system will automatically download and install them when building
-your article.
+your article. Note that you can also rename this file to something else, as
+long as you edit the corresponding setting (see :doc:`config`).
 
 
-.. _gitignore:
+.. _style:
 
-The ``.gitignore`` files
-************************
+The ``showyourwork.sty`` file
+*****************************
 
-The ``.gitignore`` files prevent you from committing certain kinds of files.
-You can add entries to these files, but you shouldn't have to remove any.
-In general, you should never commit figures (``.pdf``, ``.png``, ``.tiff``, etc),
-LaTeX temporaries (``.log``, ``.aux``, ``.blg``, etc), or any kind of output.
-In some cases, it might make sense to include one of these files (say, a ``.png``
-photograph that can't be generated programatically from a script). To commit
-something that's disallowed by a ``.gitignore`` file, just use the ``-f`` or ``--force``
-option when adding the file to ``git``.
+This is the |showyourwork| TeX style sheet, which you should always include in
+your manuscript:
 
+.. code-block:: tex
 
-.. _gitmodules:
+    \usepackage{showyourwork}
 
-The ``.gitmodules`` file
-************************
-
-The ``.gitmodules`` file simply tells ``git`` that the ``showyourwork``
-directory is a submodule. You shouldn't have to change anything in here.
-
-
-.. _license:
-
-The ``LICENSE`` file
-********************
-
-The ``LICENSE`` included in your repository is by default the MIT open-source
-license. Feel free to change this to whatever license you prefer, although we
-strongly recommend you to keep everything open source and free for others to
-modify and adapt into their own work!
-
-
-.. _readme:
-
-The ``README.md`` file
-**********************
-
-You should include a description of your repository here. Keep the badges at
-the top, as these provide easy access to the compiled article and the build logs.
-Feel free to remove or change the logo, though!
-
-
-.. _makefile:
-
-The ``Makefile``
-****************
-
-This is a standard Unix Makefile, enabling you to type ``make`` to build the article.
-You shouldn't have to edit anything in here.
-
-
-.. _snakefile:
-
-The ``Snakefile`` workflow
-**************************
-
-The ``Snakefile`` contains all of the instructions on how to build your article
-from the files in your repository. If you're not familiar with the ``Snakemake``
-workflow management system, read up on it `here <https://snakemake.readthedocs.io>`_.
-By default, the ``Snakefile`` should look something like this:
-
-.. code-block:: python
-
-    # Import the showyourwork module
-    module showyourwork:
-        snakefile:
-            "showyourwork/workflow/Snakefile"
-        config:
-            config
-
-    # Use all default rules
-    use rule * from showyourwork
-
-All this is doing is importing the ``showyourwork`` workflow (shipped within the
-``git`` submodule in your repo) and then telling ``Snakemake`` to use all the
-rules in that workflow. You typically won't want to remove any of these lines,
-but feel free to add whatever you'd like to your ``Snakefile``. This might include
-rules to build custom figures, to download datasets, etc; see
-:doc:`custom`.
-Note, finally, that this file is written in a language that's a straightforward
-superset of Python, so any regular Python commands and syntax is valid in it.
-
+If you peek inside, there's not much there: it's a placeholder stylesheet that
+imports all the |showyourwork| functionality from elsewhere if the article
+is built as part of the |showyourwork| workflow. If you compile your article
+with a standard TeX compiler (such as ``pdflatex`` or ``tectonic``), things will
+still work, but you won't benefit from any of the showyourwork functionality.
 
 .. _environment:
 
@@ -388,11 +392,57 @@ to your ``conda`` environment, which probably won't be useful to anyone else run
 your code!
 
 
+.. _license:
+
+The ``LICENSE`` file
+********************
+
+The ``LICENSE`` included in your repository is by default the MIT open-source
+license. Feel free to change this to whatever license you prefer, although we
+strongly recommend you to keep everything open source and free for others to
+modify and adapt into their own work!
+
+
+.. _readme:
+
+The ``README.md`` file
+**********************
+
+You should include a description of your repository here. Keep the badges at
+the top, as these provide easy access to the compiled article and the build logs.
+Feel free to remove or change the logo, though!
+
+
 .. _config:
 
 The ``showyourwork.yml`` config file
 ************************************
 
 This is the `Snakemake config file <https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html>`_
-for ``showyourwork``, where you can customize several aspects of the build. For
+for |showyourwork|, where you can customize several aspects of the build. For
 detailed information on this file, see :doc:`the showyourwork.yml file <config>`.
+
+
+.. _snakefile:
+
+The ``Snakefile`` workflow
+**************************
+
+The ``Snakefile`` contains custom instructions to build your article
+from the files in your repository. If you're not familiar with the Snakemake
+workflow management system, read up on it `here <https://snakemake.readthedocs.io>`_.
+By default, the ``Snakefile`` is empty: |showyourwork| takes care of everything
+for you. For custom workflows, you can add rules to your ``Snakefile``, such
+as instructions on how to build custom figures, to download datasets, etc; see
+:doc:`custom`.
+Note, finally, that this file is written in a language that's a straightforward
+superset of Python, so any regular Python commands and syntax is valid in it.
+
+
+.. _zenodoconfig:
+
+The ``zenodo.yml`` config file
+******************************
+
+This is a config file used to store Zenodo caching information. This file is
+entirely managed by |showyourwork|, so users should not edit it manually.

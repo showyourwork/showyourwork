@@ -1,0 +1,6 @@
+{
+    "latex-workshop.latex.external.build.command": "showyourwork",
+    "latex-workshop.latex.external.build.args": [],
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%"
+}

@@ -1,0 +1,12 @@
+**/__pycache__
+**/.showyourwork
+**/.snakemake
+showyourwork/_showyourwork_version.py
+showyourwork.egg-info
+.eggs
+.coverage
+.coverage.*
+htmlcov
+junit
+**/sitecustomize.py
+dist/*
