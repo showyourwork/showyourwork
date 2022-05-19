@@ -17,7 +17,7 @@ def ensure_top_level():
     if not root == here:
         raise exceptions.ShowyourworkException(
             "The `showyourwork` command must be called "
-            "from the top level of a git repo."
+            "from the top level of a git repository."
         )
 
 
@@ -119,10 +119,10 @@ def validate_slug(context, param, slug):
             if not cache:
                 echo(
                     """
-                    You didn't request remote caching (via the
-                    `--cache` command-line option), 
-                    so I'm not going to set up remote caching for
-                    this repository.
+                    By default, showyourwork does not set up remote caching for
+                    this repository. To enable remote caching of datasets to
+                    Zenodo, cancel this run and re-run `showyourwork setup` with
+                    the `--cache` command-line option.
                     """
                 )
             else:
@@ -130,16 +130,16 @@ def validate_slug(context, param, slug):
                     f"""
                     You requested remote caching, so I'm
                     going to create a deposit draft on Zenodo Sandbox
-                    where intermediate results will be cached. 
-                    Please make sure at this time that you have defined the 
+                    where intermediate results will be cached.
+                    Please make sure at this time that you have defined the
                     `SANDBOX_TOKEN` environment variable
                     containing your API key for the service. If you don't
                     have this key, visit
                     ``https://sandbox.zenodo.org/account/settings/applications/tokens/new``
                     to create a new personal access token with
                     `deposit:actions` and `deposit:write` scopes and store it
-                    in the environment variable `SANDBOX_TOKEN`. 
-                    In order for caching to work 
+                    in the environment variable `SANDBOX_TOKEN`.
+                    In order for caching to work
                     on GitHub Actions, you'll also have to visit
                     ``https://github.com/{slug}/settings/secrets/actions/new``
                     at this time to create a corresponding repository secret
@@ -151,22 +151,24 @@ def validate_slug(context, param, slug):
             # Check Overleaf credentials
             if not context.params.get("overleaf"):
                 echo(
-                    f"""
-                    You didn't provide an Overleaf project id (via the 
-                    `--overleaf` command-line option), so I'm not going to set 
-                    up Overleaf integration for this repository.
+                    """
+                    By default, showyourwork does not set up Overleaf
+                    integration. To enable Overleaf integration with this
+                    repository, cancel this run and re-run `showyourwork setup`
+                    with the `--overleaf` command-line option and pass in your
+                    Overleaf project ID.
                     """
                 )
             else:
                 echo(
                     f"""
-                    You provided an Overleaf project id, so I'm going to set up 
-                    Overleaf integration for this repository. Please make sure 
-                    at this time that you have defined the `OVERLEAF_EMAIL` and 
-                    `OVERLEAF_PASSWORD` environment variables. In order for 
+                    You provided an Overleaf project id, so I'm going to set up
+                    Overleaf integration for this repository. Please make sure
+                    at this time that you have defined the `OVERLEAF_EMAIL` and
+                    `OVERLEAF_PASSWORD` environment variables. In order for
                     this to work on GitHub Actions, please go to
                     ``https://github.com/{slug}/settings/secrets/actions/new``
-                    at this time and create `OVERLEAF_EMAIL` and 
+                    at this time and create `OVERLEAF_EMAIL` and
                     `OVERLEAF_PASSWORD` secrets with your Overleaf credentials.
                     """
                 )
