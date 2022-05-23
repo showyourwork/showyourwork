@@ -60,7 +60,7 @@ fig.savefig(paths.figures / 'test_figure.pdf', bbox_inches='tight')
 class TestMatplotlibLatex(TemporaryShowyourworkRepository):
     """Test rendering TeX in matplotlib."""
 
-    def customize():
+    def customize(self):
         """Add a figure that requires LaTeX to build."""
         # Edit the workflow
         with open(self.cwd / ".github" / "workflows" / "build.yml", "w") as f:
@@ -73,6 +73,6 @@ class TestMatplotlibLatex(TemporaryShowyourworkRepository):
         # Add the figure environment to the tex file
         self.add_figure_environment()
 
-    def build_local():
+    def build_local(self):
         """Disable local build, since this is explicitly a CI test."""
         pass
