@@ -19,7 +19,7 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
         raise exceptions.ShowyourworkException(
             f"Directory already exists: {repo}."
         )
-    name = f"@{user}"
+    name = f"@{user}".replace("_", "")
 
     # Get current stable version
     if showyourwork_version is None:

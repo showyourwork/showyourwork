@@ -75,6 +75,7 @@ def zenodo_create(branch):
         pass
     deposit = Zenodo("sandbox", branch=branch)
     with edit_yaml("zenodo.yml") as config:
+        config["cache"] = config.get("cache", {})
         config["cache"][branch] = config["cache"].get(branch, {})
         config["cache"][branch]["sandbox"] = deposit.doi
 
