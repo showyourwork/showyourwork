@@ -29,14 +29,6 @@ jobs:
         run: |
           wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh 
           sudo ~/bin/tlmgr install type1cm cm-super
-          echo "~/bin" >> $GITHUB_PATH
-
-      - name: Test TeX installation
-        id: test-tex
-        shell: bash -l {0}
-        run: |
-          latex --version
-          pdflatex --version
 
       - name: Build the article PDF
         id: build
@@ -51,10 +43,11 @@ jobs:
 
 # A figure script that requires LaTeX
 figure_script = r"""
-import sys
-print(sys.path)
+# Ensure ~/bin is in the PATH so matplotlib can find latex
+import os
 from pathlib import Path
-sys.path.insert(1, str(Path.home() / "bin"))
+os.environ["PATH"] += os.pathsep + str(Path.home() / "bin")
+
 import matplotlib.pyplot as plt
 import paths
 plt.rcParams.update({"text.usetex": True})

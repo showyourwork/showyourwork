@@ -21,7 +21,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: "3.9"
-      
+
       - name: Install showyourwork
         id: install
         if: steps.setup_python.outcome == 'success'
