@@ -1,4 +1,7 @@
-from helpers import TemporaryShowyourworkRepository
+from helpers import (
+    TemporaryShowyourworkRepository,
+    ShowyourworkRepositoryActions,
+)
 
 
 # A workflow that explicitly installs a TeX distribution
@@ -57,7 +60,9 @@ fig.savefig(paths.figures / 'test_figure.pdf', bbox_inches='tight')
 """
 
 
-class TestMatplotlibLatex(TemporaryShowyourworkRepository):
+class TestMatplotlibLatex(
+    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
+):
     """Test rendering TeX in matplotlib."""
 
     def customize(self):
