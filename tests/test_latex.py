@@ -51,7 +51,7 @@ jobs:
 
 # A figure script that requires LaTeX
 figure_script = """
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import paths
 fig = plt.figure(figsize=(7, 6))
 plt.plot([0, 1], [0, 1])
