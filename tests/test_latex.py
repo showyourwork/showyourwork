@@ -53,6 +53,7 @@ jobs:
 figure_script = r"""
 import matplotlib.pyplot as plt
 import paths
+plt.rcParams.update({"text.usetex": True})
 fig = plt.figure(figsize=(7, 6))
 plt.plot([0, 1], [0, 1])
 plt.xlabel(r'$\alpha \beta \frac{1}{2} \exp{-x^2}$')

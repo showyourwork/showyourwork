@@ -194,7 +194,7 @@ class TemporaryShowyourworkRepository:
                     raise Exception(
                         "[{self.repo}] GitHub Actions workflow terminated "
                         f"with status {conclusion}.\n"
-                        f"For details, see {url}."
+                        f"For details, see {url}"
                     )
             elif n < self.action_max_tries - 1:
                 print(
@@ -205,7 +205,7 @@ class TemporaryShowyourworkRepository:
         else:
             raise Exception(
                 "[{self.repo}] GitHub Actions workflow timed out.\n"
-                f"For details, see {url}."
+                f"For details, see {url}"
             )
 
     def delete_zenodo(self):
