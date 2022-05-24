@@ -350,6 +350,13 @@ permanent DOI (digital object identifier) and making it visible to unauthenticat
 Once you do this, anyone can take advantage of the caching functionality, for
 all of eternity (well, for as long as Zenodo continues to exist).
 
+Note that in order for this step to work, you'll need proper authentication
+in the form of an API token stored as the environment variable ``ZENODO_TOKEN``.
+This is different from the Zenodo Sandbox token we generated above. If you
+don't have one, you may generate one by clicking
+`here <https://sandbox.zenodo.org/account/settings/applications/tokens/new>`__.
+If you don't yet have a Zenodo account, you'll be asked to create one.
+
 .. note::
 
     Once you publish your deposit, further changes to a cached rule's inputs
