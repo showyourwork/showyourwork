@@ -1,4 +1,99 @@
 Migrating from previous versions
 ================================
 
-.. note:: Migrating instructions will be posted here soon! In the meantime, feel free to open an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__ on the |showyourwork| GitHub page and we'll help you migrate an existing repository!
+Version ``0.3.0`` introduced several breaking changes, so repositories dependent on previous
+versions need to be modified if you update |showyourwork|. This page contains a list of
+things you'll want to do when migrating over.
+
+.. note:: 
+    
+    If you're running into issues while migrating from a previous version of 
+    |showyourwork|, or if the steps below are too complicated, feel free to 
+    open an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__ 
+    on the |showyourwork| GitHub page and we'll help you with the migration!
+
+.. note::
+
+    If you're using an older version of |showyourwork| and things are working
+    just fine for your article, there's no need to upgrade! Your article will
+    continue to work and can be reproduced by others. Previous versions of 
+    |showyourwork| will remain on GitHub and their documentation on readthedocs
+    will persist. The downside is that you won't benefit from newer functionality
+    or bugfixes (in case you find issues with |showyourwork|).
+
+
+1. First, install |showyourwork| locally (see :doc:`install`). Prior to ``0.3.0``,
+   |showyourwork| was entirely contained in a submodule located in the article
+   repository itself. It is now a Python package that can easily be installed with ``pip``.
+
+2. Delete the ``showyourwork`` folder at the top level of your repository. Since this is 
+   a git submodule, you should also delete everything under ``[submodule "showyourwork"]``
+   in the ``.gitmodules`` file. If that file is otherwise empty, you can delete it as well.
+
+3. Remove the boilerplate code from the top-level ``Snakefile``. Unless you added custom
+   Snakemake rules for your workflow, this file should now be empty by default. The newer
+   versions of |showyourwork| import this Snakefile into the main workflow file (rather than
+   the other way around), so no user-side boilerplate code is needed.
+
+4. Delete the ``Makefile``. The new version of |showyourwork| no longer relies on ``make``.
+   Articles should now be compiled by running the ``showyourwork`` command line tool.
+
+5. Delete ``.github/workflows/showyourwork.yml``. Copy over the workflow files from
+   `the example repository <https://github.com/showyourwork/showyourwork-example/tree/main/.github/workflows>`__.
+   Copy over any custom code from your previous workflow file
+   (if you manually added/changed stuff) to the new ``build*.yml`` files. Since
+   the workflow files changed, you might have to update the workflow badge in your ``README.md``
+   file (i.e., replace occurrences of ``showyourwork.yml`` with ``build.yml``).
+
+6. Create a folder called ``src/tex`` and move your manuscript (e.g., ``ms.tex``),
+   bibliography (e.g., ``bib.bib``), and any other custom LaTeX files into it. Hint: to preserve your
+   git history for those files, use ``git mv`` instead of ``mv``.
+
+7. Create a folder called ``src/tex/figures`` and add a ``.gitignore`` file inside. Copy its
+   contents from `the example repository <https://github.com/showyourwork/showyourwork-example/blob/main/src/tex/figures/.gitignore>`__.
+   This folder will contain all the figure outputs (e.g., ``*.pdf``, ``*.png``, etc.), so nothing
+   in this folder should be tracked by git.
+
+8. Add a file called ``showyourwork.sty`` to ``src/tex``. You can copy it over from
+   `the example repository <https://github.com/showyourwork/showyourwork-example/blob/main/src/tex/showyourwork.sty>`__.
+   This is the new |showyourwork| LaTeX style file.
+
+9. Read about changes to the way |showyourwork| parses LaTeX at :doc:`latex`. The two big changes
+   are that you must now explicitly import the ``showyourwork`` style file (see above) using 
+   ``\usepackage{showyourwork}`` and that relationships beteween figure scripts and figure files
+   are no longer inferred from the figure ``\label``. Instead, users should explicitly provide
+   the path to the script (relative to ``src/scripts``) that generates figures inside a 
+   ``figure`` environment via the ``\script`` command. Edit your figure environments in your
+   tex file accordingly; see :doc:`latex` for details, as there are a few other subtleties.
+
+10. Rename the ``src/figures`` directory to ``src/scripts``. This folder should still contain
+    your figure scripts--just its naming convention in |showyourwork| changed. Hint: to preserve your
+    git history across this rename, do ``git mv src/figures src/scripts`` instead of a simple
+    ``mv``.
+
+11. Add a file called ``paths.py`` to ``src/scripts``. You can copy it over from
+    `the example repository <https://github.com/showyourwork/showyourwork-example/blob/main/src/scripts/paths.py>`__.
+    This file contains useful absolute paths to the various directories in your repository
+    (see below).
+
+12. Given the new directory structure (see above), figure scripts (in ``src/scripts``) must now output figure
+    files into the ``src/tex/figures`` directory. You will therefore have to edit your scripts to
+    ensure they save figure outputs to that directory. Importantly, you should ensure your scripts
+    will save the figures to the correct directory **regardless of where they are executed from**.
+    The new version of |showyourwork| executes scripts from the top-level directory of your repository,
+    so **any relative paths in your scripts are relative to the root of your repository**. To
+    make things easier, we recommend you use the paths provided in the ``paths.py`` file. For example,
+    to save a figure called ``figure.pdf`` to the correct output directory, import the ``paths``
+    module and run (e.g.) ``fig.savefig(paths.figures / "figure.pdf")``. The same applies to
+    datasets; a dataset called located at ``src/data/dataset.txt`` can be accessed as
+    ``paths.data / "dataset.txt"``. Read more about the ``paths.py`` file at :doc:`layout`.
+
+13. Finally, the syntax for the ``showyourwork.yml`` config file changed, particularly
+    with regards to ``zenodo`` datasets. Users should also now provide an explicit version
+    of |showyourwork| using the ``version`` key. Please see :doc:`config` for details.
+
+You can see an example diff of a repository that went through this upgrade
+`here <https://github.com/kazewong/BackPop/commit/605d7d404fc094efb8fb08aa9e5fdcebea28c75e>`__.
+If you run into any issues, have questions, or would like help with the upgrade,
+please create an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__ 
+on GitHub and we'll be more than happy to help!

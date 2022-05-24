@@ -39,8 +39,8 @@ and change the permissions to ``permissive``:
    :align: center
 
 
-Matplotlib cannot render LaTeX
-------------------------------
+Rendering LaTeX in matplotlib
+-----------------------------
 
 When plotting with ``matplotlib``, if you run into errors that look like
 
@@ -106,24 +106,9 @@ To save some typing, you could instead add this boilerplate to the
 these commands get executed whenever that file is imported into your scripts.
 
 
-Debugging remote builds
------------------------
-
-Set ``CI=true`` environment variable to mimic the behavior on GitHub Actions locally.
-More information on this soon.
-
-
-Installing LaTeX
-----------------
-
-To install TeX for access in (say) Python scripts (e.g., for rendering LaTeX expressions
-with ``matplotlib``), see 
-`here <https://github.com/showyourwork/showyourwork/blob/f5a9332cb4b1d134bb2103fae2e2853da04fe501/showyourwork-action/src/tex.js>`__.
-More information on this soon.
-
-
 Using LaTeX Workshop in VSCode
 ------------------------------
+
 If you edit and build your articles in VSCode, you need to specify some settings so that VSCode knows to use |showyourwork| to build your document.
 You can do this by creating (or editing) a workspace-specific settings file, ``.vscode/settings.json``, in the root directory of your repo.
 At minimum, you should add the following lines:
@@ -168,3 +153,10 @@ If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), 
 
 Note that there should only be one set of outer braces.
 In other words, remove the final outer brace in the first block above and the first outer brace in the second block above.
+
+
+Debugging remote builds
+-----------------------
+
+Set ``CI=true`` environment variable to mimic the behavior on GitHub Actions locally.
+More information on this soon.

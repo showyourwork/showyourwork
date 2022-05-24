@@ -5,7 +5,7 @@
 <br>
 <br>
 <a href="https://github.com/{{ cookiecutter.user }}/{{ cookiecutter.repo }}/actions/workflows/build.yml">
-<img src="https://github.com/{{ cookiecutter.user }}/{{ cookiecutter.repo }}/actions/workflows/build.yml/badge.svg" alt="Article status"/>
+<img src="https://github.com/{{ cookiecutter.user }}/{{ cookiecutter.repo }}/actions/workflows/build.yml/badge.svg?branch=main" alt="Article status"/>
 </a>
 <a href="https://github.com/{{ cookiecutter.user }}/{{ cookiecutter.repo }}/raw/main-pdf/arxiv.tar.gz">
 <img src="https://img.shields.io/badge/article-tarball-blue.svg?style=flat" alt="Article tarball"/>
