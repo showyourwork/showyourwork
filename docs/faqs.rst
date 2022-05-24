@@ -39,6 +39,73 @@ and change the permissions to ``permissive``:
    :align: center
 
 
+Matplotlib cannot render LaTeX
+------------------------------
+
+When plotting with ``matplotlib``, if you run into errors that look like
+
+.. code-block:: text
+
+    FileNotFoundError: [Errno 2] No such file or directory: 'latex'
+
+or
+
+.. code-block:: text
+
+    RuntimeError: Failed to process string with tex because latex could not be found
+
+you are probably missing a proper ``latex`` installation. Recall that |showyourwork|
+uses ``tectonic`` to build your article, which is not compatible with ``matplotlib``.
+Instead, you'll have to install a separate TeX distribution, such as TeXLive or MiKTeX.
+The same applies to runs on GitHub actions.
+
+The simplest workaround is to disable LaTeX rendering in ``matplotlib``:
+
+.. code-block:: python
+
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({"text.usetex": False})
+
+Math-mode strings can still be parsed using the built-in ``matplotlib`` renderer,
+and in most cases this will do what you need. In some cases, however, the built-in
+renderer may not cut it. If you really need a proper LaTeX installation, you'll
+have to do a bit of extra work to get your build to pass on GitHub Actions.
+First, add the following step to the ``build.yml`` and ``build-pull-request.yml`` 
+workflows in your ``.github/workflows`` folder, just before the |showyourwork| 
+``build`` step:
+
+.. code-block:: yaml
+
+    - name: Install TinyTex for matplotlib LaTeX rendering
+      id: tinytex
+      shell: bash -l {0}
+      run: |
+        wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh 
+        sudo ~/bin/tlmgr install type1cm cm-super
+
+This will install `TinyTex <https://yihui.org/tinytex/>`_, a
+very lightweight TeX distribution that should provide everything you need. Note
+that this step also installs the ``type1cm`` and ``cm-super`` LaTeX packages,
+which may be required by ``matplotlib``. You can specify additional packages
+in the same line if needed.
+
+Then, in order for ``matplotlib`` to execute ``latex``, the ``~/bin`` path needs to 
+be in the system ``$PATH``. This variable gets overwritten when running scripts inside isolated
+``conda`` environments (as |showyourwork| does), so you'll need to add ``~\bin``
+to the ``$PATH`` *within* your Python script. Therefore, add the
+following bit of boilerplate to the top of any scripts that require LaTeX parsing:
+
+.. code-block:: python
+
+    import os
+    from pathlib import Path
+    os.environ["PATH"] += os.pathsep + str(Path.home() / "bin")
+
+To save some typing, you could instead add this boilerplate to the 
+``src/scripts/paths.py`` file so that
+these commands get executed whenever that file is imported into your scripts.
+
+
 Debugging remote builds
 -----------------------
 
