@@ -50,7 +50,7 @@ jobs:
 
 
 # A figure script that requires LaTeX
-figure_script = """
+figure_script = r"""
 import matplotlib.pyplot as plt
 import paths
 fig = plt.figure(figsize=(7, 6))
