@@ -51,6 +51,10 @@ jobs:
 
 # A figure script that requires LaTeX
 figure_script = r"""
+import sys
+print(sys.path)
+from pathlib import Path
+sys.path.insert(1, str(Path.home() / "bin"))
 import matplotlib.pyplot as plt
 import paths
 plt.rcParams.update({"text.usetex": True})
