@@ -51,7 +51,6 @@ Contents
    latex
    zenodo
    overleaf
-   pull_requests
    logging
    custom
    migrating

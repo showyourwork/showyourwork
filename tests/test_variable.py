@@ -40,7 +40,7 @@ class TestLatexVariable(TemporaryShowyourworkRepository):
                 r"\end{document}",
                 r"Based on a detailed analysis of Planck observations of the cosmic "
                 r"microwave background, we have determined the age of the universe "
-                r"to be \input{age_of_universe.txt} Gyr."
+                r"to be \variable{age_of_universe.txt} Gyr."
                 "\n"
                 r"\end{document}",
             )
