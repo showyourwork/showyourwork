@@ -1,0 +1,24 @@
+Attribution
+===========
+
+We're working on writing up a citeable paper on |showyourwork|, but in the meantime, please
+consider citing `this paper <https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L>`__,
+in which we first introduced the code:
+
+.. code-block::
+
+    @ARTICLE{Luger2021,
+        author = {{Luger}, Rodrigo and {Bedell}, Megan and {Foreman-Mackey}, Daniel and {Crossfield}, Ian J.~M. and {Zhao}, Lily L. and {Hogg}, David W.},
+            title = "{Mapping stellar surfaces III: An Efficient, Scalable, and Open-Source Doppler Imaging Model}",
+        journal = {arXiv e-prints},
+        keywords = {Astrophysics - Solar and Stellar Astrophysics, Astrophysics - Earth and Planetary Astrophysics, Astrophysics - Instrumentation and Methods for Astrophysics},
+            year = 2021,
+            month = oct,
+            eid = {arXiv:2110.06271},
+            pages = {arXiv:2110.06271},
+    archivePrefix = {arXiv},
+        eprint = {2110.06271},
+    primaryClass = {astro-ph.SR},
+        adsurl = {https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L},
+        adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+    }

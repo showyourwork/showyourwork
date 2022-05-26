@@ -57,4 +57,5 @@ Contents
    faqs
    api/showyourwork
    changelog
+   attribution
    Projects that use showyourwork <https://github.com/showyourwork/showyourwork-action/network/dependents>
