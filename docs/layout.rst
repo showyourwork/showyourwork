@@ -433,8 +433,7 @@ from the files in your repository. If you're not familiar with the Snakemake
 workflow management system, read up on it `here <https://snakemake.readthedocs.io>`_.
 By default, the ``Snakefile`` is empty: |showyourwork| takes care of everything
 for you. For custom workflows, you can add rules to your ``Snakefile``, such
-as instructions on how to build custom figures, to download datasets, etc; see
-:doc:`custom`.
+as instructions on how to build custom figures, to download datasets, etc.
 Note, finally, that this file is written in a language that's a straightforward
 superset of Python, so any regular Python commands and syntax is valid in it.
 

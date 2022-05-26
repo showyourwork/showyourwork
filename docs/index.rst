@@ -52,7 +52,6 @@ Contents
    zenodo
    overleaf
    logging
-   custom
    migrating
    faqs
    api/showyourwork

@@ -180,16 +180,111 @@ in the ``push`` and ``pull`` fields. To understand what these mean, read on!
 Pushing and pulling
 -------------------
 
-Coming soon! Only enabled for the ``main`` branch.
+As we mentioned above, syncing between your git repository and your Overleaf project
+only happens *in one direction for any given file*. Files listed under ``push:``
+are only ever pushed **to** Overleaf, while files listed under ``pull:`` are only
+ever pulled **from** overleaf. Pulling happens automatically in the pre-processing
+step of every build performed in the ``main`` branch of your repository (both locally
+and when running in GitHub Actions), and automatically commits changes when
+running locally.
+Pushing happens automatically at the end of every
+build on the ``main`` branch (also both locally and on the remote). Note that a given file
+may only be specified under ``push`` **or** ``pull``, but not both, as that could lead
+to merge conflicts.
 
+It is **highly recommended** that you limit the ``pull`` section to your main TeX
+files (e.g., the manuscript and the bibliography) and the ``push`` section to 
+programmatically-generated files (e.g., figure outputs or programmatically-generated
+text files that are included in your manuscript using the ``\variable`` command).
+
+.. note::
+
+    You can disable Overleaf syncing at any time by commenting out the
+    Overleaf project ``id`` in your ``showyourwork.yml`` config file.
+    Once you're done making changes to the LaTeX files in your article,
+    it's a good idea to delete the entire Overleaf section in the config
+    file to prevent future changes to the your repository.
+
+If you build frequently, you may occasionally run into a ``Rate limit exceeded`` error
+on the Overleaf side. Simply wait a minute and try again.
+
+Finally, it is important to note that your |showyourwork| repository 
+and your Overleaf project are completely
+separate git repositories with unrelated commit histories. Under the hood, ``push``
+and ``pull`` events are implemented as simple file copies from the head commit of one
+repository to the head of the other. In order to minimize the chances that changes
+to either repository will get lost or overwritten on a sync event, |showyourwork|
+will fail when attempting to ``pull`` from Overleaf if it detects that any of the
+relevant files have been modified since the last ``pull``. Read more about this---
+and how to resolve these kinds of conflicts---in the next section. 
+
+.. warning::
+  
+   There are no merge conflict checks when doing a ``push`` to Overleaf. 
+   If, for example, you manually upload a new version of a figure to the 
+   Overleaf project, it will get overwritten the next time you build your article.
 
 .. _conflicts:
 
 Managing conflicts
 ------------------
 
-Coming soon!
+If you've accidentally made a local change to a file listed under ``pull``, the 
+next time you build your article you might see the following error message:
 
+.. code-block:: text
+  
+    Uncommitted changes to local file: <filename>. 
+    Refusing to overwrite with Overleaf version.
+
+If you've made a change *and committed the change to git*, you'll see the following
+message instead:
+
+.. code-block:: text
+  
+    Local file changed since the last Overleaf sync: <filename>. 
+    Refusing to overwrite with Overleaf version. 
+    Please see the docs for details on how to resolve this.
+
+In these cases, |showyourwork| fails because it wants to avoid overwriting your
+local changes with the contents of the Overleaf versions of the file(s). You'll
+encounter this error *even if you haven't made changes to the Overleaf project*,
+as |showyourwork| simply copies files over from Overleaf each time you build
+(see above).
+
+**If you want to keep your local changes to these files, manually copy them over to
+Overleaf to ensure both versions are in sync with each other.** Then, if you ran into
+the first error (uncommitted changes), simply reset the local changes to that file:
+
+.. code-block:: bash
+
+    git checkout -- <filename>
+
+and re-build your article. If you ran into the second error (i.e., you changed
+the file and committed it), you'll have to do a bit of extra work. If 
+*you haven't yet pushed your changes to GitHub*, copy the changes to Overleaf
+as above (if desired) and then undo that commit by running
+``git reset`` (see `here <https://stackoverflow.com/a/927386>`__) followed by
+
+.. code-block:: bash
+
+    git checkout -- <filename>
+
+to discard your changes to that specific file. You should then be able
+to re-build your article. Note that at this point you make have uncommitted
+changes (from the commit you just undid), so make sure to add any relevant
+files and commit your changes back.
+
+Finally, if you made local changes, committed them, *and pushed them to GitHub*,
+you shouldn't do a ``git reset``. Instead, once you copy your changes to Overleaf 
+(if desired) you should trick |showyourwork| into thinking everything is OK and
+proceeding with the sync process. To achieve this, make a dummy change to each
+of the problematic files (e.g., add a space to any line in the file) so you have 
+something to commit, then commit with a message containing the string ``[showyourwork]``.
+This flag is used internally whenever |showyourwork| commits changes originated
+in the Overleaf project, so this will trick the workflow into thinking everything
+is in sync. The next time you build your article, |showyourwork| will overwrite
+those files with the versions on Overleaf.
 
 
 .. _existing:
@@ -197,4 +292,41 @@ Coming soon!
 Integrating existing projects
 -----------------------------
 
-Coming soon!
+Existing git repository
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you have an existing repository for your project, create a new Overleaf
+project and **manually copy over your TeX files** (e.g., ``ms.tex`` and ``bib.bib``)
+to Overleaf. Then, grab the project ID from the Overleaf URL, and add the following to your
+``showyourwork.yml`` config file:
+
+.. code-block:: yaml
+
+    overleaf:
+        id: <ID>
+        push: 
+            - src/tex/figures
+        pull:
+            - src/tex/ms.tex
+            - src/tex/bib.bib
+
+The next time you build your article using ``showyourwork``, all files will get
+synced between both projects.
+
+
+Existing Overleaf project
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If, instead, you have an Overleaf project but no git repository, things can
+get much trickier. We recommend you hold off on using |showyourwork| until
+your next project, as it's much, much easier to set up Overleaf integration
+for brand new projects!
+
+But if you really want to set up integration for an existing Overleaf project,
+we strongly recommend you create a new |showyourwork| repository *and* a new
+Overleaf project (see the Setup section above). Then, copy over your TeX files
+to the new Overleaf project (making sure to change the name of your main TeX
+file to ``ms.tex``) and populate your local repository with the scripts
+needed to build all your figures. You'll likely run into lots of issues, such
+as missing files, missing dependencies, etc., so this might take a lot of
+debugging to get right!

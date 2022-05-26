@@ -29,7 +29,7 @@ preferred-citation:
     - family-names: "Hogg"
       given-names: "David W."
       orcid: "0000-0003-2866-9403"
-  journal: "arXiv"
+  journal: "arXiv e-prints"
   title: "Mapping stellar surfaces III: An Efficient, Scalable, and Open-Source Doppler Imaging Model"
   url: "https://arxiv.org/abs/2110.06271"
   year: 2021
