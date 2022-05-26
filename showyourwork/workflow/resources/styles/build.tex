@@ -213,3 +213,8 @@
 
 % Set the graphics path for all figures
 \graphicspath{{./}{./figures/}}
+
+% Alias of \input for syw-controlled files
+\newcommand\variable[1]{%
+  \input{#1}\unskip%
+}

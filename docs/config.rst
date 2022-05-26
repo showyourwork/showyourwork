@@ -6,8 +6,8 @@
         }
     </style>
 
-The ``showyourwork.yml`` config file
-====================================
+The showyourwork.yml config file
+================================
 
 This is the configuration file for |showyourwork|, allowing you to
 customize several aspects of the workflow. Below is a list of all
@@ -525,10 +525,10 @@ header.
 
 **Description:** Enable verbose output? Useful for debugging runs. By default,
 |showyourwork| suppresses nearly all Snakemake output, sending it directly
-to the log file (see :doc:`logging`). Setting ``verbose: true`` results in all
+to the log file (see :doc:`logging`). Setting ``verbose: true`` results in all
 Snakemake output being printed to the screen as well. Note that you can
 crank up the verbosity even more by passing the ``--verbose`` argument to
-``snakemake build``, which makes Snakemake itself more talkative.
+``snakemake build``, which makes Snakemake itself more talkative.
 
 **Required:** no
 
@@ -549,7 +549,7 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 **Type:** ``str``
 
 **Description:** The version of the |showyourwork| package required to build
-the article, populated automatically when ``showyouwork setup`` is run. Users
+the article, populated automatically when ``showyouwork setup`` is run. Users
 may, however, change this to upgrade/downgrade to a different version of the
 package. Options are:
 

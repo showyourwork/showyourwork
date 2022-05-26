@@ -35,6 +35,7 @@ class TemporaryShowyourworkRepository:
     action_max_tries = 10
     action_interval = 60
     use_local_showyourwork = debug
+    showyourwork_version = None
     local_build_only = debug
 
     # Internal
@@ -76,10 +77,13 @@ class TemporaryShowyourworkRepository:
 
         # Parse options
         command = "showyourwork setup"
-        if self.use_local_showyourwork:
-            version = str(Path(showyourwork.__file__).parents[1])
+        if self.showyourwork_version is None:
+            if self.use_local_showyourwork:
+                version = str(Path(showyourwork.__file__).parents[1])
+            else:
+                version = get_repo_sha()
         else:
-            version = get_repo_sha()
+            version = self.showyourwork_version
         options = f"--quiet --version={version} "
         if self.cache:
             # Enable zenodo caching

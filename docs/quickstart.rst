@@ -5,20 +5,20 @@ Quickstart
 Install
 -------
 
-To get started with |showyourwork|, install it using the ``pip`` command:
+To get started with |showyourwork|, install the latest version using the ``pip`` command:
 
 .. code-block:: bash
 
-    pip install showyourwork
+    pip install -U showyourwork
 
 You'll also need to have the ``conda`` package manager installed, which you
 can download from `this url <https://www.anaconda.com/products/distribution>`_.
 
 
-Setup
------
+Setup a new article
+-------------------
 
-To set up a blank article, simply execute the ``showyourwork setup`` command. This
+To set up a blank article, simply execute the ``showyourwork setup`` command. This
 command accepts one positional argument: the "slug" of the GitHub repository
 for the article, which is a string in the form ``user/repo``. For example,
 to create a repository called ``article`` under the GitHub user ``rodluger``,
@@ -84,7 +84,7 @@ Press any key to bring up the final prompt:
 
 
 The workflow can also manage integration with an Overleaf project if that's how
-you prefer to write your TeX articles. To enable this, re-run ``showyourwork setup``
+you prefer to write your TeX articles. To enable this, re-run ``showyourwork setup``
 with ``--overleaf=XXX``, where ``XXX`` is the 24-character project id of a
 blank Overleaf repository (you can grab this value from the URL of the project
 after creating it on Overleaf). Let's again skip this for now -- read all about it
@@ -233,7 +233,7 @@ Build on the remote
 -------------------
 
 Whenever you make a change to your article (add text, add a figure, edit
-a script), make sure to ``git add`` any new/modified files,
+a script), make sure to ``git add`` any new/modified files,
 commit your changes, and then push to the GitHub remote:
 
 .. code-block:: bash
@@ -284,6 +284,38 @@ page of your repository:
 these will take you to the build logs, the article tarball (containing the
 TeX files and all generated figures), and the compiled PDF of the article,
 respectively.
+
+Build someone else's article
+----------------------------
+
+If you would like to build an article created by someone else with |showyourwork|,
+simply clone the article's GitHub repository:
+
+.. code-block:: bash
+
+    git clone https://github.com/user/repo
+    cd repo
+
+and, assuming you've installed |showyourwork|, run the following command in 
+the top level of the repository:
+
+.. code-block:: bash
+
+    showyourwork
+
+.. raw:: html
+
+    <pre>
+    <span style="color:green;">Setting up the workflow...</span>
+    <span style="color:green;">Generating the article PDF...</span>
+    <span style="color:green;">Done!</span>
+    </pre>
+
+This will create a new conda environment for the workflow, install all the
+required dependencies, and run all of the scripts needed to generate the figures
+and results in the paper. At the end of the build, the article PDF will appear
+in the top level of the repository (usually called ``ms.pdf``).
+After installing all the required packages and running any pipeline or
 
 That's it for this quickstart tutorial. Please check out the rest of the 
 documentation for more information on how to customize your workflow, 

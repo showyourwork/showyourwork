@@ -39,6 +39,8 @@ Thanks to the magic of Snakemake, |showyourwork| is both lightweight—it should
 customizable. It also uses intelligent caching to never re-run things it doesn't have to (like figure scripts that haven't changed),
 even when running on the cloud.
 
+.. include:: quickbuild.rst
+
 To get started with |showyourwork|, check out the :doc:`quickstart tutorial <quickstart>`.
 You should also read about
 the :doc:`showyourwork GitHub action <action>`, :doc:`LaTeX instructions <latex>`,

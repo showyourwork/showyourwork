@@ -52,7 +52,6 @@ def compile_tex(config, output_dir=None, args=[], stylesheet=None):
             # Log the error
             logger = get_logger()
             logger.error(stderr)
-
             # Raise the exception
             raise exceptions.TectonicError(logfile)
 

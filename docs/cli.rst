@@ -39,13 +39,13 @@ subcommands.
 
     .. program-output:: showyourwork --help
 
-Running |showyourwork| (without any arguments) is a shortcut for ``showyourwork build``
+Running |showyourwork| (without any arguments) is a shortcut for ``showyourwork build``
 (see :ref:`syw_build` below).
 
 
 .. _syw_setup:
 
-``showyourwork setup``
+``showyourwork setup``
 ----------------------
 
 .. admonition:: |showyourwork_setup_help|
@@ -240,7 +240,7 @@ the upstream branch as follows:
 
 .. _syw_build:
 
-``showyourwork build``
+``showyourwork build``
 ----------------------
 
 .. admonition:: |showyourwork_build_help|
@@ -292,11 +292,11 @@ first-pass compiling of the TeX manuscript to look for ``\includegraphics``
 and ``\script`` calls, which it uses to build the graph of dependencies for
 your article. The second step is the main step, in which all of the dependencies
 are built (if needed) and the final article PDF is generated. Arguments
-passed to ``showyourwork build`` are ingested *only* during the second step.
+passed to ``showyourwork build`` are ingested *only* during the second step.
 
 Finally, |showyourwork| takes full advantage
 of the dependency tracking and caching functionality of Snakemake. When
-running ``showyourwork build``, only files whose upstream dependencies have
+running ``showyourwork build``, only files whose upstream dependencies have
 changed (since the last build) will be re-generated. This is true *even when
 running on GitHub Actions*; the ``showyourwork-action`` caches results across
 runs to minimize compute time for the build. We even go a step further, and
@@ -306,14 +306,14 @@ dependencies on Zenodo; read about it at :doc:`zenodo`.
 
 .. _syw_clean:
 
-``showyourwork clean``
+``showyourwork clean``
 ----------------------
 
 .. admonition:: |showyourwork_clean_help|
 
     .. program-output:: showyourwork clean --help
 
-This command removes all of the output from previous ``showyourwork build``
+This command removes all of the output from previous ``showyourwork build``
 steps. Depending on the state of your repository, and if there are errors in
 your config file or missing dependencies, this command may fail silently, in
 which case some of the output may remain after running it.
@@ -322,7 +322,7 @@ which case some of the output may remain after running it.
 Force clean
 ^^^^^^^^^^^
 
-If ``showyourwork clean`` didn't remove all of the output, you can force
+If ``showyourwork clean`` didn't remove all of the output, you can force
 the deletion of all the programmatically-generated figures and datasets by 
 passing the ``--force`` option, which will remove
 everything in the ``src/tex/figures``, ``src/data``, and temporary
@@ -346,14 +346,14 @@ used at different stages of the build step. You can safely remove it at any time
 
 .. _syw_tarball:
 
-``showyourwork tarball``
+``showyourwork tarball``
 ------------------------
 
 .. admonition:: |showyourwork_tarball_help|
 
     .. program-output:: showyourwork tarball --help
 
-Like ``build``, the ``showyourwork tarball`` command builds your article, but
+Like ``build``, the ``showyourwork tarball`` command builds your article, but
 also gathers all of the relevant files needed to build it using a standard
 TeX engine into a tarball called ``arxiv.tar.gz``. It's named that because
 you should be able to directly upload this tarball when submitting a paper
@@ -362,7 +362,7 @@ to the `arXiv <https://arxiv.org/>`_ article service.
 
 .. _syw_cache:
 
-``showyourwork cache``
+``showyourwork cache``
 ----------------------
 
 .. admonition:: |showyourwork_cache_help|

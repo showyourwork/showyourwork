@@ -469,8 +469,19 @@ def get_json_tree():
         "command": f"cp {srcs} {dest}",
     }
 
+    # Parse files included using the \input statement;
+    # these will be made explicit dependencies of the build
+    files = [
+        str(
+            (paths.user().tex / file.text)
+            .resolve()
+            .relative_to(paths.user().repo)
+        )
+        for file in xml_tree.findall("INPUT")
+    ]
+
     # The full tree (someday we'll have equations in here, too)
-    tree = {"figures": figures}
+    tree = {"figures": figures, "files": files}
 
     return tree
 
@@ -495,6 +506,11 @@ if __name__ == "__main__":
         config["dependencies"][config["ms_tex"]].extend(
             [Path(graphic).as_posix() for graphic in graphics]
         )
+
+    # Make files specified as \variable dependencies of the article
+    config["dependencies"][config["ms_tex"]].extend(
+        [Path(file).as_posix() for file in config["tree"]["files"]]
+    )
 
     # Gather the figure script & dataset info so we can access it on the TeX side
     config["labels"] = {}

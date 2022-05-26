@@ -27,7 +27,7 @@ things you'll want to do when migrating over.
    repository itself. It is now a Python package that can easily be installed with ``pip``.
 
 2. Delete the ``showyourwork`` folder at the top level of your repository. Since this is 
-   a git submodule, you should also delete everything under ``[submodule "showyourwork"]``
+   a git submodule, you should also delete everything under ``[submodule "showyourwork"]``
    in the ``.gitmodules`` file. If that file is otherwise empty, you can delete it as well.
 
 3. Remove the boilerplate code from the top-level ``Snakefile``. Unless you added custom
@@ -47,7 +47,7 @@ things you'll want to do when migrating over.
 
 6. Create a folder called ``src/tex`` and move your manuscript (e.g., ``ms.tex``),
    bibliography (e.g., ``bib.bib``), and any other custom LaTeX files into it. Hint: to preserve your
-   git history for those files, use ``git mv`` instead of ``mv``.
+   git history for those files, use ``git mv`` instead of ``mv``.
 
 7. Create a folder called ``src/tex/figures`` and add a ``.gitignore`` file inside. Copy its
    contents from `the example repository <https://github.com/showyourwork/showyourwork-example/blob/main/src/tex/figures/.gitignore>`__.
@@ -68,7 +68,7 @@ things you'll want to do when migrating over.
 
 10. Rename the ``src/figures`` directory to ``src/scripts``. This folder should still contain
     your figure scripts--just its naming convention in |showyourwork| changed. Hint: to preserve your
-    git history across this rename, do ``git mv src/figures src/scripts`` instead of a simple
+    git history across this rename, do ``git mv src/figures src/scripts`` instead of a simple
     ``mv``.
 
 11. Add a file called ``paths.py`` to ``src/scripts``. You can copy it over from
@@ -84,9 +84,9 @@ things you'll want to do when migrating over.
     so **any relative paths in your scripts are relative to the root of your repository**. To
     make things easier, we recommend you use the paths provided in the ``paths.py`` file. For example,
     to save a figure called ``figure.pdf`` to the correct output directory, import the ``paths``
-    module and run (e.g.) ``fig.savefig(paths.figures / "figure.pdf")``. The same applies to
+    module and run (e.g.) ``fig.savefig(paths.figures / "figure.pdf")``. The same applies to
     datasets; a dataset called located at ``src/data/dataset.txt`` can be accessed as
-    ``paths.data / "dataset.txt"``. Read more about the ``paths.py`` file at :doc:`layout`.
+    ``paths.data / "dataset.txt"``. Read more about the ``paths.py`` file at :doc:`layout`.
 
 13. Finally, the syntax for the ``showyourwork.yml`` config file changed, particularly
     with regards to ``zenodo`` datasets. Users should also now provide an explicit version

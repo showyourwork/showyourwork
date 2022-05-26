@@ -86,7 +86,7 @@ read more about those
 If you've done all that, the next time you create a new article repository
 using :ref:`syw_setup`, pass the ``--cache`` option and |showyourwork| will automatically create a Zenodo
 Sandbox draft deposit which it will use to cache your intermediate results. Note that
-you can also manually create a draft deposit by running ``showyourwork cache create``
+you can also manually create a draft deposit by running ``showyourwork cache create``
 (see :ref:`syw_cache`, and below, for details).
 
 
@@ -275,7 +275,7 @@ The cached files (and the hashes of the rule inputs)
 are stored in a Zenodo Sandbox deposit draft with concept ID specified
 in your ``zenodo.yml`` config file. If you navigate to Zenodo Sandbox in your
 browser and log in, you should see a draft with a title like 
-``Data for user/repo [main]``, where ``user/repo`` is your repository slug
+``Data for user/repo [main]``, where ``user/repo`` is your repository slug
 and ``main`` is the current branch. At any given time, you can only have
 one draft per deposit, so if you change any of the inputs to your rule (e.g., if
 you change the file ``simulation.py``), the draft will get overwritten with

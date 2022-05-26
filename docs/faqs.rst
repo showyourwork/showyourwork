@@ -122,7 +122,7 @@ At minimum, you should add the following lines:
         "latex-workshop.view.pdf.viewer": "tab",
     }
 
-This enables you to build the document using ``LaTeX Workshop: Build LaTeX project`` in the command palette.
+This enables you to build the document using ``LaTeX Workshop: Build LaTeX project`` in the command palette.
 Note that the final line tells LaTeX Workshop to open your article pdf in a VSCode tab.
 Feel free to change ``tab`` to ``browser`` if you would rather LaTeX Workshop open your article in a browser tab.
 

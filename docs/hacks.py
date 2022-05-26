@@ -21,11 +21,15 @@ class RemoveContentsHeading(StopIteration):
 
 # Import the GitHub Action README
 url = "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
-r = requests.get(url, allow_redirects=True)
-content = r.content.decode()
-content = "The GitHub action\n=================\n\n" + "\n".join(
+try:
+    r = requests.get(url, allow_redirects=True)
+    content = r.content.decode()
+    content = "The GitHub action\n=================\n\n" + "\n".join(
     content.split("\n")[10:]
 )
+except:
+    content = "The Github action\n=================\n\n"
+    content += "Please visit `<https://github.com/showyourwork/showyourwork-action>`_."
 with open("action.rst", "w") as f:
     f.write(content)
 

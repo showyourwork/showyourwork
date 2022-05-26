@@ -1,3 +1,16 @@
+:root {
+    --pst-color-inline-code: 0, 0, 0;
+}
+
+code.docutils.literal.notranslate span.pre{
+    color: #000000;
+    border-radius: 3px;
+    border: 1px solid #c9c9c9;
+    background: #f6fbfe;
+    padding: 0.2em;
+    box-shadow: 1px 1px 1px #d8d8d8;
+}
+
 .text-highlight{
     font-weight:bold; 
     color:#204a87;
