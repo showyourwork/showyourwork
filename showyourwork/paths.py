@@ -37,6 +37,7 @@ class user:
         self.scripts = self.src / "scripts"
         self.static = self.src / "static"
         self.figures = self.tex / "figures"
+        self.output = self.tex / "output"
 
         # User home temp (for all repos)
         self.home_temp = Path.home() / ".showyourwork"
