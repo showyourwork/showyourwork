@@ -3,8 +3,47 @@
 0.3.0 (June 2022)
 +++++++++++++++++
 
-- Brand new release, featuring a complete re-write of the workflow.
-- Stay tuned!
+- Brand new release, featuring a complete re-write of the workflow. Below is 
+  a list of the *major* changes:
+- ``showyourwork!`` is now a pip-installable Python package. It is no longer 
+  a git submodule. The ``showyourwork.yml`` file must now specify which version
+  of ``showyourwork`` to use.
+- There is no longer a ``Makefile``. Articles should be built using the 
+  ``showyourwork`` command, which creates and activates a clean conda environment
+  containing ``Snakemake`` and all dependencies needed to run the pipeline for
+  each article. Users therefore no longer need to install ``Snakemake`` or ``mamba``
+  in the base environment.
+- New articles can now be created using the ``showyourwork setup`` command rather than
+  via a GitHub repository template.
+- The syntax for many of the settings in the ``showyourwork.yml`` config file has
+  changed, particularly for specifying Zenodo datasets.
+- The directory structure for article repositories has changed slightly. Figure scripts
+  should now be placed in the ``src/scripts`` directory (used to be ``src/figures``).
+  The TeX files should now be placed in the ``src/tex`` directory (used to be ``src``).
+  Figure output files should now be generated in ``src/tex/figures`` (used to be ``src/figures``).
+- To help with the transition to the new directory structure, new repositories include a
+  file ``src/scripts/paths.py`` that specifies absolute Pathlib paths to the main directories
+  in the repository.
+- Figure scripts are no longer inferred from the ``\label`` command in LaTeX. Instead,
+  users should specify the script associated with a given figure using the new ``\script``
+  command.
+- Added support for programmatically-generated files that can be included in the TeX
+  manuscript via the new ``\variable`` command.
+- Overhauled the way ``showyourwork`` integrates with Zenodo. Static datasets should now
+  be specified using their full DOI. Dynamic datasets are deprecated in favor of "cached"
+  datasets. These are intermediate results that get cached on Zenodo Sandbox alongside
+  a hash of the rules and all upstream dependencies used to generate them, making it
+  possible to automatically restore results from the cloud in a way that preserves the
+  full reproducibility of the workflow.
+- Implemented (experimental) integration with Overleaf projects, allowing users to pull
+  changes to the manuscript and push changes to the figures.
+- Drastically improved the command-line interface, suppressing most of the noise generated
+  by Snakemake in favor of succinct informational messages describing the build process.
+  All messages now get logged to files in ``.showyourwork/logs`` for easier debugging.
+  Similarly, improved error catching and added informational error messages for most of the failure
+  modes of the workflow.
+- Several other tweaks, bugfixes, and improvements. Lots of changes to the back end to make
+  ``showyourwork`` easier to develop, maintain, and extend!
 
 0.2.3 (2022-02-21)
 ++++++++++++++++++

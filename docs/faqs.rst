@@ -1,7 +1,90 @@
 FAQs
 ====
 
-.. note:: This page is still under construction. More FAQs will be added shortly!
+.. note:: This page is still being written. More FAQs coming soon!
+
+Debugging local builds
+----------------------
+
+A *lot* of things can generally go wrong when building an article with |showyourwork|.
+The workflow will try its best to give you an informative error message, but
+if you can't figure out what the problem is (or you don't know how to fix it),
+consider the following tips:
+
+- Inspect the build logs. These live in ``.showyourwork/logs`` and contain a lot of
+  the verbose output that's suppressed from the terminal by default (see :doc:`logging`).
+- Run ``showyourwork clean`` or, if that doesn't help, ``showyourwork clean --force``.
+  These commands remove all build output, which could help resolve issues caused by
+  builds that are interrupted by an error or when the user cancels them halfway.
+  If you don't want to lose your output, you could also try just deleting the
+  temporary ``.showyourwork`` directory (instead of running the ``clean`` command),
+  which removes the cache and forces re-evaluation of the build graph.
+- Identify which part of the workflow is causing the problem. Is it during the run of a 
+  particular figure script? Consider adding a ``breakpoint``
+  in your code to enable interactive debugging. Or is the problem specific to the LaTeX build
+  step? LaTeX errors, in particular, can be extremely cryptic. Inspect the 
+  ``.showyourwork/logs/tectonic.log`` file for details. Consider commenting out
+  portions of your manuscript to identify which part is causing the problem.
+- If one of your figures is causing a new error, it can be helpful to temporarily
+  bypass it by placing the old figure output (e.g., the ``.pdf`` file) in the ``src/static``
+  directory and commenting out the ``\script`` command in the TeX file. This causes
+  |showyourwork| to treat the figure as static, preventing it from trying to re-generate
+  it the next time you run ``showyourwork``.
+- Sometimes, cryptic errors can occur if you've made a mistake in the config file. Certain
+  settings require a very specific YAML syntax, so please check :doc:`config` to ensure
+  you've provided, e.g., the ``datasets`` information correctly.
+- Make sure you are using the latest version of |showyourwork|, as your error could
+  be due to a bug we have since fixed! You can always upgrade to the latest version
+  by running ``pip install -U showyourwork``.
+- Check the `GitHub Issues <https://github.com/showyourwork/showyourwork/issues>`__
+  to see if others have run into the same issue. It's also worth checking out the
+  `closed issues <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aclosed>`__
+  for ones that have already been resolved!
+- If all else fails, feel free to `raise a new issue <https://github.com/showyourwork/showyourwork/issues/new>`__,
+  and we will do our best to get back to you with suggestions promptly.
+
+Debugging remote builds
+-----------------------
+
+If your article build works locally but fails on GitHub Actions, a few different
+things could be going on. 
+
+A common cause is you forgot to push a
+particular script to the remote, so make sure you don't have any unstaged 
+changes, and that your ``.gitignore`` files aren't preventing you from
+committing necessary files.
+
+There could also be hysteresis in your local workflow:
+for example, you may have built your article successfully, then deleted one
+of the scripts needed to generate a figure. The next time you build your
+article, the build could succeed since the figure output is present and there
+are no new instructions specifying how to build it (because the input file
+was deleted). On the remote, however, where the output file does not exist,
+you will get a build failure. You can avoid these sorts of issues by setting 
+``require_inputs`` to ``true``
+in the config file (see :doc:`config`), although in recent versions of |showyourwork|
+that should already be the default.
+
+Another issue has to do with the fact that |showyourwork| uses conda environments
+instead of actual containers or virtual machines. Conda environments are not always
+free of contamination from packages installed in the global scope. For instance,
+one can import a package from outside the workflow's isolated conda environment
+by tinkering with the ``$PATH`` environment variable within a Python script.
+Such a workflow could succeed locally but fail on the remote, where that package
+may not be present in the global environment. This can especially be a problem if you
+are using tools, packages, or software that are not managed by conda. In that
+case, make sure you are also installing them and making them available to the
+GitHub Actions runner. An example of this is covered below in :ref:`latex_matplotlib`,
+where ``matplotlib`` may require access to a full LaTeX installation to render LaTeX
+strings. Such builds will fail on the remote unless LaTeX is manually installed
+in the workflow YAML file.
+
+Finally, one can mimic the behavior of the remote build by setting the ``CI=true`` 
+environment variable prior to running ``showyourwork``. Depending on the nature
+of the error, it could also make sense to look into tools that allow direct
+interaction with the runner on GitHub Actions, such as
+`action-tmate <https://github.com/mxschmitt/action-tmate>`_.
+
 
 Permissions errors in GitHub Actions
 ------------------------------------
@@ -38,6 +121,8 @@ and change the permissions to ``permissive``:
    :width: 60%
    :align: center
 
+
+.. _latex_matplotlib:
 
 Rendering LaTeX in matplotlib
 -----------------------------
@@ -109,29 +194,35 @@ these commands get executed whenever that file is imported into your scripts.
 Using LaTeX Workshop in VSCode
 ------------------------------
 
-If you edit and build your articles in VSCode, you need to specify some settings so that VSCode knows to use |showyourwork| to build your document.
+If you edit and build your articles in `VSCode <https://code.visualstudio.com/>`_, you need to specify some settings so that VSCode knows to use |showyourwork| to build your document.
 You can do this by creating (or editing) a workspace-specific settings file, ``.vscode/settings.json``, in the root directory of your repo.
 At minimum, you should add the following lines:
 
-.. code-block:: json
+.. code-block:: python
 
     {
+
+        # other settings here
+
         "latex-workshop.latex.external.build.command": "showyourwork",
         "latex-workshop.latex.external.build.args": [],
         "latex-workshop.latex.outDir": "%WORKSPACE_FOLDER%",
-        "latex-workshop.view.pdf.viewer": "tab",
+        "latex-workshop.view.pdf.viewer": "tab"
+
     }
 
 This enables you to build the document using ``LaTeX Workshop: Build LaTeX project`` in the command palette.
 Note that the final line tells LaTeX Workshop to open your article pdf in a VSCode tab.
 Feel free to change ``tab`` to ``browser`` if you would rather LaTeX Workshop open your article in a browser tab.
 
+If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), you can add the following lines to the settings file:
 
-If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), you can add the following lines to the settings file
-
-.. code-block:: json
+.. code-block:: python
 
     {
+        
+        # other settings here
+
         "latex-workshop.latex.recipe.default": "showyourwork",
         "latex-workshop.latex.recipes": [
             {
@@ -148,15 +239,6 @@ If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), 
                 "args": [],
                 "env": {}
             },
-        ],
+        ]
+
     }
-
-Note that there should only be one set of outer braces.
-In other words, remove the final outer brace in the first block above and the first outer brace in the second block above.
-
-
-Debugging remote builds
------------------------
-
-Set ``CI=true`` environment variable to mimic the behavior on GitHub Actions locally.
-More information on this soon.

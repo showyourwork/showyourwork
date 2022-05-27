@@ -156,7 +156,7 @@ def wipe_remote(project_id):
                     ["git", "push", url, "master"],
                     cwd=cwd,
                     secrets=[overleaf_email, overleaf_password],
-                    callback=check_for_rate_limit
+                    callback=check_for_rate_limit,
                 )
 
         get_stdout(
@@ -268,7 +268,7 @@ def setup_remote(project_id, path=None, maxsz=500):
         ["git", "push", url, "master"],
         cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_email, overleaf_password],
-        callback=check_for_rate_limit
+        callback=check_for_rate_limit,
     )
 
 
@@ -368,7 +368,7 @@ def push_files(files, project_id, path=None):
         ["git", "push", url, "master"],
         cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_email, overleaf_password],
-        callback=check_for_rate_limit
+        callback=check_for_rate_limit,
     )
 
 
