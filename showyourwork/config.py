@@ -89,7 +89,7 @@ def get_class_name(ms_name):
     with open(paths.user().tex / f"{ms_name}.tex", "r") as f:
         lines = f.readlines()
         for line in lines:
-            match = re.match(r"[ \t]*\\\documentclass\[?.*?\]?\{(.*?)\}", line)
+            match = re.match("[ \t]*\\\documentclass\[?.*?\]?\{(.*?)\}", line)
             if hasattr(match, "groups"):
                 name = match.groups()[0]
                 break
