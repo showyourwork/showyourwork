@@ -29,6 +29,7 @@
   command.
 - Added support for programmatically-generated files that can be included in the TeX
   manuscript via the new ``\variable`` command.
+- Users must now manually add ``\usepackage{showyourwork}`` to their LaTeX manuscript.
 - Overhauled the way ``showyourwork`` integrates with Zenodo. Static datasets should now
   be specified using their full DOI. Dynamic datasets are deprecated in favor of "cached"
   datasets. These are intermediate results that get cached on Zenodo Sandbox alongside
