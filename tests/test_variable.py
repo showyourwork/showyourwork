@@ -12,7 +12,7 @@ np.random.seed(42)
 age = np.random.normal(14.0, 1.0)
 
 # Write it to disk
-with open(paths.tex / "age_of_universe.txt", "w") as f:
+with open(paths.output / "age_of_universe.txt", "w") as f:
     f.write(f"{age:.3f}")
 """
 
@@ -40,7 +40,7 @@ class TestLatexVariable(TemporaryShowyourworkRepository):
                 r"\end{document}",
                 r"Based on a detailed analysis of Planck observations of the cosmic "
                 r"microwave background, we have determined the age of the universe "
-                r"to be \variable{age_of_universe.txt} Gyr."
+                r"to be \variable{output/age_of_universe.txt} Gyr."
                 "\n"
                 r"\end{document}",
             )
@@ -57,7 +57,7 @@ class TestLatexVariable(TemporaryShowyourworkRepository):
                     [
                         "rule age_of_universe:",
                         "    output:",
-                        "        'src/tex/age_of_universe.txt'",
+                        "        'src/tex/output/age_of_universe.txt'",
                         "    script:",
                         "        'src/scripts/age_of_universe.py'",
                     ]

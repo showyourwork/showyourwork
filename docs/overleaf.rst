@@ -146,6 +146,11 @@ files:
                 <li>.gitignore</li>
             </ul>
           </li>
+          <li class="folder">output
+            <ul>
+                <li>.gitignore</li>
+            </ul>
+          </li>
           <li>.gitignore</li>
           <li>bib.bib</li>
           <li>ms.tex</li>
@@ -169,6 +174,7 @@ Returning to our local |showyourwork| repository, if you open the config file
         id: 6272c02ffe09ce2c9a5f0ff6
         push: 
             - src/tex/figures
+            - src/tex/output
         pull:
             - src/tex/ms.tex
             - src/tex/bib.bib
@@ -306,6 +312,7 @@ to Overleaf. Then, grab the project ID from the Overleaf URL, and add the follow
         id: <ID>
         push: 
             - src/tex/figures
+            - src/tex/output
         pull:
             - src/tex/ms.tex
             - src/tex/bib.bib

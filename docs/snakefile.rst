@@ -142,7 +142,7 @@ that infers the age of the universe from some cosmological dataset:
     age = get_age_of_universe(dataset)
 
     # Write it to disk
-    with open(paths.tex / "age_of_universe.txt", "w") as f:
+    with open(paths.output / "age_of_universe.txt", "w") as f:
         print(f"{age:.3f}", file=f)
 
 I would like
@@ -157,7 +157,7 @@ We can easily automate this by defining a custom Snakemake rule:
         input:
             "src/data/planck.dat"
         output:
-            "src/tex/age_of_universe.txt"
+            "src/tex/output/age_of_universe.txt"
         script:
             "src/scripts/age_of_universe.py"
 
@@ -168,7 +168,7 @@ Then, in my TeX file, I can do the following:
 
     Based on a detailed analysis of Planck observations of the cosmic 
     microwave background, we have determined the age of the universe
-    to be \variable{age_of_universe.txt} Gyr.
+    to be \variable{output/age_of_universe.txt} Gyr.
 
 That's it! This functionality can easily be adapted to automatically populate tables in 
 your article or anything else that can be generated programmatically from your

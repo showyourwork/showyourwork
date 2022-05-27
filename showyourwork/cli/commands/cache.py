@@ -6,9 +6,14 @@ import time
 
 
 def get_modified_files(commit="HEAD^"):
-    """
-    Return all files that changed since `commit`.
+    """Return all files that changed since `commit`.
 
+    Args:
+        commit (str): The commit to compare against.
+
+    Returns:
+        list: A list of Path objects for all files that changed since
+            `commit`.
     """
     return [
         Path(file).resolve()
@@ -22,8 +27,16 @@ def get_modified_files(commit="HEAD^"):
 
 
 def cache_restore():
-    """
-    Runs after restoring the cache using @actions/cache.
+    """Runs after restoring the cache on GitHub Actions using @actions/cache.
+
+    This function resets the timestamps of all files in the repository and then
+    touches all files modified since the last time the action was run.
+    This is meant to mimic the behavior one would get if running
+    ``showyourwork`` locally, where only files whose upstream dependencies
+    have fresher timestamps get rebuilt.
+
+    Note that we only cache files in ``src/tex/figures`` and ``src/tex/output``
+    (see the ``showyourwork-action``).
 
     """
     # Reset all timestamps across the repo.
@@ -64,8 +77,10 @@ def cache_restore():
 
 
 def cache_update():
-    """
-    Runs before updating the cache using @actions/cache.
+    """Runs before updating the cache using @actions/cache.
+
+    This function writes the current commit SHA to a file in the repository
+    so we can track which files changed the next time we run the action.
 
     """
     # Store the current commit

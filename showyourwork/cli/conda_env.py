@@ -13,7 +13,37 @@ import re
 
 
 def run_in_env(command, **kwargs):
-    """Run a command in the isolated showyourwork conda environment."""
+    """Run a command in the isolated showyourwork conda environment.
+
+    This function creates and activates an isolated conda environment
+    and executes ``command`` in it, with optional ``kwargs`` passed to
+    ``subprocess.run``. The conda environment is specified in
+    ``showyourwork/workflow/envs/environment.yml`` and consists primarily
+    of the dependencies needed to execute ``Snakemake``, including ``mamba``.
+    To this environment we add the specific version of ``showyourwork``
+    requested in the article repository's ``showyourwork.yml`` file.
+
+    Note that this ensures that the article is built with the version of
+    ``showyourwork`` specified by the workflow, and **not** the version
+    the user currently has installed.
+
+    To speed things up on future runs, we cache the environment in the
+    temporary folder ``~/.showyourwork/env``.
+
+    Args:
+        command (str): The command to run.
+        kwargs: Keyword arguments to pass to subprocess.run.
+
+    Returns:
+        subprocess.CompletedProcess: The result of the command.
+
+    Raises:
+        exceptions.CondaNotFoundError: If conda is not found.
+        exceptions.ShowyourworkException: If the cwd is not the top level of a
+            showyourwork project.
+        exceptions.ShowyourworkNotFoundError: If the requested version of
+            showyourwork in the config file cannot be found.
+    """
 
     # Logging
     logger = get_logger()
@@ -111,7 +141,8 @@ def run_in_env(command, **kwargs):
     # Command to activate our environment
     conda_activate = f"{conda_setup} && conda activate {paths.user().env}"
 
-    # Command to get the path to the showyourwork install
+    # Command to get the path to the showyourwork installation.
+    # This is used to resolve the path to the internal Snakefile.
     get_syw_path = """SYW_PATH=$(python -c "import showyourwork; from pathlib import Path; print(Path(showyourwork.__file__).parent)")"""
 
     # Run

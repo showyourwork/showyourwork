@@ -5,6 +5,7 @@ overleaf:
   id: {{ cookiecutter.overleaf_id }}
   push: 
     - src/tex/figures
+    - src/tex/output
   pull:
     - src/tex/ms.tex
     - src/tex/bib.bib
