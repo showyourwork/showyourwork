@@ -6,7 +6,7 @@ dependencies:
   - python=3.9
   - pip=21.0.1
   - tectonic=0.8.0
-  - mamba=0.17.0
+  - mamba=0.23.3
   - snakemake-minimal=6.15.5
   - pip:
       - click==8.0.4
