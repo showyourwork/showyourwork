@@ -48,9 +48,13 @@ def process_user_rules():
 
         # Add script as an explicit input
         if ur.script:
-            ur.set_input(ur.script)
+            script = ur.script
+            script = script.replace("{wildcards.", "{")
+            ur.set_input(script)
         elif ur.notebook:
-            ur.set_input(ur.notebook)
+            notebook = ur.notebook
+            notebook = notebook.replace("{wildcards.", "{")
+            ur.set_input(notebook)
         elif ur.is_run:
             raise exceptions.RunDirectiveNotAllowedInUserRules(ur.name)
 

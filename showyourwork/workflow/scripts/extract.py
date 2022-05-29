@@ -1,3 +1,7 @@
+"""
+Extracts a single file from a tarball or zipfile.
+
+"""
 from showyourwork import exceptions
 from showyourwork.logging import get_logger
 import sys

@@ -1,6 +1,8 @@
 """
 Defines the rule ``syw__compile`` to build the article PDF.
 
+Runs the script :doc:`pdf` to generate the article ``ms.pdf``.
+
 """
 from showyourwork import paths
 

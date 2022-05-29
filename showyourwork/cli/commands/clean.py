@@ -6,7 +6,14 @@ import shutil
 
 
 def clean(force, deep, options=""):
-    """Clean the article build."""
+    """Clean the article build.
+    
+    Args:
+        force (bool): If True, forcefully delete files in output directories.
+        deep (bool): If True, delete all temporary Snakemake and showyourwork directories.
+        options (str, optional): Additional options to pass to Snakemake.
+
+    """
     for file in ["build.smk", "prep.smk"]:
         snakefile = snakefile = Path("${SYW_PATH}") / "workflow" / file
         snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --reason --cache"

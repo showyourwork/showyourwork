@@ -1,3 +1,7 @@
+"""
+Implements all the subcommands of the ``showyourwork`` command line tool.
+
+"""
 from .build import build
 from .setup import setup
 from .clean import clean

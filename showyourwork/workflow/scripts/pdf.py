@@ -1,3 +1,7 @@
+"""
+Compiles the article manuscript into a PDF.
+
+"""
 from showyourwork import paths
 from showyourwork.tex import compile_tex
 import sys

@@ -5,7 +5,11 @@ import os
 
 
 def tarball(options=""):
-    """Build the article tarball."""
+    """Build the article tarball.
+    
+    Args:
+        options (str, optional): Additional options to pass to Snakemake.
+    """
     snakefile = snakefile = Path("${SYW_PATH}") / "workflow" / "build.smk"
     snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='tarball' snakemake -c1 --use-conda --reason --cache"
     command = f"{snakemake} {options} -s {snakefile} syw__arxiv_entrypoint"

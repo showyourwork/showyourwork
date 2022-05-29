@@ -11,8 +11,7 @@ def build(snakemake_args=[]):
     conda environment.
 
     Args:
-        snakemake_args (list): Additional arguments to pass to
-            ``Snakemake``.
+        snakemake_args (list): Additional arguments to pass to ``Snakemake``.
 
     """
     snakefile = Path("${SYW_PATH}") / "workflow" / "build.smk"

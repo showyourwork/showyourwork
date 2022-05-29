@@ -5,7 +5,11 @@ import os
 
 
 def preprocess(snakemake_args=[]):
-    """Pre-processing step for the article build."""
+    """Pre-processing step for the article build.
+
+    Args:
+        snakemake_args (list, optional): Additional options to pass to Snakemake.
+    """
     snakefile = Path("${SYW_PATH}") / "workflow" / "prep.smk"
     snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='preprocess' snakemake -c1 --use-conda --reason --cache"
     command = f"{snakemake} {' '.join(snakemake_args)} -s {snakefile}"

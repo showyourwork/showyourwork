@@ -1,6 +1,8 @@
 """
 Defines the rule ``syw__arxiv`` to generate a tarball for arXiv submission.
 
+Runs the script :doc:`arxiv` to generate the tarball ``arxiv.tar.gz``.
+
 """
 from showyourwork import paths
 

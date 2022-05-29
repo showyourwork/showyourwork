@@ -8,9 +8,10 @@ import re
 
 
 def ensure_top_level():
-    """
-    Ensures we're running commands in the top level of a git repo.
+    """Ensures we're running commands in the top level of a git repo.
 
+    Raises:
+        exceptions.ShowyourworkException: If not in the top level of a git repo.
     """
     root = os.path.realpath(git.get_repo_root())
     here = os.path.realpath(".")
@@ -22,11 +23,16 @@ def ensure_top_level():
 
 
 def echo(text="", **kwargs):
-    """
-    Print a message to screen with some custom formatting.
+    """Print a message to the terminal with some custom formatting.
 
-    This may be the ugliest function I've ever written in my life.
+    Breaks long lines using ``TextWrapper`` and adds custom colors and
+    indentation to code snippets and environment variables.
 
+    This may just be the ugliest function I've ever written in my life.
+
+    Args:
+        text (str): The text to print.
+        kwargs: Additional keyword arguments to pass to ``click.echo``.
     """
     try:
         terminal_size = shutil.get_terminal_size().columns
@@ -88,6 +94,8 @@ def build(snakemake_args):
 
 
 def validate_slug(context, param, slug):
+    """Checks whether the repo slug was provided correctly."""
+
     def pause():
         if context.params.get("yes"):
             pass

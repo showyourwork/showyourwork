@@ -1,3 +1,8 @@
+"""
+Defines custom exceptions for the ``showyourwork`` package.
+
+"""
+
 from .base import *
 from .github import *
 from .latex import *

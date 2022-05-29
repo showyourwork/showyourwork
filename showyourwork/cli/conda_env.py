@@ -31,18 +31,19 @@ def run_in_env(command, **kwargs):
     temporary folder ``~/.showyourwork/env``.
 
     Args:
-        command (str): The command to run.
-        kwargs: Keyword arguments to pass to subprocess.run.
+        ``command`` (str): The command to run.
+        ``kwargs``: Keyword arguments to pass to subprocess.run.
 
     Returns:
         subprocess.CompletedProcess: The result of the command.
 
     Raises:
-        exceptions.CondaNotFoundError: If conda is not found.
-        exceptions.ShowyourworkException: If the cwd is not the top level of a
-            showyourwork project.
-        exceptions.ShowyourworkNotFoundError: If the requested version of
-            showyourwork in the config file cannot be found.
+        ``exceptions.CondaNotFoundError``:
+            If conda is not found.
+        ``exceptions.ShowyourworkException``:
+            If the cwd is not the top level of a showyourwork project.
+        ``exceptions.ShowyourworkNotFoundError``:
+            If the requested version of showyourwork in the config file cannot be found.
     """
 
     # Logging

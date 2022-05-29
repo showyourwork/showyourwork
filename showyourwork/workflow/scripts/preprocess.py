@@ -1,3 +1,14 @@
+r"""
+Does a first pass through the manuscript to infer the workflow graph.
+
+This does a fast compile of the article, overriding commands like
+``\label``, ``\script``, ``\variable``, and 
+``\includegraphics`` to instead print their arguments to an XML
+log file, which we use to infer the relationships between input and output
+files. This information is then used to build the workflow graph for the
+main article build step.
+
+"""
 from showyourwork import paths, exceptions, zenodo
 from showyourwork.zenodo import Zenodo
 from showyourwork.tex import compile_tex
@@ -11,10 +22,14 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 
 def flatten_dataset_contents(d, parent_key="", default_path=None):
     """
-    Flatten the `contents` dictionary of a dataset entry, filling
+    Flatten the ``contents`` dictionary of a dataset entry, filling
     in default mappings and removing zipfile extensions from the target path.
+    Adapted from `<https://stackoverflow.com/a/6027615>`_.
 
-    Adapted from https://stackoverflow.com/a/6027615
+    Args:
+        d (dict): The dataset ``contents`` dictionary.
+        parent_key (str): The parent key of the current dictionary.
+        default_path (str, optional): The default path to use if the target is not specified.
 
     """
     if not default_path:
@@ -59,8 +74,8 @@ def flatten_dataset_contents(d, parent_key="", default_path=None):
 
 def parse_datasets():
     """
-    Parse the `datasets` keys in the config file and
-    populate entries with custom metadata.
+    Parse the ``datasets`` keys in the config file and populate entries with
+    custom metadata.
 
     """
 
@@ -135,6 +150,8 @@ def check_figure_format(figure):
     Check that all figures are declared correctly in `tex/ms.tex`
     so we can parse them corresponding XML tree.
 
+    Args:
+        figure: A figure XML element.
     """
     # Get all figure elements
     elements = list(figure)
@@ -214,7 +231,12 @@ def check_figure_format(figure):
 
 
 def get_xml_tree():
-    """"""
+    """Compiles the TeX file to generate the XML tree.
+
+    Returns:
+        xml.etree.ElementTree.ElementTree: The XML tree.
+    """
+
     # Parameters
     xmlfile = paths.user().preprocess / "showyourwork.xml"
 
@@ -249,7 +271,11 @@ def get_xml_tree():
 
 
 def get_json_tree():
-    """"""
+    """Builds a dictionary containing mappings between input and output files.
+    
+    Returns:
+        dict: The JSON dependency tree for the article.
+    """
     # Get the XML article tree
     xml_tree = get_xml_tree()
 

@@ -2,6 +2,9 @@
 Defines the rule ``syw__preprocess`` to parse the config and build the
 workflow graph.
 
+Runs the script :doc:`preprocess` to generate the ``.showyourwork/config.json`` 
+file containing metadata about the build and the workflow graph.
+
 """
 from showyourwork import paths
 

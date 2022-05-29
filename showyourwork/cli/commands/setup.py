@@ -12,7 +12,16 @@ import subprocess
 
 
 def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
-    """Set up a new article repo."""
+    """Set up a new article repo.
+
+    Args:
+        slug (str): Repository slug (user/repo).
+        cache (bool): If True, enable caching on Zenodo Sandbox.
+        overleaf_id (str or NoneType): Overleaf ID of the article.
+        ssh (bool): If True, use SSH to clone the repository. Otherwise, use HTTPS.
+        showyourwork_version (str): Version of showyourwork to use.
+
+    """
     # Parse the slug
     user, repo = slug.split("/")
     if Path(repo).exists():

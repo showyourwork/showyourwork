@@ -1,3 +1,9 @@
+"""
+Wraps the :doc:`pdf` script to build the article PDF, then
+tars everything in the ``src/tex`` directory into the tarball
+``arxiv.tar.gz`` for easy arXiv submission.
+
+"""
 from showyourwork import paths
 import tarfile
 

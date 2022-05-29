@@ -1,3 +1,7 @@
+"""
+Downloads a publically available file from a Zenodo or Zenodo Sandbox record.
+
+"""
 from showyourwork import exceptions
 from showyourwork.zenodo import Zenodo
 from showyourwork.logging import get_logger

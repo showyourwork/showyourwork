@@ -7,7 +7,11 @@ copyright = "2022, Rodrigo Luger"
 
 # -- General configuration ---------------------------------------------------
 
-extensions = ["sphinx.ext.autodoc", "sphinxcontrib.programoutput"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinxcontrib.programoutput",
+    "sphinx.ext.napoleon",
+]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 master_doc = "index"

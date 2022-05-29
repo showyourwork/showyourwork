@@ -12,8 +12,8 @@ def get_modified_files(commit="HEAD^"):
         commit (str): The commit to compare against.
 
     Returns:
-        list: A list of Path objects for all files that changed since
-            `commit`.
+        list:
+            A list of Path objects for all files that changed since `commit`.
     """
     return [
         Path(file).resolve()

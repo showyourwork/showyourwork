@@ -7,6 +7,14 @@ import os
 
 
 def zenodo_publish(branch):
+    """Publish the cache.
+
+    Copies the latest draft on Zenodo Sandbox to Zenodo and publishes it,
+    assigning it a permanent DOI.
+
+    Args:
+        branch (str): Branch to publish.
+    """
     # Ensure there's a sandbox cache record for this branch
     if branch is None:
         branch = get_repo_branch()
@@ -44,6 +52,16 @@ def zenodo_publish(branch):
 
 
 def zenodo_freeze(branch):
+    """
+    Freeze the Zenodo Sandbox deposit.
+
+    This command publishes the latest draft on Zenodo Sandbox. This
+    action makes the cache public and (semi-)permanent. Useful during
+    development.
+
+    Args:
+        branch (str): Branch whose cache is to be frozen.
+    """
     if branch is None:
         branch = get_repo_branch()
     try:
@@ -61,6 +79,14 @@ def zenodo_freeze(branch):
 
 
 def zenodo_create(branch):
+    """
+    Create a new Zenodo Sandbox deposit.
+
+    This command creates a new draft on Zenodo Sandbox.
+
+    Args:
+        branch (str): Branch to create the cache for.
+    """
     if branch is None:
         branch = get_repo_branch()
     try:
@@ -81,6 +107,12 @@ def zenodo_create(branch):
 
 
 def zenodo_delete(branch):
+    """
+    Delete the latest draft of the Zenodo Sandbox deposit.
+
+    Args:
+        branch (str): Branch whose cahce is to be deleted.
+    """
     logger = logging.get_logger()
     if branch is None:
         branch = get_repo_branch()

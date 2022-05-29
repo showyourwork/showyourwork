@@ -11,6 +11,12 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(1, str(ROOT / "showyourwork" / "workflow" / "scripts"))
 
 
+# TODO
+SNAKEMAKE_SCRIPTS_DOCS = [""]
+SNAKEMAKE_RULES_DOCS = [""]
+SNAKEMAKE_SNAKEFILE_DOCS = [""]
+
+
 class RemoveSubmodulesHeading(StopIteration):
     pass
 
@@ -25,8 +31,8 @@ try:
     r = requests.get(url, allow_redirects=True)
     content = r.content.decode()
     content = "The GitHub action\n=================\n\n" + "\n".join(
-    content.split("\n")[10:]
-)
+        content.split("\n")[10:]
+    )
 except:
     content = "The Github action\n=================\n\n"
     content += "Please visit `<https://github.com/showyourwork/showyourwork-action>`_."
@@ -75,8 +81,11 @@ lines = (
     [".. include:: ../api.rst\n"]
     + [
         "\n",
-        "The ``showyourwork`` module\n",
-        "---------------------------\n",
+        ".. _api.module:",
+        "\n",
+        "\n",
+        "The showyourwork module\n",
+        "-----------------------\n",
     ]
     + lines[2:]
 )
@@ -85,13 +94,25 @@ with open("api/modules.rst", "r") as f:
 Path("api/modules.rst").unlink()
 lines += [
     "\n",
+    ".. _api.scripts:",
+    "\n",
+    "\n",
     "Snakemake workflow scripts\n",
     "--------------------------\n",
+    "\n",
+    *SNAKEMAKE_SCRIPTS_DOCS,
+    "\n",
 ] + new_lines[2:]
 lines += [
     "\n",
+    ".. _api.rules:",
+    "\n",
+    "\n",
     "Snakemake rules\n",
     "---------------\n\n",
+    *SNAKEMAKE_RULES_DOCS,
+    "\n",
+    "\n",
     ".. toctree::\n",
     "   :maxdepth: 5\n",
     "\n   ",
@@ -99,8 +120,14 @@ lines += [
 ]
 lines += [
     "\n\n",
+    ".. _api.snakefiles:",
+    "\n",
+    "\n",
     "Snakefiles\n",
     "----------\n\n",
+    *SNAKEMAKE_SNAKEFILE_DOCS,
+    "\n",
+    "\n",
     ".. toctree::\n",
     "   :maxdepth: 5\n",
     "\n   ",
