@@ -8,4 +8,4 @@ dependencies:
       - sphinx-book-theme>=0.1.3
       - jinja2>=2.11.3
       - sphinxcontrib-programoutput>=0.17
-      - showyourwork
+      - -e .

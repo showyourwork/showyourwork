@@ -1,4 +1,5 @@
 import subprocess
+import shutil
 import sys
 from pathlib import Path
 import re
@@ -11,10 +12,38 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(1, str(ROOT / "showyourwork" / "workflow" / "scripts"))
 
 
-# TODO
-SNAKEMAKE_SCRIPTS_DOCS = [""]
-SNAKEMAKE_RULES_DOCS = [""]
-SNAKEMAKE_SNAKEFILE_DOCS = [""]
+# Snippets for each of the sections on the API page
+SNAKEMAKE_SCRIPTS_DOCS = [
+    """
+These files are located in ``showyourwork/workflow/scripts`` and are executed
+from the Snakemake rules defined in ``showyourwork/workflow/rules``.
+They do the heavy lifting for the pipeline, including generating the article
+graph in the preprocessing step, downloading and extracting Zenodo datasets,
+and building the article PDF.
+"""
+]
+SNAKEMAKE_RULES_DOCS = [
+    """
+These files are located in ``showyourwork/workflow/rules`` and contain the
+main Snakemake rules for the pipeline. These rules either execute simple
+shell commands (like running Python scripts to generate figures) or call
+the scripts in ``showyourwork/workflow/scripts`` to perform more complex
+pipeline tasks.
+"""
+]
+SNAKEMAKE_SNAKEFILE_DOCS = [
+    """
+These are the two Snakefiles that control the pipeline. These Snakefiles
+import all of the Snakemake rules defined in ``showyourwork/workflow/rules``,
+parse the user config, ingest the user's custom Snakefile, etc.
+"""
+]
+UNIT_TEST_DOCS = [
+    """
+Unit tests are located in ``tests`` at the root of the repo. See below for 
+information on how we test all the different moving parts in ``showyourwork``.
+"""
+]
 
 
 class RemoveSubmodulesHeading(StopIteration):
@@ -72,6 +101,9 @@ for file in rules + snakefiles:
         docstring = ""
     with open(f"api/{file}.rst", "w") as f:
         f.write(f"{file}\n{'=' * len(file)}\n\n{docstring}")
+
+# Unit test docs
+unit_tests = ["../unit_tests.rst"]
 
 
 # Customize the API table of contents
@@ -132,6 +164,21 @@ lines += [
     "   :maxdepth: 5\n",
     "\n   ",
     "\n   ".join(snakefiles),
+]
+lines += [
+    "\n\n",
+    ".. _api.unittests:",
+    "\n",
+    "\n",
+    "Unit tests\n",
+    "----------\n\n",
+    *UNIT_TEST_DOCS,
+    "\n",
+    "\n",
+    ".. toctree::\n",
+    "   :maxdepth: 5\n",
+    "\n   ",
+    "\n   ".join(unit_tests),
 ]
 with open("api/showyourwork.rst", "w") as f:
     f.writelines(lines)
