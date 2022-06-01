@@ -134,7 +134,11 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                             f"Searching remote file cache: {outputfile}..."
                         )
                         try:
+                            logger.debug(f"Searching Zenodo cache...")
                             if zenodo is None:
+                                logger.debug(
+                                    f"Zenodo DOI not provided in `zenodo.yml`."
+                                )
                                 raise exceptions.FileNotFoundOnZenodo(None)
                             zenodo.download_file(
                                 cachefile, job.rule.name, tarball=tarball
@@ -144,6 +148,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                                 f"Restoring from Zenodo cache: {outputfile}..."
                             )
                         except exceptions.FileNotFoundOnZenodo:
+                            logger.debug(f"Searching Zenodo Sandbox cache...")
                             sandbox.download_file(
                                 cachefile, job.rule.name, tarball=tarball
                             )

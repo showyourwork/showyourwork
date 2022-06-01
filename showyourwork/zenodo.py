@@ -53,6 +53,16 @@ services = {
 
 class Zenodo:
     def __init__(self, doi_or_service, **kwargs):
+        """
+        Initialize a Zenodo interface.
+
+        Args:
+            doi_or_service (str): Deposit DOI or service name
+                (e.g., "zenodo" or "sandbox").
+            kwargs: Forwarded to `Zenodo._create`.
+
+        """
+
         # Parse input
         if str(doi_or_service).lower() in services.keys():
 
@@ -66,6 +76,7 @@ class Zenodo:
             self.service = service["name"]
             self.doi = self._create(**kwargs)
             self.deposit_id = self.doi.split(self.doi_prefix)[1]
+            self.user_is_owner = True
 
         else:
 
@@ -86,6 +97,9 @@ class Zenodo:
                     raise Exception
             except Exception as e:
                 raise exceptions.InvalidZenodoDOI(self.doi)
+
+            # Check if the user is an owner
+            self.user_is_owner = self.check_if_user_is_owner()
 
     def _get_access_token(self, error_if_missing=False):
         """
@@ -199,6 +213,54 @@ class Zenodo:
         doi = f"{self.doi_prefix}{data['conceptrecid']}"
         logger.info(f"Created draft with concept DOI {doi} on {self.service}.")
         return doi
+
+    def check_if_user_is_owner(self):
+        # Logger
+        logger = get_logger()
+
+        # Check if we've tested this already for the given API
+        # token **in this session**. These flags get automatically
+        # deleted during the preprocessing step of every build.
+        cache_file_true = paths.user().flags / f"{self.deposit_id}_AUTH_VALID"
+        cache_file_false = (
+            paths.user().flags / f"{self.deposit_id}_AUTH_INVALID"
+        )
+        if cache_file_true.exists():
+            return True
+        if cache_file_false.exists():
+            return False
+
+        logger.debug(f"Testing if user is authenticated for {self.doi}...")
+
+        # Search for both concept and version DOIs
+        r = requests.get(
+            f"https://{self.url}/api/deposit/depositions",
+            params={
+                "q": f"recid:{self.deposit_id} conceptrecid:{self.deposit_id}",
+                "all_versions": 1,
+                "access_token": self.access_token,
+            },
+        )
+
+        # See if we find the deposit
+        if r.status_code <= 204:
+            if type(r.json()) is list and len(r.json()):
+                logger.info(f"User authentication for {self.doi} is valid.")
+                cache_file_true.touch()
+                return True
+            else:
+                logger.debug(
+                    "Error establishing whether user is authenticated."
+                )
+                logger.debug("HTTP response:")
+                logger.debug(r.text)
+
+        # No dice
+        logger.warn(
+            f"User is not authenticated to edit and/or access {self.doi}."
+        )
+        cache_file_false.touch()
+        return False
 
     @require_access_token
     def upload_file_to_draft(self, draft, file, rule_name, tarball=False):
@@ -315,13 +377,22 @@ class Zenodo:
         )
 
         # Look for a match
+        logger.debug(
+            f"Searching for file `{rule_name}` with hash `{file.name}`..."
+        )
         for entry in data:
+
+            logger.debug(
+                f"Inspecting candidate file `{entry['filename']}` with hash `{file.name}`..."
+            )
+
             if (
                 entry["filename"] == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
 
                 # Download it
+                logger.debug(f"File name and hash both match. Downloading...")
                 url = entry["links"]["download"]
                 progress_bar = (
                     ["--progress-bar"]
@@ -353,10 +424,18 @@ class Zenodo:
 
             elif entry["filename"] == rule_name:
 
+                # We're done with this deposit
                 logger.debug(
                     f"File {rule_name} found, but it has the wrong hash. Skipping..."
                 )
                 break
+
+            else:
+
+                # Keep looking in this deposit for a file with the right name
+                logger.debug(
+                    "Cache miss for file {entry['filename']}. Skipping..."
+                )
 
         # This is caught in the enclosing scope and treated as a cache miss
         raise exceptions.FileNotFoundOnZenodo(rule_name)
