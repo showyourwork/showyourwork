@@ -54,7 +54,21 @@ particular script to the remote, so make sure you don't have any unstaged
 changes, and that your ``.gitignore`` files aren't preventing you from
 committing necessary files.
 
-There could also be hysteresis in your local workflow:
+It's also useful to make sure you've provided all the necessary repository
+secrets, such as ``SANDBOX_TOKEN``, which is used to access the Zenodo
+Sandbox API to download files from the remote cache. See :doc:`zenodo` for
+details. If you're reproducing someone else's article and don't have access
+to their API token, you can either set ``run_cache_rules_on_ci`` to ``true``
+in the config file to allow running cached rules on GitHub Actions (see :doc:`config`),
+or you can switch to a cache deposit you have read/write access to. To do this,
+delete the ``zenodo.yml`` file at the root of the repository and run 
+``showyourwork cache create`` (after making sure you've defined the ``$SANDBOX_TOKEN``
+environment variable; see :doc:`zenodo`). Run the workflow locally to populate the
+cache, then commit and push your results. If you've provided the ``SANDBOX_TOKEN``
+repository secret on GitHub (see :doc:`zenodo`), the workflow should now be able
+to access the Sandbox cache.
+
+A different issue potentially affecting remote builds is hysteresis in your local workflow:
 for example, you may have built your article successfully, then deleted one
 of the scripts needed to generate a figure. The next time you build your
 article, the build could succeed since the figure output is present and there

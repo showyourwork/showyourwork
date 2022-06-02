@@ -257,7 +257,7 @@ class Zenodo:
 
         # No dice
         logger.warn(
-            f"User is not authenticated to edit and/or access {self.doi}."
+            f"User is not authenticated to edit {self.doi}."
         )
         cache_file_false.touch()
         return False

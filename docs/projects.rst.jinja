@@ -1,0 +1,65 @@
+.. raw:: html
+
+    <style>
+        li p {
+            margin-bottom: 0px;
+            font-size: small;
+        }
+        dt {
+            font-weight: unset;
+        }
+        dd li::marker {
+            content: "";
+            color: hotpink;
+        }
+        dd ul {
+            padding-left: 0px;
+        }
+    </style>
+
+Projects that use showyourwork
+==============================
+
+Below is a curated list of GitHub repositories that make use of |showyourwork|. 
+These are great resources off of which you can base your own work, as they
+make use of several different features of the workflow.
+If you would like to showcase your own open source scientific article, please add 
+it to the JSON list of projects by
+`suggesting an edit on GitHub <https://github.com/showyourwork/showyourwork/edit/main/docs/projects.json>`_.
+
+{% for field in fields %}
+
+{{ field }} articles ({{ count[field] }})
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+{% for repo in repos %}
+{% if projects[repo]["field"] == field %}
+- `{{ repo }} <https://github.com/{{ repo }}>`_
+    - **Title:** {{ projects[repo]["title"] }}
+    - **Authors:** {{ ", ".join(projects[repo]["authors"]) }}
+{% if projects[repo]["doi"] == "N/A" %}
+    - **DOI:** N/A
+{% else %}
+    - **DOI:** `{{ projects[repo]["doi"] }} <{{ projects[repo]["url"] }}>`_
+{% endif %}
+    - **Version:** {{ projects[repo]["version"] }}
+    - **Commits:** {{ projects[repo]["commits"] }}
+    - **Last updated:** {{ projects[repo]["date"].split("T")[0] }}
+{% endif %}
+{% endfor %}
+
+{% endfor %}
+
+
+All projects
+^^^^^^^^^^^^
+
+For a complete list of projects that make use of |showyourwork|, see
+`here <https://github.com/showyourwork/showyourwork-action/network/dependents>`__.
+
+Don't see your project? The link above points to all GitHub projects that
+use `showyourwork-action <https://github.com/showyourwork/showyourwork-action>`_
+on their default (usually ``main``) branch. If your article uses a version
+of |showyourwork| prior to ``v0.3.0``, you should follow the 
+:doc:`migration instructions <migrating>` to bring it up to date and make it
+searchable via the GitHub API.

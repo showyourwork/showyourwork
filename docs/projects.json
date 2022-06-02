@@ -1,0 +1,91 @@
+{
+  "rodluger/paparazzi": {
+    "title": "An Efficient, Scalable, and Open-Source Doppler Imaging Model",
+    "authors": [
+      "Rodrigo Luger",
+      "Megan Bedell",
+      "Daniel Foreman-Mackey",
+      "Ian J. M. Crossfield",
+      "Lily L. Zhao",
+      "David W. Hogg"
+    ],
+    "doi": "arXiv:2110.06271",
+    "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211006271L",
+    "field": "Astronomy"
+  },
+  "trevordavid/rossby-ridge": {
+    "title": "Further Evidence for Modified Spin-down in Sun-like Stars: Pile-ups in the Temperature–Period Distribution",
+    "authors": [
+      "Trevor David",
+      "Ruth Angus",
+      "Jason L. Curtis",
+      "Jennifer L. van Saders",
+      "Isabel L. Colman",
+      "Gabriella Contardo",
+      "Yuxi Lu",
+      "Joel C. Zinn"
+    ],
+    "doi": "arXiv:2203.08920",
+    "url": "https://arxiv.org/abs/2203.08920",
+    "field": "Astronomy"
+  },
+  "kazewong/BackPop": {
+    "title": "Backward Population Synthesis: Mapping the Evolutionary History of Gravitational-Wave Progenitors",
+    "authors": [
+      "Kaze W. K. Wong",
+      "Katelyn Breivik",
+      "Will M. Farr",
+      "Rodrigo Luger"
+    ],
+    "doi": "N/A",
+    "url": "",
+    "field": "Astronomy"
+  },
+  "jfcrenshaw/pzflow-paper": {
+    "title": "Statistical Modeling of Galaxy Catalogues with Normalizing Flows",
+    "authors": [
+      "John Franklin Crenshaw",
+      "J. Bryce Kalmbach",
+      "Alexander Gagliano",
+      "Alex Malz",
+      "Sam Schmidt",
+      "Francois Lanusse"
+    ],
+    "doi": "N/A",
+    "url": "",
+    "field": "Astronomy"
+  },
+  "one-datum/paper": {
+    "title": "Unresolved spectroscopic binaries with Gaia I: Detection & orbital characterization using EDR3 radial velocity errors",
+    "authors": ["Daniel Foreman-Mackey", "Quadry Chance", "Andrew R. Casey"],
+    "doi": "N/A",
+    "url": "",
+    "field": "Astronomy"
+  },
+  "TeamLEGWORK/LEGWORK-paper": {
+    "title": "LEGWORK: A python package for computing the evolution and detectability of stellar-origin gravitational-wave sources with space-based detectors",
+    "authors": ["Tom Wagg", "Katelyn Breivik", "Selma E. de Mink"],
+    "doi": "arXiv:2111.08717",
+    "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211108717W",
+    "field": "Astronomy"
+  },
+  "mathren/top_down_compact_obj_mass": {
+    "title": "Pair-instability mass loss for top-down compact object mass calculations",
+    "authors": [
+      "Mathieu Renzo",
+      "David D. Hendriks",
+      "Lieke A. C. van Son",
+      "Robert Farmer"
+    ],
+    "doi": "arXiv:2201.10519",
+    "url": "https://arxiv.org/abs/2201.10519",
+    "field": "Astronomy"
+  },
+  "katiebreivik/hush": {
+    "title": "Applying the metallicity-dependent binary fraction to double white dwarf formation: Implications for LISA",
+    "authors": ["Sarah Thiele", "Katelyn Breivik", "Robyn E. Sanderson"],
+    "doi": "arXiv:2111.13700",
+    "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211113700T",
+    "field": "Astronomy"
+  }
+}

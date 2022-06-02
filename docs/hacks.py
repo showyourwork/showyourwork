@@ -3,13 +3,88 @@ import shutil
 import sys
 from pathlib import Path
 import re
-import requests
+from urllib.request import Request, urlopen
+import jinja2
+import json
+import os
+import yaml
 
 
-# Add our module to the path
-ROOT = Path(__file__).absolute().parents[1]
-sys.path.insert(0, str(ROOT))
-sys.path.insert(1, str(ROOT / "showyourwork" / "workflow" / "scripts"))
+def get_commit_count(repo, API_KEY):
+    """
+    Return the number of commits to a project.
+
+    See https://stackoverflow.com/a/55873469
+
+    """
+    req = Request(f"https://api.github.com/repos/{repo}/commits?per_page=1")
+    req.add_header("Accept", "application/vnd.github.v3+json")
+    req.add_header("Authorization", f"token {API_KEY}")
+    try:
+        resp = urlopen(req)
+        content = resp.read()
+        content = json.loads(content)
+        if len(content):
+            commits = int(
+                resp.headers["Link"]
+                .split(",")[1]
+                .split("per_page=1&page=")[1]
+                .split(">")[0]
+            )
+        else:
+            commits = 0
+    except:
+        commits = "N/A"
+    return commits
+
+
+def get_date(repo, API_KEY):
+    """
+    Get the timestamp when a repo was last pushed to.
+
+    """
+    req = Request(f"https://api.github.com/repos/{repo}")
+    req.add_header("Accept", "application/vnd.github.v3+json")
+    req.add_header("Authorization", f"token {API_KEY}")
+    req.add_header("User-Agent", "request")
+    try:
+        content = urlopen(req).read()
+        content = json.loads(content)
+        date = content["pushed_at"]
+    except:
+        date = "??"
+    return date
+
+
+def get_version(repo, API_KEY):
+    """
+    Get the showyourwork SHA or version from the config file.
+
+    """
+    req = Request(f"https://api.github.com/repos/{repo}")
+    req.add_header("Accept", "application/vnd.github.v3+json")
+    req.add_header("Authorization", f"token {API_KEY}")
+    try:
+        resp = urlopen(req)
+        content = resp.read()
+        content = json.loads(content)
+        branch = content.get("default_branch", "main")
+        req = Request(
+            f"https://raw.githubusercontent.com/{repo}/{branch}/showyourwork.yml"
+        )
+        content = urlopen(req).read()
+        version = yaml.safe_load(content).get("version", "unknown")
+    except:
+        version = "unknown"
+    return version
+
+
+class RemoveSubmodulesHeading(StopIteration):
+    pass
+
+
+class RemoveContentsHeading(StopIteration):
+    pass
 
 
 # Snippets for each of the sections on the API page
@@ -46,18 +121,47 @@ information on how we test all the different moving parts in ``showyourwork``.
 ]
 
 
-class RemoveSubmodulesHeading(StopIteration):
-    pass
+# Add our module to the path
+ROOT = Path(__file__).absolute().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(1, str(ROOT / "showyourwork" / "workflow" / "scripts"))
 
 
-class RemoveContentsHeading(StopIteration):
-    pass
+# Generate the `projects.rst` page
+API_KEY = os.getenv("GH_API_KEY", None)
+if API_KEY is None:
+    print("ERROR: Can't authenticate git. Unable to generate `projects.rst`.")
+else:
+    with open("projects.json", "r") as f:
+        projects = json.load(f)
+    for project in projects:
+        projects[project]["date"] = projects[project].get("date", "")
+        projects[project]["doi"] = projects[project].get("doi", "N/A")
+        projects[project]["url"] = projects[project].get("url", "")
+        projects[project]["version"] = get_version(project, API_KEY)
+        projects[project]["commits"] = get_commit_count(project, API_KEY)
+        projects[project]["date"] = get_date(project, API_KEY)
+    fields = list(set([projects[project]["field"] for project in projects]))
+    repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[
+        ::-1
+    ]
+    count = {field: 0 for field in fields}
+    for project in projects:
+        count[projects[project]["field"]] += 1
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
+    with open("projects.rst", "w") as f:
+        print(
+            env.get_template("projects.rst.jinja").render(
+                projects=projects, fields=fields, repos=repos, count=count
+            ),
+            file=f,
+        )
 
 
 # Import the GitHub Action README
 url = "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
 try:
-    r = requests.get(url, allow_redirects=True)
+    r = get(url, allow_redirects=True)
     content = r.content.decode()
     content = "The GitHub action\n=================\n\n" + "\n".join(
         content.split("\n")[10:]
