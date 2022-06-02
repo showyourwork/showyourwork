@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 import re
 from urllib.request import Request, urlopen
+import requests
 import jinja2
 import json
 import os
@@ -161,7 +162,7 @@ else:
 # Import the GitHub Action README
 url = "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
 try:
-    r = get(url, allow_redirects=True)
+    r = requests.get(url, allow_redirects=True)
     content = r.content.decode()
     content = "The GitHub action\n=================\n\n" + "\n".join(
         content.split("\n")[10:]
@@ -169,6 +170,7 @@ try:
 except:
     content = "The Github action\n=================\n\n"
     content += "Please visit `<https://github.com/showyourwork/showyourwork-action>`_."
+    print("ERROR: Unable to generate `action.rst`.")
 with open("action.rst", "w") as f:
     f.write(content)
 

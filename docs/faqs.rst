@@ -43,61 +43,74 @@ consider the following tips:
 - If all else fails, feel free to `raise a new issue <https://github.com/showyourwork/showyourwork/issues/new>`__,
   and we will do our best to get back to you with suggestions promptly.
 
+
 Debugging remote builds
 -----------------------
 
 If your article build works locally but fails on GitHub Actions, a few different
 things could be going on. 
 
-A common cause is you forgot to push a
-particular script to the remote, so make sure you don't have any unstaged 
-changes, and that your ``.gitignore`` files aren't preventing you from
-committing necessary files.
+- A common cause is you forgot to push a
+  particular script to the remote, so make sure you don't have any unstaged 
+  changes, and that your ``.gitignore`` files aren't preventing you from
+  committing necessary files.
 
-It's also useful to make sure you've provided all the necessary repository
-secrets, such as ``SANDBOX_TOKEN``, which is used to access the Zenodo
-Sandbox API to download files from the remote cache. See :doc:`zenodo` for
-details. If you're reproducing someone else's article and don't have access
-to their API token, you can either set ``run_cache_rules_on_ci`` to ``true``
-in the config file to allow running cached rules on GitHub Actions (see :doc:`config`),
-or you can switch to a cache deposit you have read/write access to. To do this,
-delete the ``zenodo.yml`` file at the root of the repository and run 
-``showyourwork cache create`` (after making sure you've defined the ``$SANDBOX_TOKEN``
-environment variable; see :doc:`zenodo`). Run the workflow locally to populate the
-cache, then commit and push your results. If you've provided the ``SANDBOX_TOKEN``
-repository secret on GitHub (see :doc:`zenodo`), the workflow should now be able
-to access the Sandbox cache.
+- It's also useful to make sure you've provided all the necessary repository
+  secrets, such as ``SANDBOX_TOKEN``, which is used to access the Zenodo
+  Sandbox API to download files from the remote cache. See :doc:`zenodo` for
+  details. If you're reproducing someone else's article and don't have access
+  to their API token, you can either set ``run_cache_rules_on_ci`` to ``true``
+  in the config file to allow running cached rules on GitHub Actions (see :doc:`config`),
+  or you can switch to a cache deposit you have read/write access to. To do this,
+  delete the ``zenodo.yml`` file at the root of the repository and run 
+  ``showyourwork cache create`` (after making sure you've defined the ``$SANDBOX_TOKEN``
+  environment variable; see :doc:`zenodo`). Run the workflow locally to populate the
+  cache, then commit and push your results. If you've provided the ``SANDBOX_TOKEN``
+  repository secret on GitHub (see :doc:`zenodo`), the workflow should now be able
+  to access the Sandbox cache.
 
-A different issue potentially affecting remote builds is hysteresis in your local workflow:
-for example, you may have built your article successfully, then deleted one
-of the scripts needed to generate a figure. The next time you build your
-article, the build could succeed since the figure output is present and there
-are no new instructions specifying how to build it (because the input file
-was deleted). On the remote, however, where the output file does not exist,
-you will get a build failure. You can avoid these sorts of issues by setting 
-``require_inputs`` to ``true``
-in the config file (see :doc:`config`), although in recent versions of |showyourwork|
-that should already be the default.
+- A different issue potentially affecting remote builds is hysteresis in your local workflow:
+  for example, you may have built your article successfully, then deleted one
+  of the scripts needed to generate a figure. The next time you build your
+  article, the build could succeed since the figure output is present and there
+  are no new instructions specifying how to build it (because the input file
+  was deleted). On the remote, however, where the output file does not exist,
+  you will get a build failure. You can avoid these sorts of issues by setting 
+  ``require_inputs`` to ``true``
+  in the config file (see :doc:`config`), although in recent versions of |showyourwork|
+  that should already be the default.
 
-Another issue has to do with the fact that |showyourwork| uses conda environments
-instead of actual containers or virtual machines. Conda environments are not always
-free of contamination from packages installed in the global scope. For instance,
-one can import a package from outside the workflow's isolated conda environment
-by tinkering with the ``$PATH`` environment variable within a Python script.
-Such a workflow could succeed locally but fail on the remote, where that package
-may not be present in the global environment. This can especially be a problem if you
-are using tools, packages, or software that are not managed by conda. In that
-case, make sure you are also installing them and making them available to the
-GitHub Actions runner. An example of this is covered below in :ref:`latex_matplotlib`,
-where ``matplotlib`` may require access to a full LaTeX installation to render LaTeX
-strings. Such builds will fail on the remote unless LaTeX is manually installed
-in the workflow YAML file.
+- Another issue has to do with the fact that |showyourwork| uses conda environments
+  instead of actual containers or virtual machines. Conda environments are not always
+  free of contamination from packages installed in the global scope. For instance,
+  one can import a package from outside the workflow's isolated conda environment
+  by tinkering with the ``$PATH`` environment variable within a Python script.
+  Such a workflow could succeed locally but fail on the remote, where that package
+  may not be present in the global environment. This can especially be a problem if you
+  are using tools, packages, or software that are not managed by conda. In that
+  case, make sure you are also installing them and making them available to the
+  GitHub Actions runner. An example of this is covered below in :ref:`latex_matplotlib`,
+  where ``matplotlib`` may require access to a full LaTeX installation to render LaTeX
+  strings. Such builds will fail on the remote unless LaTeX is manually installed
+  in the workflow YAML file.
 
-Finally, one can mimic the behavior of the remote build by setting the ``CI=true`` 
-environment variable prior to running ``showyourwork``. Depending on the nature
-of the error, it could also make sense to look into tools that allow direct
-interaction with the runner on GitHub Actions, such as
-`action-tmate <https://github.com/mxschmitt/action-tmate>`_.
+- Finally, one can mimic the behavior of the remote build by setting the ``CI=true`` 
+  environment variable prior to running ``showyourwork``. Depending on the nature
+  of the error, it could also make sense to look into tools that allow direct
+  interaction with the runner on GitHub Actions, such as
+  `action-tmate <https://github.com/mxschmitt/action-tmate>`_.
+
+
+Issues due to git
+-----------------
+
+The |showyourwork| workflow relies heavily on command line calls to ``git``.
+The pipeline is tested for ``git>=2.24.0``, so certain issues may arise with
+older versions. For instance, |showyourwork| determines the current branch
+using ``git branch --show-current``, an option that was introduced in 
+``git==2.22.0``. You can check which version of ``git`` you are using by
+running ``git --version``, and upgrade it if needed using ``homebrew`` (MacOS)
+or ``apt-get`` (Linux).
 
 
 Permissions errors in GitHub Actions
@@ -137,6 +150,7 @@ and change the permissions to ``permissive``:
 
 
 .. _latex_matplotlib:
+
 
 Rendering LaTeX in matplotlib
 -----------------------------

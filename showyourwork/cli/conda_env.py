@@ -117,7 +117,7 @@ def run_in_env(command, **kwargs):
             "Creating a new conda environment in ~/.showyourwork/env..."
         )
         get_stdout(
-            f"conda env create -p {paths.user().env} -f {workflow_envfile} -q",
+            f"CONDARC={paths.showyourwork().envs / '.condarc'} conda env create -p {paths.user().env} -f {workflow_envfile} -q",
             shell=True,
         )
         shutil.copy(workflow_envfile, cached_envfile)
