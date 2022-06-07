@@ -447,6 +447,9 @@ class Zenodo:
         Downloads a file from a published Zenodo record.
 
         """
+        # Logger
+        logger = get_logger()
+
         # Get rule hashes for the files currently on Zenodo
         metadata = record["metadata"]
         notes = metadata.get("notes", "{}")

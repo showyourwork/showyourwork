@@ -46,7 +46,7 @@ def get_repo_branch():
     Return the current repository branch name.
 
     """
-    return get_stdout(["git", "branch", "--show-current"], callback=callback)
+    return get_stdout(["git", "rev-parse", "--abbrev-ref", "HEAD"], callback=callback)
 
 
 def get_repo_slug():
