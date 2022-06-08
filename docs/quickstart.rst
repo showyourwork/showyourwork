@@ -315,7 +315,6 @@ This will create a new conda environment for the workflow, install all the
 required dependencies, and run all of the scripts needed to generate the figures
 and results in the paper. At the end of the build, the article PDF will appear
 in the top level of the repository (usually called ``ms.pdf``).
-After installing all the required packages and running any pipeline or
 
 That's it for this quickstart tutorial. Please check out the rest of the 
 documentation for more information on how to customize your workflow, 
