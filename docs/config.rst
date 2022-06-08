@@ -253,7 +253,7 @@ Finally, dependencies of the manuscript file are also allowed:
 .. _config.ms:
 
 ``ms_name``
-^^^^^^
+^^^^^^^^^^^
 
 **Type:** ``str``
 
