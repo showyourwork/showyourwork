@@ -252,8 +252,8 @@ Finally, dependencies of the manuscript file are also allowed:
 
 .. _config.ms:
 
-``ms``
-^^^^^^
+``ms_name``
+^^^^^^^^^^^
 
 **Type:** ``str``
 
@@ -265,13 +265,13 @@ in the repository root) .
 
 **Required:** no
 
-**Default:** ``src/tex/ms.tex``
+**Default:** ``ms``
 
 **Example:**
 
 .. code-block:: yaml
 
-  ms: src/tex/article.tex
+  ms_name: article
 
 
 .. _config.overleaf:
