@@ -73,7 +73,8 @@ def cache_restore():
     time.sleep(1)
     for file in modified_files:
         print(f"Refreshing timestamp for modified file: {file}")
-        file.touch()
+        if file.exists():
+            file.touch()
 
 
 def cache_update():
