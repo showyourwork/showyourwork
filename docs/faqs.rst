@@ -219,6 +219,27 @@ To save some typing, you could instead add this boilerplate to the
 these commands get executed whenever that file is imported into your scripts.
 
 
+Using ``paths.py`` within ``scripts`` subdirectories
+----------------------------------------------------
+
+For complicated workflows, you may wish to organize your ``scripts`` directory into subdirectories.
+However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on ``paths.py`` being in the same directory as your scripts.
+
+There is a simple workaround for this issue.
+Simply add ``showyourwork`` as a dependency in ``environment.yml``, and add the following to the top of your scripts:
+
+.. code-block:: python
+
+    from showyourwork.paths import user as Paths
+
+    # instantiate the paths
+    paths = Paths()
+
+You can now use ``paths.data``, ``paths.figures``, etc. as usual.
+
+Note that if you decide to take this approach, we recommend that you pin the version of ``showyourwork`` in ``environment.yml`` to the same version specified in the ``showyourwork.yml`` config file. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
+
+
 Using LaTeX fonts in matplotlib without installing LaTeX
 --------------------------------------------------------
 
