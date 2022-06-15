@@ -226,7 +226,7 @@ For complicated workflows, you may wish to organize your ``scripts`` directory i
 However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on ``paths.py`` being in the same directory as your scripts.
 
 There is a simple workaround for this issue.
-Simply add |showyourwork| as a dependency in ``environment.yml``, and add the following to the top of your scripts:
+Simply add ``showyourwork`` as a dependency in ``environment.yml``, and add the following to the top of your scripts:
 
 .. code-block:: python
 
@@ -237,7 +237,7 @@ Simply add |showyourwork| as a dependency in ``environment.yml``, and add the fo
 
 You can now use ``paths.data``, ``paths.figures``, etc. as usual.
 
-Note that in rare cases, you might get bugs due to version differences between the 3 copies of |showyourwork| in play. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
+Note that if you decide to take this approach, we recommend that you pin the version of ``showyourwork`` in ``environment.yml`` to the same version specified in the ``showyourwork.yml`` config file. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
 
 
 Using LaTeX fonts in matplotlib without installing LaTeX
