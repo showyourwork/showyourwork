@@ -223,7 +223,7 @@ Using ``paths.py`` within ``scripts`` subdirectories
 ----------------------------------------------------
 
 For complicated workflows, you may wish to organize your ``scripts`` directory into subdirectories.
-However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on ``paths.py`` being in the same directory as your scripts.
+However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on ``paths.py`` being in the same directory as your scripts.
 
 There is a simple workaround for this issue.
 Simply add |showyourwork| as a dependency in ``environment.yml``, and add the following to the top of your scripts:
@@ -238,6 +238,21 @@ Simply add |showyourwork| as a dependency in ``environment.yml``, and add the fo
 You can now use ``paths.data``, ``paths.figures``, etc. as usual.
 
 Note that in rare cases, you might get bugs due to version differences between the 3 copies of |showyourwork| in play. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
+
+
+Using LaTeX fonts in matplotlib without installing LaTeX
+--------------------------------------------------------
+
+If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript, you can accomplish this without the full LaTeX installation described above.
+Just add the following lines to ``src/scripts/matplotlibrc``:
+
+.. code-block:: python
+  
+    # set font to match LaTeX's Computer Modern
+    font.family: serif
+    font.serif: cmr10
+    mathtext.fontset: cm
+    axes.formatter.use_mathtext: True # needed when using cm=cmr10 for normal text
 
 
 Using LaTeX Workshop in VSCode
