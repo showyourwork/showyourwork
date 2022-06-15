@@ -219,6 +219,21 @@ To save some typing, you could instead add this boilerplate to the
 these commands get executed whenever that file is imported into your scripts.
 
 
+Using LaTeX fonts in matplotlib without installing LaTeX
+--------------------------------------------------------
+
+If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript, you can accomplish this without the full LaTeX installation described above.
+Just add the following lines to ``src/scripts/matplotlibrc``:
+
+.. code-block:: python
+  
+    # set font to match LaTeX's Computer Modern
+    font.family: serif
+    font.serif: cmr10
+    mathtext.fontset: cm
+    axes.formatter.use_mathtext: True # needed when using cm=cmr10 for normal text
+
+
 Using LaTeX Workshop in VSCode
 ------------------------------
 
