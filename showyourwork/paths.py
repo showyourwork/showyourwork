@@ -5,6 +5,11 @@ from os.path import realpath
 
 # showyourwork paths
 class showyourwork:
+    """
+    Paths to various directories within the ``showyourwork`` package.
+
+    """
+
     def __init__(self):
         self.module = Path(realpath(__file__)).absolute().parents[0]
         self.workflow = self.module / "workflow"
@@ -18,9 +23,15 @@ class showyourwork:
 
 # User paths
 class user:
+    """
+    Paths to various directories within the user's repository.
+
+    """
+
     def __init__(self, path=None):
         """
-        path: an absolute path
+        path (str): The path to the top level of the user's repository
+            (if running outside of the repository).
         """
         if path is None:
             root = git.get_repo_root()

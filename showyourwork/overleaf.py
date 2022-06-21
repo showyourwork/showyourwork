@@ -40,6 +40,10 @@ OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
 
 
 def check_for_rate_limit(code, stdout, stderr):
+    """
+    Callback function to check if we hit a rate limit on Overleaf.
+
+    """
     if stdout:
         logger.debug(stdout)
     if code != 0:
@@ -56,6 +60,13 @@ def get_overleaf_credentials(
 ):
     """
     Return the user's Overleaf email and password, stored in env vars.
+
+    Args:
+        overleaf_email (str, optional): Environment variable containing the
+            Overleaf account email address. Default ``OVERLEAF_EMAIL``.
+        overleaf_password (str, optional): Environment variable containing the
+            Overleaf account password. Default ``OVERLEAF_PASSWORD``.
+        error_if_missing (bool, optional): Default ``False``.
 
     """
     creds = []
@@ -77,7 +88,20 @@ def get_overleaf_credentials(
 
 
 def clone(project_id, path=None):
+    """
+    Clones an Overleaf remote locally.
 
+    Args:
+        project_id (str): The Overleaf project ID.
+        path (str, optional): The path to the top level of the user's repo
+            (if running from a different directory).
+
+    Note that we don't qactually clone the repository (despite the name of this
+    function) to avoid storing the url containing the Overleaf password in
+    ``.git/config``. Instead, we initialize a new repository and pull from the
+    remote.
+
+    """
     # Logging
     logger = logging.get_logger()
     logger.info("Fetching Overleaf repo...")
@@ -117,8 +141,11 @@ def clone(project_id, path=None):
 
 def wipe_remote(project_id):
     """
-    Remove all files from the Overleaf project and start
-    fresh as if it were a blank project.
+    Remove all files from the Overleaf project and start fresh as if it were a
+    blank project.
+
+    Args:
+        project_id (str): The Overleaf project ID.
 
     """
     with TemporaryDirectory() as cwd:
@@ -175,8 +202,17 @@ def wipe_remote(project_id):
         )
 
 
-def setup_remote(project_id, path=None, maxsz=500):
+def setup_remote(project_id, path=None):
+    """
+    Set up the bridge between the git repo and the Overleaf project for an
+    empty Overleaf project with a given ID.
 
+    Args:
+        project_id (str): The Overleaf project ID.
+        path (str, optional): The path to the top level of the user's repo
+            (if running from a different directory).
+
+    """
     # Setup logging
     logger = logging.get_logger()
 
@@ -273,7 +309,18 @@ def setup_remote(project_id, path=None, maxsz=500):
 
 
 def push_files(files, project_id, path=None):
+    """
+    Push files to the Overleaf remote.
 
+    Args:
+        files (list): A list of strings corresponding to the paths of the
+            files to be pushed to the Overleaf remote. These files must
+            be located in ``src/tex/``. Subdirectories will be preserved.
+        project_id (str): The Overleaf project ID.
+        path (str, optional): The path to the top level of the user's repo
+            (if running from a different directory).
+
+    """
     # Disable if user didn't specify an id or if there are no files
     if not project_id or not files:
         return
@@ -379,7 +426,22 @@ def pull_files(
     error_if_local_changes=False,
     path=None,
 ):
+    """
+    Pull files from the Overleaf remote.
 
+    Args:
+        files (list): A list of strings corresponding to the paths of the
+            files to be pulled from the Overleaf remote. These paths must
+            be given relative to ``src/tex/`` or within subdirectories.
+        project_id (str): The Overleaf project ID.
+        error_if_missing (bool, optional): Default ``False``, which
+            prints a warning but does not interrupt the workflow.
+        error_if_local_changes (bool, optional): Default ``False``, which
+            prints a warning but does not interrupt the workflow.
+        path (str, optional): The path to the top level of the user's repo
+            (if running from a different directory).
+
+    """
     # Disable if user didn't specify an id or if there are no files
     if not project_id or not files:
         return

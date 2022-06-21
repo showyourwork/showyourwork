@@ -10,7 +10,7 @@ __all__ = ["compile_tex"]
 
 def compile_tex(config, output_dir=None, args=[], stylesheet=None):
     """
-    Compile the TeX document using `tectonic`.
+    Compile the TeX document using ``tectonic``.
 
     """
     if output_dir is None:

@@ -4,6 +4,10 @@ from pathlib import Path
 
 
 def process_run_result(code, stdout, stderr):
+    """
+    Default callback function for ``get_stdout``.
+
+    """
     from . import logging, exceptions
 
     # Log the output
@@ -21,6 +25,19 @@ def process_run_result(code, stdout, stderr):
 def get_stdout(
     args, shell=False, cwd=None, secrets=[], callback=process_run_result
 ):
+    """
+    A thin wrapper around ``subprocess.run`` that hides secrets and decodes
+    ``stdout`` and ``stderr`` output into ``utf-8``.
+
+    Args:
+        args (list or str): Arguments passed to ``subprocess.run``
+        shell (bool, optional): Passed directly to ``subprocess.run``
+        cwd (str, optional): Directory to run the command in, if different
+            from current working directory.
+        secrets (list, optional): Secrets to be masked in the output.
+        callback (callable, optional): Callback to process the result.
+
+    """
     # Run the command and capture all output
     result = subprocess.run(
         args,
@@ -46,7 +63,7 @@ def get_stdout(
 
 def parse_request(r):
     """
-    Parse a requests return object and raise a custom exception
+    Parse a requests return object ``r`` and raise a custom exception
     for a >200-level status code.
 
     """

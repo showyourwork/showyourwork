@@ -24,6 +24,11 @@ zip_exts = ["tar", "tar.gz", "zip"]
 
 
 def require_access_token(method):
+    """
+    Decorator that raises an exception of the Zenodo token was not provided.
+
+    """
+
     def wrapper(self, *args, **kwargs):
         if self.access_token:
             return method(self, *args, **kwargs)
@@ -52,6 +57,11 @@ services = {
 
 
 class Zenodo:
+    """
+    A Zenodo or Zenodo Sandbox interface for ``showyourwork``.
+
+    """
+
     def __init__(self, doi_or_service, **kwargs):
         """
         Initialize a Zenodo interface.
@@ -59,7 +69,7 @@ class Zenodo:
         Args:
             doi_or_service (str): Deposit DOI or service name
                 (e.g., "zenodo" or "sandbox").
-            kwargs: Forwarded to `Zenodo._create`.
+            kwargs: Forwarded to ``Zenodo._create``.
 
         """
 
@@ -256,9 +266,7 @@ class Zenodo:
                 logger.debug(r.text)
 
         # No dice
-        logger.warn(
-            f"User is not authenticated to edit {self.doi}."
-        )
+        logger.warn(f"User is not authenticated to edit {self.doi}.")
         cache_file_false.touch()
         return False
 
@@ -582,6 +590,9 @@ class Zenodo:
         logger.info(f"Successfully published deposit {self.doi}.")
 
     def download_file(self, file, rule_name, tarball=False):
+        """
+        Download a file from the record, deposit or deposit draft.
+        """
         # Logger
         logger = get_logger()
 
@@ -727,6 +738,10 @@ class Zenodo:
 
     @require_access_token
     def upload_file(self, file, rule_name, tarball=False):
+        """
+        Upload a file to the latest deposit draft.
+
+        """
         # Logger
         logger = get_logger()
 
@@ -903,6 +918,11 @@ class Zenodo:
 
     @require_access_token
     def copy_draft(self, target_doi_or_service, **kwargs):
+        """
+        Copies the latest draft to a different DOI or a different service
+        (e.g., from Zenodo Sandbox to Zenodo).
+
+        """
         # Logger
         logger = get_logger()
         logger.info(f"Downloading files from {self.doi}...")

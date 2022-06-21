@@ -70,9 +70,12 @@ def patch_snakemake_missing_input_leniency():
 
 def get_snakemake_variable(name, default=None):
     """
-    Infer the value of a variable within snakemake.
+    Infer the value of a variable within Snakemake.
 
-    This is extremely hacky.
+    This is extremely hacky, as it inspects local variables across
+    various frames in the call stack. This function should be used for
+    debugging/development, but not in production.
+
     """
     levels = inspect.stack()
     for level in levels:
@@ -86,9 +89,14 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     """
     Patches the Snakemake cache functionality to
 
-        - Add custom logging messages
-        - Attempt to download the cache file from Zenodo or Zenodo Sandbox on `fetch()`
-        - Uploads the cache file to Zenodo Sandbox on `store()`
+    - Add custom logging messages
+    - Attempt to download the cache file from Zenodo/Zenodo Sandbox on ``fetch()``
+    - Uploads the cache file to Zenodo Sandbox on ``store()``
+
+    Args:
+        zenodo_doi (str): The Zenodo DOI for the cache. Can be ``None``.
+        sandbox_doi (str): The Zenodo Sandbox doi for the development cache.
+            Can be ``None``.
 
     """
     # Get the showyourwork logger
@@ -342,7 +350,14 @@ def patch_snakemake_logging():
 
 def patch_snakemake_wait_for_files():
     """
-    Replace Snakemake's `wait_for_files` method with a custom version.
+    Replace Snakemake's ``wait_for_files`` method with a custom version
+    that prints a different error message.
+
+    If an expected output of a rule is not found after running it,
+    Snakemake prints an error recommending that the user increase the
+    filesystem latency tolerance. This is **almost never** a latency issue --
+    the far more likely scenario is the user simply did not code up the rule
+    properly, or the output file was saved with the wrong path.
 
     """
 

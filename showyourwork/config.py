@@ -16,7 +16,11 @@ except ModuleNotFoundError:
 
 @contextmanager
 def edit_yaml(file):
-    """A context used to edit a YAML file in place."""
+    """A context used to edit a YAML file in place.
+
+    Args:
+        file (str): The full path to the YAML file.
+    """
     if Path(file).exists():
         with open(file, "r") as f:
             contents = yaml.load(f, Loader=yaml.CLoader)
@@ -31,13 +35,18 @@ def edit_yaml(file):
 
 def render_config(cwd="."):
     """
-    Render any jinja templates in `showyourwork.yml`, combine with
-    `zenodo.yml`, and save the processed config to a temporary YAML file.
+    Render any jinja templates in ``showyourwork.yml``, combine with
+    ``zenodo.yml``, and save the processed config to a temporary YAML file.
 
     This temporary YAML file is then used as the configfile for the Snakemake
     workflow.
 
-    Returns the config as a dictionary.
+    Args:
+        cwd (str, optional): The path to the working directory.
+
+    Returns:
+        dict:
+            The user config.
 
     """
     # Render the user's config file to a dict
@@ -63,11 +72,15 @@ def get_run_type():
 
     Options are:
 
-        - ``clean``
-        - ``build``
-        - ``tarball``
-        - ``preprocess``
-        - ``other``
+    - ``clean``
+    - ``build``
+    - ``tarball``
+    - ``preprocess``
+    - ``other``
+
+    Returns:
+        str:
+            The type of the current run (one of the options listed above).
 
     """
     return os.getenv("SNAKEMAKE_RUN_TYPE", "other")
@@ -105,6 +118,12 @@ def as_dict(x, depth=0, maxdepth=30):
     This is useful when parsing a config generated from a YAML file with
     inconsistent use of hyphens.
 
+    Args:
+        x: A dictionary or dictionary-like mapping generated from reading a
+            YAML file.
+        depth(int, optional): Default is ``0``.
+        maxdepth(int, optional): Default is ``30``.
+
     """
     if depth == 0 and not x:
         return {}
@@ -133,6 +152,10 @@ def as_dict(x, depth=0, maxdepth=30):
 
 
 def parse_overleaf():
+    """
+    Parse Overleaf configuration options and fill in defaults.
+
+    """
     # Get the config
     config = snakemake.workflow.config
 

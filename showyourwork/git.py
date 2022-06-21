@@ -1,11 +1,18 @@
 """
-Miscellaneous functions for interfacing with git.
+Miscellaneous functions for interfacing with ``git``.
 
 """
 from .subproc import get_stdout
 
 
 def callback(code, stdout, stderr):
+    """
+    Silent failure callback for functions defined in this module.
+
+    Returns:
+        str:
+            The result of the function call, or ``unknown`` on error.
+    """
     if code != 0:
         return "unknown"
     else:
@@ -23,14 +30,16 @@ def get_repo_root():
 
 
 def get_commit_message():
-    return get_stdout(
-        "git log -1 --pretty=%B", shell=True, callback=callback
-    )
+    """
+    Return the message of the latest commit to the current branch.
+
+    """
+    return get_stdout("git log -1 --pretty=%B", shell=True, callback=callback)
 
 
 def get_repo_url():
     """
-    Return the repository URL.
+    Return the full repository URL.
 
     """
     url = get_stdout(
@@ -46,7 +55,9 @@ def get_repo_branch():
     Return the current repository branch name.
 
     """
-    return get_stdout(["git", "rev-parse", "--abbrev-ref", "HEAD"], callback=callback)
+    return get_stdout(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"], callback=callback
+    )
 
 
 def get_repo_slug():

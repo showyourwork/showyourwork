@@ -9,6 +9,12 @@ def get_access_token(token_name="GH_API_KEY", error_if_missing=False):
     """
     Return the access token stored in the environment variable `token_name`.
 
+    Args:
+        token_name (str, optional): Name of the environment variable containing
+            the GitHub API token. Default is ``GH_API_KEY``.
+        error_if_missing (bool, optional): Raise an error if the environment
+            variable is not defined or empty? Default ``False``.
+
     """
     access_token = os.getenv(token_name, None)
     if error_if_missing and not access_token:
@@ -17,6 +23,10 @@ def get_access_token(token_name="GH_API_KEY", error_if_missing=False):
 
 
 def get_authenticated_user():
+    """
+    Return the name of the current authenticated GitHub user.
+
+    """
     data = parse_request(
         requests.get(
             "https://api.github.com/user",
@@ -32,6 +42,13 @@ def get_authenticated_user():
 def create_repo(name, description=None, private=False, org=None):
     """
     Create a new repository on GitHub.
+
+    Args:
+        name (str): The name of the repository (without the user).
+        private (bool, optional): Set to ``True`` for private repos.
+            Default ``False``.
+        org (str, optional): Name of the organization (if applicable).
+            Default is ``None``.
 
     """
     # Delete repo (if it exists)
@@ -70,6 +87,12 @@ def delete_repo(name, org=None, quiet=False):
     """
     Delete a repository on GitHub.
 
+    Args:
+        name (str): The name of the repository (without the user).
+        org (str, optional): Name of the organization (if applicable).
+            Default is ``None``.
+        quiet (bool, optional): Default ``False``.
+
     """
     if org:
         url = f"https://api.github.com/repos/{org}/{name}"
@@ -88,18 +111,36 @@ def delete_repo(name, org=None, quiet=False):
 
 def get_latest_workflow_run_status(name, org=None):
     """
-    Returns the tuple (status, conclusion, url).
+    Checks the status of the latest GH Actions workflow run for a repository.
 
-    The `status` is one of
 
-        queued, in_progress, completed
+    Args:
+        name (str): The name of the repository (without the user).
+        org (str, optional): The name of the organization (if applicable).
+            Default is ``None``.
 
-    The `conclusion` is one of
+    Returns:
+        tuple:
+            A tuple containing ``(status, conclusion, url)``.
 
-        action_required, cancelled, failure, neutral,
-        success, skipped, stale, timed_out
+    The ``status`` is one of
 
-    If the workflow is not found, both are set to `unknown`.
+    - ``queued``
+    - ``in_progress``
+    - ``completed``
+
+    The ``conclusion`` is one of
+
+    - ``action_required``
+    - ``cancelled``
+    - ``failure``
+    - ``neutral``
+    - ``success ``
+    - ``skipped  ``
+    - ``stale  ``
+    - ``timed_out``
+
+    If the workflow is not found, both are set to ``unknown``.
 
     The url is that of the workflow on GitHub actions.
     """

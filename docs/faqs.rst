@@ -101,14 +101,53 @@ things could be going on.
   `action-tmate <https://github.com/mxschmitt/action-tmate>`_.
 
 
+Issues related to ``IncompleteFilesException``
+----------------------------------------------
+
+If you run your workflow and interrupt it (e.g., by hitting ``Ctrl + C``) while
+a rule is being executed, or if an error in your code causes the workflow to
+fail, you may end up with a situation where Snakemake marks some of your output
+files as "incomplete". This is useful in cases where the interruption may have
+corrupted those files. Snakemake tries to be conservative about this, and requires
+users to either re-run the problematic rule or manually mark the files as
+incomplete. When this happens, ``showyourwork`` tells the user:
+
+.. code-block:: text
+
+  If you are sure that certain files are not incomplete, mark them as complete with
+
+    showyourwork build --cleanup-metadata <filenames>
+
+  To re-generate the files rerun showyourwork build with the --rerun-incomplete flag.
+
+Sometimes, however, the ``--cleanup-metadata`` argument does not successfully
+clean up the incomplete files. This may be due to either an issue with Snakemake
+(see 
+`here <https://github.com/snakemake/snakemake/issues/828>`__
+and `here <https://github.com/snakemake/snakemake/issues/1497>`__) or an issue
+with |showyourwork| 
+(see `here <https://github.com/showyourwork/showyourwork/issues/103>`__); we're
+still looking into how to fix this.
+
+If you find yourself stuck trying to cleanup the metadata (in cases where
+you would like to keep your current output files), you can try 
+manually deleting the folder ``.snakemake/incomplete``, which keeps track of 
+that metadata. Alternatively, you can manually delete all of the problematic
+output files, which will trigger a re-run of the corresponding rule.
+
+
 Issues due to git
 -----------------
 
 The |showyourwork| workflow relies heavily on command line calls to ``git``.
 The pipeline is tested for ``git>=2.24.0``, so certain issues may arise with
-older versions. For instance, |showyourwork| determines the current branch
-using ``git branch --show-current``, an option that was introduced in 
-``git==2.22.0``. You can check which version of ``git`` you are using by
+older versions. For instance, prior to version ``0.3.0.dev9`` of ``showyourwork``,
+the current git branch was determined by running ``git branch --show-current``, 
+an option that was only introduced in ``git==2.22.0`` and led to strange
+behavior on platforms running older versions of ``git``. This issue has since
+been addressed, but there may be others that you might encounter if your
+``git`` is significantly out of date.
+You can always check which version of ``git`` you are using by
 running ``git --version``, and upgrade it if needed using ``homebrew`` (MacOS)
 or ``apt-get`` (Linux).
 
