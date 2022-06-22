@@ -30,8 +30,10 @@ class user:
 
     def __init__(self, path=None):
         """
-        path (str): The path to the top level of the user's repository
-            (if running outside of the repository).
+
+        Args:
+            path (str): The path to the top level of the user's repository
+                (if running outside of the repository).
         """
         if path is None:
             root = git.get_repo_root()

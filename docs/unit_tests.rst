@@ -109,7 +109,7 @@ All of this, of course, relies on users having write privileges to
 like to create and experiment with unit tests for ``showyourwork``, you can either
 run the tests in debug mode by setting the ``DEBUG=true`` environment variable
 prior to calling ``pytest`` (e.g., ``DEBUG=true pytest``) or setting the
-class variable ``local_build_only = True`` at the top of your class.
+class variable ``local_build_only = True`` at the top of your class.
 
 
 .. warning::

@@ -121,7 +121,7 @@ def get_latest_workflow_run_status(name, org=None):
 
     Returns:
         tuple:
-            A tuple containing ``(status, conclusion, url)``.
+            A tuple containing ``(status, conclusion, url)``.
 
     The ``status`` is one of
 
@@ -135,9 +135,9 @@ def get_latest_workflow_run_status(name, org=None):
     - ``cancelled``
     - ``failure``
     - ``neutral``
-    - ``success ``
-    - ``skipped  ``
-    - ``stale  ``
+    - ``success``
+    - ``skipped``
+    - ``stale``
     - ``timed_out``
 
     If the workflow is not found, both are set to ``unknown``.
