@@ -130,7 +130,7 @@ the TeX manuscript. For example, say I have a script called ``age_of_universe.py
 that infers the age of the universe from some cosmological dataset: 
 
 .. code-block:: python
-    :caption: **File:** ``age_of_universe.txt``
+    :caption: **File:** ``age_of_universe.py``
 
     import paths
     from my_awesome_code import get_age_of_universe
