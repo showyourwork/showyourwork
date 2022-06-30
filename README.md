@@ -9,6 +9,9 @@
     <a href="https://showyourwork.readthedocs.io">
         <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue" alt="tests"/>
     </a>
+    <a href="https://github.com/showyourwork/showyourwork-action/network/dependents">
+        <img src="https://img.shields.io/static/v1?label=sample&message=projects&color=green" alt="sample projects"/>
+    </a>
     <a href="https://pypi.org/project/showyourwork/">
         <img src="https://img.shields.io/pypi/v/showyourwork" alt="pypi"/>
     </a>
