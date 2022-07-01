@@ -272,7 +272,7 @@ def get_xml_tree():
 
 def get_json_tree():
     """Builds a dictionary containing mappings between input and output files.
-    
+
     Returns:
         dict: The JSON dependency tree for the article.
     """
@@ -402,6 +402,7 @@ def get_json_tree():
             deposit = Zenodo(doi)
             url = f"https://{deposit.url}/record/{deposit.deposit_id}"
             for dep in dependencies:
+                # TODO (#117): Loop over dependencies of these dependencies as well!
                 if dep in config["datasets"][doi]["contents"].values():
                     datasets.append(url)
                 else:

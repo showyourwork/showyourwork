@@ -82,6 +82,7 @@ def process_user_rules():
         labels = {}
         for figscript in snakemake.workflow.config["dependencies"]:
             for dep in snakemake.workflow.config["dependencies"][figscript]:
+                # TODO (#117): Loop over dependencies of these dependencies as well!
                 if dep in cached_deps:
                     for label in snakemake.workflow.config["labels"]:
                         if (
