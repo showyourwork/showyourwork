@@ -1,7 +1,7 @@
 from . import exceptions
 from .logging import get_logger
 from .patches import patch_snakemake_cache
-from .config import get_run_type, get_upstream_dependencies
+from .config import get_run_type
 from .git import get_repo_branch
 import json
 import requests
@@ -34,6 +34,12 @@ def process_user_rules():
     cached_deps = []
     if cache_zenodo_doi or cache_sandbox_doi:
         patch_snakemake_cache(cache_zenodo_doi, cache_sandbox_doi)
+
+    # Remind the user to publish the deposit
+    if cache_sandbox_doi and get_run_type == "build":
+        get_logger().warn(
+            f"Zenodo cache not yet published for this repository."
+        )
 
     # Process each user rule
     for ur in user_rules:
@@ -68,44 +74,4 @@ def process_user_rules():
         if not ur.conda_env:
             ur.conda_env = "environment.yml"
 
-    # No need to go any further if this isn't the main build
-    if get_run_type() != "build":
-        return
-
-    # Add some metadata containing the link to the Zenodo cache record
-    # which we can access on the LaTeX side to provide margin links
-    # for figures that depend on cached datasets
-    if cache_zenodo_doi or cache_sandbox_doi:
-
-        if cache_zenodo_doi:
-
-            # Cached on Zenodo
-            record_id = cache_zenodo_doi.split("zenodo.")[1]
-            zenodo_cache_url = f"https://zenodo.org/record/{record_id}"
-
-        else:
-
-            # Cached on Zenodo Sandbox
-            record_id = cache_sandbox_doi.split("zenodo.")[1]
-            zenodo_cache_url = f"https://sandbox.zenodo.org/record/{record_id}"
-
-            # Remind the user to publish the deposit
-            get_logger().warn(
-                f"Zenodo cache not yet published for this repository."
-            )
-
-        # Add the metadata to the config (accessed in `pdf.py`)
-        labels = {}
-        for figscript in snakemake.workflow.config["dependencies"]:
-            for dep in get_upstream_dependencies(
-                figscript, snakemake.workflow.config
-            ):
-                if dep in cached_deps:
-                    for label in snakemake.workflow.config["labels"]:
-                        if (
-                            label.endswith("_script")
-                            and snakemake.workflow.config["labels"][label]
-                            == figscript
-                        ):
-                            labels[label[:-6] + "cache"] = zenodo_cache_url
-        snakemake.workflow.config["labels"].update(labels)
+    snakemake.workflow.config["cached_deps"] = cached_deps

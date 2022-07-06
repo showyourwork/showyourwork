@@ -1,5 +1,7 @@
 from showyourwork import paths
+from showyourwork.config import get_upstream_dependencies
 from showyourwork.patches import get_snakemake_variable
+from showyourwork.zenodo import Zenodo, get_dataset_urls
 import snakemake
 from collections import defaultdict
 
@@ -25,19 +27,32 @@ def WORKFLOW_GRAPH(*args):
 
     else:
 
-        # Assemble input-output information; add it to the global config
-        rule_dependencies = defaultdict(set)
-        for rule in dag.rules:
-            outputs = [str(file) for file in rule.output]
+        # Assemble input-output information
+        dependencies = defaultdict(set)
+        for job in dag.jobs:
+            outputs = [str(file) for file in job.output]
             inputs = [
-                str(file) for file in rule.input 
+                str(file) for file in job.input 
                 if type(file) is snakemake.io._IOFile
             ]
             for file in outputs:
-                rule_dependencies[file] |= set(inputs)
-        for key in rule_dependencies.keys():
-            rule_dependencies[key] = list(rule_dependencies[key])
-        snakemake.workflow.config["rule_dependencies"] = dict(rule_dependencies)
+                dependencies[file] |= set(inputs)
+        for key in dependencies.keys():
+            dependencies[key] = list(dependencies[key])
+        dependencies = dict(dependencies)
+        
+        # Find recursive input-output dependencies
+        recursive_dependencies = {}
+        for output in dependencies.keys():
+            recursive_dependencies[output] = get_upstream_dependencies(
+                output, 
+                dependencies
+            )
+        
+        # Add to the global config
+        config = snakemake.workflow.config
+        config["dag_dependencies"] = dependencies
+        config["dag_dependencies_recursive"] = recursive_dependencies
 
     # Dummy output
     return []

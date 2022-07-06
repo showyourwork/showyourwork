@@ -23,6 +23,8 @@ def clean(force, deep, options=""):
         (paths.user().repo / "arxiv.tar.gz").unlink()
     if paths.user().temp.exists():
         shutil.rmtree(paths.user().temp)
+    if (paths.user().repo / ".snakemake" / "incomplete").exists():
+        shutil.rmtree(paths.user().repo / ".snakemake" / "incomplete")
     if force:
         for file in paths.user().figures.rglob("*.*"):
             if file.name != ".gitignore":

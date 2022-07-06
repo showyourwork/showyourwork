@@ -6,13 +6,11 @@
 - Fixed bug related to displaying figure caption icons for cached datasets.
 - Added recursive dependency checks; if any upstream dependency of a figure script
   is a dataset or cached Zenodo deposit, an icon to that dataset/deposit will
-  be displayed next to the figure. Note that this only applies to dependencies
-  explicitly defined in `showyourwork.yml`; we're not (yet) inspecting the full
-  Snakemake DAG to resolve *all* upstream dependencies.
-- Added functionality to obtain the Snakemake DAG prior to running any of the rules.
-  Metadata from the DAG is stored in the global config; useful for generating
-  custom DAG images or for implementing the recursive dependency checks mentioned
-  above.
+  be displayed next to the figure.
+- Added functionality to obtain the Snakemake DAG prior to running any of the 
+  rules (used to infer upstream dependencies above). Metadata from the DAG is 
+  stored in the global config; may be useful for generating custom DAG images,
+  for example.
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++

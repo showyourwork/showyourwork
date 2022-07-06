@@ -151,17 +151,17 @@ def as_dict(x, depth=0, maxdepth=30):
     return x
 
 
-def get_upstream_dependencies(file, config, depth=0):
+def get_upstream_dependencies(file, dependencies, depth=0):
     """
     Collect user-defined dependencies of a file recursively.
     Returns a list of strings.
     
     """
-    if deps := config["dependencies"].get(file, []):
+    if deps := dependencies.get(file, []):
         res = set()
         for dep in deps:
             res |= set([dep])
-            res |= get_upstream_dependencies(dep, config, depth + 1)
+            res |= get_upstream_dependencies(dep, dependencies, depth + 1)
     else:
         res = set()
     if not depth:
@@ -366,8 +366,16 @@ def parse_config():
 
         # Overridden in the `preprocess` rule
         config["tree"] = {"figures": {}}
+
+        # Overridden in `userrules.py`
+        config["cached_deps"] = []
+
+        # Overridden in the `dag` checkpoint
+        config["dag_dependencies"] = {}
+        config["dag_dependencies_recursive"] = {}
+
+        # Overridden in the `compile` rule
         config["labels"] = {}
-        config["cached_dependencies"] = []
 
     # The following is run in both the preprocessing stage and the main build.
     # If we ran it only during preprocessing, passing different command line

@@ -10,7 +10,7 @@ main article build step.
 
 """
 from showyourwork import paths, exceptions, zenodo
-from showyourwork.zenodo import Zenodo
+from showyourwork.zenodo import Zenodo, get_dataset_urls
 from showyourwork.tex import compile_tex
 from showyourwork.config import get_upstream_dependencies
 import sys
@@ -395,31 +395,11 @@ def get_json_tree():
 
         # Same, but recursing all the way up the graph
         # (i.e., including dependendencies of dependencies, and so forth)
-        upstream = get_upstream_dependencies(script, config)
+        upstream = get_upstream_dependencies(script, config["dependencies"])
 
-        # If any of the upstream dependencies exists in a Zenodo deposit, infer
-        # its URL here so we can add margin links to the PDF
-        datasets = []
-        for doi in config["datasets"]:
-            deposit = Zenodo(doi)
-            url = f"https://{deposit.url}/record/{deposit.deposit_id}"
-            for dep in upstream:
-                if dep in config["datasets"][doi]["contents"].values():
-                    # The dataset is a direct dependency of the current figure
-                    datasets.append(url)
-                else:
-                    for zip_file in config["datasets"][doi]["zip_files"]:
-                        if (
-                            dep
-                            in config["datasets"][doi]["zip_files"][
-                                zip_file
-                            ].values()
-                        ):
-                            # A dataset inside this zip file is a direct
-                            # dependency of the current figure
-                            datasets.append(url)
-                            break
-        datasets = list(set(datasets))
+        # If any of the upstream dependencies exist in a Zenodo deposit, infer
+        # their URLs so we can add margin links to the PDF
+        datasets = get_dataset_urls(upstream, config["datasets"])
 
         # Format the command by replacing placeholders
         if command is not None:
@@ -542,17 +522,6 @@ if __name__ == "__main__":
     config["dependencies"][config["ms_tex"]].extend(
         [Path(file).as_posix() for file in config["tree"]["files"]]
     )
-
-    # Gather the figure script & dataset info so we can access it on the TeX side
-    config["labels"] = {}
-    for label, value in config["tree"]["figures"].items():
-        script = value["script"]
-        if script is not None:
-            config["labels"][f"{label}_script"] = script
-        datasets = value["datasets"]
-        # Note: built-in max of 3 datasets will be displayed
-        for dataset, number in zip(datasets, ["One", "Two", "Three"]):
-            config["labels"][f"{label}_dataset{number}"] = dataset
 
     # Save the config file
     with open(config["config_json"], "w") as f:

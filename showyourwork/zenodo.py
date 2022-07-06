@@ -38,6 +38,27 @@ def require_access_token(method):
 
     return wrapper
 
+def get_dataset_urls(files, datasets):
+    """
+    Given a list of `files`, return all associated Zenodo and/or Zenodo Sandbox
+    URLs.
+    
+    This is used to populate the figure margin icons in the article.
+
+    """
+    result = []
+    for doi in datasets:
+        deposit = Zenodo(doi)
+        url = f"https://{deposit.url}/record/{deposit.deposit_id}"
+        for file in files:
+            if file in datasets[doi]["contents"].values():
+                result.append(url)
+            else:
+                for zip_file in datasets[doi]["zip_files"]:
+                    if file in datasets[doi]["zip_files"][zip_file].values():
+                        result.append(url)
+                        break
+    return list(set(result))
 
 services = {
     "zenodo": {
