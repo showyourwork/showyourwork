@@ -151,6 +151,25 @@ def as_dict(x, depth=0, maxdepth=30):
     return x
 
 
+def get_upstream_dependencies(file, config, depth=0):
+    """
+    Collect user-defined dependencies of a file recursively.
+    Returns a list of strings.
+    
+    """
+    if deps := config["dependencies"].get(file, []):
+        res = set()
+        for dep in deps:
+            res |= set([dep])
+            res |= get_upstream_dependencies(dep, config, depth + 1)
+    else:
+        res = set()
+    if not depth:
+        return list(res)
+    else:
+        return res
+
+
 def parse_overleaf():
     """
     Parse Overleaf configuration options and fill in defaults.
@@ -252,8 +271,7 @@ def parse_config():
         # var $MATPLOTLIBRC.
         config["scripts"] = as_dict(config.get("scripts", {}))
         config["scripts"]["py"] = config["scripts"].get(
-            "py",
-            f"MATPLOTLIBRC={paths.user().scripts} " + "python {script}",
+            "py", f"MATPLOTLIBRC={paths.user().scripts} " + "python {script}",
         )
 
         #: Custom script dependencies

@@ -5,6 +5,7 @@ Main Zenodo interface.
 from . import exceptions, paths, git
 from .subproc import parse_request
 from .logging import get_logger
+from .config import get_run_type
 import requests
 import tarfile
 import os
@@ -187,9 +188,7 @@ class Zenodo:
         data = parse_request(
             requests.post(
                 f"https://{self.url}/api/deposit/depositions",
-                params={
-                    "access_token": self.access_token,
-                },
+                params={"access_token": self.access_token,},
                 json={},
             )
         )
@@ -255,7 +254,14 @@ class Zenodo:
         # See if we find the deposit
         if r.status_code <= 204:
             if type(r.json()) is list and len(r.json()):
-                logger.info(f"User authentication for {self.doi} is valid.")
+                if get_run_type() == "build":
+                    logger.info(
+                        f"User authentication for {self.doi} is valid."
+                    )
+                else:
+                    logger.debug(
+                        f"User authentication for {self.doi} is valid."
+                    )
                 cache_file_true.touch()
                 return True
             else:
@@ -295,8 +301,7 @@ class Zenodo:
             files_url = draft["links"]["files"]
             data = parse_request(
                 requests.get(
-                    files_url,
-                    params={"access_token": self.access_token},
+                    files_url, params={"access_token": self.access_token},
                 )
             )
             for entry in data:
@@ -481,13 +486,7 @@ class Zenodo:
                     else []
                 )
                 subprocess.run(
-                    [
-                        "curl",
-                        url,
-                        *progress_bar,
-                        "--output",
-                        str(file),
-                    ]
+                    ["curl", url, *progress_bar, "--output", str(file),]
                 )
 
                 # If it's a directory tarball, extract it
@@ -542,9 +541,7 @@ class Zenodo:
         parse_request(
             requests.delete(
                 f"https://{self.url}/api/deposit/depositions/{version_id}",
-                params={
-                    "access_token": self.access_token,
-                },
+                params={"access_token": self.access_token,},
             )
         )
         logger.info(f"Successfully deleted deposit {self.doi}.")
@@ -582,9 +579,7 @@ class Zenodo:
         parse_request(
             requests.post(
                 f"https://{self.url}/api/deposit/depositions/{version_id}/actions/publish",
-                params={
-                    "access_token": self.access_token,
-                },
+                params={"access_token": self.access_token,},
             )
         )
         logger.info(f"Successfully published deposit {self.doi}.")
@@ -625,8 +620,7 @@ class Zenodo:
                 draft_url = data.get("links", {}).get("latest_draft", None)
                 if draft_url:
                     r = requests.get(
-                        draft_url,
-                        params={"access_token": self.access_token},
+                        draft_url, params={"access_token": self.access_token},
                     )
                     if r.status_code <= 204:
                         try:
@@ -787,8 +781,7 @@ class Zenodo:
             # Draft exists
             draft = parse_request(
                 requests.get(
-                    draft_url,
-                    params={"access_token": self.access_token},
+                    draft_url, params={"access_token": self.access_token},
                 )
             )
 
@@ -804,8 +797,7 @@ class Zenodo:
             draft_url = data["links"]["latest_draft"]
             draft = parse_request(
                 requests.get(
-                    draft_url,
-                    params={"access_token": self.access_token},
+                    draft_url, params={"access_token": self.access_token},
                 )
             )
 
@@ -860,8 +852,7 @@ class Zenodo:
 
                 # Grab the draft
                 r = requests.get(
-                    draft_url,
-                    params={"access_token": self.access_token},
+                    draft_url, params={"access_token": self.access_token},
                 )
                 if r.status_code <= 204:
                     draft = r.json()

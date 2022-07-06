@@ -151,76 +151,69 @@
   \oldendabstract%
 }
 
+% Figure script icon
+\newcommand\syw@Script[1]{%
+  \raisebox{0pt}[6pt][6pt]{%
+    \href{\syw@url/blob/\syw@sha/\usevalue{#1}}{%
+      \color{sywBlue}\faGithub%
+    }%
+  }%
+}
+
+% Figure dataset icon
+\newcommand\syw@DatasetOne[1]{%
+  \raisebox{0pt}[6pt][6pt]{%
+    \href{\usevalue{#1}}{%
+      \color{sywBlue}\faDatabase%
+    }%
+  }%
+}
+
+% Figure dataset icon
+\newcommand\syw@DatasetTwo[1]{%
+  \raisebox{0pt}[6pt][6pt]{%
+    \href{\usevalue{#1}}{%
+      \color{sywBlue}\faDatabase%
+    }%
+  }%
+}
+
+% Figure dataset icon
+\newcommand\syw@DatasetThree[1]{%
+  \raisebox{0pt}[6pt][6pt]{%
+    \href{\usevalue{#1}}{%
+      \color{sywBlue}\faDatabase%
+    }%
+  }%
+}
+
+% Figure cache icon
+\newcommand\syw@Cache[1]{%
+  \raisebox{0pt}[6pt][6pt]{%
+    \IfSubStr*{\usevalue{#1}}{sandbox}{%
+      \href{\usevalue{#1}}{%
+        \color{sywRed}\faRecycle%
+      }%
+    }{%
+      \href{\usevalue{#1}}{%
+        \color{sywBlue}\faRecycle%
+      }%
+    }%
+  }%
+}
 
 % Hack `showkeys' to show margin links for figures
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
   \normalfont%
-  \stackon[3pt]{%
-    \IfEq*{\usevalue{#1_script}}{KEYNOTFOUND}{}{%
-      \raisebox{0pt}[5pt][5pt]{%
-        \href{\syw@url/blob/\syw@sha/\usevalue{#1_script}}{%
-          \color{sywBlue}\faGithub%
-        }%
-      }%
-    }%
-  }{%
-    \IfEq*{\usevalue{#1_cache}}{KEYNOTFOUND}{}{%
-      \stackon[3pt]{%
-        \raisebox{0pt}[5pt][5pt]{%
-          \href{\usevalue{#1_cache}}{%
-            \color{sywBlue}\faCloudDownload%
-          }%
-        }%
-      }{%
-        \stackon[3pt]{%
-          \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{%        
-            \raisebox{0pt}[5pt][5pt]{%
-              \href{\usevalue{#1_datasetOne}}{%
-                \color{sywBlue}\faDatabase%
-              }%
-            }%
-          }%
-        }{%
-          \IfEq*{\usevalue{#1_datasetTwo}}{KEYNOTFOUND}{}{%        
-            \raisebox{0pt}[5pt][5pt]{%
-              \href{\usevalue{#1_datasetTwo}}{%
-                \color{sywBlue}\faDatabase%
-              }%
-            }%
-          }%
-        }%
-      }%
-    }{%
-      \stackon[3pt]{%
-        \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{%        
-          \raisebox{0pt}[5pt][5pt]{%
-            \href{\usevalue{#1_datasetOne}}{%
-              \color{sywBlue}\faDatabase%
-            }%
-          }%
-        }%
-      }{%
-        \stackon[3pt]{%
-          \IfEq*{\usevalue{#1_datasetTwo}}{KEYNOTFOUND}{}{%        
-            \raisebox{0pt}[5pt][5pt]{%
-              \href{\usevalue{#1_datasetTwo}}{%
-                \color{sywBlue}\faDatabase%
-              }%
-            }%
-          }%
-        }{%
-          \IfEq*{\usevalue{#1_datasetThree}}{KEYNOTFOUND}{}{%        
-            \raisebox{0pt}[5pt][5pt]{%
-              \href{\usevalue{#1_datasetThree}}{%
-                \color{sywBlue}\faDatabase%
-              }%
-            }%
-          }%
-        }%
-      }%
-    }%
-  }%
+  \setstackgap{S}{0pt}
+  \Shortstack[c]{
+    \IfEq*{\usevalue{#1_cache}}{KEYNOTFOUND}{}{\syw@Cache{#1_cache}}
+    \IfEq*{\usevalue{#1_datasetThree}}{KEYNOTFOUND}{}{\syw@DatasetThree{#1_datasetThree}}
+    \IfEq*{\usevalue{#1_datasetTwo}}{KEYNOTFOUND}{}{\syw@DatasetTwo{#1_datasetTwo}}
+    \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{\syw@DatasetOne{#1_datasetOne}}
+    \IfEq*{\usevalue{#1_script}}{KEYNOTFOUND}{}{\syw@Script{#1_script}}
+  }
 }
 
 % Set the graphics path for all figures

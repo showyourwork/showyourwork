@@ -298,6 +298,35 @@ users with access to your account can see their files.
         <br/>
 
 
+.. note::
+
+    Snakemake only allows rules with a single output to be cached
+    (see `here <https://snakemake.readthedocs.io/en/v6.15.5/executing/caching.html>`__).
+    If you would like to cache a step in your build that generates multiple files,
+    the recommended approach is to generate all those files in a dedicated
+    directory and cache the directory itself and wrap it in the special ``directory``
+    function within the rule:
+
+    .. code-block:: python
+
+        rule simulation:
+            output:
+                directory("src/data/simulation")
+            cache:
+                True
+            script:
+                "src/scripts/simulation.py"
+
+    Snakemake (and |showyourwork|) will automatically zip the contents of the
+    directory and upload the archive to Zenodo Sandbox, then download and unzip
+    it the next time it is needed.
+
+    .. raw:: html
+
+        <br/>
+
+
+
 Freezing the cache
 ^^^^^^^^^^^^^^^^^^
 

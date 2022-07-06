@@ -19,6 +19,7 @@ rule:
     input:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
+        WORKFLOW_GRAPH,
         "showyourwork.yml"
     output:
         config["ms_pdf"],

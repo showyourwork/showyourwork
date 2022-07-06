@@ -31,6 +31,11 @@ if (paths.user().temp / "config.json").exists():
     report: "report/workflow.rst"
 
 
+    # Remove old flags
+    for file in paths.user().flags.glob("*"):
+        file.unlink()
+
+
     # Set up custom logging for Snakemake
     patch_snakemake_logging()
 

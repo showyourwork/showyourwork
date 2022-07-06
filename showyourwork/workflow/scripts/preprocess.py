@@ -12,6 +12,7 @@ main article build step.
 from showyourwork import paths, exceptions, zenodo
 from showyourwork.zenodo import Zenodo
 from showyourwork.tex import compile_tex
+from showyourwork.config import get_upstream_dependencies
 import sys
 import json
 import re
@@ -243,10 +244,7 @@ def get_xml_tree():
     # Build the paper to get the XML file
     compile_tex(
         config,
-        args=[
-            "-r",
-            "0",
-        ],
+        args=["-r", "0",],
         output_dir=paths.user().preprocess,
         stylesheet=paths.showyourwork().resources
         / "styles"
@@ -395,15 +393,19 @@ def get_json_tree():
         # Collect user-defined dependencies
         dependencies = config["dependencies"].get(script, [])
 
-        # If any of the dependencies exists in a Zenodo deposit, infer
+        # Same, but recursing all the way up the graph
+        # (i.e., including dependendencies of dependencies, and so forth)
+        upstream = get_upstream_dependencies(script, config)
+
+        # If any of the upstream dependencies exists in a Zenodo deposit, infer
         # its URL here so we can add margin links to the PDF
         datasets = []
         for doi in config["datasets"]:
             deposit = Zenodo(doi)
             url = f"https://{deposit.url}/record/{deposit.deposit_id}"
-            for dep in dependencies:
-                # TODO (#117): Loop over dependencies of these dependencies as well!
+            for dep in upstream:
                 if dep in config["datasets"][doi]["contents"].values():
+                    # The dataset is a direct dependency of the current figure
                     datasets.append(url)
                 else:
                     for zip_file in config["datasets"][doi]["zip_files"]:
@@ -413,6 +415,8 @@ def get_json_tree():
                                 zip_file
                             ].values()
                         ):
+                            # A dataset inside this zip file is a direct
+                            # dependency of the current figure
                             datasets.append(url)
                             break
         datasets = list(set(datasets))
