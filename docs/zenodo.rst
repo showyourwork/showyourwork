@@ -15,7 +15,7 @@ If your workflow depends on data that cannot be programmatically generated,
 such as data collected from a telescope, a mass spectrometer, a DNA
 sequencer, etc., that data should be made available to anyone trying to
 reproduce your results. Instead of committing the dataset directly to the
-repository, we recommend you archive it on an online open-access 
+repository, we recommend you archive it on an online open-access
 file-hosting service. You can use whichever service you want, but if you use
 Zenodo, |showyourwork| does all the communicating back-and-forth for you. All
 you need to do is specify the ID of the (public) archive and some information about the
@@ -28,11 +28,11 @@ Dynamic datasets
 ----------------
 
 The |showyourwork| workflow has the ability to cache the results of intermediate
-steps in your pipeline on either Zenodo or Zenodo Sandbox. 
+steps in your pipeline on either Zenodo or Zenodo Sandbox.
 This is useful for workflows that entail
 running lengthy computations, simulations, etc., that third-party users may
 not want to run on their own. It's also useful for builds on GitHub Actions,
-which has limited compute resources and a timeout of a few hours. 
+which has limited compute resources and a timeout of a few hours.
 
 The way |showyourwork| deals with these cases is to cache these lengthy
 computations on Zenodo or Zenodo Sandbox alongside a record of all the
@@ -61,7 +61,7 @@ If you don't yet have a Zenodo Sandbox account, you'll be asked to create one.
 
 Name the token something informative and make
 sure to give it ``deposit:actions`` and ``deposit:write`` permissions. Copy the
-token and store it somewhere secure. 
+token and store it somewhere secure.
 
 .. warning::
 
@@ -69,7 +69,7 @@ token and store it somewhere secure.
     repository!
 
 Then, on your local computer, create an environment variable called
-``$SANDBOX_TOKEN`` with value equal to the API token you just generated. 
+``$SANDBOX_TOKEN`` with value equal to the API token you just generated.
 You can either do this manually in the terminal, e.g.,
 
 .. code-block:: bash
@@ -79,8 +79,8 @@ You can either do this manually in the terminal, e.g.,
 or by adding that line to your shell config file (``.bashrc``, ``.zshrc``, etc.)
 and re-starting your session.
 In order for |showyourwork| to have access to Zenodo Sandbox when running on GitHub
-Actions, you'll also have to provide this value as a secret (name it ``SANDBOX_TOKEN``); 
-read more about those 
+Actions, you'll also have to provide this value as a secret (name it ``SANDBOX_TOKEN``);
+read more about those
 `here <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_.
 
 If you've done all that, the next time you create a new article repository
@@ -108,7 +108,7 @@ integration, or simulation. Every time we change anything in that script,
 build your article PDF. This is good for reproducibility---i.e., to always
 ensure the output is up to date with the inputs---but it is extremely
 wasteful in cases where, e.g., we wish to tweak some aspect of the plot,
-like the color of a line in a graph. 
+like the color of a line in a graph.
 
 To avoid this, we can split our script into two: one that runs the simulation
 and saves the results, and one that loads the results and plots them. Let's
@@ -140,7 +140,7 @@ Consider a workflow containing the following figure script and TeX file:
 
 .. code-block:: TeX
     :caption: **File:** ``src/tex/ms.tex``
-    
+
     ...
 
     \begin{figure}[ht!]
@@ -264,7 +264,7 @@ from the cache (if it's needed).
 |showyourwork| builds on this functionality by also caching the file ``simulation.dat``
 on Zenodo Sandbox, allowing the results to be restored on *any* computer running your
 workflow (as long as they have the correct ``SANDBOX_TOKEN``; but more on this
-in a moment). This means that, provided you have run your workflow locally first, 
+in a moment). This means that, provided you have run your workflow locally first,
 the runner on GitHub Actions will never have to execute ``simulation.py``, as
 it can just download the result from Zenodo Sandbox. Recall that this procedure still
 guarantees that you'll get the *same result* as if you had run your entire
@@ -274,7 +274,7 @@ restored if *none* of the upstream inputs to a rule have changed.
 The cached files (and the hashes of the rule inputs)
 are stored in a Zenodo Sandbox deposit draft with concept ID specified
 in your ``zenodo.yml`` config file. If you navigate to Zenodo Sandbox in your
-browser and log in, you should see a draft with a title like 
+browser and log in, you should see a draft with a title like
 ``Data for user/repo [main]``, where ``user/repo`` is your repository slug
 and ``main`` is the current branch. At any given time, you can only have
 one draft per deposit, so if you change any of the inputs to your rule (e.g., if
@@ -286,7 +286,7 @@ users with access to your account can see their files.
 .. note::
 
     If you switch branches, or if you set up a repository without caching
-    functionality and would like to add it, you can create a new Zenodo Sandbox deposit 
+    functionality and would like to add it, you can create a new Zenodo Sandbox deposit
     for the current branch by running
 
     .. code-block:: bash
@@ -345,12 +345,12 @@ time you edit your workflow, a new draft will be created. Future builds can
 then draw from either the published version *or* the draft. This process can
 be repeated as often as you need, so that at any given time the workflow is
 able to restore intermediate results from any number of deposits on Zenodo
-Sandbox. 
+Sandbox.
 
 One useful side effect of freezing a deposit is that an API token is not
 required to access it. This is especially convenient for working with
 outside collaborators, who will not in general have access to your
-``SANDBOX_TOKEN``. If the cache has been frozen, they will be able to 
+``SANDBOX_TOKEN``. If the cache has been frozen, they will be able to
 restore output from the cache both locally and when building pull requests
 on GitHub Actions.
 
@@ -366,7 +366,7 @@ Publishing the cache
 
 When you're ready to publish or distribute your article to the outside world
 --and you're confident the inputs to your cached rules won't change again--
-you should consider migrating your cached outputs from Zenodo Sandbox to Zenodo. 
+you should consider migrating your cached outputs from Zenodo Sandbox to Zenodo.
 You can easily do this by running
 
 .. code-block:: bash
@@ -374,7 +374,7 @@ You can easily do this by running
     showyourwork cache publish
 
 in the top level of your repo. This will transfer the latest draft of your
-Zenodo Sandbox deposit over to Zenodo and publish it, giving it a 
+Zenodo Sandbox deposit over to Zenodo and publish it, giving it a
 permanent DOI (digital object identifier) and making it visible to unauthenticated users.
 Once you do this, anyone can take advantage of the caching functionality, for
 all of eternity (well, for as long as Zenodo continues to exist).
@@ -383,7 +383,7 @@ Note that in order for this step to work, you'll need proper authentication
 in the form of an API token stored as the environment variable ``ZENODO_TOKEN``.
 This is different from the Zenodo Sandbox token we generated above. If you
 don't have one, you may generate one by clicking
-`here <https://sandbox.zenodo.org/account/settings/applications/tokens/new>`__.
+`here <https://zenodo.org/account/settings/applications/tokens/new>`__.
 If you don't yet have a Zenodo account, you'll be asked to create one.
 
 .. note::
@@ -391,7 +391,7 @@ If you don't yet have a Zenodo account, you'll be asked to create one.
     Once you publish your deposit, further changes to a cached rule's inputs
     will result in a new draft being created on Zenodo Sandbox (much like what
     happens when you ``freeze`` your cache). Future runs of your workflow
-    will be able to restore the cache from any of the frozen versions on Zenodo Sandbox, 
+    will be able to restore the cache from any of the frozen versions on Zenodo Sandbox,
     published versions on Zenodo, or from the latest draft on Zenodo Sandbox.
 
 .. warning::
