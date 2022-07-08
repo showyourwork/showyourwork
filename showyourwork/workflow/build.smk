@@ -50,12 +50,12 @@ if (paths.user().temp / "config.json").exists():
             config["ms_pdf"]
 
 
-    # Wrap the tarball generation rule to ensure tempfiles are properly
-    # deleted; this is the rule we actually call from the Makefile
+    # Wrap other top-level rules to ensure tempfiles are properly
+    # deleted; these are the rules we actually call from the Makefile
     rule syw__arxiv_entrypoint:
         input:
             "arxiv.tar.gz"
-
+            
 
     # Include all other rules
     include: "checkpoints/dag.smk"
@@ -63,7 +63,7 @@ if (paths.user().temp / "config.json").exists():
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
-
+    include: "rules/render_dag.smk"
 
     # Resolve ambiguities in rule order
     ruleorder: syw__compile > syw__arxiv

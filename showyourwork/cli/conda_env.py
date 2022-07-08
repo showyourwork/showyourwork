@@ -45,7 +45,6 @@ def run_in_env(command, **kwargs):
         ``exceptions.ShowyourworkNotFoundError``:
             If the requested version of showyourwork in the config file cannot be found.
     """
-
     # Logging
     logger = get_logger()
 

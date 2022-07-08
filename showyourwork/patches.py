@@ -210,14 +210,17 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                     )
                     try:
                         sandbox.upload_file(
-                            cachefile,
-                            job.rule.name,
-                            tarball=tarball,
+                            cachefile, job.rule.name, tarball=tarball,
                         )
-                    except exceptions.ZenodoException as e:
+                    except (
+                        exceptions.ZenodoException,
+                        exceptions.RequestError,
+                    ) as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        logger.error(str(e))
+                        if len(str(e)):
+                            logger.error(str(e))
+                        logger.error(f"Failed to sync {outputfile} with Zenodo Sandbox cache.")
 
             # Call the original method
             return _fetch(job)
@@ -246,10 +249,15 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         sandbox.upload_file(
                             cachefile, job.rule.name, tarball=tarball
                         )
-                    except exceptions.ZenodoException as e:
+                    except (
+                        exceptions.ZenodoException,
+                        exceptions.RequestError,
+                    ) as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        logger.error(str(e))
+                        if len(str(e)):
+                            logger.error(str(e))
+                        logger.error(f"Failed to upload {outputfile} to Zenodo Sandbox cache.")
 
                 return result
 

@@ -9,8 +9,14 @@
   be displayed next to the figure.
 - Added functionality to obtain the Snakemake DAG prior to running any of the 
   rules (used to infer upstream dependencies above). Metadata from the DAG is 
-  stored in the global config; may be useful for generating custom DAG images,
-  for example.
+  stored in the global config.
+- Reintroduced option to render the workflow DAG when building the article;
+  users can now provide ``render_dag: true`` in the config file to request this.
+- Workaround for issue with incomplete files not getting deleted when passing
+  the ``--rerun-incomplete`` flag. Running ``showyourwork clean`` now deletes 
+  the ``.snakemake/incomplete`` directory. 
+- Server errors on Zenodo / Zenodo Sandbox no longer lead to fatal errors when
+  accessing the remote file cache.
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++

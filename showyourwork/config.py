@@ -298,6 +298,9 @@ def parse_config():
             "run_cache_rules_on_ci", False
         )
 
+        #: Render the article DAG on build
+        config["render_dag"] = config.get("render_dag", False)
+
         #
         # -- Internal settings --
         #

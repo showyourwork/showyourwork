@@ -14,6 +14,8 @@ def clean(force, deep, options=""):
         options (str, optional): Additional options to pass to Snakemake.
 
     """
+    if (paths.user().repo / ".snakemake" / "incomplete").exists():
+        shutil.rmtree(paths.user().repo / ".snakemake" / "incomplete")
     for file in ["build.smk", "prep.smk"]:
         snakefile = snakefile = Path("${SYW_PATH}") / "workflow" / file
         snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --reason --cache"
@@ -23,8 +25,6 @@ def clean(force, deep, options=""):
         (paths.user().repo / "arxiv.tar.gz").unlink()
     if paths.user().temp.exists():
         shutil.rmtree(paths.user().temp)
-    if (paths.user().repo / ".snakemake" / "incomplete").exists():
-        shutil.rmtree(paths.user().repo / ".snakemake" / "incomplete")
     if force:
         for file in paths.user().figures.rglob("*.*"):
             if file.name != ".gitignore":

@@ -384,6 +384,28 @@ repository. Exact names are required; no glob syntax allowed.
             - src/tex/figures
 
 
+.. _config.render_dag:
+
+``render_dag``
+^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Render the article DAG (directed acyclic graph) showing the
+relationship between all the input and output files in the workflow. The
+DAG is saved as the file ``dag.pdf`` at the root of the repository.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+    render_dag: true
+
+
 .. _config.require_inputs:
 
 ``require_inputs``

@@ -60,6 +60,25 @@ def get_dataset_urls(files, datasets):
                         break
     return list(set(result))
 
+def get_dataset_dois(files, datasets):
+    """
+    Given a list of `files`, return all associated Zenodo and/or Zenodo Sandbox
+    DOIs.
+
+    """
+    result = []
+    for doi in datasets:
+        deposit = Zenodo(doi)
+        for file in files:
+            if file in datasets[doi]["contents"].values():
+                result.append(doi)
+            else:
+                for zip_file in datasets[doi]["zip_files"]:
+                    if file in datasets[doi]["zip_files"][zip_file].values():
+                        result.append(doi)
+                        break
+    return list(set(result))
+
 services = {
     "zenodo": {
         "url": "zenodo.org",

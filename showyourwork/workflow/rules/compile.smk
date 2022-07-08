@@ -19,6 +19,7 @@ rule:
     input:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
+        "dag.pdf" if config["render_dag"] else [],
         WORKFLOW_GRAPH,
         "showyourwork.yml"
     output:
