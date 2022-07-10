@@ -10,6 +10,11 @@ import filecmp
 import jinja2
 from pathlib import Path
 import re
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    # If LibYAML not installed
+    from yaml import Loader, Dumper
 
 
 def run_in_env(command, **kwargs):
@@ -73,7 +78,7 @@ def run_in_env(command, **kwargs):
         jinja2.Environment(loader=jinja2.FileSystemLoader(paths.user().repo))
         .get_template("showyourwork.yml")
         .render(),
-        Loader=yaml.CLoader,
+        Loader=Loader,
     )
     syw_spec = user_config.get("version", None)
     if not syw_spec:
@@ -102,12 +107,12 @@ def run_in_env(command, **kwargs):
     # and add the user's requested showyourwork version as a dependency
     # so we can import it within Snakemake
     with open(syw_envfile, "r") as f:
-        syw_env = yaml.load(f, Loader=yaml.CLoader)
+        syw_env = yaml.load(f, Loader=Loader)
     for dep in syw_env["dependencies"]:
         if type(dep) is dict and "pip" in dep:
             dep["pip"].append(syw_spec)
     with open(workflow_envfile, "w") as f:
-        print(yaml.dump(syw_env, Dumper=yaml.CDumper), file=f)
+        print(yaml.dump(syw_env, Dumper=Dumper), file=f)
 
     # Set up or update our isolated conda env
     if not paths.user().env.exists():
