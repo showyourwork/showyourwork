@@ -7,6 +7,11 @@ import re
 import sys
 import jinja2
 import yaml
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    # If LibYAML not installed
+    from yaml import Loader, Dumper
 
 try:
     import snakemake
@@ -23,14 +28,14 @@ def edit_yaml(file):
     """
     if Path(file).exists():
         with open(file, "r") as f:
-            contents = yaml.load(f, Loader=yaml.CLoader)
+            contents = yaml.load(f, Loader=Loader)
     else:
         contents = {}
     try:
         yield contents
     finally:
         with open(file, "w") as f:
-            print(yaml.dump(contents, Dumper=yaml.CDumper), file=f)
+            print(yaml.dump(contents, Dumper=Dumper), file=f)
 
 
 def render_config(cwd="."):
