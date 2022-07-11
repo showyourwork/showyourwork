@@ -51,7 +51,8 @@ def restore_trace():
     except:
         pass
     else:
-        flag.unlink()
+        if flag.exists():
+            flag.unlink()
 
 
 class ShowyourworkException(Exception):
