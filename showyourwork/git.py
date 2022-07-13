@@ -47,6 +47,8 @@ def get_repo_url():
     )
     if url.endswith(".git"):
         url = url[:-4]
+    # Fix for SSH authentication
+    url = url.replace("git@github.com:", "https://github.com/")
     return url
 
 
