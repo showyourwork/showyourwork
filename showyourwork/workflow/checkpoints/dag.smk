@@ -62,7 +62,9 @@ def infer_additional_figure_dependencies():
 
         # If any of the upstream dependencies is a cached file,
         # we'll add a cache icon to the figure
-        if set(upstream) & set(config["cached_deps"]):
+        if set(dependencies) & set(config["cached_deps"]):
+            config["tree"]["figures"][label]["cached"] = True
+        elif set(upstream) & set(config["cached_deps"]):
             config["tree"]["figures"][label]["cached"] = True
         else:
             config["tree"]["figures"][label]["cached"] = False
