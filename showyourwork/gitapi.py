@@ -109,7 +109,7 @@ def delete_repo(name, org=None, quiet=False):
         parse_request(result)
 
 
-def get_latest_workflow_run_status(name, org=None):
+def get_latest_workflow_run_status(name, org=None, event="push"):
     """
     Checks the status of the latest GH Actions workflow run for a repository.
 
@@ -160,11 +160,12 @@ def get_latest_workflow_run_status(name, org=None):
     if data["total_count"] == 0:
         return "unknown", "unknown", None
 
-    # Get the first hit. _Should_ be the most recent workflow run, but
-    # I don't know if that's guaranteed.
-    workflow_run = data["workflow_runs"][0]
-    return (
-        workflow_run["status"],
-        workflow_run["conclusion"],
-        workflow_run["html_url"],
-    )
+    # Get the first hit corresponding to the correct event.
+    for workflow_run in data["workflow_runs"]:
+        if workflow_run["event"] == event:
+            return (
+                workflow_run["status"],
+                workflow_run["conclusion"],
+                workflow_run["html_url"],
+            )
+    return "unknown", "unknown", None

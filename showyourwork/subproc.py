@@ -85,7 +85,7 @@ def parse_request(r):
         data["message"] = data.get("message", "")
         data["status"] = data.get("status", "")
         for error in data.get("errors", []):
-            data["message"] += " " + error["message"]
+            data["message"] += " " + error.get("message", "")
         raise exceptions.RequestError(
             status=data["status"], message=data["message"]
         )
