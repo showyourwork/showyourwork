@@ -96,7 +96,7 @@ the figure scripts, datasets, figure outputs, etc.
 
 **Required:** no
 
-**Default:** ``true``
+**Default:** ``false``
 
 **Example:**
 

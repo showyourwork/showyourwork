@@ -309,7 +309,7 @@ def parse_config():
         config["dag"] = as_dict(config.get("dag", {}))
         config["dag"]["render"] = config["dag"].get("render", False)
         config["dag"]["group_by_type"] = config["dag"].get(
-            "group_by_type", True
+            "group_by_type", False
         )
         config["dag"]["engine"] = config["dag"].get("engine", "sfdp")
         defaults = {

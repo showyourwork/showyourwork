@@ -8,6 +8,7 @@ from showyourwork.zenodo import get_dataset_dois
 from pathlib import Path
 from jinja2 import Environment, BaseLoader
 import json
+
 try:
     import graphviz
 except:

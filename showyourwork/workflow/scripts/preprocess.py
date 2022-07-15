@@ -244,7 +244,10 @@ def get_xml_tree():
     # Build the paper to get the XML file
     compile_tex(
         config,
-        args=["-r", "0",],
+        args=[
+            "-r",
+            "0",
+        ],
         output_dir=paths.user().preprocess,
         stylesheet=paths.showyourwork().resources
         / "styles"
@@ -417,6 +420,7 @@ def get_json_tree():
             "datasets": datasets,
             "dependencies": dependencies,
             "command": command,
+            "static": static,
         }
 
     # Parse free-floating graphics
@@ -457,6 +461,7 @@ def get_json_tree():
         "datasets": [],
         "dependencies": [],
         "command": None,
+        "static": False,
     }
 
     # Add entries to the tree: static figures
@@ -478,6 +483,7 @@ def get_json_tree():
         "datasets": [],
         "dependencies": [],
         "command": f"cp {srcs} {dest}",
+        "static": True,
     }
 
     # Parse files included using the \input statement;

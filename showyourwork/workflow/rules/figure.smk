@@ -15,6 +15,7 @@ for figure_name in figures:
     graphics = figures[figure_name]["graphics"]
     dependencies = figures[figure_name]["dependencies"]
     command = figures[figure_name]["command"]
+    static = figures[figure_name]["static"]
 
     # If there's no command to generate this figure, skip it
     if command is None:
@@ -40,7 +41,7 @@ for figure_name in figures:
         input:
             figscript,
             dependencies,
-            "environment.yml"
+            "environment.yml" if not static else []
         output:
             report(graphics, category="Figure")
         conda:
