@@ -14,19 +14,10 @@ class TestPullRequest(TemporaryShowyourworkRepository):
     the automated PR message w/ the link to the PDF.
 
     """
-
-    def build_local(self, pre=""):
-        """No need to build the article locally."""
-        pass
-
-    def git_commit(self):
-        """Nothing to commit initially."""
-        pass
-
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self):
         """Make changes in a new branch, issue a PR, and inspect the rendered diff."""
-        # Push the first commit to the main branch
+        print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}`...")
         get_stdout(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
@@ -37,6 +28,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
         )
 
         # Create a new branch
+        print(f"[{self.repo}] Creating branch `small-change` with some changes...")
         get_stdout("git checkout -b small-change", shell=True, cwd=self.cwd)
 
         # Make a few small changes, deletions, and insertions.
@@ -55,6 +47,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             f.write(contents)
 
         # Add, commit, and push to the new branch
+        print(f"[{self.repo}] Pushing to the remote...")
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
@@ -72,6 +65,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
         )
 
         # Create the PR for the main branch
+        print(f"[{self.repo}] Creating PR for small-change -> main...")
         url = f"https://api.github.com/repos/showyourwork/{self.repo}/pulls"
         data = parse_request(
             requests.post(
@@ -92,6 +86,10 @@ class TestPullRequest(TemporaryShowyourworkRepository):
         )
 
         # Wait for the action to complete & check its status
+        print(
+            f"[{self.repo}] Waiting {self.action_wait} seconds for PR workflow "
+            f"to finish (1/{self.action_max_tries})..."
+        )
         await asyncio.sleep(self.action_wait)
         status = "unknown"
         for n in range(self.action_max_tries):
@@ -115,7 +113,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             elif n < self.action_max_tries - 1:
                 print(
                     f"[{self.repo}] Waiting {self.action_interval} seconds for "
-                    f"workflow to finish ({n+2}/{self.action_max_tries})..."
+                    f"PR workflow to finish ({n+2}/{self.action_max_tries})..."
                 )
                 await asyncio.sleep(self.action_interval)
         else:
