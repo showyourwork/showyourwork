@@ -26,12 +26,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self):
         """Make changes in a new branch, issue a PR, and inspect the rendered diff."""
-        # Push the first commit to the main branch (w/out running the action)
-        get_stdout(
-            "git commit --amend -m '[skip ci] auto commit from showyourwork tests'",
-            shell=True,
-            cwd=self.cwd,
-        )
+        # Push the first commit to the main branch
         get_stdout(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
