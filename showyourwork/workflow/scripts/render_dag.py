@@ -7,38 +7,36 @@ from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import get_dataset_dois
 from pathlib import Path
 from jinja2 import Environment, BaseLoader
-import graphviz
 import json
+try:
+    import graphviz
+except:
+    graphviz = None
 
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
     """
-    Convert a file to a PNG thumbnail and return its aspect ratio.
+    Convert a file to a PNG thumbnail w/ a border and return its aspect ratio.
 
     On error, returns None.
     """
-
-    def get_aspect(code, stdout, stderr):
-        try:
-            if code != 0:
-                raise exceptions.CalledProcessError(stderr)
-            aspect = float(
-                get_stdout(
-                    f'convert {file} -format "%[fx:w/h]" info:', shell=True,
-                )
+    try:
+        aspect = float(
+            get_stdout(
+                f'convert {file} -format "%[fx:w/h]" info:',
+                shell=True,
             )
-        except exceptions.CalledProcessError:
-            return None
-        else:
-            return aspect
-
-    aspect = get_stdout(
-        f"convert -resize 500x500 {file} {file}.png",
-        shell=True,
-        callback=get_aspect,
-    )
-
-    return aspect
+        )
+        width = aspect * 500
+        get_stdout(
+            f"convert -resize {width}x500 -background white -alpha remove "
+            f"-bordercolor black -border 15 {file} {file}.png",
+            shell=True,
+        )
+    except:
+        return None
+    else:
+        return aspect
 
 
 if __name__ == "__main__":
@@ -46,22 +44,36 @@ if __name__ == "__main__":
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
 
+    # User settings
+    node_attr = config["dag"]["node_attr"]
+    graph_attr = config["dag"]["graph_attr"]
+    engine = config["dag"]["engine"]
+    group_by_type = config["dag"]["group_by_type"]
+
+    # Internal settings
+    if group_by_type:
+        subgraph_prefix = "cluster_"
+        alpha = "33"
+    else:
+        subgraph_prefix = ""
+        alpha = "ff"
     colors = dict(
-        zenodo="#1f77b433",  # blue
-        other="#00000033",  # black
-        script="#2ca02c33",  # green
-        tex="#d6272833",  # red
-        dataset="#9467bd33",  # purple
-        figures="#ffffff33",  # white
-        article="#ffffff33",  # white
+        zenodo=f"#1f77b4{alpha}",  # blue
+        other=f"#000000{alpha}",  # black
+        script=f"#2ca02c{alpha}",  # green
+        tex=f"#d62728{alpha}",  # red
+        dataset=f"#9467bd{alpha}",  # purple
+        figures="black",
+        article=f"#ffffff{alpha}",  # white
         edge="black",
     )
 
     # Instantiate the graph
     dot = graphviz.Digraph(
         "dag",
-        node_attr={"shape": "box", "penwidth": "2", "width": "1"},
-        engine="sfdp",
+        node_attr=node_attr,
+        graph_attr=graph_attr,
+        engine=engine,
     )
 
     # Collect all dependency information
@@ -110,7 +122,7 @@ if __name__ == "__main__":
         return f"{config['git_url']}/blob/{config['git_sha']}/{file}"
 
     # Zenodo nodes
-    with dot.subgraph(name="cluster_zenodo") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}zenodo") as c:
         c.attr(
             color="black",
             fillcolor=colors["zenodo"],
@@ -122,7 +134,7 @@ if __name__ == "__main__":
             c.node(
                 doi,
                 URL=f"https://doi.org/{doi}",
-                color="black",
+                color="black" if group_by_type else colors["zenodo"],
                 style="filled",
                 fillcolor="white",
             )
@@ -136,13 +148,13 @@ if __name__ == "__main__":
             c.node(
                 cache,
                 URL=f"https://doi.org/{cache}",
-                color="black",
+                color="black" if group_by_type else colors["zenodo"],
                 style="filled",
                 fillcolor="white",
             )
 
     # Dataset nodes
-    with dot.subgraph(name="cluster_data") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}data") as c:
         c.attr(
             color="black",
             fillcolor=colors["dataset"],
@@ -154,7 +166,7 @@ if __name__ == "__main__":
             c.node(
                 file,
                 label=label,
-                color="black",
+                color="black" if group_by_type else colors["dataset"],
                 style="filled",
                 fillcolor="white",
             )
@@ -162,7 +174,7 @@ if __name__ == "__main__":
                 c.edge(doi, file)
 
     # Script nodes
-    with dot.subgraph(name="cluster_scripts") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}scripts") as c:
         c.attr(
             color="black",
             fillcolor=colors["script"],
@@ -175,13 +187,13 @@ if __name__ == "__main__":
                 file,
                 label=label,
                 URL=file2url(file),
-                color="black",
+                color="black" if group_by_type else colors["script"],
                 style="filled",
                 fillcolor="white",
             )
 
     # Tex nodes
-    with dot.subgraph(name="cluster_tex") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}tex") as c:
         c.attr(
             color="black",
             fillcolor=colors["tex"],
@@ -194,16 +206,16 @@ if __name__ == "__main__":
                 file,
                 label=label,
                 URL=file2url(file),
-                color="black",
+                color="black" if group_by_type else colors["tex"],
                 style="filled",
                 fillcolor="white",
             )
 
     # Figure nodes
-    with dot.subgraph(name="cluster_figures") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}figures") as c:
         c.attr(
             color="black",
-            fillcolor=colors["figures"],
+            fillcolor="white",
             style="filled",
             label="src/tex/figures/",
         )
@@ -219,6 +231,9 @@ if __name__ == "__main__":
                     imagescale="false",
                     width=f"{aspect}",
                     height="1",
+                    color="black" if group_by_type else colors["figures"],
+                    style="filled",
+                    fillcolor="white",
                 )
             else:
                 # Couldn't convert to PNG; display text instead
@@ -226,13 +241,13 @@ if __name__ == "__main__":
                 c.node(
                     file,
                     label=label,
-                    color="black",
+                    color="black" if group_by_type else colors["figures"],
                     style="filled",
                     fillcolor="white",
                 )
 
     # Other nodes
-    with dot.subgraph(name="cluster_others") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}others") as c:
         c.attr(
             color="black", fillcolor=colors["other"], style="filled", label="/"
         )
@@ -240,13 +255,13 @@ if __name__ == "__main__":
             c.node(
                 file,
                 URL=file2url(file),
-                color="black",
+                color="black" if group_by_type else colors["other"],
                 style="filled",
                 fillcolor="white",
             )
 
     # Article node
-    with dot.subgraph(name="cluster_article") as c:
+    with dot.subgraph(name=f"{subgraph_prefix}article") as c:
         c.attr(
             color="black",
             fillcolor=colors["article"],
@@ -262,8 +277,11 @@ if __name__ == "__main__":
             penwidth="0",
             fixedsize="true",
             imagescale="false",
-            width="1.5",
+            width="1.15",
             height="1.5",
+            color="black" if group_by_type else colors["article"],
+            style="filled",
+            fillcolor="white",
         )
 
     # Add the edges

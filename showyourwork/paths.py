@@ -14,9 +14,7 @@ class showyourwork:
         self.module = Path(realpath(__file__)).absolute().parents[0]
         self.workflow = self.module / "workflow"
         self.rules = self.workflow / "rules"
-        self.checkpoints = self.workflow / "checkpoints"
         self.resources = self.workflow / "resources"
-        self.placeholders = self.resources / "placeholders"
         self.envs = self.workflow / "envs"
         self.cookiecutter = self.module / "cookiecutter-showyourwork"
 

@@ -7,6 +7,7 @@ import re
 import sys
 import jinja2
 import yaml
+
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -160,7 +161,7 @@ def get_upstream_dependencies(file, dependencies, depth=0):
     """
     Collect user-defined dependencies of a file recursively.
     Returns a list of strings.
-    
+
     """
     if deps := dependencies.get(file, []):
         res = set()
@@ -276,7 +277,8 @@ def parse_config():
         # var $MATPLOTLIBRC.
         config["scripts"] = as_dict(config.get("scripts", {}))
         config["scripts"]["py"] = config["scripts"].get(
-            "py", f"MATPLOTLIBRC={paths.user().scripts} " + "python {script}",
+            "py",
+            f"MATPLOTLIBRC={paths.user().scripts} " + "python {script}",
         )
 
         #: Custom script dependencies
@@ -304,7 +306,22 @@ def parse_config():
         )
 
         #: Render the article DAG on build
-        config["render_dag"] = config.get("render_dag", False)
+        config["dag"] = as_dict(config.get("dag", {}))
+        config["dag"]["render"] = config["dag"].get("render", False)
+        config["dag"]["group_by_type"] = config["dag"].get(
+            "group_by_type", True
+        )
+        config["dag"]["engine"] = config["dag"].get("engine", "sfdp")
+        defaults = {
+            "shape": "box",
+            "penwidth": "2",
+            "width": "1",
+        }
+        defaults.update(config["dag"].get("node_attr", {}))
+        config["dag"]["node_attr"] = defaults
+        defaults = {"ranksep": "1", "nodesep": "0.65"}
+        defaults.update(config["dag"].get("graph_attr", {}))
+        config["dag"]["graph_attr"] = defaults
 
         #
         # -- Internal settings --

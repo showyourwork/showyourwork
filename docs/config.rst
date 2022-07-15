@@ -14,6 +14,153 @@ customize several aspects of the workflow. Below is a list of all
 available options.
 
 
+.. _config.dag:
+
+``dag``
+^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Settings controlling the generation of an image of the article DAG
+(directed acyclic graph) that summarizes the dependencies among files in the
+workflow.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag: 
+      render: true
+
+
+``dag.engine``
+^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** Graphviz layout engine. See options `here <https://graphviz.org/docs/layouts/>`__.
+
+**Required:** no
+
+**Default:** ``sfdp``
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag: 
+      render: true
+      engine: sfdp
+
+
+``dag.graph_attr``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Custom attributes for the graph. See 
+`here <https://graphviz.org/doc/info/attrs.html>`__ for details.
+Note that all values must be provided as strings.
+
+**Required:** no
+
+**Default:** 
+
+.. code-block:: yaml
+
+    ranksep: "1"
+    nodesep: "0.65"
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag: 
+      render: true
+      graph_attr:
+        ranksep: "1"
+        nodesep: "0.65"
+
+
+.. _config.dag.group_by_type:
+
+``dag.group_by_type``
+^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Group files in the DAG by type? This will create plates for
+the figure scripts, datasets, figure outputs, etc.
+
+**Required:** no
+
+**Default:** ``true``
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag: 
+      render: true
+      group_by_type: true
+
+
+``dag.node_attr``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Attributes for all the nodes in the graph. See 
+`here <https://graphviz.org/doc/info/attrs.html>`__ for details.
+Note that all values must be provided as strings.
+
+**Required:** no
+
+**Default:** 
+
+.. code-block:: yaml
+
+    shape: "box"
+    penwidth: "2"
+    width: "1"
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag: 
+      render: true
+      node_attr:
+        shape: "box"
+        penwidth: "2"
+        width: "1"
+
+
+.. _config.dag.render:
+
+``dag.render``
+^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Render the article DAG (directed acyclic graph) showing the
+relationship between all the input and output files in the workflow. The
+DAG is saved as the file ``dag.pdf`` at the root of the repository.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag: 
+      render: true
+
+
 .. _config.datasets:
 
 ``datasets``
@@ -382,28 +529,6 @@ repository. Exact names are required; no glob syntax allowed.
     overleaf:
         push:
             - src/tex/figures
-
-
-.. _config.render_dag:
-
-``render_dag``
-^^^^^^^^^^^^^^
-
-**Type:** ``bool``
-
-**Description:** Render the article DAG (directed acyclic graph) showing the
-relationship between all the input and output files in the workflow. The
-DAG is saved as the file ``dag.pdf`` at the root of the repository.
-
-**Required:** no
-
-**Default:** ``false``
-
-**Example:**
-
-.. code-block:: yaml
-
-    render_dag: true
 
 
 .. _config.require_inputs:
