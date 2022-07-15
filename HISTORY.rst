@@ -11,7 +11,8 @@
   rules (used to infer upstream dependencies above). Metadata from the DAG is 
   stored in the global config.
 - Reintroduced option to render the workflow DAG when building the article;
-  users can now provide ``render_dag: true`` in the config file to request this.
+  users can now provide DAG-related settings under the ``dag`` entry in the 
+  config file (set ``render: true`` to enable the DAG generation).
   Note that ``showyourwork`` now depends on the ``graphviz`` package, so users
   may have to clear their ``~/.showyourwork`` cache to force regeneration of
   the default ``showyourwork`` conda environment.
