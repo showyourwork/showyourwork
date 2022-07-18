@@ -285,6 +285,7 @@ def tarball():
 @entry_point.group()
 @click.pass_context
 def cache(ctx):
+    """Caching-related operations."""
     pass
 
 

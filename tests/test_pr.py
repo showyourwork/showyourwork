@@ -7,7 +7,6 @@ import json
 import asyncio
 import re
 
-@pytest.mark.xfail(reason="Error in latexdiff: You can't use `/raise' in internal vertical mode")
 class TestPullRequest(TemporaryShowyourworkRepository):
     """
     Test pull request behavior, including the generation of the diff and
