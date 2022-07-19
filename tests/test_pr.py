@@ -121,7 +121,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             if status == "completed":
                 if conclusion == "success":
                     print(f"[{self.repo}] Workflow completed successfully.")
-                    return
+                    break
                 else:
                     raise Exception(
                         "[{self.repo}] GitHub Actions workflow terminated "
@@ -141,7 +141,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             )
 
         # Get the bot comment
-        url = f"https://api.github.com/repos/showyourwork/{self.repo}/issues/1/comments"
+        url = f"https://api.github.com/repos/showyourwork/{self.repo}/issues/{pr_number}/comments"
         data = parse_request(
             requests.get(
                 url,
