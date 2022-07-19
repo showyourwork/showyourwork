@@ -8,6 +8,7 @@ from showyourwork.zenodo import Zenodo
 import logging
 from pathlib import Path
 import shutil
+import inspect
 import asyncio
 import pytest
 import re
@@ -37,6 +38,8 @@ class TemporaryShowyourworkRepository:
     use_local_showyourwork = debug
     showyourwork_version = None
     local_build_only = debug
+    delete_remote_on_success = False
+    clear_actions_cache_on_start = True
 
     # Internal
     _sandbox_concept_doi = None
@@ -123,11 +126,34 @@ class TemporaryShowyourworkRepository:
             .get("sandbox")
         )
 
+        # Tweak the README
+        message = "\n".join(
+            [line.strip() for line in self.__doc__.split("\n")]
+        )
+        file = Path(inspect.getfile(self.__class__)).name
+        readme = (
+            "*This is an automatically generated unit test for "
+            "[showyourwork](https://github.com/showyourwork/showyourwork) "
+            "generated from the file "
+            f"[{file}](https://github.com/showyourwork/showyourwork/blob/main/tests/{file}).*"
+            "\n\n"
+            + message
+        )
+        with open(self.cwd / "README.md", "r") as f:
+            contents = f.read()
+        contents = contents.replace(
+            "An open source scientific article created using the "
+            "[showyourwork](https://github.com/showyourwork/showyourwork) "
+            "workflow.",
+            readme,
+        )
+        with open(self.cwd / "README.md", "w") as f:
+            f.write(contents)
+
     def create_remote(self):
-        """Create the repo on GitHub."""
-        print("")
+        """Create the repo on GitHub if needed."""
         print(
-            f"[{self.repo}] Creating GitHub repo "
+            f"[{self.repo}] Setting up remote GitHub repo "
             f"`showyourwork/{self.repo}`..."
         )
         gitapi.create_repo(
@@ -136,6 +162,11 @@ class TemporaryShowyourworkRepository:
             description="Temporary test repository for showyourwork",
             private=False,
         )
+
+    def clear_remote_cache(self):
+        """Clear the remote GitHub Actions cache."""
+        print(f"[{self.repo}] Clearing the Actions cache...")
+        gitapi.clear_cache(self.repo, org="showyourwork")
 
     def git_commit(self):
         """Add and commit all files in the local repo."""
@@ -180,6 +211,9 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
         )
+        head_sha = get_stdout(
+            "git rev-parse HEAD", shell=True, cwd=self.cwd
+        ).replace("\n", "")
         print(
             f"[{self.repo}] Waiting {self.action_wait} seconds for workflow "
             f"to finish (1/{self.action_max_tries})..."
@@ -187,8 +221,10 @@ class TemporaryShowyourworkRepository:
         await asyncio.sleep(self.action_wait)
         status = "unknown"
         for n in range(self.action_max_tries):
-            (status, conclusion, url,) = gitapi.get_latest_workflow_run_status(
-                self.repo, org="showyourwork"
+            (status, conclusion, url,) = gitapi.get_workflow_run_status(
+                self.repo,
+                org="showyourwork",
+                q={"event": "push", "head_sha": head_sha},
             )
             if status == "completed":
                 if conclusion == "success":
@@ -262,6 +298,8 @@ class TemporaryShowyourworkRepository:
             # Create the repo on GitHub
             if not self.local_build_only:
                 self.create_remote()
+                if self.clear_actions_cache_on_start:
+                    self.clear_remote_cache()
 
             # Set up the repo
             self.create_local()
@@ -290,7 +328,7 @@ class TemporaryShowyourworkRepository:
         else:
 
             # Delete remote repo (only on success)
-            if not self.local_build_only:
+            if not self.local_build_only and self.delete_remote_on_success:
                 self.delete_remote()
 
             # Delete local repo (only on success)

@@ -12,7 +12,10 @@ import os
 class TestCache(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
-    """Test the Zenodo caching feature."""
+    """
+    Test the Zenodo Sandbox caching feature for a rule with a single output.
+
+    """
 
     # Enable caching
     cache = True
@@ -41,7 +44,11 @@ class TestCache(
 class TestDirCache(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
-    """Test the Zenodo caching feature for entire directories."""
+    """
+    Test the Zenodo Sandbox caching feature for a rule that outputs an
+    entire directory.
+
+    """
 
     # Enable caching
     cache = True
@@ -76,7 +83,7 @@ if os.getenv("CI", "false") != "true":
     class TestCacheFreeze(
         TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
     ):
-        """Test the Zenodo cache freeze feature."""
+        """Test the Zenodo Sandbox cache freeze feature."""
 
         # Enable caching
         cache = True
@@ -128,7 +135,7 @@ if os.getenv("CI", "false") != "true":
     class TestCachePublish(
         TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
     ):
-        """Test the Zenodo cache publish feature."""
+        """Test the Zenodo Sandbox cache publish feature."""
 
         # Enable caching
         cache = True

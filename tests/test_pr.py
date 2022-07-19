@@ -7,16 +7,19 @@ import json
 import asyncio
 import re
 
+
 class TestPullRequest(TemporaryShowyourworkRepository):
     """
-    Test pull request behavior, including the generation of the diff and
-    the automated PR message w/ the link to the PDF.
+    Test pull request behavior, including the generation of the diff using
+    ``latex-diff`` and the automated PR message with the link to the PDF.
 
     """
+
     @pytest.mark.asyncio_cooperative
     async def run_github_action(self):
         """Make changes in a new branch, issue a PR, and inspect the rendered diff."""
-        print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}`...")
+        # Push the initial commit to main
+        print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}@main`...")
         get_stdout(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
@@ -25,9 +28,17 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
         )
+        # Avoid pushing two commits simultaneously, since this was causing
+        # the Actions to occasionally not run on the PR.
+        await asyncio.sleep(30)
+        head_sha = get_stdout(
+            "git rev-parse HEAD", shell=True, cwd=self.cwd
+        ).replace("\n", "")
 
         # Create a new branch
-        print(f"[{self.repo}] Creating branch `small-change` with some changes...")
+        print(
+            f"[{self.repo}] Creating branch `small-change` with some changes..."
+        )
         get_stdout("git checkout -b small-change", shell=True, cwd=self.cwd)
 
         # Make a few small changes, deletions, and insertions.
@@ -46,7 +57,9 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             f.write(contents)
 
         # Add, commit, and push to the new branch
-        print(f"[{self.repo}] Pushing to the remote...")
+        print(
+            f"[{self.repo}] Pushing to `showyourwork/{self.repo}@small-change`..."
+        )
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
@@ -83,6 +96,7 @@ class TestPullRequest(TemporaryShowyourworkRepository):
                 ),
             )
         )
+        pr_number = data["number"]
 
         # Wait for the action to complete & check its status
         print(
@@ -96,8 +110,13 @@ class TestPullRequest(TemporaryShowyourworkRepository):
             # Note that we're querying `workflow_run` actions, specifically
             # to catch the `process-pull-request` action and check that the bot
             # has posted a comment to the PR with the link to the PDF and the diff.
-            (status, conclusion, url,) = gitapi.get_latest_workflow_run_status(
-                self.repo, org="showyourwork", event="workflow_run"
+            (status, conclusion, url,) = gitapi.get_workflow_run_status(
+                self.repo,
+                org="showyourwork",
+                q={
+                    "event": "workflow_run",
+                    "head_sha": head_sha,
+                },
             )
             if status == "completed":
                 if conclusion == "success":
@@ -157,4 +176,17 @@ class TestPullRequest(TemporaryShowyourworkRepository):
 
         # TODO: Inspect the diff
         pass
-        
+
+        # Close the PR
+        print(f"[{self.repo}] Closing the PR...")
+        url = f"https://api.github.com/repos/showyourwork/{self.repo}/pulls/{pr_number}"
+        data = parse_request(
+            requests.patch(
+                url,
+                headers={
+                    "Accept": "application/vnd.github.v3+json",
+                    "Authorization": f"token {gitapi.get_access_token()}",
+                },
+                data=json.dumps({"state": "closed"}),
+            )
+        )

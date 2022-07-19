@@ -1,8 +1,25 @@
 from .subproc import parse_request
 from . import exceptions
+from collections.abc import MutableMapping
 import requests
 import os
 import json
+
+
+def flatten_dict(d, parent_key="", sep="__"):
+    """
+    Flatten a nested dictionary.
+
+    Adapted from https://stackoverflow.com/a/6027615.
+    """
+    items = []
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, MutableMapping):
+            items.extend(flatten_dict(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
 
 
 def get_access_token(token_name="GH_API_KEY", error_if_missing=False):
@@ -41,7 +58,7 @@ def get_authenticated_user():
 
 def create_repo(name, description=None, private=False, org=None):
     """
-    Create a new repository on GitHub.
+    Create a new repository on GitHub if it does not already exist.
 
     Args:
         name (str): The name of the repository (without the user).
@@ -51,8 +68,13 @@ def create_repo(name, description=None, private=False, org=None):
             Default is ``None``.
 
     """
-    # Delete repo (if it exists)
-    delete_repo(name, org=org, quiet=True)
+    # Check if repo exists; if so, do nothing
+    if org:
+        url = f"https://api.github.com/repos/{org}/{name}"
+    else:
+        url = f"https://api.github.com/repos/{get_authenticated_user()}/{name}"
+    if requests.get(url).status_code <= 204:
+        return
 
     # Create a new repo
     if description is None:
@@ -109,15 +131,53 @@ def delete_repo(name, org=None, quiet=False):
         parse_request(result)
 
 
-def get_latest_workflow_run_status(name, org=None, event="push"):
+def clear_cache(name, org=None):
     """
-    Checks the status of the latest GH Actions workflow run for a repository.
+    Clear the Actions cache for a repository.
 
+    Args:
+        name (str): The name of the repository (without the user).
+        org (str, optional): Name of the organization (if applicable).
+            Default is ``None``.
+
+    """
+    if org:
+        url = f"https://api.github.com/repos/{org}/{name}/actions/caches"
+    else:
+        url = f"https://api.github.com/repos/{get_authenticated_user()}/{name}/actions/caches"
+    data = parse_request(
+        requests.get(
+            url,
+            headers={
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": f"token {get_access_token()}",
+            },
+        )
+    )
+    for cache in data["actions_caches"]:
+        parse_request(
+            requests.delete(
+                f"{url}/{cache['id']}",
+                headers={
+                    "Accept": "application/vnd.github.v3+json",
+                    "Authorization": f"token {get_access_token()}",
+                },
+            )
+        )
+
+
+def get_workflow_run_status(name, org=None, q={}):
+    """
+    Checks the status of the latest GH Actions workflow run for a repository,
+    optionally matching certain search criteria.
 
     Args:
         name (str): The name of the repository (without the user).
         org (str, optional): The name of the organization (if applicable).
             Default is ``None``.
+        q (dict, optional): Search query, a dictionary containing all the
+            key-value pairs to be matched in the JSON response of the
+            workflow search. Nested dictionaries are allowed.
 
     Returns:
         tuple:
@@ -157,15 +217,26 @@ def get_latest_workflow_run_status(name, org=None, event="push"):
             },
         )
     )
-    if data["total_count"] == 0:
-        return "unknown", "unknown", None
 
-    # Get the first hit corresponding to the correct event.
+    # Flatten the search criteria
+    q = flatten_dict(q)
+
+    # Return the first match
     for workflow_run in data["workflow_runs"]:
-        if workflow_run["event"] == event:
+
+        # Flatten the response
+        workflow_run = flatten_dict(workflow_run)
+
+        # Check for matches
+        for key, value in q.items():
+            if workflow_run.get(key) != value:
+                break
+        else:
             return (
                 workflow_run["status"],
                 workflow_run["conclusion"],
                 workflow_run["html_url"],
             )
+
+    # No match
     return "unknown", "unknown", None
