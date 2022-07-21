@@ -8,7 +8,7 @@ import asyncio
 import re
 
 
-class TestPullRequest(TemporaryShowyourworkRepository):
+class TestPullRequests(TemporaryShowyourworkRepository):
     """
     Test pull request behavior, including the generation of the diff using
     ``latex-diff`` and the automated PR message with the link to the PDF.
