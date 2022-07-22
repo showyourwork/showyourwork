@@ -404,10 +404,10 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``str``
 
-**Description:** Path to the main TeX manuscript. Change this if you'd prefer to
-name your manuscript something other than ``src/tex/ms.tex``. Note that you should still
+**Description:** The name of the main TeX manuscript (without the path or the extension). Change this if you'd prefer to
+name your manuscript something other than ``ms``. Note that you should still
 keep it in the ``src/tex`` directory. Note also that the compiled PDF file will
-have the same name (e.g., ``src/tex/article.tex`` will generate ``article.pdf``
+have the same name (e.g., ``ms_name: article`` will compile ``src/tex/article.tex`` and generate ``article.pdf``
 in the repository root) .
 
 **Required:** no
