@@ -45,6 +45,7 @@ def check_for_rate_limit(code, stdout, stderr):
 
     """
     if stdout:
+        logger = logging.get_logger()
         logger.debug(stdout)
     if code != 0:
         if "Rate limit exceeded" in stderr:
