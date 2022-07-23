@@ -38,11 +38,12 @@ def require_access_token(method):
 
     return wrapper
 
+
 def get_dataset_urls(files, datasets):
     """
     Given a list of `files`, return all associated Zenodo and/or Zenodo Sandbox
     URLs.
-    
+
     This is used to populate the figure margin icons in the article.
 
     """
@@ -59,6 +60,7 @@ def get_dataset_urls(files, datasets):
                         result.append(url)
                         break
     return list(set(result))
+
 
 def get_dataset_dois(files, datasets):
     """
@@ -78,6 +80,7 @@ def get_dataset_dois(files, datasets):
                         result.append(doi)
                         break
     return list(set(result))
+
 
 services = {
     "zenodo": {
@@ -228,7 +231,9 @@ class Zenodo:
         data = parse_request(
             requests.post(
                 f"https://{self.url}/api/deposit/depositions",
-                params={"access_token": self.access_token,},
+                params={
+                    "access_token": self.access_token,
+                },
                 json={},
             )
         )
@@ -341,7 +346,8 @@ class Zenodo:
             files_url = draft["links"]["files"]
             data = parse_request(
                 requests.get(
-                    files_url, params={"access_token": self.access_token},
+                    files_url,
+                    params={"access_token": self.access_token},
                 )
             )
             for entry in data:
@@ -405,7 +411,9 @@ class Zenodo:
         )
 
     @require_access_token
-    def download_file_from_draft(self, draft, file, rule_name, tarball=False):
+    def download_file_from_draft(
+        self, draft, file, rule_name, tarball=False, dry_run=False
+    ):
         """
         Downloads a file from a Zenodo draft.
 
@@ -445,33 +453,35 @@ class Zenodo:
             ):
 
                 # Download it
-                logger.debug(f"File name and hash both match. Downloading...")
-                url = entry["links"]["download"]
-                progress_bar = (
-                    ["--progress-bar"]
-                    if not snakemake.workflow.config["github_actions"]
-                    else []
-                )
-                try:
-                    res = subprocess.run(
-                        [
-                            "curl",
-                            "-f",
-                            f"{url}?access_token={self.access_token}",
-                            *progress_bar,
-                            "--output",
-                            str(file),
-                        ]
+                logger.debug(f"File name and hash both match.")
+                if not dry_run:
+                    logger.debug("Downloading...")
+                    url = entry["links"]["download"]
+                    progress_bar = (
+                        ["--progress-bar"]
+                        if not snakemake.workflow.config["github_actions"]
+                        else []
                     )
-                except:
-                    raise exceptions.ZenodoDownloadError()
+                    try:
+                        res = subprocess.run(
+                            [
+                                "curl",
+                                "-f",
+                                f"{url}?access_token={self.access_token}",
+                                *progress_bar,
+                                "--output",
+                                str(file),
+                            ]
+                        )
+                    except:
+                        raise exceptions.ZenodoDownloadError()
 
-                # If it's a directory tarball, extract it
-                if tarball:
-                    os.rename(file, f"{file}.tar.gz")
-                    with tarfile.open(f"{file}.tar.gz") as tb:
-                        tb.extractall(file)
-                    Path(f"{file}.tar.gz").unlink()
+                    # If it's a directory tarball, extract it
+                    if tarball:
+                        os.rename(file, f"{file}.tar.gz")
+                        with tarfile.open(f"{file}.tar.gz") as tb:
+                            tb.extractall(file)
+                        Path(f"{file}.tar.gz").unlink()
 
                 return
 
@@ -494,7 +504,7 @@ class Zenodo:
         raise exceptions.FileNotFoundOnZenodo(rule_name)
 
     def download_file_from_record(
-        self, record, file, rule_name, tarball=False
+        self, record, file, rule_name, tarball=False, dry_run=False
     ):
         """
         Downloads a file from a published Zenodo record.
@@ -519,22 +529,31 @@ class Zenodo:
             ):
 
                 # Download it
-                url = entry["links"]["self"]
-                progress_bar = (
-                    ["--progress-bar"]
-                    if not snakemake.workflow.config["github_actions"]
-                    else []
-                )
-                subprocess.run(
-                    ["curl", url, *progress_bar, "--output", str(file),]
-                )
+                logger.debug(f"File name and hash both match.")
+                if not dry_run:
+                    logger.debug("Downloading...")
+                    url = entry["links"]["self"]
+                    progress_bar = (
+                        ["--progress-bar"]
+                        if not snakemake.workflow.config["github_actions"]
+                        else []
+                    )
+                    subprocess.run(
+                        [
+                            "curl",
+                            url,
+                            *progress_bar,
+                            "--output",
+                            str(file),
+                        ]
+                    )
 
-                # If it's a directory tarball, extract it
-                if tarball:
-                    os.rename(file, f"{file}.tar.gz")
-                    with tarfile.open(f"{file}.tar.gz") as tb:
-                        tb.extractall(file)
-                    Path(f"{file}.tar.gz").unlink()
+                    # If it's a directory tarball, extract it
+                    if tarball:
+                        os.rename(file, f"{file}.tar.gz")
+                        with tarfile.open(f"{file}.tar.gz") as tb:
+                            tb.extractall(file)
+                        Path(f"{file}.tar.gz").unlink()
 
                 return
 
@@ -581,7 +600,9 @@ class Zenodo:
         parse_request(
             requests.delete(
                 f"https://{self.url}/api/deposit/depositions/{version_id}",
-                params={"access_token": self.access_token,},
+                params={
+                    "access_token": self.access_token,
+                },
             )
         )
         logger.info(f"Successfully deleted deposit {self.doi}.")
@@ -619,14 +640,17 @@ class Zenodo:
         parse_request(
             requests.post(
                 f"https://{self.url}/api/deposit/depositions/{version_id}/actions/publish",
-                params={"access_token": self.access_token,},
+                params={
+                    "access_token": self.access_token,
+                },
             )
         )
         logger.info(f"Successfully published deposit {self.doi}.")
 
-    def download_file(self, file, rule_name, tarball=False):
+    def download_file(self, file, rule_name, tarball=False, dry_run=False):
         """
         Download a file from the record, deposit or deposit draft.
+
         """
         # Logger
         logger = get_logger()
@@ -660,13 +684,18 @@ class Zenodo:
                 draft_url = data.get("links", {}).get("latest_draft", None)
                 if draft_url:
                     r = requests.get(
-                        draft_url, params={"access_token": self.access_token},
+                        draft_url,
+                        params={"access_token": self.access_token},
                     )
                     if r.status_code <= 204:
                         try:
                             draft = r.json()
                             self.download_file_from_draft(
-                                draft, file, rule_name, tarball=tarball
+                                draft,
+                                file,
+                                rule_name,
+                                tarball=tarball,
+                                dry_run=dry_run,
                             )
                         except exceptions.FileNotFoundOnZenodo:
                             exceptions.restore_trace()
@@ -744,7 +773,11 @@ class Zenodo:
                 for record in records[::-1]:
                     try:
                         self.download_file_from_record(
-                            record, file, rule_name, tarball=tarball
+                            record,
+                            file,
+                            rule_name,
+                            tarball=tarball,
+                            dry_run=dry_run,
                         )
                     except exceptions.FileNotFoundOnZenodo:
                         exceptions.restore_trace()
@@ -821,7 +854,8 @@ class Zenodo:
             # Draft exists
             draft = parse_request(
                 requests.get(
-                    draft_url, params={"access_token": self.access_token},
+                    draft_url,
+                    params={"access_token": self.access_token},
                 )
             )
 
@@ -837,7 +871,8 @@ class Zenodo:
             draft_url = data["links"]["latest_draft"]
             draft = parse_request(
                 requests.get(
-                    draft_url, params={"access_token": self.access_token},
+                    draft_url,
+                    params={"access_token": self.access_token},
                 )
             )
 
@@ -892,7 +927,8 @@ class Zenodo:
 
                 # Grab the draft
                 r = requests.get(
-                    draft_url, params={"access_token": self.access_token},
+                    draft_url,
+                    params={"access_token": self.access_token},
                 )
                 if r.status_code <= 204:
                     draft = r.json()

@@ -323,6 +323,9 @@ def parse_config():
         defaults.update(config["dag"].get("graph_attr", {}))
         config["dag"]["graph_attr"] = defaults
 
+        #: Optimize the DAG by removing jobs upstream of cache hits
+        config["optimize_caching"] = config.get("optimize_caching", False)
+
         #
         # -- Internal settings --
         #
