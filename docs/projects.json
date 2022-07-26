@@ -87,5 +87,25 @@
     "doi": "arXiv:2111.13700",
     "url": "https://ui.adsabs.harvard.edu/abs/2021arXiv211113700T",
     "field": "Astronomy"
+  },
+  "arm61/reporting_sampling": {
+    "title": "Advice on describing Bayesian analysis of neutron and X-ray reflectometry ",
+    "authors": [
+      "Andrew R. McCluskey",
+      "Andrew J. Caruana", 
+      "Christy J. Kinane",
+      "Alexander J. Armstrong",
+      "Tom Arnold",
+      "Joshaniel F. K. Cooper",
+      "David L. Cortie",
+      "Arwel V. Hughes",
+      "Jean-François Moulin",
+      "Andrew R. J. Nelson",
+      "Wojciech Potrzebowski",
+      "Vladimir Straostin"
+    ],
+    "doi": "arXiv:2207.10406",
+    "url": "https://arxiv.org/abs/2207.10406",
+    "field": "Statistics"
   }
 }
