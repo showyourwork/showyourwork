@@ -82,6 +82,7 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
         },
+        overwrite_if_exists=True,
     )
 
     # Set up git
@@ -94,18 +95,30 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
             cwd=repo,
         )
         get_stdout("git branch -M main", shell=True, cwd=repo)
-        if ssh:
-            get_stdout(
-                f"git remote add origin git@github.com:{user}/{repo}.git",
-                shell=True,
-                cwd=repo,
-            )
-        else:
-            get_stdout(
-                f"git remote add origin https://github.com/{user}/{repo}.git",
-                shell=True,
-                cwd=repo,
-            )
+
+        # Set up the remote if it doesn't exist
+        def callback(code, stdout, stderr):
+            if code != 0:
+                if ssh:
+                    get_stdout(
+                        f"git remote add origin git@github.com:{user}/{repo}.git",
+                        shell=True,
+                        cwd=repo,
+                    )
+                else:
+                    get_stdout(
+                        f"git remote add origin https://github.com/{user}/{repo}.git",
+                        shell=True,
+                        cwd=repo,
+                    )
+
+        get_stdout(
+            "git config --get remote.origin.url",
+            shell=True,
+            cwd=repo,
+            callback=callback,
+        )
+
     except Exception as e:
         logger = get_logger()
         if cache:
