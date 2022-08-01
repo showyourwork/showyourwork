@@ -1,4 +1,4 @@
-# Makefile use is deprecated as of v1.0.0. If the user tries to build an
+# Makefile use is deprecated as of v0.3.0. If the user tries to build an
 # article usign `make`, this displays a warning telling them to migrate the
 # repository to the new showyourwork standard.
 
