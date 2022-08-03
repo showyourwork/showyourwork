@@ -10,3 +10,4 @@ htmlcov
 junit
 **/sitecustomize.py
 dist/*
+.vscode

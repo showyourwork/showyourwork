@@ -421,6 +421,28 @@ in the repository root) .
   ms_name: article
 
 
+.. _config.optimize_caching:
+
+``optimize_caching``
+^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Optimize the workflow graph by removing unnecessary jobs upstream
+of cache hits? Can in some cases significantly reduce computation time;
+see `here <https://github.com/showyourwork/showyourwork/issues/124>`__
+for a detailed discussion. Snakemake does not do this optimization, so it is implemented
+as a patch on the ``showyourwork`` side and therefore disabled by default.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+    optimize_caching: true
+
+
 .. _config.overleaf:
 
 ``overleaf``
@@ -439,7 +461,6 @@ and make sure to check out :doc:`overleaf`.
 
     overleaf:
         id: 62150dd16134ef045f81d1c8
-        auto-commit: true
         push: 
             - src/tex/figures
         pull:

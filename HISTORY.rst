@@ -23,6 +23,11 @@
   accessing the remote file cache.
 - Fixed issue with broken GitHub links in the PDF when using SSH to authenticate
   with GitHub.
+- Implemented better testing for showyourwork features; test repositories now
+  persist on GitHub (showyourwork/test-**).
+- Implemented major fix for issue `#124 <https://github.com/showyourwork/showyourwork/issues/124>`__,
+  which allows us to optimize the DAG by eliminating unnecessary jobs upstream
+  of jobs with cache hits.
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++

@@ -6,12 +6,13 @@ access the workflow graph and use information about it within the workflow
 itself.
 
 """
-from showyourwork import paths
+from showyourwork import paths, logging
 from showyourwork.config import get_upstream_dependencies
-from showyourwork.patches import get_snakemake_variable
-from showyourwork.zenodo import Zenodo, get_dataset_urls
+from showyourwork.patches import get_snakemake_variable, patch_snakemake_cache_optimization
+from showyourwork.zenodo import get_dataset_urls
 import snakemake
 from collections import defaultdict
+
 
 def infer_additional_figure_dependencies():
     """
@@ -87,56 +88,76 @@ def infer_additional_figure_dependencies():
             config["labels"][f"{label}_cache"] = zenodo_cache_url
 
 
+def add_dag_metadata_to_config(dag):
+    """
+    Add metadata about dependencies to the global config dict.
+
+    """
+    # Assemble input-output information
+    dependencies = defaultdict(set)
+    for job in dag.jobs:
+        outputs = [str(file) for file in job.output]
+        inputs = [
+            str(file)
+            for file in job.input
+            if type(file) is snakemake.io._IOFile
+        ]
+        for file in outputs:
+            dependencies[file] |= set(inputs)
+    for key in dependencies.keys():
+        dependencies[key] = list(dependencies[key])
+    dependencies = dict(dependencies)
+
+    # Find recursive input-output dependencies
+    recursive_dependencies = {}
+    for output in dependencies.keys():
+        recursive_dependencies[output] = get_upstream_dependencies(
+            output, dependencies
+        )
+
+    # Add to the global config
+    config = snakemake.workflow.config
+    config["dag_dependencies"] = dependencies
+    config["dag_dependencies_recursive"] = recursive_dependencies
+
+
 def WORKFLOW_GRAPH(*args):
     """
     This is a dummy input function for the main rules of the build (``syw__pdf``
     and ``syw_arxiv``) which returns an empty list. As a side effect, it blocks
     until the checkpoint ``syw_dag`` is executed, at which point it queries the
-    workflow dag and adds graph metadata to the global ``config``.
+    workflow dag so we can modify it and add some metadata to the global
+    ``config``.
 
     """
+    logger = logging.get_logger()
+
     # Wait until the DAG has been built
     snakemake.workflow.checkpoints.syw__dag.get()
 
     # Get the workflow graph
     dag = get_snakemake_variable("dag", None)
-    
+
     if dag is None:
-        
-        # Fail silently
-        pass
+
+        # Fail with a warning
+        logger.warning(
+            "Unable to query the DAG. Functionality will be limited."
+        )
 
     else:
 
-        # Assemble input-output information
-        dependencies = defaultdict(set)
-        for job in dag.jobs:
-            outputs = [str(file) for file in job.output]
-            inputs = [
-                str(file) for file in job.input 
-                if type(file) is snakemake.io._IOFile
-            ]
-            for file in outputs:
-                dependencies[file] |= set(inputs)
-        for key in dependencies.keys():
-            dependencies[key] = list(dependencies[key])
-        dependencies = dict(dependencies)
-        
-        # Find recursive input-output dependencies
-        recursive_dependencies = {}
-        for output in dependencies.keys():
-            recursive_dependencies[output] = get_upstream_dependencies(
-                output, 
-                dependencies
-            )
-        
-        # Add to the global config
-        config = snakemake.workflow.config
-        config["dag_dependencies"] = dependencies
-        config["dag_dependencies_recursive"] = recursive_dependencies
+        # Add dependency information to the global config
+        add_dag_metadata_to_config(dag)
 
         # Infer figure deps from the DAG
+        logger.debug("Inferring figure dependencies recursively...")
         infer_additional_figure_dependencies()
+
+        # Optimize the DAG by removing jobs upstream of cache hits
+        if config["optimize_caching"]:
+            logger.debug("Optimizing jobs upstream of cache hits...")
+            patch_snakemake_cache_optimization(dag)
 
     # Dummy output
     return []
@@ -150,7 +171,7 @@ checkpoint:
     name:
         "syw__dag"
     message:
-        "Building DAG..."
+        "Building the workflow graph..."
     priority:
         snakemake.jobs.Job.HIGHEST_PRIORITY
     output:
