@@ -43,19 +43,9 @@
 \newcommand\script[1]{}
 
 % Showyourwork logo
-% We can only use our custom font if running XeTeX / LuaTeX
-\ifxetex
-  \usepackage{fontspec}
-  \defaultfontfeatures{Extension = .otf}
-  \newfontfamily\ShowYourWorkFont{showyourwork.otf}
-  \newcommand{\showyourwork}{%
-    {\ShowYourWorkFont\color{red}\smash{show your work!}}\xspace
-  }
-\else
-  \newcommand{\showyourwork}{%
-      \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
-  }
-\fi
+\newcommand{\showyourwork}{%
+    \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
+}
 
 % Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
 \let\oldmaketitle\maketitle
