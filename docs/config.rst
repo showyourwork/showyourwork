@@ -705,7 +705,9 @@ header.
   tectonic_args: ["-Z", "shell-escape"]
 
 to enable TeX shell escape functionality (allows the script to run
-arbitrary commands within TeX; be carefult as this could be a security hazard).
+arbitrary commands within TeX; be careful as this could be a security hazard).
+This is required to use the ``minted`` package for syntax highlighting of code
+snippets.
 
 .. _config.verbose:
 
