@@ -461,7 +461,6 @@ and make sure to check out :doc:`overleaf`.
 
     overleaf:
         id: 62150dd16134ef045f81d1c8
-        auto-commit: true
         push: 
             - src/tex/figures
         pull:
