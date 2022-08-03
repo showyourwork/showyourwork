@@ -325,7 +325,7 @@ def parse_config():
 
         #: Tectonic settings
         config["user_args"] = config.get("tectonic_args", [])
-        if not type(config["user_args"]) is list:
+        if not (isinstance(config["user_args"], list) and all(isinstance(elem, str) for elem in config["user_args"])):
             raise exceptions.ConfigError(
                 "Error parsing the config. "
                 "Setting `tectonic_args` must be a list of strings."
