@@ -323,6 +323,14 @@ def parse_config():
         defaults.update(config["dag"].get("graph_attr", {}))
         config["dag"]["graph_attr"] = defaults
 
+        #: Tectonic settings
+        config["user_args"] = config.get("tectonic_args", [])
+        if not type(config["user_args"]) is list:
+            raise exceptions.ConfigError(
+                "Error parsing the config. "
+                "Setting `tectonic_args` must be a list of strings."
+            )
+
         #
         # -- Internal settings --
         #

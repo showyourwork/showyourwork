@@ -59,6 +59,7 @@ def compile_tex(config, output_dir=None, args=[], stylesheet=None):
         ["tectonic"]
         + args
         + force_args
+        + config["user_args"]
         + [paths.user().repo / config["ms_tex"]],
         callback=callback,
     )

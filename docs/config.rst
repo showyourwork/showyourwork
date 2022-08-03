@@ -663,6 +663,29 @@ header.
     show_git_sha_or_tag: true
 
 
+.. _config.tectonic_args:
+
+``tectonic_args``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``list``
+
+**Description:** A list of additional command-line options to be passed directly to
+``tectonic`` when building the manuscript.
+
+**Default:** ``[]``
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  tectonic_args: ["-Z", "shell-escape"]
+
+to enable TeX shell escape functionality (allows the script to run
+arbitrary commands within TeX; be carefult as this could be a security hazard).
+
 .. _config.verbose:
 
 ``verbose``
