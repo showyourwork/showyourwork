@@ -323,6 +323,14 @@ def parse_config():
         defaults.update(config["dag"].get("graph_attr", {}))
         config["dag"]["graph_attr"] = defaults
 
+        #: Tectonic settings
+        config["user_args"] = config.get("tectonic_args", [])
+        if not (isinstance(config["user_args"], list) and all(isinstance(elem, str) for elem in config["user_args"])):
+            raise exceptions.ConfigError(
+                "Error parsing the config. "
+                "Setting `tectonic_args` must be a list of strings."
+            )
+
         #: Optimize the DAG by removing jobs upstream of cache hits
         config["optimize_caching"] = config.get("optimize_caching", False)
 
