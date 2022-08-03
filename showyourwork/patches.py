@@ -420,3 +420,167 @@ def patch_snakemake_wait_for_files():
     snakemake.io.wait_for_files = wait_for_files
     snakemake.dag.wait_for_files = wait_for_files
     snakemake.jobs.wait_for_files = wait_for_files
+
+
+def job_is_cached(job):
+    """
+    Return True if a job's outputs will be restored from cache.
+
+    """
+    logger = get_logger()
+    cache = snakemake.workflow.workflow.output_file_cache
+
+    # Check if user requested caching for job
+    if not snakemake.workflow.workflow.is_cached_rule(job.rule):
+        logger.debug(f"Job {job.name} is not cacheable.")
+        return False
+
+    # Check for a local cache hit
+    try:
+        if cache.exists(job):
+            logger.debug(f"Local cache exists for job {job.name}.")
+            return True
+        else:
+            pass
+    except:
+        # Job is not cacheable (no output files or multiple output files)
+        logger.debug(f"Job {job.name} is not cacheable.")
+        return False
+
+    # Check if a remote cache exists
+    branch = snakemake.workflow.config["git_branch"]
+    zenodo_doi = snakemake.workflow.config["cache"][branch]["zenodo"]
+    sandbox_doi = snakemake.workflow.config["cache"][branch]["sandbox"]
+    if not zenodo_doi and not sandbox_doi:
+        logger.debug(f"No cache hits for job {job.name}.")
+        return False
+
+    # Loop over cache files for the job (should really only be one)
+    for outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job):
+
+        def file_exists(doi):
+            """
+            Return True if the file exists in the deposit with given doi.
+
+            """
+            if doi:
+                try:
+                    Zenodo(doi).download_file(
+                        cachefile, job.rule.name, dry_run=True
+                    )
+                    return True
+                except exceptions.FileNotFoundOnZenodo:
+                    pass
+            return False
+
+        if file_exists(zenodo_doi) or file_exists(sandbox_doi):
+            continue
+        else:
+            # No hit!
+            logger.debug(f"No cache hits for job {job.name}.")
+            return False
+
+    # All cache files exist
+    logger.debug(f"Remote cache exists for job {job.name}.")
+    return True
+
+
+def get_skippable_jobs(dag):
+    """
+    Search the DAG and return jobs we can safely skip due to
+    downstream cache hits.
+
+    """
+    logger = get_logger()
+
+    # Get all jobs (nodes) with cache hits
+    cached_jobs = set([job for job in dag.jobs if job_is_cached(job)])
+    logger.debug("The following jobs have cache hits:")
+    logger.debug("    " + " ".join([job.name for job in cached_jobs]))
+
+    # Nodes we can skip
+    nodes = set(cached_jobs)
+
+    # Loop until there are no changes to the graph
+    new_nodes = True
+    while new_nodes:
+
+        new_nodes = set()
+        for node in nodes:
+
+            # Find all parents that are in `nodes`
+            parents = set()
+            for file in node.input:
+                try:
+                    parents |= set(dag.file2jobs(file)).difference(nodes)
+                except snakemake.exceptions.MissingRuleException:
+                    # Not all files have producers
+                    pass
+
+            # Find parents whose children are all in `nodes`
+            for parent in parents:
+                children = set()
+                for file in parent.output:
+                    children |= set(
+                        [job for job in dag.jobs if file in job.input]
+                    )
+                if all([child in nodes for child in children]):
+                    new_nodes.add(parent)
+
+        # Add the new batch to the list of all skippable nodes
+        nodes |= new_nodes
+
+    # Exclude the cached jobs from the list we'll skip
+    nodes = nodes.difference(cached_jobs)
+
+    return nodes
+
+
+def patch_snakemake_cache_optimization(dag):
+    """
+    Remove unnecessary jobs upstream of those with cache hits.
+
+    See the full discussion about this feature
+    `here <https://github.com/showyourwork/showyourwork/issues/124>`__.
+
+    """
+    logger = get_logger()
+
+    if snakemake.workflow.workflow.output_file_cache is not None:
+
+        # Get list of jobs we can skip
+        skippable_jobs = get_skippable_jobs(dag)
+        logger.debug(
+            "Skipping the following jobs because of downstream cache hits:"
+        )
+        logger.debug("    " + " ".join([job.name for job in skippable_jobs]))
+
+        # Patch the Snakemake method that executes jobs
+        scheduler = snakemake.workflow.workflow.scheduler
+        for executor in scheduler._executor, scheduler._local_executor:
+            if executor:
+
+                # Original method
+                _cached_or_run = executor.cached_or_run
+
+                # Intercept jobs we don't need to run
+                def wrapper(self, job, run_func, *args):
+
+                    if job in skippable_jobs:
+                        # Instead of running this job, we create empty temp
+                        # outputs to trick Snakemake & keep going
+                        for output in job.output:
+                            if not output.exists:
+                                logger.warning(
+                                    f"Skipping job {job.name} because "
+                                    "of a downstream cache hit."
+                                )
+                                output.set_flags({"temp": True})
+                                output.touch_or_create()
+                        return
+                    else:
+                        # We need to run this rule
+                        _cached_or_run(job, run_func, *args)
+
+                # Patch the method
+                executor.cached_or_run = types.MethodType(wrapper, executor)

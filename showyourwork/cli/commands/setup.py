@@ -25,9 +25,31 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
     # Parse the slug
     user, repo = slug.split("/")
     if Path(repo).exists():
-        raise exceptions.ShowyourworkException(
-            f"Directory already exists: {repo}."
-        )
+
+        # Check if it's an empty git repository
+        def callback(code, stdout, stderr):
+            if code != 0:
+                # `git log` errors if there are no commits;
+                # that's what we want
+                return
+            else:
+                # There is some history; let's not re-write it
+                raise exceptions.ShowyourworkException(
+                    f"Directory already exists: {repo}."
+                )
+
+        # Require nothing but a `.git` folder and no commit history
+        contents = set(list(Path(repo).glob("*"))) - set([Path(repo) / ".git"])
+        if len(contents) == 0:
+            get_stdout(
+                "git log 2> /dev/null", shell=True, cwd=repo, callback=callback
+            )
+        else:
+            # Refuse to continue
+            raise exceptions.ShowyourworkException(
+                f"Directory already exists: {repo}."
+            )
+
     name = f"@{user}".replace("_", "")
 
     # Get current stable version
@@ -60,6 +82,7 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
         },
+        overwrite_if_exists=True,
     )
 
     # Set up git
@@ -72,18 +95,30 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
             cwd=repo,
         )
         get_stdout("git branch -M main", shell=True, cwd=repo)
-        if ssh:
-            get_stdout(
-                f"git remote add origin git@github.com:{user}/{repo}.git",
-                shell=True,
-                cwd=repo,
-            )
-        else:
-            get_stdout(
-                f"git remote add origin https://github.com/{user}/{repo}.git",
-                shell=True,
-                cwd=repo,
-            )
+
+        # Set up the remote if it doesn't exist
+        def callback(code, stdout, stderr):
+            if code != 0:
+                if ssh:
+                    get_stdout(
+                        f"git remote add origin git@github.com:{user}/{repo}.git",
+                        shell=True,
+                        cwd=repo,
+                    )
+                else:
+                    get_stdout(
+                        f"git remote add origin https://github.com/{user}/{repo}.git",
+                        shell=True,
+                        cwd=repo,
+                    )
+
+        get_stdout(
+            "git config --get remote.origin.url",
+            shell=True,
+            cwd=repo,
+            callback=callback,
+        )
+
     except Exception as e:
         logger = get_logger()
         if cache:
