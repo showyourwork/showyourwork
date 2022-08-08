@@ -120,6 +120,13 @@ def clone(project_id, path=None):
     # storing the url containing the password in .git/config
     get_stdout(["git", "init"], cwd=str(paths.user(path=path).overleaf))
 
+    # Overleaf uses a branch called 'master' by default. If the local config
+    # uses a different name, we need to change it.
+    get_stdout(
+        ["git", "branch", "-M", "master"],
+        cwd=str(paths.user(path=path).overleaf)
+    )
+
     # Pull from the repo (hide secrets)
     def callback(code, stdout, stderr):
         if stdout:
@@ -151,6 +158,7 @@ def wipe_remote(project_id):
     """
     with TemporaryDirectory() as cwd:
         get_stdout(["git", "init"], cwd=cwd)
+        get_stdout(["git", "branch", "-M", "master"], cwd=cwd)
         (
             overleaf_email,
             overleaf_password,
