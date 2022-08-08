@@ -1,14 +1,10 @@
-channels:
-  - defaults
-  - conda-forge
-  - bioconda
 dependencies:
   - python=3.9
   - pip=21.0.1
-  - tectonic=0.8.0
-  - mamba=0.23.3
-  - snakemake-minimal=6.15.5
-  - imagemagick
+  - conda-forge::tectonic=0.8.0
+  - conda-forge::mamba=0.23.3
+  - bioconda::snakemake-minimal=6.15.5
+  - conda-forge::imagemagick
   - graphviz
   - pip:
       - click==8.0.4
