@@ -156,22 +156,32 @@ def parse_syw_spec(syw_spec):
             syw_spec = {"path": syw_spec}
 
     if "pip" in syw_spec:
-        return f"showyourwork=={syw_spec['pip']}"
-    if "path" in syw_spec:
-        path = syw_spec["path"]
+        version = syw_spec.pop("pip")
+        solved = f"showyourwork=={version}"
+    elif "path" in syw_spec:
+        path = syw_spec.pop("path")
         if not Path(path).is_absolute():
             path = (paths.user().repo / syw_spec).resolve()
         else:
             path = Path(path).resolve()
         if not path.exists():
             raise exceptions.ShowyourworkNotFoundError(path)
-        return f"-e {path}"
-
-    fork = syw_spec.get(
-        "fork", "https://github.com/showyourwork/showyourwork.git"
-    )
-    spec = syw_spec.get("ref", None)
-    if not spec:
-        return f"git+{fork}#egg=showyourwork"
+        solved = f"-e {path}"
     else:
-        return f"git+{fork}@{spec}#egg=showyourwork"
+        fork = syw_spec.pop(
+            "fork", "https://github.com/showyourwork/showyourwork.git"
+        )
+        spec = syw_spec.pop("ref", None)
+        if not spec:
+            solved = f"git+{fork}#egg=showyourwork"
+        else:
+            solved = f"git+{fork}@{spec}#egg=showyourwork"
+
+    if syw_spec:
+        raise exceptions.ShowyourworkException(
+            "Invalid specification of the showyourwork version. "
+            f"We solved the version as '{solved}', but the following (unrecognized or "
+            f"invalid) fields were also set: {syw_spec}"
+        )
+
+    return solved
