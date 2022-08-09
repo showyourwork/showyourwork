@@ -739,16 +739,19 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 ``version``
 ^^^^^^^^^^^
 
-**Type:** ``str`` or ``mapping``
+**Type:** ``mapping`` (or ``str``)
 
 **Description:** The version of the |showyourwork| package required to build
 the article, populated automatically when ``showyouwork setup`` is run. Users
-may, however, change this to upgrade/downgrade to a different version of the
-package. Options are:
+may change this to upgrade/downgrade to a different version of the
+package. Please see the nested keys (``pip``, ``path``, ``fork``, and ``ref``)
+below for information on how to specify an exact version.
+
+For backwards compatibility, the ``version`` option also accepts a string
+corresponding to:
 
 - any pip-installable version number (e.g., ``0.3.0``)
 - a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`_ repo
-- a mapping with the nested keys (``pip``, ``path``, ``fork``, and ``ref``) described below
 
 **Required:** yes
 
@@ -784,7 +787,9 @@ package. Options are:
 **Type:** ``str``
 
 **Description:** A relative (to the project repository root) or absolute path to
-a local version of |showyourwork|.
+a local version of |showyourwork|. Note that this should only be used during
+development, since third-party users of your workflow may not have |showyourwork|
+installed in the same path locally!
 
 **Required:** no
 
