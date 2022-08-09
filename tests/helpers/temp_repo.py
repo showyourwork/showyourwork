@@ -136,8 +136,7 @@ class TemporaryShowyourworkRepository:
             "[showyourwork](https://github.com/showyourwork/showyourwork) "
             "generated from the file "
             f"[{file}](https://github.com/showyourwork/showyourwork/blob/main/tests/{file}).*"
-            "\n\n"
-            + message
+            "\n\n" + message
         )
         with open(self.cwd / "README.md", "r") as f:
             contents = f.read()
@@ -344,7 +343,7 @@ class TemporaryShowyourworkRepository:
 
 
 class ShowyourworkRepositoryActions:
-    def add_figure_environment(self, add_script=True):
+    def add_figure_environment(self, add_script=True, label="fig:test_figure"):
         """Adds a figure environment to the TeX file that includes `test_figure.pdf`."""
         ms = self.cwd / "src" / "tex" / "ms.tex"
         with open(ms, "r") as f:
@@ -359,7 +358,7 @@ class ShowyourworkRepositoryActions:
                         r"\begin{centering}",
                         r"\includegraphics[width=\linewidth]{figures/test_figure.pdf}",
                         r"\caption{A test figure.}",
-                        r"\label{fig:test_figure}",
+                        r"\label{" + label + "}",
                         r"\end{centering}",
                         r"\end{figure}",
                         "",

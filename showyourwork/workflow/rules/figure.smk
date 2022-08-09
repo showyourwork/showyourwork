@@ -8,6 +8,8 @@ from showyourwork import paths
 
 figures = config["tree"]["figures"]
 fignum = 1
+graphics_with_rules = []
+
 for figure_name in figures:
 
     # Get figure metadata
@@ -16,6 +18,12 @@ for figure_name in figures:
     dependencies = figures[figure_name]["dependencies"]
     command = figures[figure_name]["command"]
     static = figures[figure_name]["static"]
+
+    # If we already have a rule to generate all of the
+    # graphics for this figure, skip it
+    if all(graphic in graphics_with_rules for graphic in graphics):
+        continue
+    graphics_with_rules.extend(graphics)
 
     # If there's no command to generate this figure, skip it
     if command is None:
