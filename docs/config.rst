@@ -775,7 +775,7 @@ package. Options are:
 
 .. code-block:: yaml
 
-  verbose:
+  version:
     fork: https://github.com/SOMEUSER/showyourwork.git
 
 .. _config.version_spec:
@@ -796,5 +796,5 @@ the |showyourwork| repo specified by ``version.fork``.
 
 .. code-block:: yaml
 
-  verbose:
+  version:
     spec: main
