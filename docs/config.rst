@@ -739,7 +739,7 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 ``version``
 ^^^^^^^^^^^
 
-**Type:** ``str``
+**Type:** ``str`` or ``mapping``
 
 **Description:** The version of the |showyourwork| package required to build
 the article, populated automatically when ``showyouwork setup`` is run. Users
@@ -748,6 +748,7 @@ package. Options are:
 
 - any pip-installable version number (e.g., ``0.3.0``)
 - a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`_ repo
+- a mapping with the ``fork`` and/or ``spec`` keys described below
 
 **Required:** yes
 
@@ -756,3 +757,44 @@ package. Options are:
 .. code-block:: yaml
 
   version: 0.3.0
+
+.. _config.version_fork:
+
+``version.fork``
+^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The URL of a GitHub fork of the |showyourwork| repo.
+
+**Required:** no
+
+**Default:** ``https://github.com/showyourwork/showyourwork.git``
+
+**Example:**
+
+.. code-block:: yaml
+
+  verbose:
+    fork: https://github.com/SOMEUSER/showyourwork.git
+
+.. _config.version_spec:
+
+``version.spec``
+^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The spec for a specific branch, tag, or commit on the fork of
+the |showyourwork| repo specified by ``version.fork``.
+
+**Required:** no
+
+**Default:** ``null``
+
+**Example:**
+
+.. code-block:: yaml
+
+  verbose:
+    spec: main
