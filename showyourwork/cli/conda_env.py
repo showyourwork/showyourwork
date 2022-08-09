@@ -10,6 +10,7 @@ import filecmp
 import jinja2
 from pathlib import Path
 import re
+
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -80,28 +81,7 @@ def run_in_env(command, **kwargs):
         .render(),
         Loader=Loader,
     )
-    syw_spec = user_config.get("version", None)
-    if not syw_spec:
-        # No specific version provided; default to any
-        syw_spec = "showyourwork"
-    elif re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
-        # This is an actual package version
-        syw_spec = f"showyourwork=={syw_spec}"
-    elif re.match("[0-9a-f]{5,40}", syw_spec):
-        # This is a commit SHA
-        syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{syw_spec}#egg=showyourwork"
-    elif syw_spec in ["main", "dev"]:
-        # This is a branch on github
-        syw_spec = f"git+https://github.com/showyourwork/showyourwork.git@{syw_spec}#egg=showyourwork"
-    else:
-        # Assume it's a local path to the package
-        if not Path(syw_spec).is_absolute():
-            syw_spec = (paths.user().repo / syw_spec).resolve()
-        else:
-            syw_spec = Path(syw_spec).resolve()
-        if not syw_spec.exists():
-            raise exceptions.ShowyourworkNotFoundError(syw_spec)
-        syw_spec = f"-e {syw_spec}"
+    syw_spec = parse_syw_spec(user_config.get("version", None))
 
     # Copy the showyourwork environment file to a temp location,
     # and add the user's requested showyourwork version as a dependency
@@ -156,3 +136,52 @@ def run_in_env(command, **kwargs):
         shell=True,
         **kwargs,
     )
+
+
+def parse_syw_spec(syw_spec):
+    # No specific version provided; default to any
+    if not syw_spec:
+        return "showyourwork"
+
+    # For backwards compatibility, parse the version string into a structured
+    # spec that we understand
+    if isinstance(syw_spec, str):
+        if re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
+            syw_spec = {"pip": syw_spec}
+        elif re.match("[0-9a-f]{5,40}", syw_spec):
+            syw_spec = {"ref": syw_spec}
+        elif syw_spec in ["main", "dev"]:
+            syw_spec = {"ref": syw_spec}
+        else:
+            syw_spec = {"path": syw_spec}
+
+    if "pip" in syw_spec:
+        version = syw_spec.pop("pip")
+        solved = f"showyourwork=={version}"
+    elif "path" in syw_spec:
+        path = syw_spec.pop("path")
+        if not Path(path).is_absolute():
+            path = (paths.user().repo / syw_spec).resolve()
+        else:
+            path = Path(path).resolve()
+        if not path.exists():
+            raise exceptions.ShowyourworkNotFoundError(path)
+        solved = f"-e {path}"
+    else:
+        fork = syw_spec.pop(
+            "fork", "https://github.com/showyourwork/showyourwork.git"
+        )
+        spec = syw_spec.pop("ref", None)
+        if not spec:
+            solved = f"git+{fork}#egg=showyourwork"
+        else:
+            solved = f"git+{fork}@{spec}#egg=showyourwork"
+
+    if syw_spec:
+        raise exceptions.ShowyourworkException(
+            "Invalid specification of the showyourwork version. "
+            f"We solved the version as '{solved}', but the following (unrecognized or "
+            f"invalid) fields were also set: {syw_spec}"
+        )
+
+    return solved

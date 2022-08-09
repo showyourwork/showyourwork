@@ -739,12 +739,16 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 ``version``
 ^^^^^^^^^^^
 
-**Type:** ``str``
+**Type:** ``mapping`` (or ``str``)
 
 **Description:** The version of the |showyourwork| package required to build
 the article, populated automatically when ``showyouwork setup`` is run. Users
-may, however, change this to upgrade/downgrade to a different version of the
-package. Options are:
+may change this to upgrade/downgrade to a different version of the
+package. Please see the nested keys (``pip``, ``path``, ``fork``, and ``ref``)
+below for information on how to specify an exact version.
+
+For backwards compatibility, the ``version`` option also accepts a string
+corresponding to:
 
 - any pip-installable version number (e.g., ``0.3.0``)
 - a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`_ repo
@@ -756,3 +760,83 @@ package. Options are:
 .. code-block:: yaml
 
   version: 0.3.0
+
+.. _config.version_pip:
+
+``version.pip``
+^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A version number for |showyourwork| that is available on PyPI.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  version:
+    pip: 0.3.0
+
+.. _config.version_path:
+
+``version.path``
+^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A relative (to the project repository root) or absolute path to
+a local version of |showyourwork|. Note that this should only be used during
+development, since third-party users of your workflow may not have |showyourwork|
+installed in the same path locally!
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  version:
+    path: ./local/version/of/showyourwork
+
+.. _config.version_fork:
+
+``version.fork``
+^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The URL of a fork of the |showyourwork| repo.
+
+**Required:** no
+
+**Default:** ``https://github.com/showyourwork/showyourwork.git``
+
+**Example:**
+
+.. code-block:: yaml
+
+  version:
+    fork: https://github.com/SOMEUSER/showyourwork.git
+
+.. _config.version_ref:
+
+``version.ref``
+^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The name of a specific branch, tag, or commit on the fork of
+the |showyourwork| repo specified by ``version.fork``.
+
+**Required:** no
+
+**Default:** ``null``
+
+**Example:**
+
+.. code-block:: yaml
+
+  version:
+    ref: main
