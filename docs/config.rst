@@ -747,7 +747,7 @@ may, however, change this to upgrade/downgrade to a different version of the
 package. Options are:
 
 - any pip-installable version number (e.g., ``0.3.0``)
-- a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `<github.com/showyourwork/showyourwork>`_ repo
+- a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`_ repo
 
 **Required:** yes
 
