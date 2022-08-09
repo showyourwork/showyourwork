@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run tests (push)
     concurrency: showyourwork
-    if: github.event_name == "push"
+    if: github.event_name == 'push'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
