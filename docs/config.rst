@@ -748,7 +748,7 @@ package. Options are:
 
 - any pip-installable version number (e.g., ``0.3.0``)
 - a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`_ repo
-- a mapping with the ``fork`` and/or ``spec`` keys described below
+- a mapping with the nested keys (``pip``, ``path``, ``fork``, and ``ref``) described below
 
 **Required:** yes
 
