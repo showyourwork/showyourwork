@@ -758,6 +758,43 @@ package. Options are:
 
   version: 0.3.0
 
+.. _config.version_pip:
+
+``version.pip``
+^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A version number for |showyourwork| that is available on PyPI.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  version:
+    pip: 0.3.0
+
+.. _config.version_path:
+
+``version.path``
+^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A relative (to the project repository root) or absolute path to
+a local version of |showyourwork|.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  version:
+    path: ./local/version/of/showyourwork
+
 .. _config.version_fork:
 
 ``version.fork``
@@ -765,7 +802,7 @@ package. Options are:
 
 **Type:** ``str``
 
-**Description:** The URL of a GitHub fork of the |showyourwork| repo.
+**Description:** The URL of a fork of the |showyourwork| repo.
 
 **Required:** no
 
@@ -778,14 +815,14 @@ package. Options are:
   version:
     fork: https://github.com/SOMEUSER/showyourwork.git
 
-.. _config.version_spec:
+.. _config.version_ref:
 
-``version.spec``
-^^^^^^^^^^^^^^^^
+``version.ref``
+^^^^^^^^^^^^^^^
 
 **Type:** ``str``
 
-**Description:** The spec for a specific branch, tag, or commit on the fork of
+**Description:** The name of a specific branch, tag, or commit on the fork of
 the |showyourwork| repo specified by ``version.fork``.
 
 **Required:** no
@@ -797,4 +834,4 @@ the |showyourwork| repo specified by ``version.fork``.
 .. code-block:: yaml
 
   version:
-    spec: main
+    ref: main

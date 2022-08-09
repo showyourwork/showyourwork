@@ -149,9 +149,9 @@ def parse_syw_spec(syw_spec):
         if re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
             syw_spec = {"pip": syw_spec}
         elif re.match("[0-9a-f]{5,40}", syw_spec):
-            syw_spec = {"sha": syw_spec}
+            syw_spec = {"ref": syw_spec}
         elif syw_spec in ["main", "dev"]:
-            syw_spec = {"branch": syw_spec}
+            syw_spec = {"ref": syw_spec}
         else:
             syw_spec = {"path": syw_spec}
 
@@ -170,9 +170,7 @@ def parse_syw_spec(syw_spec):
     fork = syw_spec.get(
         "fork", "https://github.com/showyourwork/showyourwork.git"
     )
-    spec = syw_spec.get(
-        "branch", syw_spec.get("tag", syw_spec.get("sha", None))
-    )
+    spec = syw_spec.get("ref", None)
     if not spec:
         return f"git+{fork}#egg=showyourwork"
     else:
