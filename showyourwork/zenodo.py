@@ -153,7 +153,14 @@ class Zenodo:
                 raise exceptions.InvalidZenodoDOI(self.doi)
 
             # Check if the user is an owner
-            self.user_is_owner = self.check_if_user_is_owner()
+            try:
+                self.user_is_owner = self.check_if_user_is_owner()
+            except Exception as e:
+                # Fail silently on connection errors
+                logger = get_logger()
+                logger.debug(f"Error accessing the {self.url} API:")
+                logger.debug(str(e))
+                self.user_is_owner = False
 
     def _get_access_token(self, error_if_missing=False):
         """

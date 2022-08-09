@@ -179,10 +179,14 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                             )
                         else:
                             logger.warn(f"Running rule from scratch...")
-                    except exceptions.ZenodoException as e:
+                    except Exception as e:
                         # NOTE: we treat all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        logger.error(str(e))
+                        logger.warn(
+                            "File not found on remote cache. See logs for details."
+                        )
+                        if len(str(e)):
+                            logger.debug(str(e))
                         if config.get("github_actions") and not config.get(
                             "run_cache_rules_on_ci"
                         ):
@@ -214,17 +218,14 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                             job.rule.name,
                             tarball=tarball,
                         )
-                    except (
-                        exceptions.ZenodoException,
-                        exceptions.RequestError,
-                    ) as e:
+                    except Exception as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        if len(str(e)):
-                            logger.error(str(e))
-                        logger.error(
-                            f"Failed to sync {outputfile} with Zenodo Sandbox cache."
+                        logger.warn(
+                            f"Failed to sync {outputfile} with Zenodo Sandbox cache. See logs for details."
                         )
+                        if len(str(e)):
+                            logger.debug(str(e))
 
             # Call the original method
             return _fetch(job)
@@ -253,17 +254,14 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         sandbox.upload_file(
                             cachefile, job.rule.name, tarball=tarball
                         )
-                    except (
-                        exceptions.ZenodoException,
-                        exceptions.RequestError,
-                    ) as e:
+                    except Exception as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        if len(str(e)):
-                            logger.error(str(e))
-                        logger.error(
-                            f"Failed to upload {outputfile} to Zenodo Sandbox cache."
+                        logger.warn(
+                            f"Failed to upload {outputfile} to Zenodo Sandbox cache. See logs for details."
                         )
+                        if len(str(e)):
+                            logger.debug(str(e))
 
                 return result
 
@@ -571,7 +569,7 @@ def patch_snakemake_cache_optimization(dag):
                         # outputs to trick Snakemake & keep going
                         for output in job.output:
                             if not output.exists:
-                                logger.warning(
+                                logger.warn(
                                     f"Skipping job {job.name} because "
                                     "of a downstream cache hit."
                                 )

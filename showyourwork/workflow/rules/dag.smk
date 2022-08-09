@@ -141,7 +141,7 @@ def WORKFLOW_GRAPH(*args):
     if dag is None:
 
         # Fail with a warning
-        logger.warning(
+        logger.warn(
             "Unable to query the DAG. Functionality will be limited."
         )
 
