@@ -1,6 +1,7 @@
 import pytest
 
 from showyourwork.cli.conda_env import parse_syw_spec
+from showyourwork.exceptions import ShowyourworkException
 
 
 @pytest.mark.parametrize(
@@ -36,7 +37,19 @@ from showyourwork.cli.conda_env import parse_syw_spec
             },
             "git+https://github.com/dfm/showyourwork@branch#egg=showyourwork",
         ),
+        (
+            {"invalid": "value"},
+            "raise",
+        ),
+        (
+            {"pip": "0.3.0", "ref": "main"},
+            "raise",
+        ),
     ],
 )
 def test_parse_syw_spec(spec, expected):
-    assert parse_syw_spec(spec) == expected
+    if expected == "raise":
+        with pytest.raises(ShowyourworkException):
+            parse_syw_spec(spec)
+    else:
+        assert parse_syw_spec(spec) == expected
