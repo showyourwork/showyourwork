@@ -76,7 +76,7 @@ jobs:
         run: python -m pytest tests/integration
 
       - name: Run tests (including remote)
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.repository == "showyourwork/showyourwork"
         shell: bash -l {0}
         run: python -m pytest --remote tests/integration
         env:
