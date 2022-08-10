@@ -132,7 +132,7 @@ class TemporaryShowyourworkRepository:
         )
         file = Path(inspect.getfile(self.__class__)).name
         readme = (
-            "*This is an automatically generated unit test for "
+            "*This is an automatically generated test for "
             "[showyourwork](https://github.com/showyourwork/showyourwork) "
             "generated from the file "
             f"[{file}](https://github.com/showyourwork/showyourwork/blob/main/tests/{file}).*"
