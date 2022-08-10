@@ -279,7 +279,7 @@ class TemporaryShowyourworkRepository:
                 handler.setLevel(logging.ERROR)
 
     @pytest.mark.asyncio_cooperative
-    async def test_repo(self):
+    async def test_local(self):
         """
         Test functionality by creating a new repo, customizing it,
         pushing it to GitHub, and awaiting the article build action to
@@ -293,12 +293,6 @@ class TemporaryShowyourworkRepository:
 
             # Always run this first
             self.startup()
-
-            # Create the repo on GitHub
-            if not self.local_build_only:
-                self.create_remote()
-                if self.clear_actions_cache_on_start:
-                    self.clear_remote_cache()
 
             # Set up the repo
             self.create_local()
@@ -315,19 +309,57 @@ class TemporaryShowyourworkRepository:
             # Run local checks
             self.check_build()
 
+            # Delete local repo (only on success)
+            self.delete_local()
+
+        finally:
+
+            # Always delete the Zenodo deposit (if created)
+            self.delete_zenodo()
+
+            # Always run this last
+            self.teardown()
+
+    @pytest.mark.remote
+    @pytest.mark.asyncio_cooperative
+    async def test_remote(self):
+        """
+        Test functionality by creating a new repo, customizing it,
+        pushing it to GitHub, and awaiting the article build action to
+        complete.
+
+        """
+        if self.local_build_only:
+            return
+
+        try:
+
+            # Disable screen logging info from showyourwork
+            self.disable_logging()
+
+            # Always run this first
+            self.startup()
+
+            # Create the repo on GitHub
+            self.create_remote()
+            if self.clear_actions_cache_on_start:
+                self.clear_remote_cache()
+
+            # Set up the repo
+            self.create_local()
+
+            # Customize the repo
+            self.customize()
+
+            # Commit changes
+            self.git_commit()
+
             # Push to GitHub to trigger the Actions workflow
             # and wait for the result
-            if not self.local_build_only:
-                await self.run_github_action()
-
-        except:
-
-            raise
-
-        else:
+            await self.run_github_action()
 
             # Delete remote repo (only on success)
-            if not self.local_build_only and self.delete_remote_on_success:
+            if self.delete_remote_on_success:
                 self.delete_remote()
 
             # Delete local repo (only on success)

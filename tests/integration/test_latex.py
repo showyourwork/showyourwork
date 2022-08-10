@@ -1,8 +1,11 @@
+import pytest
 from helpers import (
     TemporaryShowyourworkRepository,
     ShowyourworkRepositoryActions,
 )
 
+
+pytestmark = pytest.mark.remote
 
 # A workflow that explicitly installs a TeX distribution
 workflow = """

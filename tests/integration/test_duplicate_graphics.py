@@ -7,7 +7,7 @@ from helpers import (
 class TestDuplicateGraphics(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
 ):
-    """Test graphcis included in multiple figure environments."""
+    """Test graphics included in multiple figure environments."""
 
     # No need to test this on CI
     local_build_only = True

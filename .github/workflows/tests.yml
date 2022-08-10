@@ -2,21 +2,22 @@ name: tests
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
   pull_request_target:
 
 jobs:
   approve:
     runs-on: ubuntu-latest
-    if: startsWith(github.event_name, 'pull_request')
+    if: github.event_name == 'pull_request_target'
     steps:
-    - name: Approve pull request workflow run
-      run: echo "For security reasons, all pull requests need to be approved first before running any automated CI."
+      - name: Approve pull request workflow run
+        run: echo "For security reasons, all pull requests need to be approved first before running any automated CI."
 
-  build-push:
+  unit:
     runs-on: ubuntu-latest
-    name: Run tests (push)
-    concurrency: showyourwork
-    if: github.event_name == 'push'
+    name: Run unit tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -25,25 +26,59 @@ jobs:
           submodules: recursive
 
       - name: Set up python
-        id: setup_python
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: "3.9"
 
       - name: Install showyourwork
-        id: install
-        if: steps.setup_python.outcome == 'success'
         shell: bash -l {0}
         run: |
           python -m pip install -U pip
           python -m pip install -e ".[tests]"
 
       - name: Run tests
-        id: tests
-        if: steps.install.outcome == 'success'
         shell: bash -l {0}
-        run: python -m pytest
+        run: python -m pytest tests/unit
+
+      - name: Publish tests
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "junit/*.xml"
+
+  integration:
+    runs-on: ubuntu-latest
+    name: Run integration tests
+    concurrency: showyourwork
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up python
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.9"
+
+      - name: Install showyourwork
+        shell: bash -l {0}
+        run: |
+          python -m pip install -U pip
+          python -m pip install -e ".[tests]"
+
+      - name: Run tests (skpping remote)
+        if: github.event_name != 'push'
+        shell: bash -l {0}
+        run: python -m pytest tests/integration
+
+      - name: Run tests (including remote)
+        if: github.event_name == 'push'
+        shell: bash -l {0}
+        run: python -m pytest --remote tests/integration
         env:
           ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
@@ -52,17 +87,16 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
 
       - name: Publish tests
-        id: publish_tests
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
           files: "junit/*.xml"
 
-  build-pr:
+  integration-remote-pr:
     runs-on: ubuntu-latest
-    name: Run tests (pull request)
+    name: Run remote integration tests on PR (requires approval)
     concurrency: showyourwork
-    if: startsWith(github.event_name, 'pull_request')
+    if: github.event_name == 'pull_request_target'
     needs: [approve]
     environment:
       name: Integrate Pull Request
@@ -74,25 +108,20 @@ jobs:
           submodules: recursive
 
       - name: Set up python
-        id: setup_python
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: "3.9"
 
       - name: Install showyourwork
-        id: install
-        if: steps.setup_python.outcome == 'success'
         shell: bash -l {0}
         run: |
           python -m pip install -U pip
           python -m pip install -e ".[tests]"
 
-      - name: Run tests
-        id: tests
-        if: steps.install.outcome == 'success'
+      - name: Run tests (only remote)
         shell: bash -l {0}
-        run: python -m pytest
+        run: python -m pytest --remote -m "remote" tests/integration
         env:
           ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}

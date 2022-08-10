@@ -1,9 +1,12 @@
+import pytest
 from helpers import (
     TemporaryShowyourworkRepository,
     ShowyourworkRepositoryActions,
 )
 from showyourwork.config import edit_yaml
 
+
+pytestmark = pytest.mark.remote
 
 test_figure_script = """
 import matplotlib.pyplot as plt

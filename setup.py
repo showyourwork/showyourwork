@@ -26,9 +26,7 @@ setup(
         "packaging",
         "lastversion",
     ],
-    extras_require={
-        "tests": ["pytest", "pytest-asyncio-cooperative"],
-    },
+    extras_require={"tests": ["pytest", "pytest-asyncio-cooperative"]},
     entry_points={
         "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]
     },
