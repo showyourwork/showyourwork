@@ -71,7 +71,7 @@ jobs:
           python -m pip install -e ".[tests]"
 
       - name: Run tests (skpping remote)
-        if: github.event_name != 'push'
+        if: github.event_name != 'push' || github.repository != "showyourwork/showyourwork"
         shell: bash -l {0}
         run: python -m pytest tests/integration
 
