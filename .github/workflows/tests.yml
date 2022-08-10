@@ -50,7 +50,7 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     name: Run integration tests
-    concurrency: showyourwork
+    concurrency: showyourwork-integration
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -92,10 +92,10 @@ jobs:
         with:
           files: "junit/*.xml"
 
-  integration-remote-pr:
+  integration-pr:
     runs-on: ubuntu-latest
     name: Run remote integration tests on PR (requires approval)
-    concurrency: showyourwork
+    concurrency: showyourwork-integration-pr
     if: github.event_name == 'pull_request_target'
     needs: [approve]
     environment:
