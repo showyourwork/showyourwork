@@ -135,7 +135,7 @@ class TemporaryShowyourworkRepository:
             "*This is an automatically generated test for "
             "[showyourwork](https://github.com/showyourwork/showyourwork) "
             "generated from the file "
-            f"[{file}](https://github.com/showyourwork/showyourwork/blob/main/tests/{file}).*"
+            f"[{file}](https://github.com/showyourwork/showyourwork/blob/main/tests/integration/{file}).*"
             "\n\n" + message
         )
         with open(self.cwd / "README.md", "r") as f:
