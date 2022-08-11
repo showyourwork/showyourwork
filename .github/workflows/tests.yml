@@ -9,16 +9,6 @@ on:
     types: [labeled]
 
 jobs:
-  event_file:
-    name: Event file
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload event file
-        uses: actions/upload-artifact@v2
-        with:
-          name: Event File
-          path: ${{ github.event_path }}
-
   unit:
     if: github.event_name != 'pull_request_target'
     runs-on: ubuntu-latest
@@ -45,14 +35,6 @@ jobs:
       - name: Run tests
         shell: bash -l {0}
         run: python -m pytest tests/unit
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results (unit)
-          path: |
-            junit/*.xml
 
   integration:
     if: github.event_name != 'pull_request_target'
@@ -81,14 +63,6 @@ jobs:
       - name: Run local integration tests
         shell: bash -l {0}
         run: python -m pytest tests/integration
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results (integration)
-          path: |
-            junit/*.xml
 
   remote:
     if: ${{ (github.event_name == 'push' && github.repository == 'showyourwork/showyourwork') || (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
@@ -123,11 +97,3 @@ jobs:
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
           OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results (remote)
-          path: |
-            junit/*.xml
