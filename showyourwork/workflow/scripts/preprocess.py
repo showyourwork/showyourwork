@@ -206,14 +206,6 @@ def check_figure_format(figure):
                     "Command \marginicon must always come before the figure label."
                 )
 
-    # Check that there is at most one label
-    if len(labels) >= 2:
-        raise exceptions.FigureFormatError(
-            "A figure has multiple labels: `{}`".format(
-                ", ".join(label.text for label in labels)
-            )
-        )
-
     # Check that there is at most one script
     if len(scripts) >= 2:
         raise exceptions.FigureFormatError(
