@@ -1,6 +1,6 @@
 """
 Defines the rules ``syw__downloadX`` and ``syw__extractX`` to download
-and tar-extract files from Zenodo deposits, where ``X`` is the number of 
+and tar-extract files from Zenodo deposits, where ``X`` is the number of
 the file.
 
 Runs the scripts :doc:`download` and :doc:`extract`.

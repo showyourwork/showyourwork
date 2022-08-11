@@ -187,7 +187,7 @@ The process-pull-request.yml file
 Pull request builds only get read access to the repository, so they can't upload the
 article PDF anywhere. Instead, they generate a workflow artifact. This workflow
 runs whenever a pull request build completes successfully. It downloads the build
-artifact and force-pushes the article PDF to a special branch called (by default) 
+artifact and force-pushes the article PDF to a special branch called (by default)
 ``pull-request-<NUMBER>-pdf``, where ``<NUMBER>`` is the number of the pull request.
 This workflow also posts a comment in the PR discussion with a link to the PDF
 for convenience.
@@ -201,10 +201,10 @@ The src directory
 This directory contains the source code for building your article. This includes
 the LaTeX manuscript, the bibliography file, and the scripts
 needed to produce all of the article figures. Figure scripts and auxiliary
-code should be placed in the ``scripts`` directory; datasets should be 
+code should be placed in the ``scripts`` directory; datasets should be
 programmatically generated or downloaded into the ``data`` directory; static
 figures (if absolutely necessary!) should be placed in the ``static``
-directory; and TeX files should be placed in the ``tex`` directory. 
+directory; and TeX files should be placed in the ``tex`` directory.
 See below for details.
 
 
@@ -284,7 +284,7 @@ As an example, the following code
     fig = plt.figure()
     plt.plot(data)
     fig.savefig(paths.figures / "figure.pdf")
-    
+
 loads a dataset called ``dataset.txt`` from the :ref:`data<data>` directory, plots it,
 and saves the figure as ``figure.pdf`` in the :ref:`figures<figures>` directory.
 All paths declared in the ``paths`` module are absolute, so the above script will

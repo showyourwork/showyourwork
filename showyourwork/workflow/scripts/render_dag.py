@@ -2,12 +2,13 @@
 Generates a directed acyclic graph (DAG) of the build process.
 
 """
-from showyourwork import paths, exceptions
+from pathlib import Path
+
+from jinja2 import BaseLoader, Environment
+
+from showyourwork import exceptions, paths
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import get_dataset_dois
-from pathlib import Path
-from jinja2 import Environment, BaseLoader
-import json
 
 try:
     import graphviz

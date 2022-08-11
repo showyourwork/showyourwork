@@ -1,9 +1,11 @@
-from .subproc import parse_request
-from . import exceptions
-from collections.abc import MutableMapping
-import requests
-import os
 import json
+import os
+from collections.abc import MutableMapping
+
+import requests
+
+from . import exceptions
+from .subproc import parse_request
 
 
 def flatten_dict(d, parent_key="", sep="__"):

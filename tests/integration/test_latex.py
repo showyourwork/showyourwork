@@ -1,9 +1,8 @@
 import pytest
 from helpers import (
-    TemporaryShowyourworkRepository,
     ShowyourworkRepositoryActions,
+    TemporaryShowyourworkRepository,
 )
-
 
 pytestmark = pytest.mark.remote
 
@@ -30,7 +29,7 @@ jobs:
         id: tinytex
         shell: bash -l {0}
         run: |
-          wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh 
+          wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
           sudo ~/bin/tlmgr install type1cm cm-super
 
       - name: Build the article PDF

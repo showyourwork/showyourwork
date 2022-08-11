@@ -1,10 +1,10 @@
 import pytest
 from helpers import (
-    TemporaryShowyourworkRepository,
     ShowyourworkRepositoryActions,
+    TemporaryShowyourworkRepository,
 )
-from showyourwork.config import edit_yaml
 
+from showyourwork.config import edit_yaml
 
 pytestmark = pytest.mark.remote
 

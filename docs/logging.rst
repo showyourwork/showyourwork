@@ -3,7 +3,7 @@ Logging
 
 Log files live in ``.showyourwork/logs``. There is typically a log file
 for |showyourwork| messages and errors (``showyourwork.log``), one for Snakemake
-messages and errors, including the full verbose Snakemake workflow output 
+messages and errors, including the full verbose Snakemake workflow output
 (``snakemake.log``), and one for LaTeX messages and errors (``tectonic.log``).
 
 If you run into any errors in your build, these log files might help you debug!

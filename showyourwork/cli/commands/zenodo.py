@@ -1,9 +1,9 @@
+import os
+
+from ... import exceptions, logging, paths
+from ...config import edit_yaml
 from ...git import get_repo_branch
 from ...zenodo import Zenodo
-from ...config import edit_yaml
-from ... import paths, exceptions, logging
-import json
-import os
 
 
 def zenodo_publish(branch):

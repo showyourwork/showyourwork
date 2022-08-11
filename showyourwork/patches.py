@@ -1,19 +1,20 @@
 """
 Implements functions that modify the behavior of Snakemake.
 
-This functionality is pretty hacky and is almost certainly not future-proof, 
-so if we change the Snakemake version (currently pinned at 16.5.5), we may have 
+This functionality is pretty hacky and is almost certainly not future-proof,
+so if we change the Snakemake version (currently pinned at 16.5.5), we may have
 to update the code in this file.
 
 """
-from . import paths, exceptions
-from .zenodo import Zenodo
-from .logging import get_logger, ColorizingStreamHandler
 import inspect
 import logging
+import os
 import time
 import types
-import os
+
+from . import exceptions, paths
+from .logging import ColorizingStreamHandler, get_logger
+from .zenodo import Zenodo
 
 try:
     import snakemake

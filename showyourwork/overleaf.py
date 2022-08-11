@@ -1,13 +1,12 @@
-from . import paths, exceptions, logging
-from .subproc import get_stdout
-import subprocess
 import os
+import re
 import shutil
 from pathlib import Path
-from urllib.parse import quote
 from tempfile import TemporaryDirectory
-import re
+from urllib.parse import quote
 
+from . import exceptions, logging, paths
+from .subproc import get_stdout
 
 OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
     [
@@ -124,7 +123,7 @@ def clone(project_id, path=None):
     # uses a different name, we need to change it.
     get_stdout(
         ["git", "branch", "-M", "master"],
-        cwd=str(paths.user(path=path).overleaf)
+        cwd=str(paths.user(path=path).overleaf),
     )
 
     # Pull from the repo (hide secrets)

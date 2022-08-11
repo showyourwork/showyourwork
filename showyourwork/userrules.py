@@ -1,10 +1,10 @@
+import requests
+
 from . import exceptions
-from .logging import get_logger
-from .patches import patch_snakemake_cache
 from .config import get_run_type
 from .git import get_repo_branch
-import json
-import requests
+from .logging import get_logger
+from .patches import patch_snakemake_cache
 
 try:
     import snakemake

@@ -1,8 +1,8 @@
 import pytest
 from helpers import TemporaryShowyourworkRepository
-from showyourwork.subproc import get_stdout
-from showyourwork.config import edit_yaml
 
+from showyourwork.config import edit_yaml
+from showyourwork.subproc import get_stdout
 
 A = """
 # Record the number

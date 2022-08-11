@@ -2,23 +2,23 @@ r"""
 Does a first pass through the manuscript to infer the workflow graph.
 
 This does a fast compile of the article, overriding commands like
-``\label``, ``\script``, ``\variable``, and 
+``\label``, ``\script``, ``\variable``, and
 ``\includegraphics`` to instead print their arguments to an XML
 log file, which we use to infer the relationships between input and output
 files. This information is then used to build the workflow graph for the
 main article build step.
 
 """
-from showyourwork import paths, exceptions, zenodo
-from showyourwork.zenodo import Zenodo, get_dataset_urls
-from showyourwork.tex import compile_tex
-from showyourwork.config import get_upstream_dependencies
-import sys
 import json
 import re
-from pathlib import Path
 from collections.abc import MutableMapping
+from pathlib import Path
 from xml.etree.ElementTree import parse as ParseXMLTree
+
+from showyourwork import exceptions, paths, zenodo
+from showyourwork.config import get_upstream_dependencies
+from showyourwork.tex import compile_tex
+from showyourwork.zenodo import Zenodo, get_dataset_urls
 
 
 def flatten_dataset_contents(d, parent_key="", default_path=None):

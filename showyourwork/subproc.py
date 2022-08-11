@@ -1,6 +1,4 @@
 import subprocess
-import os
-from pathlib import Path
 
 
 def process_run_result(code, stdout, stderr):
@@ -8,7 +6,7 @@ def process_run_result(code, stdout, stderr):
     Default callback function for ``get_stdout``.
 
     """
-    from . import logging, exceptions
+    from . import exceptions, logging
 
     # Log the output
     logger = logging.get_logger()

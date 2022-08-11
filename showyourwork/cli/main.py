@@ -1,10 +1,12 @@
-from . import commands
-from .. import git, exceptions, __version__
-from textwrap import TextWrapper
 import os
-import shutil
-import click
 import re
+import shutil
+from textwrap import TextWrapper
+
+import click
+
+from .. import __version__, exceptions, git
+from . import commands
 
 
 def ensure_top_level():

@@ -31,7 +31,7 @@ workflow.
 
 .. code-block:: yaml
 
-    dag: 
+    dag:
       render: true
 
 
@@ -50,7 +50,7 @@ workflow.
 
 .. code-block:: yaml
 
-    dag: 
+    dag:
       render: true
       engine: sfdp
 
@@ -60,13 +60,13 @@ workflow.
 
 **Type:** ``mapping``
 
-**Description:** Custom attributes for the graph. See 
+**Description:** Custom attributes for the graph. See
 `here <https://graphviz.org/doc/info/attrs.html>`__ for details.
 Note that all values must be provided as strings.
 
 **Required:** no
 
-**Default:** 
+**Default:**
 
 .. code-block:: yaml
 
@@ -77,7 +77,7 @@ Note that all values must be provided as strings.
 
 .. code-block:: yaml
 
-    dag: 
+    dag:
       render: true
       graph_attr:
         ranksep: "1"
@@ -102,7 +102,7 @@ the figure scripts, datasets, figure outputs, etc.
 
 .. code-block:: yaml
 
-    dag: 
+    dag:
       render: true
       group_by_type: true
 
@@ -112,13 +112,13 @@ the figure scripts, datasets, figure outputs, etc.
 
 **Type:** ``mapping``
 
-**Description:** Attributes for all the nodes in the graph. See 
+**Description:** Attributes for all the nodes in the graph. See
 `here <https://graphviz.org/doc/info/attrs.html>`__ for details.
 Note that all values must be provided as strings.
 
 **Required:** no
 
-**Default:** 
+**Default:**
 
 .. code-block:: yaml
 
@@ -130,7 +130,7 @@ Note that all values must be provided as strings.
 
 .. code-block:: yaml
 
-    dag: 
+    dag:
       render: true
       node_attr:
         shape: "box"
@@ -157,7 +157,7 @@ DAG is saved as the file ``dag.pdf`` at the root of the repository.
 
 .. code-block:: yaml
 
-    dag: 
+    dag:
       render: true
 
 
@@ -205,18 +205,18 @@ See below for the syntax of the ``contents`` section of the ``datasets`` mapping
 
 **Type:** ``mapping``
 
-**Description:** 
+**Description:**
 The Zenodo or Zenodo Sandbox version DOI for the deposit.
 
 .. note::
-    
-    Zenodo makes a distinction 
+
+    Zenodo makes a distinction
     between *version* DOIs and *concept* DOIs. Version DOIs are static, and tied
     to a specific version of a deposit (the way you'd expect a DOI to behave); this is
     what you should provide here.
     Concept DOIs, on the other hand, point to *all* versions of a given record,
     and always resolve to the *latest* version.
-    Check out the sidebar on the 
+    Check out the sidebar on the
     `web page for this sample deposit <https://zenodo.org/record/6468327>`_:
 
     .. image:: _static/zenodo_dois.png
@@ -229,7 +229,7 @@ The Zenodo or Zenodo Sandbox version DOI for the deposit.
 
     You can see that the DOI ``10.5281/zenodo.6468327`` corresponds to a specific version (``1``)
     of the deposit, while the DOI ``10.5281/zenodo.6468326`` corresponds to *all* versions of
-    the deposit (it's listed under "Cite all versions?"). 
+    the deposit (it's listed under "Cite all versions?").
     The former is a "version" DOI, while the latter is a "concept" DOI.
     You can read more about that in the `Zenodo docs <https://help.zenodo.org/#versioning>`_.
 
@@ -352,9 +352,9 @@ to ``src/data`` (subfolders will be preserved).
 
 **Type:** ``list``
 
-**Description:** List of dependencies for each script. Each entry should be 
-the path to a script (either a figure script or the TeX manuscript itself) 
-relative to the repository root. Following each entry, provide a list of 
+**Description:** List of dependencies for each script. Each entry should be
+the path to a script (either a figure script or the TeX manuscript itself)
+relative to the repository root. Following each entry, provide a list of
 all files on which the script depends. These dependencies may either be
 static (such as helper scripts) or programmatically generated (such as
 datsets downloaded from Zenodo). In the latter case, instructions on how
@@ -461,7 +461,7 @@ and make sure to check out :doc:`overleaf`.
 
     overleaf:
         id: 62150dd16134ef045f81d1c8
-        push: 
+        push:
             - src/tex/figures
         pull:
             - src/tex/ms.tex
@@ -509,7 +509,7 @@ in this case, the id is ``6262c032aae5421d6d945acf``.
 **Type:** ``bool``
 
 **Description:** A list of files and/or folders to be pulled from the Overleaf project before
-every build. These should be files that are only ever modified on Overleaf, such as 
+every build. These should be files that are only ever modified on Overleaf, such as
 the TeX manuscript and other TeX files. Paths should be relative to the top level of the
 repository. Exact names are required; no glob syntax allowed.
 
@@ -588,7 +588,7 @@ error is thrown. Set this option to ``false`` to override this behavior.
 
 **Description:** Allow cacheable rules to run on GitHub Actions if the cached
 output is not available? Default is ``false``, which prevents potentially
-computationally expensive rules from running on the cloud. In this case, 
+computationally expensive rules from running on the cloud. In this case,
 cache misses result in an error when running on GitHub Actions only.
 
 **Required:** no
@@ -609,7 +609,7 @@ cache misses result in an error when running on GitHub Actions only.
 
 **Type:** ``mapping``
 
-**Description:** Mapping of script extensions to instructions on how to execute 
+**Description:** Mapping of script extensions to instructions on how to execute
 them to generate output. By default, |showyourwork| expects output files
 (e.g., figures or datasets) to
 be generated by executing the corresponding scripts with ``python``. You can add custom
@@ -636,7 +636,7 @@ following specification in the ``yaml`` file:
     py:
       python {script}
 
-That is, ``python`` is used to execute all scripts that end in ``.py``. 
+That is, ``python`` is used to execute all scripts that end in ``.py``.
 
 **Example:**
 We can tell |showyourwork| how to generate figures by executing a Jupyter

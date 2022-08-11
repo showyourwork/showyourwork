@@ -1,9 +1,9 @@
-from . import paths, exceptions
-from .subproc import get_stdout
-from .logging import get_logger
-from pathlib import Path
 import shutil
+from pathlib import Path
 
+from . import exceptions, paths
+from .logging import get_logger
+from .subproc import get_stdout
 
 __all__ = ["compile_tex"]
 

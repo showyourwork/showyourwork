@@ -23,7 +23,7 @@
 % version 2005/12/01 or later.
 %
 % This work has the LPPL maintenance status `author-maintained'.
-% 
+%
 % The Current Maintainer of this work is: Royal Astronomical Society,
 % MNRAS Editorial Office, who can be contacted on mn@ras.org.uk
 %
@@ -514,7 +514,7 @@ $\reset@font\displaystyle##$\hfil\cr>\cr\approx\cr}}}
 \newcommand\aspc{ASP Conf. Ser.}     % ASP Conference Series
 \newcommand\azh{Azh}                 % Astronomicheskii Zhurnal
 \newcommand\baas{BAAS}               % Bulletin of the American Astronomical Society
-\newcommand\bac{Bull. Astron. Inst. Czechoslovakia} % Bulletin of the Astronomical Institutes of Czechoslovakia 
+\newcommand\bac{Bull. Astron. Inst. Czechoslovakia} % Bulletin of the Astronomical Institutes of Czechoslovakia
 \newcommand\bain{Bull. Astron. Inst. Netherlands} % Bulletin Astronomical Institute of the Netherlands
 \newcommand\caa{Chinese Astron. Astrophys.} % Chinese Astronomy and Astrophysics
 \newcommand\cjaa{Chinese J.~Astron. Astrophys.} % Chinese Journal of Astronomy and Astrophysics
@@ -1397,7 +1397,7 @@ $\reset@font\displaystyle##$\hfil\cr>\cr\approx\cr}}}
 % The following list is not simply \dospecials, because that includes
 % '{' and '}', which we need.  And if they're in a DOI... well.
 \def\@urlcharsother{%
-  \let\do\@makeother 
+  \let\do\@makeother
   \do\\\do\$\do\&\do\#\do\^\do\_\do\%\do\~}
 
 % \doi
@@ -1807,7 +1807,7 @@ has been typeset from a \TeX/\LaTeX\ file prepared by the author.}
 %          Removed the fleqn code in this file, which didn't do anything
 %          Added definitions for journal abbreviations used by ADS
 %          Define a \ion command for ionization states
-%          Added commands used by the new version 
+%          Added commands used by the new version
 %            of the .bst file (code by Norman Gray)
 %          Now licensed under LPPL, comments updated accordingly
 %          Various minor tweaks and updates

@@ -3,7 +3,7 @@ LaTeX stuff
 
 This page describes how |showyourwork| parses your LaTeX manuscript (by default,
 the file ``src/ms.tex``) and uses it to build your article PDF. While you can
-do just about anything you'd regularly do when writing in LaTeX, there are a 
+do just about anything you'd regularly do when writing in LaTeX, there are a
 few rules and details you should be aware of controlling the generation of figures
 and the inclusion of clickable margin icons, which we discuss in detail below.
 
@@ -79,11 +79,11 @@ In a nutshell, the idea behind |showyourwork| is to have users place all the
 figure-generating scripts in the ``src/scripts`` directory, and the workflow
 will automatically execute them when generating the article PDF.
 However, it would be pretty wasteful to re-run *all* of the scripts every time
-we build the article PDF, since many of the scripts likely haven't changed 
+we build the article PDF, since many of the scripts likely haven't changed
 since the last time the article was built.
 It's therefore useful for |showyourwork| to know exactly which scripts generate
 which figures so it can optimize the build process.
-There are different ways the user can do this, but the easiest is to 
+There are different ways the user can do this, but the easiest is to
 call the ``\script`` command within a figure environment, as follows:
 
 .. code-block:: latex
@@ -98,16 +98,16 @@ call the ``\script`` command within a figure environment, as follows:
     \end{figure}
 
 Within this figure environment, we've declared the figure we wish to include
-(``figures/mandelbrot.pdf``, where the path is relative to the ``tex`` file), 
+(``figures/mandelbrot.pdf``, where the path is relative to the ``tex`` file),
 the label we'll use to reference the figure
 (``fig:mandlebrot``), and the name of the script that generates all of the
 graphics in this environment (``mandelbrot.py``, which is relative to
 the ``src/scripts`` directory). Figure environments can only have a single
-``\script`` declaration, and must include a figure label. 
+``\script`` declaration, and must include a figure label.
 
 .. important::
 
-    Previous versions of |showyourwork| inferred the name of the figure 
+    Previous versions of |showyourwork| inferred the name of the figure
     script directly from the label. This functionality is now deprecated,
     and there are no longer any restrictions on the formatting of the
     argument of the ``\label`` command within a figure environment.
@@ -164,12 +164,12 @@ it is missing and re-builds the article whenever the script or rule that generat
 that file is modified.
 
 Note that users *could* instead use ``\input`` and manually include the
-file as a dependency in the ``showyourwork.yml`` config file, 
+file as a dependency in the ``showyourwork.yml`` config file,
 but errors may occur during the initial
-pre-processing step if the file does not already exist. A workaround for this is 
+pre-processing step if the file does not already exist. A workaround for this is
 to nest the ``\input`` command in a ``\IfFileExists{}{}`` conditional, but we
-simply recommend you use the ``\variable`` command instead for 
-including programmatically-generated files! 
+simply recommend you use the ``\variable`` command instead for
+including programmatically-generated files!
 
 When using the ``\variable`` command, you probably want to also define a rule
 in the ``Snakefile`` to generate the file. For example, say you want to include
@@ -195,7 +195,7 @@ inform the workflow about it by adding the following rule to your ``Snakefile``:
         script:
             "src/scripts/deep_thought.py"
 
-And that's it -- your article PDF will now update whenever anything in 
+And that's it -- your article PDF will now update whenever anything in
 the input file(s) to the rule (which include the Python script itself)
 changes.
 
@@ -220,7 +220,7 @@ and your PDF is compiled for you.
     showyourwork tarball
 
 command, which places all the relevant class and style files in the ``src/tex``
-directory so you can build your article PDF using a 
+directory so you can build your article PDF using a
 standard LaTeX compiler. Running this command packages everything up into
 a tarball, which you should be able to upload to arXiv straight away.
 
@@ -233,8 +233,8 @@ be able to use anywhere in your texfile:
 ``\showyourwork``
 ^^^^^^^^^^^^^^^^^
 
-This is a command that takes no arguments and simply adds a tiny inline 
-|showyourwork| logo. Useful for bragging to your friends about your cool 
+This is a command that takes no arguments and simply adds a tiny inline
+|showyourwork| logo. Useful for bragging to your friends about your cool
 new toy!
 
 ``\marginicon``
@@ -248,7 +248,7 @@ any calls to ``\caption`` and before any calls to ``\label``.
 ``\GitHubURL``
 ^^^^^^^^^^^^^^^
 
-A macro that resolves to the current repository URL 
+A macro that resolves to the current repository URL
 (i.e., ``https://github.com/user/repo``).
 
 ``\GitHubSHA``

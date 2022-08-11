@@ -2,11 +2,11 @@
 Downloads a publically available file from a Zenodo or Zenodo Sandbox record.
 
 """
-from showyourwork import exceptions
-from showyourwork.zenodo import Zenodo
-from showyourwork.logging import get_logger
-import sys
 import subprocess
+
+from showyourwork import exceptions
+from showyourwork.logging import get_logger
+from showyourwork.zenodo import Zenodo
 
 if __name__ == "__main__":
 

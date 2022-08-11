@@ -5,7 +5,7 @@
 %% The original source files were:
 %%
 %% aa.dtx  (with options: `aa')
-%% 
+%%
 %% aa.dtx
 %% Copyright EDP Sciences, E-press (2016), J.-C. Charpentier (2010), all rights reserved.
 %% Class `aa' to use with LaTeX 2e

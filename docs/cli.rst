@@ -21,7 +21,7 @@
 .. |showyourwork_cache_help| raw:: html
 
     <span style="font-family:var(--pst-font-family-monospace);">showyourwork cache --help</span>
- 
+
 
 Command line interface
 ======================
@@ -54,7 +54,7 @@ Running |showyourwork| (without any arguments) is a shortcut for ``showyourworkÂ
 
 The ``setup`` subcommand sets up an open source article repository from scratch
 in the current working directory. This is an interactive command (unless you
-provide the ``--yes`` or ``--quiet`` options; see below). 
+provide the ``--yes`` or ``--quiet`` options; see below).
 Let's step through what it does here.
 
 To set up a new open source article repository, run
@@ -65,7 +65,7 @@ To set up a new open source article repository, run
     showyourwork setup <span class="text-highlight">$USER/$REPO</span>
     </pre>
 
-where you should replace ``$USER`` with your GitHub user name and 
+where you should replace ``$USER`` with your GitHub user name and
 ``$REPO`` with the name of your new article repository. For definiteness,
 here we'll use my user name (``rodluger``) and we'll call our repository
 ``article``.
@@ -94,8 +94,8 @@ Running the ``setup`` command as above should bring up the following prompt:
 
 
 As requested, if you haven't yet created the remote repository, go to
-`github.com/new <https://github.com/new>`_ in your browser to create an empty 
-repository of the same name. There's no need to create a README, gitignore file, 
+`github.com/new <https://github.com/new>`_ in your browser to create an empty
+repository of the same name. There's no need to create a README, gitignore file,
 or LICENSE at this time, as |showyourwork| will set those up for you.
 
 Press any key to bring up the next prompt. What you see next depends on whether
@@ -128,15 +128,15 @@ If instead you passed the ``--cache`` flag, you'll see the following message:
 .. raw:: html
 
     <pre>
-    You requested remote caching on Zenodo, so I'm going to create a deposit draft where 
-    intermediate results will be cached. Please make sure at this time that you have 
-    defined the <span class="text-highlight">ZENODO_TOKEN</span> environment variable containing your API key for Zenodo. 
+    You requested remote caching on Zenodo, so I'm going to create a deposit draft where
+    intermediate results will be cached. Please make sure at this time that you have
+    defined the <span class="text-highlight">ZENODO_TOKEN</span> environment variable containing your API key for Zenodo.
     If you don't have one, visit
 
         <span class="text-highlight">https://zenodo.org/account/settings/applications/tokens/new</span>
 
-    to create a new personal access token with <span class="text-highlight">deposit:actions</span> and <span class="text-highlight">deposit:write</span> 
-    scopes and store it in the environment variable <span class="text-highlight">ZENODO_TOKEN</span>. In order for 
+    to create a new personal access token with <span class="text-highlight">deposit:actions</span> and <span class="text-highlight">deposit:write</span>
+    scopes and store it in the environment variable <span class="text-highlight">ZENODO_TOKEN</span>. In order for
     this to work on GitHub Actions, you'll also have to visit
 
         <span class="text-highlight">https://github.com/tmp/tmp/settings/secrets/actions/new</span>
@@ -160,7 +160,7 @@ and GitHub Actions secret.
     repository!
 
 You can read more about GitHub secrets (and the security measures
-in place to prevent them from getting exposed to the outside world) at the 
+in place to prevent them from getting exposed to the outside world) at the
 `GitHub documentation <https://docs.github.com/en/actions/security-guides/encrypted-secrets>`_.
 
 Press any key to bring up the next prompt. What you see next depends on whether
@@ -188,7 +188,7 @@ hit ``Ctrl+C`` and run
 
     showyourwork setup --overleaf=62150dd16134ef045f81d1c8
 
-where you should replace ``62150dd16134ef045f81d1c8`` with the 24-character id 
+where you should replace ``62150dd16134ef045f81d1c8`` with the 24-character id
 of a new (blank) Overleaf project. Once you create a new Overleaf project, you
 can grab the id from the last bit of the project's URL. Note that |showyourwork|
 requires the Overleaf project to be empty, otherwise it will refuse to set up
@@ -206,19 +206,19 @@ you'll get the following message:
 .. raw:: html
 
     <pre>
-    You provided an Overleaf project id, so I'm going to set up Overleaf integration 
-    for this repository. Please make sure at this time that you have defined the 
+    You provided an Overleaf project id, so I'm going to set up Overleaf integration
+    for this repository. Please make sure at this time that you have defined the
     <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> environment variables. In order for this to
     work on GitHub Actions, please go to
 
         <span class="text-highlight">https://github.com/tmp/tmp/settings/secrets/actions/new</span>
 
-    at this time and create <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with your 
+    at this time and create <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with your
     Overleaf credentials.
     </pre>
 
 To allow |showyourwork| to push to/pull from your Overleaf project, create
-the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` and 
+the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` and
 populate them with your Overleaf email address and password, respectively;
 then re-run the setup command.
 Again, take care to never actually commit this information to your repository!
@@ -250,7 +250,7 @@ the upstream branch as follows:
 Run this command to build the article in the current working directory. Note that
 you must run this command from the top level of the repository (an error will
 be thrown otherwise). The command accepts any number of arguments, all of which
-are forwarded to ``snakemake``. 
+are forwarded to ``snakemake``.
 By default, ``showyourwork`` passes the following arguments to ``snakemake``:
 
 .. code-block:: bash
@@ -282,7 +282,7 @@ at the `snakemake documentation <https://snakemake.readthedocs.io/en/stable/exec
 .. warning::
 
     Not all Snakemake options are compatible with |showyourwork|. If you
-    run into issues when specifying custom options, please 
+    run into issues when specifying custom options, please
     `let us know <https://github.com/showyourwork/showyourwork/issues/new>`_.
 
 Note that the build process in |showyourwork| happens in two steps, each of
@@ -323,7 +323,7 @@ Force clean
 ^^^^^^^^^^^
 
 If ``showyourworkÂ clean`` didn't remove all of the output, you can force
-the deletion of all the programmatically-generated figures and datasets by 
+the deletion of all the programmatically-generated figures and datasets by
 passing the ``--force`` option, which will remove
 everything in the ``src/tex/figures``, ``src/data``, and temporary
 ``.showyourwork`` folders
@@ -335,7 +335,7 @@ Deep clean
 
 If you want to start over from scratch, you can also pass the ``--deep`` option
 for a deep clean. This removes
-the hidden ``.snakemake`` folder, which houses the ``conda`` environments 
+the hidden ``.snakemake`` folder, which houses the ``conda`` environments
 for your build (among other things), so
 deleting it will force a re-install of all packages used in your workflow.
 This option also removes the ``.showyourwork``

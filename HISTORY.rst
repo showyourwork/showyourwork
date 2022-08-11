@@ -7,18 +7,18 @@
 - Added recursive dependency checks; if any upstream dependency of a figure script
   is a dataset or cached Zenodo deposit, an icon to that dataset/deposit will
   be displayed next to the figure.
-- Added functionality to obtain the Snakemake DAG prior to running any of the 
-  rules (used to infer upstream dependencies above). Metadata from the DAG is 
+- Added functionality to obtain the Snakemake DAG prior to running any of the
+  rules (used to infer upstream dependencies above). Metadata from the DAG is
   stored in the global config.
 - Reintroduced option to render the workflow DAG when building the article;
-  users can now provide DAG-related settings under the ``dag`` entry in the 
+  users can now provide DAG-related settings under the ``dag`` entry in the
   config file (set ``render: true`` to enable the DAG generation).
   Note that ``showyourwork`` now depends on the ``graphviz`` package, so users
   may have to clear their ``~/.showyourwork`` cache to force regeneration of
   the default ``showyourwork`` conda environment.
 - Workaround for issue with incomplete files not getting deleted when passing
-  the ``--rerun-incomplete`` flag. Running ``showyourwork clean`` now deletes 
-  the ``.snakemake/incomplete`` directory. 
+  the ``--rerun-incomplete`` flag. Running ``showyourwork clean`` now deletes
+  the ``.snakemake/incomplete`` directory.
 - Server errors on Zenodo / Zenodo Sandbox no longer lead to fatal errors when
   accessing the remote file cache.
 - Fixed issue with broken GitHub links in the PDF when using SSH to authenticate
@@ -32,12 +32,12 @@
 0.3.0 (2022-06-22)
 ++++++++++++++++++
 
-- Brand new release, featuring a complete re-write of the workflow. Below is 
+- Brand new release, featuring a complete re-write of the workflow. Below is
   a list of the *major* changes:
-- ``showyourwork!`` is now a pip-installable Python package. It is no longer 
+- ``showyourwork!`` is now a pip-installable Python package. It is no longer
   a git submodule. The ``showyourwork.yml`` file must now specify which version
   of ``showyourwork`` to use.
-- There is no longer a ``Makefile``. Articles should be built using the 
+- There is no longer a ``Makefile``. Articles should be built using the
   ``showyourwork`` command, which creates and activates a clean conda environment
   containing ``Snakemake`` and all dependencies needed to run the pipeline for
   each article. Users therefore no longer need to install ``Snakemake`` or ``mamba``

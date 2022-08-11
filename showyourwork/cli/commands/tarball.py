@@ -1,12 +1,13 @@
+import os
+from pathlib import Path
+
 from ... import paths
 from ..conda_env import run_in_env
-from pathlib import Path
-import os
 
 
 def tarball(options=""):
     """Build the article tarball.
-    
+
     Args:
         options (str, optional): Additional options to pass to Snakemake.
     """

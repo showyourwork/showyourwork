@@ -1,10 +1,10 @@
-from . import paths
-from pathlib import Path
 import logging
-import platform
-import threading
 import os
+import platform
 import sys
+import threading
+
+from . import paths
 
 try:
     import snakemake

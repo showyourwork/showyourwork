@@ -2,13 +2,13 @@
 Compiles the article manuscript into a PDF.
 
 """
-from showyourwork import paths
-from showyourwork.tex import compile_tex
-import sys
 import shutil
 from pathlib import Path
-from jinja2 import Environment, BaseLoader
 
+from jinja2 import BaseLoader, Environment
+
+from showyourwork import paths
+from showyourwork.tex import compile_tex
 
 if __name__ == "__main__":
 

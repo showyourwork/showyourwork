@@ -2,7 +2,7 @@
 Defines the rule ``syw__preprocess`` to parse the config and build the
 workflow graph.
 
-Runs the script :doc:`preprocess` to generate the ``.showyourwork/config.json`` 
+Runs the script :doc:`preprocess` to generate the ``.showyourwork/config.json``
 file containing metadata about the build and the workflow graph.
 
 """
@@ -12,12 +12,12 @@ from showyourwork import paths
 rule:
     """
     Generate a `config.json` file for the main build.
-    
-    This rule builds the article using ``tectonic``, but re-defines ``figure``, 
-    ``caption``, and ``label`` commands to print XML tags to a special log file. 
-    This way, we can use TeX to construct a full XML tree of the document for us, 
-    without any need for parsing the TeX file ourselves. This XML tree is then 
-    used to determine relationships between the figure scripts and the figure 
+
+    This rule builds the article using ``tectonic``, but re-defines ``figure``,
+    ``caption``, and ``label`` commands to print XML tags to a special log file.
+    This way, we can use TeX to construct a full XML tree of the document for us,
+    without any need for parsing the TeX file ourselves. This XML tree is then
+    used to determine relationships between the figure scripts and the figure
     files.
 
     This rule also assembles information about the datasets and other script
@@ -25,7 +25,7 @@ rule:
     all this up alongside the user's config settings into the file
     `config.json`, which is used as input to the main `showyourwork`
     workflow.
-    
+
     """
     name:
         "syw__preprocess"

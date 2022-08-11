@@ -1,11 +1,13 @@
-from helpers import TemporaryShowyourworkRepository
-from showyourwork import gitapi
-from showyourwork.subproc import get_stdout, parse_request
+import asyncio
+import json
+import re
+
 import pytest
 import requests
-import json
-import asyncio
-import re
+from helpers import TemporaryShowyourworkRepository
+
+from showyourwork import gitapi
+from showyourwork.subproc import get_stdout, parse_request
 
 pytestmark = pytest.mark.remote
 

@@ -17,7 +17,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 master_doc = "index"
 rst_epilog = """
 .. |showyourwork| raw:: html
-    
+
     <span style="color:red; font-weight:bold; font-style:italic;">showyourwork!</span>
 """
 
