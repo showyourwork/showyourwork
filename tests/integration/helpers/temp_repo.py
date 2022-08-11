@@ -167,8 +167,7 @@ class TemporaryShowyourworkRepository:
             with open(self.cwd / "showyourwork.yml", "r") as f:
                 contents = yaml.load(f, Loader=Loader)
             contents["version"] = {"fork": fork, "ref": ref}
-            print(contents)
-            with open(file, "w") as f:
+            with open(self.cwd / "showyourwork.yml", "w") as f:
                 yaml.dump(contents, f, Dumper=Dumper)
 
     def create_remote(self):
