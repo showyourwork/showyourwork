@@ -41,3 +41,5 @@ jobs:
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
           OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          SHOWYOURWORK_FORK: ${{ github.event.pull_request.head.repo.clone_url }}
+          SHOWYOURWORK_REF: ${{ github.event.pull_request.head.sha }}

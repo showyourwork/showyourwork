@@ -13,6 +13,13 @@ import asyncio
 import pytest
 import re
 import os
+import yaml
+
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    # If LibYAML not installed
+    from yaml import Loader, Dumper
 
 
 # Folder where we'll create our temporary repos
@@ -74,15 +81,15 @@ class TemporaryShowyourworkRepository:
         """Subclass me to run post-build local checks."""
         pass
 
-    def create_local(self):
+    def create_local(self, use_local=False):
         """Create the repo locally."""
         # Delete any local repos
         self.delete_local()
 
         # Parse options
         command = "showyourwork setup"
-        if self.showyourwork_version is None:
-            if self.use_local_showyourwork:
+        if use_local or self.showyourwork_version is None:
+            if use_local or self.use_local_showyourwork:
                 version = str(Path(showyourwork.__file__).parents[1])
             else:
                 version = get_repo_sha()
@@ -149,6 +156,20 @@ class TemporaryShowyourworkRepository:
         )
         with open(self.cwd / "README.md", "w") as f:
             f.write(contents)
+
+        # Update the version in the config file to point to the correct fork if required
+        fork = os.environ.get("SHOWYOURWORK_FORK", "").strip()
+        if fork:
+            ref = (
+                os.environ.get("SHOWYOURWORK_REF", "").strip()
+                or get_repo_sha()
+            )
+            with open(self.cwd / "showyourwork.yml", "r") as f:
+                contents = yaml.load(f, Loader=Loader)
+            contents["version"] = {"fork": fork, "ref": ref}
+            print(contents)
+            with open(file, "w") as f:
+                yaml.dump(contents, f, Dumper=Dumper)
 
     def create_remote(self):
         """Create the repo on GitHub if needed."""
@@ -279,8 +300,7 @@ class TemporaryShowyourworkRepository:
             if isinstance(handler, logging.StreamHandler):
                 handler.setLevel(logging.ERROR)
 
-    @pytest.mark.asyncio_cooperative
-    async def test_local(self):
+    def test_local(self):
         """
         Test functionality by creating a new repo, customizing it,
         pushing it to GitHub, and awaiting the article build action to
@@ -296,7 +316,7 @@ class TemporaryShowyourworkRepository:
             self.startup()
 
             # Set up the repo
-            self.create_local()
+            self.create_local(use_local=True)
 
             # Customize the repo
             self.customize()
