@@ -38,6 +38,7 @@ class TemporaryShowyourworkRepository:
     use_local_showyourwork = debug
     showyourwork_version = None
     local_build_only = debug
+    require_local_build = False
     delete_remote_on_success = False
     clear_actions_cache_on_start = True
 
@@ -353,6 +354,11 @@ class TemporaryShowyourworkRepository:
 
             # Commit changes
             self.git_commit()
+
+            # Some tests require a local build first
+            if self.require_local_build:
+                self.build_local()
+                self.check_build()
 
             # Push to GitHub to trigger the Actions workflow
             # and wait for the result

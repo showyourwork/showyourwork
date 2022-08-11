@@ -21,6 +21,7 @@ class TestCache(
 
     # Enable caching
     cache = True
+    require_local_build = True
 
     def customize(self):
         """Add all necessary files for the build."""
@@ -54,6 +55,7 @@ class TestDirCache(
 
     # Enable caching
     cache = True
+    require_local_build = True
 
     def customize(self):
         """Add all necessary files for the build."""
