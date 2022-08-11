@@ -158,7 +158,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
                 comment = comment["body"]
                 try:
                     diff_url = re.search(
-                        "\[PDF with highlighted changes\]\((.*?)\)", comment
+                        r"\[PDF with highlighted changes\]\((.*?)\)", comment
                     ).groups()[0]
                 except:
                     raise Exception(

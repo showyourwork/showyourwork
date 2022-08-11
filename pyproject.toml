@@ -20,5 +20,5 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
-addopts = "-v --asyncio-task-timeout=1800 --junitxml=junit/test-results.xml"
+addopts = "-v --asyncio-task-timeout=1800"
 norecursedirs = "tests/helpers"

@@ -1,0 +1,46 @@
+name: integration
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  remote:
+    if: ${{ (github.event_name == 'push' && github.repository == 'showyourwork/showyourwork') || (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
+    runs-on: ubuntu-latest
+    name: Run remote integration tests
+    concurrency: showyourwork-remote
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up python
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.9"
+
+      - name: Install showyourwork
+        shell: bash -l {0}
+        run: |
+          python -m pip install -U pip
+          python -m pip install -e ".[tests]"
+
+      - name: Run remote integration tests
+        shell: bash -l {0}
+        run: python -m pytest --remote -m "remote" tests/integration
+        env:
+          ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+          SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
+          OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
+          OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          SHOWYOURWORK_FORK: ${{ github.event.pull_request.head.repo.clone_url }}
+          SHOWYOURWORK_REF: ${{ github.event.pull_request.head.sha }}
