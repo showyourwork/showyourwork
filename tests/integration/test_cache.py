@@ -8,6 +8,8 @@ from showyourwork.git import get_commit_message
 import pytest
 import os
 
+pytestmark = pytest.mark.remote
+
 
 class TestCache(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions

@@ -1,3 +1,4 @@
+import pytest
 from helpers import TemporaryShowyourworkRepository
 from showyourwork.subproc import get_stdout
 from showyourwork.config import edit_yaml
@@ -112,6 +113,7 @@ class TestLocalCacheOptimization(BaseClass):
     cache = False  # (`cache` = the Zenodo Sandbox cache)
 
 
+@pytest.mark.remote
 class TestRemoteCacheOptimization(BaseClass):
     """
     Test the feature that removes jobs from the DAG that are

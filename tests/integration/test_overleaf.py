@@ -1,3 +1,4 @@
+import pytest
 from helpers import (
     TemporaryShowyourworkRepository,
     ShowyourworkRepositoryActions,
@@ -7,6 +8,9 @@ from showyourwork.config import edit_yaml
 from showyourwork.logging import get_logger
 from showyourwork.subproc import get_stdout
 import time
+
+
+pytestmark = pytest.mark.remote
 
 
 class TestOverleaf(

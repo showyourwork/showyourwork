@@ -7,6 +7,8 @@ import json
 import asyncio
 import re
 
+pytestmark = pytest.mark.remote
+
 
 class TestPullRequests(TemporaryShowyourworkRepository):
     """
