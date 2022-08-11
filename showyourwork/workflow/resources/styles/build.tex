@@ -22,16 +22,16 @@
 % See https://tex.stackexchange.com/a/48931
 \def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{#2}}
 \def\usevalue#1{%
-\ifcsname syw@data@#1\endcsname%
-  \csname syw@data@#1\expandafter\endcsname%
-\else%
-  KEYNOTFOUND%
-\fi%
+  \ifcsname syw@data@#1\endcsname%
+    \csname syw@data@#1\expandafter\endcsname%
+  \else%
+    KEYNOTFOUND%
+  \fi%
 }
 
 % Import metadata
 \IfFileExists{./showyourwork-metadata.tex}{
-    \input{showyourwork-metadata.tex}
+  \input{showyourwork-metadata.tex}
 }{
   \OnGithubActionsfalse
   \def\syw@url{https://github.com/showyourwork/showyourwork-example}
@@ -44,21 +44,21 @@
 
 % Showyourwork logo
 \newcommand{\showyourwork}{%
-    \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
+  \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
 % Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
 \let\oldmaketitle\maketitle
 \def\maketitle{%
-    \let\oldLaTeX\LaTeX
-    \let\oldtoday\today
-    \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
-    \ifcsname gitHeader\endcsname
-      \renewcommand{\today}{\oldtoday.~\gitHeader}
-    \fi
-    \oldmaketitle
-    \let\LaTeX\oldLaTeX
-    \let\today\oldtoday
+  \let\oldLaTeX\LaTeX
+  \let\oldtoday\today
+  \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
+  \ifcsname gitHeader\endcsname
+    \renewcommand{\today}{\oldtoday.~\gitHeader}
+  \fi
+  \oldmaketitle
+  \let\LaTeX\oldLaTeX
+  \let\today\oldtoday
 }
 
 % MNRAS hack for displaying showyourwork logo
@@ -69,7 +69,7 @@
       \ifcsname gitHeader\endcsname
         \,(\gitHeader)
       \fi
-      }
+    }
   \else
     \def\@printed{}
   \fi
@@ -94,6 +94,20 @@
         \fi
       }
     }
+  }
+}{}
+
+% Annual Reviews hack for displaying showyourwork logo
+\@ifclassloaded{ar-1col}{
+  \let\oldjournalinfo\journalinfo
+  \def\journalinfo{%
+    \oldjournalinfo%
+    \vskip6\p@{\jinfofont%
+      Compiled using\begin{minipage}{7.3em}\includegraphics[width=7.3em]{showyourwork-logo.pdf}\end{minipage}\endgraf%
+      \ifcsname gitHeader\endcsname
+        \,(\gitHeader)\endgraf
+      \fi
+    }%
   }
 }{}
 
