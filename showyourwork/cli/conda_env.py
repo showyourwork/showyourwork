@@ -161,7 +161,7 @@ def parse_syw_spec(syw_spec):
     elif "path" in syw_spec:
         path = syw_spec.pop("path")
         if not Path(path).is_absolute():
-            path = (paths.user().repo / syw_spec).resolve()
+            path = (paths.user().repo / path).resolve()
         else:
             path = Path(path).resolve()
         if not path.exists():
