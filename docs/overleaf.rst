@@ -6,16 +6,16 @@ Overleaf integration
     Overleaf integration is still an **experimental** feature.
     The user interface may change in future releases.
     If you run into problems or have any suggestions to improve
-    this functionality, please 
+    this functionality, please
     `open an issue on GitHub <https://github.com/showyourwork/showyourwork/issues/new>`__.
 
 Overview
 --------
 
-|showyourwork| now allows users to integrate their projects 
+|showyourwork| now allows users to integrate their projects
 with `Overleaf <https://www.overleaf.com>`__, which can greatly facilitate collaborative
 article writing in LaTeX.
-While Overleaf supports integration with git and GitHub in 
+While Overleaf supports integration with git and GitHub in
 `a few different ways <https://www.overleaf.com/learn/how-to/Using_Git_and_GitHub>`__,
 none of these are *quite* right for an Overleaf-|showyourwork| bridge (you
 can read all about why `here <https://github.com/showyourwork/showyourwork/issues/22>`__).
@@ -32,7 +32,7 @@ This means that if users wish to integrate their project with Overleaf, they mus
 make changes to the TeX file(s) on Overleaf. Similarly, users should not manually change/edit/upload
 figures to Overleaf, and instead let |showyourwork| do the grunt work.
 
-In the event of a merge conflict---for example, if the user edited ``ms.tex`` locally---the 
+In the event of a merge conflict---for example, if the user edited ``ms.tex`` locally---the
 |showyourwork| build will acknowledge that and fail, refusing to overwrite
 the local changes. See :ref:`conflicts` below for details.
 
@@ -44,11 +44,11 @@ Setup
 -----
 
 Let's set up Overleaf integration for a new repository. It is much, much, much
-easier to set up Overleaf integration for new projects, so here we'll create both a 
+easier to set up Overleaf integration for new projects, so here we'll create both a
 new GitHub repository **and** a new Overleaf project for our article.
 If you want to set up Overleaf integration for an existing project, see :ref:`existing`.
 
-To start, create a new repository on GitHub by visiting `github.com/new <https://github.com/new>`__. 
+To start, create a new repository on GitHub by visiting `github.com/new <https://github.com/new>`__.
 For definiteness,
 in the example below we'll create the repository ``article`` under my user
 name (``rodluger``).
@@ -73,7 +73,7 @@ Overleaf does not yet support token-based authentication, so the only way
 to grant |showyourwork| access to your project is by providing the email
 and password for your Overleaf account. As with the other credentials required
 by |showyourwork|, you'll also need to create corresponding
-GitHub Actions secrets at the following URL 
+GitHub Actions secrets at the following URL
 
 .. code-block:: text
 
@@ -160,8 +160,8 @@ files:
 
 These, in fact, are the same files as in the ``src/tex`` folder of your repository
 (see :doc:`layout`); |showyourwork| will keep your Overleaf project up to date
-with the contents of that folder (more on this below). 
-Note that the TeX manuscript is now called 
+with the contents of that folder (more on this below).
+Note that the TeX manuscript is now called
 ``ms.tex`` (the default name in |showyourwork|).
 
 Returning to our local |showyourwork| repository, if you open the config file
@@ -172,7 +172,7 @@ Returning to our local |showyourwork| repository, if you open the config file
 
     overleaf:
         id: 6272c02ffe09ce2c9a5f0ff6
-        push: 
+        push:
             - src/tex/figures
             - src/tex/output
         pull:
@@ -199,7 +199,7 @@ may only be specified under ``push`` **or** ``pull``, but not both, as that coul
 to merge conflicts.
 
 It is **highly recommended** that you limit the ``pull`` section to your main TeX
-files (e.g., the manuscript and the bibliography) and the ``push`` section to 
+files (e.g., the manuscript and the bibliography) and the ``push`` section to
 programmatically-generated files (e.g., figure outputs or programmatically-generated
 text files that are included in your manuscript using the ``\variable`` command).
 
@@ -214,7 +214,7 @@ text files that are included in your manuscript using the ``\variable`` command)
 If you build frequently, you may occasionally run into a ``Rate limit exceeded`` error
 on the Overleaf side. Simply wait a minute and try again.
 
-Finally, it is important to note that your |showyourwork| repository 
+Finally, it is important to note that your |showyourwork| repository
 and your Overleaf project are completely
 separate git repositories with unrelated commit histories. Under the hood, ``push``
 and ``pull`` events are implemented as simple file copies from the head commit of one
@@ -222,12 +222,12 @@ repository to the head of the other. In order to minimize the chances that chang
 to either repository will get lost or overwritten on a sync event, |showyourwork|
 will fail when attempting to ``pull`` from Overleaf if it detects that any of the
 relevant files have been modified since the last ``pull``. Read more about this---
-and how to resolve these kinds of conflicts---in the next section. 
+and how to resolve these kinds of conflicts---in the next section.
 
 .. warning::
-  
-   There are no merge conflict checks when doing a ``push`` to Overleaf. 
-   If, for example, you manually upload a new version of a figure to the 
+
+   There are no merge conflict checks when doing a ``push`` to Overleaf.
+   If, for example, you manually upload a new version of a figure to the
    Overleaf project, it will get overwritten the next time you build your article.
 
 .. _conflicts:
@@ -235,21 +235,21 @@ and how to resolve these kinds of conflicts---in the next section.
 Managing conflicts
 ------------------
 
-If you've accidentally made a local change to a file listed under ``pull``, the 
+If you've accidentally made a local change to a file listed under ``pull``, the
 next time you build your article you might see the following error message:
 
 .. code-block:: text
-  
-    Uncommitted changes to local file: <filename>. 
+
+    Uncommitted changes to local file: <filename>.
     Refusing to overwrite with Overleaf version.
 
 If you've made a change *and committed the change to git*, you'll see the following
 message instead:
 
 .. code-block:: text
-  
-    Local file changed since the last Overleaf sync: <filename>. 
-    Refusing to overwrite with Overleaf version. 
+
+    Local file changed since the last Overleaf sync: <filename>.
+    Refusing to overwrite with Overleaf version.
     Please see the docs for details on how to resolve this.
 
 In these cases, |showyourwork| fails because it wants to avoid overwriting your
@@ -267,7 +267,7 @@ the first error (uncommitted changes), simply reset the local changes to that fi
     git checkout -- <filename>
 
 and re-build your article. If you ran into the second error (i.e., you changed
-the file and committed it), you'll have to do a bit of extra work. If 
+the file and committed it), you'll have to do a bit of extra work. If
 *you haven't yet pushed your changes to GitHub*, copy the changes to Overleaf
 as above (if desired) and then undo that commit by running
 ``git reset`` (see `here <https://stackoverflow.com/a/927386>`__) followed by
@@ -282,10 +282,10 @@ changes (from the commit you just undid), so make sure to add any relevant
 files and commit your changes back.
 
 Finally, if you made local changes, committed them, *and pushed them to GitHub*,
-you shouldn't do a ``git reset``. Instead, once you copy your changes to Overleaf 
+you shouldn't do a ``git reset``. Instead, once you copy your changes to Overleaf
 (if desired) you should trick |showyourwork| into thinking everything is OK and
 proceeding with the sync process. To achieve this, make a dummy change to each
-of the problematic files (e.g., add a space to any line in the file) so you have 
+of the problematic files (e.g., add a space to any line in the file) so you have
 something to commit, then commit with a message containing the string ``[showyourwork]``.
 This flag is used internally whenever |showyourwork| commits changes originated
 in the Overleaf project, so this will trick the workflow into thinking everything
@@ -310,7 +310,7 @@ to Overleaf. Then, grab the project ID from the Overleaf URL, and add the follow
 
     overleaf:
         id: <ID>
-        push: 
+        push:
             - src/tex/figures
             - src/tex/output
         pull:

@@ -1,21 +1,22 @@
-from .. import __version__
-from .. import paths
-from .. import exceptions
+import filecmp
+import re
+import shutil
+import subprocess
+from pathlib import Path
+
+import jinja2
+import yaml
+
+from .. import exceptions, paths
 from ..logging import get_logger
 from ..subproc import get_stdout
-import subprocess
-import shutil
-import yaml
-import filecmp
-import jinja2
-from pathlib import Path
-import re
 
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
     # If LibYAML not installed
-    from yaml import Loader, Dumper
+    from yaml import Dumper, Loader
 
 
 def run_in_env(command, **kwargs):

@@ -2,17 +2,19 @@
 Main Zenodo interface.
 
 """
-from . import exceptions, paths, git
-from .subproc import parse_request
-from .logging import get_logger
-from .config import get_run_type
-import requests
-import tarfile
-import os
 import json
-from pathlib import Path
-import subprocess
+import os
 import shutil
+import subprocess
+import tarfile
+from pathlib import Path
+
+import requests
+
+from . import exceptions, git, paths
+from .config import get_run_type
+from .logging import get_logger
+from .subproc import parse_request
 
 try:
     import snakemake

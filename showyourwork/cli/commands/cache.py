@@ -1,8 +1,9 @@
-from ... import paths
-from ...subproc import get_stdout
-from pathlib import Path
 import os
 import time
+from pathlib import Path
+
+from ... import paths
+from ...subproc import get_stdout
 
 
 def get_modified_files(commit="HEAD^"):

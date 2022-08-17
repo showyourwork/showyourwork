@@ -1,13 +1,13 @@
+import shutil
+from pathlib import Path
+
 from ... import paths
 from ..conda_env import run_in_env
-from pathlib import Path
-import subprocess
-import shutil
 
 
 def clean(force, deep, options=""):
     """Clean the article build.
-    
+
     Args:
         force (bool): If True, forcefully delete files in output directories.
         deep (bool): If True, delete all temporary Snakemake and showyourwork directories.

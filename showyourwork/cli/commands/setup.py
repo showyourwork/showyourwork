@@ -1,14 +1,15 @@
-from ... import paths, exceptions, overleaf, __version__
-from ...subproc import get_stdout
-from ...logging import get_logger
-from ...zenodo import Zenodo
-from cookiecutter.main import cookiecutter
-from packaging import version
-from lastversion import latest
+import shutil
 import time
 from pathlib import Path
-import shutil
-import subprocess
+
+from cookiecutter.main import cookiecutter
+from lastversion import latest
+from packaging import version
+
+from ... import __version__, exceptions, overleaf, paths
+from ...logging import get_logger
+from ...subproc import get_stdout
+from ...zenodo import Zenodo
 
 
 def setup(slug, cache, overleaf_id, ssh, showyourwork_version):

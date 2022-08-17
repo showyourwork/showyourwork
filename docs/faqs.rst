@@ -19,10 +19,10 @@ consider the following tips:
   If you don't want to lose your output, you could also try just deleting the
   temporary ``.showyourwork`` directory (instead of running the ``clean`` command),
   which removes the cache and forces re-evaluation of the build graph.
-- Identify which part of the workflow is causing the problem. Is it during the run of a 
+- Identify which part of the workflow is causing the problem. Is it during the run of a
   particular figure script? Consider adding a ``breakpoint``
   in your code to enable interactive debugging. Or is the problem specific to the LaTeX build
-  step? LaTeX errors, in particular, can be extremely cryptic. Inspect the 
+  step? LaTeX errors, in particular, can be extremely cryptic. Inspect the
   ``.showyourwork/logs/tectonic.log`` file for details. Consider commenting out
   portions of your manuscript to identify which part is causing the problem.
 - If one of your figures is causing a new error, it can be helpful to temporarily
@@ -48,10 +48,10 @@ Debugging remote builds
 -----------------------
 
 If your article build works locally but fails on GitHub Actions, a few different
-things could be going on. 
+things could be going on.
 
 - A common cause is you forgot to push a
-  particular script to the remote, so make sure you don't have any unstaged 
+  particular script to the remote, so make sure you don't have any unstaged
   changes, and that your ``.gitignore`` files aren't preventing you from
   committing necessary files.
 
@@ -62,7 +62,7 @@ things could be going on.
   to their API token, you can either set ``run_cache_rules_on_ci`` to ``true``
   in the config file to allow running cached rules on GitHub Actions (see :doc:`config`),
   or you can switch to a cache deposit you have read/write access to. To do this,
-  delete the ``zenodo.yml`` file at the root of the repository and run 
+  delete the ``zenodo.yml`` file at the root of the repository and run
   ``showyourwork cache create`` (after making sure you've defined the ``$SANDBOX_TOKEN``
   environment variable; see :doc:`zenodo`). Run the workflow locally to populate the
   cache, then commit and push your results. If you've provided the ``SANDBOX_TOKEN``
@@ -75,7 +75,7 @@ things could be going on.
   article, the build could succeed since the figure output is present and there
   are no new instructions specifying how to build it (because the input file
   was deleted). On the remote, however, where the output file does not exist,
-  you will get a build failure. You can avoid these sorts of issues by setting 
+  you will get a build failure. You can avoid these sorts of issues by setting
   ``require_inputs`` to ``true``
   in the config file (see :doc:`config`), although in recent versions of |showyourwork|
   that should already be the default.
@@ -94,7 +94,7 @@ things could be going on.
   strings. Such builds will fail on the remote unless LaTeX is manually installed
   in the workflow YAML file.
 
-- Finally, one can mimic the behavior of the remote build by setting the ``CI=true`` 
+- Finally, one can mimic the behavior of the remote build by setting the ``CI=true``
   environment variable prior to running ``showyourwork``. Depending on the nature
   of the error, it could also make sense to look into tools that allow direct
   interaction with the runner on GitHub Actions, such as
@@ -122,16 +122,16 @@ incomplete. When this happens, ``showyourwork`` tells the user:
 
 Sometimes, however, the ``--cleanup-metadata`` argument does not successfully
 clean up the incomplete files. This may be due to either an issue with Snakemake
-(see 
+(see
 `here <https://github.com/snakemake/snakemake/issues/828>`__
 and `here <https://github.com/snakemake/snakemake/issues/1497>`__) or an issue
-with |showyourwork| 
+with |showyourwork|
 (see `here <https://github.com/showyourwork/showyourwork/issues/103>`__); we're
 still looking into how to fix this.
 
 If you find yourself stuck trying to cleanup the metadata (in cases where
-you would like to keep your current output files), you can try 
-manually deleting the folder ``.snakemake/incomplete``, which keeps track of 
+you would like to keep your current output files), you can try
+manually deleting the folder ``.snakemake/incomplete``, which keeps track of
 that metadata. Alternatively, you can manually delete all of the problematic
 output files, which will trigger a re-run of the corresponding rule.
 
@@ -142,7 +142,7 @@ Issues due to git
 The |showyourwork| workflow relies heavily on command line calls to ``git``.
 The pipeline is tested for ``git>=2.24.0``, so certain issues may arise with
 older versions. For instance, prior to version ``0.3.0.dev9`` of ``showyourwork``,
-the current git branch was determined by running ``git branch --show-current``, 
+the current git branch was determined by running ``git branch --show-current``,
 an option that was only introduced in ``git==2.22.0`` and led to strange
 behavior on platforms running older versions of ``git``. This issue has since
 been addressed, but there may be others that you might encounter if your
@@ -222,8 +222,8 @@ Math-mode strings can still be parsed using the built-in ``matplotlib`` renderer
 and in most cases this will do what you need. In some cases, however, the built-in
 renderer may not cut it. If you really need a proper LaTeX installation, you'll
 have to do a bit of extra work to get your build to pass on GitHub Actions.
-First, add the following step to the ``build.yml`` and ``build-pull-request.yml`` 
-workflows in your ``.github/workflows`` folder, just before the |showyourwork| 
+First, add the following step to the ``build.yml`` and ``build-pull-request.yml``
+workflows in your ``.github/workflows`` folder, just before the |showyourwork|
 ``build`` step:
 
 .. code-block:: yaml
@@ -232,7 +232,7 @@ workflows in your ``.github/workflows`` folder, just before the |showyourwork|
       id: tinytex
       shell: bash -l {0}
       run: |
-        wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh 
+        wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
         sudo ~/bin/tlmgr install type1cm cm-super
 
 This will install `TinyTex <https://yihui.org/tinytex/>`_, a
@@ -241,7 +241,7 @@ that this step also installs the ``type1cm`` and ``cm-super`` LaTeX packages,
 which may be required by ``matplotlib``. You can specify additional packages
 in the same line if needed.
 
-Then, in order for ``matplotlib`` to execute ``latex``, the ``~/bin`` path needs to 
+Then, in order for ``matplotlib`` to execute ``latex``, the ``~/bin`` path needs to
 be in the system ``$PATH``. This variable gets overwritten when running scripts inside isolated
 ``conda`` environments (as |showyourwork| does), so you'll need to add ``~\bin``
 to the ``$PATH`` *within* your Python script. Therefore, add the
@@ -253,7 +253,7 @@ following bit of boilerplate to the top of any scripts that require LaTeX parsin
     from pathlib import Path
     os.environ["PATH"] += os.pathsep + str(Path.home() / "bin")
 
-To save some typing, you could instead add this boilerplate to the 
+To save some typing, you could instead add this boilerplate to the
 ``src/scripts/paths.py`` file so that
 these commands get executed whenever that file is imported into your scripts.
 
@@ -286,7 +286,7 @@ If you just want ``matplotlib`` to use Computer Modern fonts so that the font in
 Just add the following lines to ``src/scripts/matplotlibrc``:
 
 .. code-block:: python
-  
+
     # set font to match LaTeX's Computer Modern
     font.family: serif
     font.serif: cmr10
@@ -323,7 +323,7 @@ If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), 
 .. code-block:: python
 
     {
-        
+
         # other settings here
 
         "latex-workshop.latex.recipe.default": "showyourwork",

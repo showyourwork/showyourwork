@@ -1,25 +1,28 @@
+import asyncio
+import inspect
+import logging
+import os
+import re
+import shutil
+from pathlib import Path
+
+import pytest
+import yaml
+
 import showyourwork
 from showyourwork import gitapi
 from showyourwork.config import render_config
-from showyourwork.logging import get_logger
 from showyourwork.git import get_repo_sha
+from showyourwork.logging import get_logger
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import Zenodo
-import logging
-from pathlib import Path
-import shutil
-import inspect
-import asyncio
-import pytest
-import re
-import os
-import yaml
 
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
     # If LibYAML not installed
-    from yaml import Loader, Dumper
+    from yaml import Dumper, Loader
 
 
 # Folder where we'll create our temporary repos

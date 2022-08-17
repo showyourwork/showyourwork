@@ -1,6 +1,7 @@
-from . import git
-from pathlib import Path
 from os.path import realpath
+from pathlib import Path
+
+from . import git
 
 
 # showyourwork paths

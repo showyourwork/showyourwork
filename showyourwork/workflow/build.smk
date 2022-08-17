@@ -55,7 +55,7 @@ if (paths.user().temp / "config.json").exists():
     rule syw__arxiv_entrypoint:
         input:
             "arxiv.tar.gz"
-            
+
 
     # Include all other rules
     include: "rules/dag.smk"

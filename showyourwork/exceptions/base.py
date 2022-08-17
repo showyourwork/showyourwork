@@ -1,7 +1,8 @@
+import sys
+import traceback
+
 from .. import paths
 from ..logging import get_logger
-import traceback
-import sys
 
 
 def redirect_exception(*args, **kwargs):

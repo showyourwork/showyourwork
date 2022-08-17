@@ -25,7 +25,7 @@ to reproduce your results.
 
 Check out the pages below for more information about this project. The :doc:`quickstart tutorial <quickstart>` should get
 you up and running fairly quickly with a simple workflow. Dig deeper by reading about the :doc:`command line interface <cli>`, the
-:doc:`recommended project layout <layout>`, the :doc:`workflow configuration file <config>`, and 
+:doc:`recommended project layout <layout>`, the :doc:`workflow configuration file <config>`, and
 :doc:`details about the integration with LaTeX <latex>`.
 
 |showyourwork| is an open source project hosted on `GitHub <https://github.com/showyourwork/showyourwork>`__. It

@@ -1,13 +1,13 @@
-import subprocess
-import shutil
-import sys
-from pathlib import Path
-import re
-from urllib.request import Request, urlopen
-import requests
-import jinja2
 import json
 import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+from urllib.request import Request, urlopen
+
+import jinja2
+import requests
 import yaml
 
 

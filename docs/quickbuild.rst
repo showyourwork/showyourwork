@@ -4,9 +4,9 @@
    Build it in 3 easy steps.
 
    1. Install the latest version of |showyourwork|:
-   
+
       .. code-block:: bash
-      
+
          pip install -U showyourwork
 
       .. raw:: html
@@ -15,12 +15,12 @@
 
    2. Clone the article repository (replace ``user`` and ``repo`` with the GitHub user name
       and repository name for the desired project):
-   
+
       .. code-block:: bash
-      
+
          git clone https://github.com/user/repo
          cd repo
-      
+
       .. raw:: html
 
         <br/>
@@ -28,7 +28,7 @@
    3. Build!
 
       .. code-block:: bash
-      
+
          showyourwork
 
       .. raw:: html
@@ -40,5 +40,5 @@
          </pre>
 
    After installing all the required packages and running any pipeline or
-   figure scripts, this will generate the article PDF ``ms.pdf`` in the current 
+   figure scripts, this will generate the article PDF ``ms.pdf`` in the current
    working directory.

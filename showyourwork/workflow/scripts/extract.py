@@ -2,15 +2,14 @@
 Extracts a single file from a tarball or zipfile.
 
 """
+import shutil
+import tarfile
+import tempfile
+from pathlib import Path
+from zipfile import ZipFile
+
 from showyourwork import exceptions
 from showyourwork.logging import get_logger
-import sys
-import tarfile
-from zipfile import ZipFile
-from pathlib import Path
-import tempfile
-import shutil
-
 
 if __name__ == "__main__":
 

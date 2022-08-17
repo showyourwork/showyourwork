@@ -1,18 +1,20 @@
-from . import paths, git, exceptions
-from pathlib import Path
-from collections import OrderedDict, ChainMap
-from contextlib import contextmanager
 import os
 import re
-import sys
+from collections import ChainMap, OrderedDict
+from contextlib import contextmanager
+from pathlib import Path
+
 import jinja2
 import yaml
 
+from . import exceptions, git, paths
+
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
     # If LibYAML not installed
-    from yaml import Loader, Dumper
+    from yaml import Dumper, Loader
 
 try:
     import snakemake

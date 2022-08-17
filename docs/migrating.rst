@@ -5,18 +5,18 @@ Version ``0.3.0`` introduced several breaking changes, so repositories dependent
 versions need to be modified if you update |showyourwork|. This page contains a list of
 things you'll want to do when migrating over.
 
-.. note:: 
-    
-    If you're running into issues while migrating from a previous version of 
-    |showyourwork|, or if the steps below are too complicated, feel free to 
-    open an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__ 
+.. note::
+
+    If you're running into issues while migrating from a previous version of
+    |showyourwork|, or if the steps below are too complicated, feel free to
+    open an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__
     on the |showyourwork| GitHub page and we'll help you with the migration!
 
 .. note::
 
     If you're using an older version of |showyourwork| and things are working
     just fine for your article, there's no need to upgrade! Your article will
-    continue to work and can be reproduced by others. Previous versions of 
+    continue to work and can be reproduced by others. Previous versions of
     |showyourwork| will remain on GitHub and their documentation on readthedocs
     will persist. The downside is that you won't benefit from newer functionality
     or bugfixes (in case you find issues with |showyourwork|).
@@ -26,7 +26,7 @@ things you'll want to do when migrating over.
    |showyourwork| was entirely contained in a submodule located in the article
    repository itself. It is now a Python package that can easily be installed with ``pip``.
 
-2. Delete the ``showyourwork`` folder at the top level of your repository. Since this is 
+2. Delete the ``showyourwork`` folder at the top level of your repository. Since this is
    a git submodule, you should also delete everything under ``[submodule "showyourwork"]``
    in the ``.gitmodules`` file. If that file is otherwise empty, you can delete it as well.
 
@@ -64,10 +64,10 @@ things you'll want to do when migrating over.
    This is the new |showyourwork| LaTeX style file.
 
 10. Read about changes to the way |showyourwork| parses LaTeX at :doc:`latex`. The two big changes
-    are that you must now explicitly import the ``showyourwork`` style file (see above) using 
+    are that you must now explicitly import the ``showyourwork`` style file (see above) using
     ``\usepackage{showyourwork}`` and that relationships beteween figure scripts and figure files
     are no longer inferred from the figure ``\label``. Instead, users should explicitly provide
-    the path to the script (relative to ``src/scripts``) that generates figures inside a 
+    the path to the script (relative to ``src/scripts``) that generates figures inside a
     ``figure`` environment via the ``\script`` command. Edit your figure environments in your
     tex file accordingly; see :doc:`latex` for details, as there are a few other subtleties.
 
@@ -100,5 +100,5 @@ things you'll want to do when migrating over.
 You can see an example diff of a repository that went through this upgrade
 `here <https://github.com/kazewong/BackPop/commit/605d7d404fc094efb8fb08aa9e5fdcebea28c75e>`__.
 If you run into any issues, have questions, or would like help with the upgrade,
-please create an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__ 
+please create an `issue <https://github.com/showyourwork/showyourwork/issues/new>`__
 on GitHub and we'll be more than happy to help!

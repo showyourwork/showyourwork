@@ -4,22 +4,20 @@ tars everything in the ``src/tex`` directory into the tarball
 ``arxiv.tar.gz`` for easy arXiv submission.
 
 """
-from showyourwork import paths
 import tarfile
 
+from showyourwork import paths
 
 if __name__ == "__main__":
 
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
 
-
     # Hack to run the `pdf.py` script
     script = __file__.replace("arxiv.py", "pdf.py")
     with open(script, "r") as f:
         script = f.read()
     exec(script)
-
 
     # File names to exclude
     ms_name = snakemake.config["ms_name"]
@@ -31,7 +29,6 @@ if __name__ == "__main__":
         f"{ms_name}.log",
         f"{ms_name}.out",
     ]
-
 
     # Tar up everything in the src/tex directory
     with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:

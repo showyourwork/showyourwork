@@ -1,12 +1,14 @@
-from helpers import (
-    TemporaryShowyourworkRepository,
-    ShowyourworkRepositoryActions,
-)
-from showyourwork.config import edit_yaml
-from showyourwork.subproc import get_stdout
-from showyourwork.git import get_commit_message
-import pytest
 import os
+
+import pytest
+from helpers import (
+    ShowyourworkRepositoryActions,
+    TemporaryShowyourworkRepository,
+)
+
+from showyourwork.config import edit_yaml
+from showyourwork.git import get_commit_message
+from showyourwork.subproc import get_stdout
 
 pytestmark = pytest.mark.remote
 

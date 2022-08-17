@@ -1,6 +1,6 @@
 from helpers import TemporaryShowyourworkRepository
-from showyourwork.config import edit_yaml
 
+from showyourwork.config import edit_yaml
 
 # A script that computes the age of the universe
 variable_script = r"""

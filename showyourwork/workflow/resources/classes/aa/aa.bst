@@ -1,5 +1,5 @@
 %% 2001/06/10 EDP Sciences
-%% APJ, corrected by hand to get results for A&A, using Natbib   
+%% APJ, corrected by hand to get results for A&A, using Natbib
 
 %% 1998/08/12  J Baker
 %% Tweaked by hand to get correct results for ApJ.  Added functions from
@@ -22,7 +22,7 @@
 %% merlin.mbs  (with options: `,ay,nat,nm-rev,nmdash,dt-beg,yr-per,note-yr,atit-u,jtit-x,jttl-rm,thtit-a,vnum-x,volp-com,jpg-1,pp-last,btit-rm,add-pub,pub-par,pre-edn,edby,edbyx,blk-com,fin-bare,ppx,ed,abr,ord,jabr,eprint,amper,em-x')
 %% ----------------------------------------
 %% *** Bibliographic Style for ApJ ***
-%% 
+%%
  %-------------------------------------------------------------------
  % The original source file contains the following version information:
  % \ProvidesFile{merlin.mbs}[1998/02/25 3.85a (PWD)]
@@ -578,7 +578,7 @@ FUNCTION {format.note}
 FUNCTION {format.eprint}
 { eprint duplicate$ empty$
     'skip$
-    { "[\eprint" 
+    { "[\eprint"
       archiveprefix empty$
         'skip$
         { "[" * archiveprefix * "]" * }
@@ -1089,7 +1089,7 @@ FUNCTION {format.full.book.spec} % The title should be on the stack.
 	    { " No." number tie.or.space.connect * }
 	    if$
 	}
-	{ series ", Vol." volume tie.or.space.connect *  
+	{ series ", Vol." volume tie.or.space.connect *
           ", " * swap$ format.ed.booktitle *
 	  number empty$
 	    'skip$
@@ -1692,4 +1692,3 @@ EXECUTE {end.bib}
 %% End of customized bst file
 %%
 %% End of file `apj.bst'.
-

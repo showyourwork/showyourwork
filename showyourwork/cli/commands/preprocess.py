@@ -1,7 +1,8 @@
+import os
+from pathlib import Path
+
 from ... import paths
 from ..conda_env import run_in_env
-from pathlib import Path
-import os
 
 
 def preprocess(snakemake_args=[]):

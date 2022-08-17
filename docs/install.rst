@@ -19,7 +19,7 @@ You can also install the latest development version from GitHub:
 .. note::
 
     |showyourwork| is constantly under development, so users should upgrade
-    frequently (just pass the ``-U`` argument to ``pip`` as shown above). 
-    Check out the latest release on 
+    frequently (just pass the ``-U`` argument to ``pip`` as shown above).
+    Check out the latest release on
     `PyPI <https://pypi.python.org/pypi/showyourwork>`__ and read the release
     notes at :doc:`changelog`.
