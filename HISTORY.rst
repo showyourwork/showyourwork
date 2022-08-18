@@ -28,6 +28,13 @@
 - Implemented major fix for issue `#124 <https://github.com/showyourwork/showyourwork/issues/124>`__,
   which allows us to optimize the DAG by eliminating unnecessary jobs upstream
   of jobs with cache hits.
+- Users can now clone an empty remote repository prior to running ``showyourwork setup``
+  without triggering an error.
+- Added option to pass custom arguments to the ``tectonic`` build.
+- Removed dependency on ``fontspec``, which caused issues with TT fonts. The ``shoyourwork``
+  logo is no longer displayed as text in a custom font, but as a PDF image.
+- Fix for newer versions of ``git`` that use ``main`` as the default branch name, which
+  led to errors when integrating with Overleaf (which uses ``master``).
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++
