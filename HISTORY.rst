@@ -28,6 +28,26 @@
 - Implemented major fix for issue `#124 <https://github.com/showyourwork/showyourwork/issues/124>`__,
   which allows us to optimize the DAG by eliminating unnecessary jobs upstream
   of jobs with cache hits.
+- Users can now clone an empty remote repository prior to running ``showyourwork setup``
+  without triggering an error.
+- Added option to pass custom arguments to the ``tectonic`` build.
+- Removed dependency on ``fontspec``, which caused issues with TT fonts. The ``shoyourwork``
+  logo is no longer displayed as text in a custom font, but as a PDF image.
+- Fix for newer versions of ``git`` that use ``main`` as the default branch name, which
+  led to errors when integrating with Overleaf (which uses ``master``).
+- Changed the syntax for specifying the ``showyourwork`` version number in the
+  ``showyourwork.yml`` config file. Users should now specify whether the version
+  spec is a ``pip``-installable version, a ``path`` to a local installation,
+  or a ``ref`` on the GitHub repository (optionally on a given ``fork``).
+  The previous syntax (in which the version is provided as a string and the
+  code attempts to interpret it as one of the above options) is deprecated, but
+  will still be supported going forward. However, this
+  change is still **backwards-incompatible**, as versions of
+  ``showyourwork`` prior to ``0.3.1`` will not be able to build repositories
+  that require versions greater than or equal to ``0.3.1`` (since previous
+  versions of the code will not be able to parse the new ``version`` mapping
+  syntax). Users can fix this by simply upgrading their local installation of
+  ``showyourwork``.
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++
