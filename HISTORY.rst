@@ -35,6 +35,19 @@
   logo is no longer displayed as text in a custom font, but as a PDF image.
 - Fix for newer versions of ``git`` that use ``main`` as the default branch name, which
   led to errors when integrating with Overleaf (which uses ``master``).
+- Changed the syntax for specifying the ``showyourwork`` version number in the
+  ``showyourwork.yml`` config file. Users should now specify whether the version
+  spec is a ``pip``-installable version, a ``path`` to a local installation,
+  or a ``ref`` on the GitHub repository (optionally on a given ``fork``).
+  The previous syntax (in which the version is provided as a string and the
+  code attempts to interpret it as one of the above options) is deprecated, but
+  will still be supported going forward. However, this
+  change is still **backwards-incompatible**, as versions of
+  ``showyourwork`` prior to ``0.3.1`` will not be able to build repositories
+  that require versions greater than or equal to ``0.3.1`` (since previous
+  versions of the code will not be able to parse the new ``version`` mapping
+  syntax). Users can fix this by simply upgrading their local installation of
+  ``showyourwork``.
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++

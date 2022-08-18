@@ -345,3 +345,50 @@ If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), 
         ]
 
     }
+
+
+Errors in the ``conda_env.py`` module
+-------------------------------------
+
+Version ``0.3.1`` of |showyourwork| introduced a change to the
+way ``showyourwork`` versions are specified in the ``showyourwork.yml`` config
+file. Previously, the ``version:`` keyword accepted a string corresponding
+to a version number, a GitHub ref, or a local path to a ``showyourwork``
+installation. As of ``0.3.1``, the workflow accepts mappings of the form
+``pip: <version-on-PyPI>`` and ``fork: <fork-name>``, in addition to the
+old syntax (in which the workflow infers whether the provided value is a
+version number, a ref, or a path). Even though this is backwards-compatible
+in that the old syntax is still allowed, repositories that use the new syntax
+cannot be built using older versions of ``showyourwork`` (which will fail
+when trying to parse the new syntax of the ``version:`` key). Users may run
+into errors that look something like this:
+
+.. code-block:: text
+
+  File "/home/runner/.local/bin/showyourwork", line 8, in <module>
+    sys.exit(entry_point())
+  File "/usr/lib/python3/dist-packages/click/core.py", line 764, in __call__
+    return self.main(*args, **kwargs)
+  File "/usr/lib/python3/dist-packages/click/core.py", line 717, in main
+    rv = self.invoke(ctx)
+  File "/usr/lib/python3/dist-packages/click/core.py", line 1137, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/usr/lib/python3/dist-packages/click/core.py", line 956, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/usr/lib/python3/dist-packages/click/core.py", line 555, in invoke
+    return callback(*args, **kwargs)
+  File "/home/runner/.local/lib/python3.8/site-packages/showyourwork/cli/main.py", line 92, in build
+    commands.preprocess()
+  File "/home/runner/.local/lib/python3.8/site-packages/showyourwork/cli/commands/preprocess.py", line 16, in preprocess
+    result = run_in_env(command, check=False)
+  File "/home/runner/.local/lib/python3.8/site-packages/showyourwork/cli/conda_env.py", line 83, in run_in_env
+    elif re.match(r"(?:(/d+/.[./d]*/d+))", syw_spec):
+  File "/usr/lib/python3.8/re.py", line 191, in match
+    return _compile(pattern, flags).match(string)
+  TypeError: expected string or bytes-like object
+
+This error can be fixed by simply upgrading your local installation of ``showyourwork``:
+
+.. code-block:: bash
+
+  pip install -U showyourwork
