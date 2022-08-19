@@ -1,4 +1,4 @@
-name: remote integration tests
+name: remote tests
 
 on:
   push:
