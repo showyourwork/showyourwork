@@ -4,10 +4,13 @@
     </a>
     <br/>
     <a href="https://github.com/showyourwork/showyourwork/actions/workflows/tests.yml">
-        <img src="https://github.com/showyourwork/showyourwork/actions/workflows/tests.yml/badge.svg" alt="tests"/>
+        <img src="https://github.com/showyourwork/showyourwork/actions/workflows/unit_tests.yml/badge.svg" alt="unit tests"/>
     </a>
-    <a href="https://github.com/showyourwork/showyourwork/actions/workflows/integration.yml">
-        <img src="https://github.com/showyourwork/showyourwork/actions/workflows/integration.yml/badge.svg" alt="tests"/>
+    <a href="https://github.com/showyourwork/showyourwork/actions/workflows/local_integration_tests.yml">
+        <img src="https://github.com/showyourwork/showyourwork/actions/workflows/local_integration_tests.yml/badge.svg" alt="local integration tests"/>
+    </a>
+    <a href="https://github.com/showyourwork/showyourwork/actions/workflows/remote_integration_tests.yml">
+        <img src="https://github.com/showyourwork/showyourwork/actions/workflows/remote_integration_tests.yml/badge.svg" alt="remote integration tests"/>
     </a>
     <a href="https://showyourwork.readthedocs.io">
         <img src="https://img.shields.io/static/v1?label=read&message=the%20docs&color=blue" alt="tests"/>
