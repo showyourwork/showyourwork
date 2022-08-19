@@ -1,0 +1,35 @@
+name: unit tests
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: Run unit tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up python
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.9"
+
+      - name: Install showyourwork
+        shell: bash -l {0}
+        run: |
+          python -m pip install -U pip
+          python -m pip install -e ".[tests]"
+
+      - name: Run tests
+        shell: bash -l {0}
+        run: python -m pytest tests/unit

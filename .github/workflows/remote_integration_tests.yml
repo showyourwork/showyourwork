@@ -1,4 +1,4 @@
-name: integration
+name: remote integration tests
 
 on:
   push:
@@ -9,8 +9,18 @@ on:
     types: [labeled]
 
 jobs:
-  remote:
-    if: ${{ (github.event_name == 'push' && github.repository == 'showyourwork/showyourwork') || (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
+  tests:
+    if: |
+      ${{
+        (
+          github.event_name == 'push' &&
+          github.repository == 'showyourwork/showyourwork'
+        ) ||
+        (
+          github.event_name == 'pull_request_target' &&
+          contains(github.event.pull_request.labels.*.name, 'safe to test')
+        )
+      }}
     runs-on: ubuntu-latest
     name: Run remote integration tests
     concurrency: showyourwork-remote
@@ -44,3 +54,14 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           SHOWYOURWORK_FORK: ${{ github.event.pull_request.head.repo.clone_url }}
           SHOWYOURWORK_REF: ${{ github.event.pull_request.head.sha }}
+
+  skipped:
+    needs: tests
+    runs-on: ubuntu-latest
+    name: Remote integration tests were skipped
+    if: needs.tests.result == 'skipped'
+    steps:
+      - name: Info
+        shell: bash -l {0}
+        run: |
+          echo "::warning ::Remote integration tests were skipped. These can only run on the showyourwork/showyourwork repo and require admin privileges."
