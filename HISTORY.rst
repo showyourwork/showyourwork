@@ -1,6 +1,6 @@
 .. :changelog:
 
-0.3.1 (TBD)
+0.3.1 (2022-08-19)
 ++++++++++++++++++
 
 - Fixed bug related to displaying figure caption icons for cached datasets.
@@ -35,6 +35,13 @@
   logo is no longer displayed as text in a custom font, but as a PDF image.
 - Fix for newer versions of ``git`` that use ``main`` as the default branch name, which
   led to errors when integrating with Overleaf (which uses ``master``).
+- Revamped the way tests for the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`__
+  repo are run. Split tests into unit tests, local integration tests, and remote
+  integration tests. The first two can be executed on either the base repo or
+  any fork; the last one can only be executed on the base repo or upon the
+  ``pull_request_target`` trigger from a PR, which occurs when a PR is labeled
+  ``safe to test`` by a maintainer. This change will make contributing to
+  ``showyourwork`` much easier going forward!
 - Changed the syntax for specifying the ``showyourwork`` version number in the
   ``showyourwork.yml`` config file. Users should now specify whether the version
   spec is a ``pip``-installable version, a ``path`` to a local installation,
