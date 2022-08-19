@@ -5,5 +5,10 @@
   "showyourwork_version": null,
   "cache_sandbox_doi": null,
   "overleaf_id": null,
-  "year": null
+  "year": null,
+  "_copy_without_render": [
+    "src/tex/aasjournal.bst",
+    "src/tex/aastex631.cls",
+    "orcid-ID.png"
+  ]
 }
