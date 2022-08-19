@@ -10,17 +10,7 @@ on:
 
 jobs:
   tests:
-    if: |
-      ${{
-        (
-          github.event_name == 'push' &&
-          github.repository == 'showyourwork/showyourwork'
-        ) ||
-        (
-          github.event_name == 'pull_request_target' &&
-          contains(github.event.pull_request.labels.*.name, 'safe to test')
-        )
-      }}
+    if: ${{ (github.event_name == 'push' && github.repository == 'showyourwork/showyourwork') || (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
     runs-on: ubuntu-latest
     name: Run remote integration tests
     concurrency: showyourwork-remote
