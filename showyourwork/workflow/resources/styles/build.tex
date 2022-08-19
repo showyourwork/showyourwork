@@ -3,14 +3,12 @@
 \RequirePackage{xcolor} % custom colors
 \RequirePackage{hyperref} % url links
 \RequirePackage{suffix} % allows definition of starred commmands
-\RequirePackage{ifxetex}
 \RequirePackage{fontawesome5} % FontAwesome symbols
 \RequirePackage{letltxmacro} % command redefinitions
 \RequirePackage{xstring} % string manipulation
 \RequirePackage{catchfile} % read file into macro
 \RequirePackage{totcount} % count total number of errors
 \RequirePackage[notref, notcite]{showkeys} % get label refs
-\RequirePackage{marginnote} % margin notes
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
@@ -139,7 +137,7 @@
   %\ifcsname if@two@col\endcsname%
   %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
   %\fi%
-  \marginnote{%
+  \marginpar{%
     \href{\syw@url/tree/\syw@sha/}{%
       \color{sywBlue}%
       \faGithub%
