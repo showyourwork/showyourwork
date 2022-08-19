@@ -1,4 +1,4 @@
-name: local integration tests
+name: local tests
 
 on:
   push:
