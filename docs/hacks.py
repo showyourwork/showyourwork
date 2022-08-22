@@ -278,7 +278,7 @@ lines += [
     "\n",
     "\n",
     "Integration tests\n",
-    "----------\n\n",
+    "-----------------\n\n",
     *INTEGRATION_TEST_DOCS,
     "\n",
     "\n",

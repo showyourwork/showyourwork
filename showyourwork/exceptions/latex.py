@@ -41,7 +41,10 @@ class TectonicError(LaTeXException):
             else:
 
                 # Admonish the user (:
-                message = r"Failed to compile manuscript. Did you forget to `\usepackage{showyourwork}`?"
+                message = (
+                    r"Failed to compile manuscript. Perhaps you forgot to `\usepackage{showyourwork}`?"
+                    f"\nFor more information, check out the log file:\n{logfile}"
+                )
 
         else:
 
