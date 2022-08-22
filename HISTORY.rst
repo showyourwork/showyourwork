@@ -55,6 +55,14 @@
   versions of the code will not be able to parse the new ``version`` mapping
   syntax). Users can fix this by simply upgrading their local installation of
   ``showyourwork``.
+- Removed built-in LaTeX class files for AAS journals, MNRAS, and A&A. Users
+  who upgrade to ``0.3.1`` (or later) must now include all necessary class files
+  and auxiliary TeX files in ``src/tex`` (and track them with ``git``). This
+  allows users to customize these files as needed and means we no longer have to
+  maintain them as they get updated by the journals.
+- Removed the dependence on the ``marginnote`` package, which was causing issues
+  with some other packages that also defined a ``\marginnote`` command. The
+  margin link in the abstract now uses the built-in ``\marginpar``.
 
 0.3.0 (2022-06-22)
 ++++++++++++++++++
