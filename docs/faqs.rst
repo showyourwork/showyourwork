@@ -1,7 +1,13 @@
 FAQs
 ====
 
-.. note:: This page is still being written. More FAQs coming soon!
+Below is a non-exhaustive list of frequently asked questions with suggested
+answers and solutions. If you don't find what you're looking for here, consider
+taking a look at the `issues <https://github.com/showyourwork/showyourwork/issues>`__
+page on |showyourwork| GitHub repo. Also make sure to check out the list of
+`closed issues <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aclosed>`__,
+where you might find that others have run into your exact problem before.
+
 
 Debugging local builds
 ----------------------
@@ -11,22 +17,22 @@ The workflow will try its best to give you an informative error message, but
 if you can't figure out what the problem is (or you don't know how to fix it),
 consider the following tips:
 
-- Inspect the build logs. These live in ``.showyourwork/logs`` and contain a lot of
+- Inspect the build logs. These live in `.showyourwork/logs` and contain a lot of
   the verbose output that's suppressed from the terminal by default (see :doc:`logging`).
 - Run ``showyourwork clean`` or, if that doesn't help, ``showyourwork clean --force``.
   These commands remove all build output, which could help resolve issues caused by
   builds that are interrupted by an error or when the user cancels them halfway.
   If you don't want to lose your output, you could also try just deleting the
-  temporary ``.showyourwork`` directory (instead of running the ``clean`` command),
+  temporary `.showyourwork` directory (instead of running the ``clean`` command),
   which removes the cache and forces re-evaluation of the build graph.
 - Identify which part of the workflow is causing the problem. Is it during the run of a
   particular figure script? Consider adding a ``breakpoint``
   in your code to enable interactive debugging. Or is the problem specific to the LaTeX build
   step? LaTeX errors, in particular, can be extremely cryptic. Inspect the
-  ``.showyourwork/logs/tectonic.log`` file for details. Consider commenting out
+  `.showyourwork/logs/tectonic.log` file for details. Consider commenting out
   portions of your manuscript to identify which part is causing the problem.
 - If one of your figures is causing a new error, it can be helpful to temporarily
-  bypass it by placing the old figure output (e.g., the ``.pdf`` file) in the ``src/static``
+  bypass it by placing the old figure output (e.g., the `.pdf` file) in the ``src/static``
   directory and commenting out the ``\script`` command in the TeX file. This causes
   |showyourwork| to treat the figure as static, preventing it from trying to re-generate
   it the next time you run ``showyourwork``.
@@ -52,7 +58,7 @@ things could be going on.
 
 - A common cause is you forgot to push a
   particular script to the remote, so make sure you don't have any unstaged
-  changes, and that your ``.gitignore`` files aren't preventing you from
+  changes, and that your `.gitignore` files aren't preventing you from
   committing necessary files.
 
 - It's also useful to make sure you've provided all the necessary repository
@@ -62,7 +68,7 @@ things could be going on.
   to their API token, you can either set ``run_cache_rules_on_ci`` to ``true``
   in the config file to allow running cached rules on GitHub Actions (see :doc:`config`),
   or you can switch to a cache deposit you have read/write access to. To do this,
-  delete the ``zenodo.yml`` file at the root of the repository and run
+  delete the `zenodo.yml` file at the root of the repository and run
   ``showyourwork cache create`` (after making sure you've defined the ``$SANDBOX_TOKEN``
   environment variable; see :doc:`zenodo`). Run the workflow locally to populate the
   cache, then commit and push your results. If you've provided the ``SANDBOX_TOKEN``
@@ -101,8 +107,8 @@ things could be going on.
   `action-tmate <https://github.com/mxschmitt/action-tmate>`_.
 
 
-Issues related to ``IncompleteFilesException``
-----------------------------------------------
+`IncompleteFilesException`
+--------------------------
 
 If you run your workflow and interrupt it (e.g., by hitting ``Ctrl + C``) while
 a rule is being executed, or if an error in your code causes the workflow to
@@ -131,7 +137,7 @@ still looking into how to fix this.
 
 If you find yourself stuck trying to cleanup the metadata (in cases where
 you would like to keep your current output files), you can try
-manually deleting the folder ``.snakemake/incomplete``, which keeps track of
+manually deleting the folder `.snakemake/incomplete`, which keeps track of
 that metadata. Alternatively, you can manually delete all of the problematic
 output files, which will trigger a re-run of the corresponding rule.
 
@@ -222,8 +228,8 @@ Math-mode strings can still be parsed using the built-in ``matplotlib`` renderer
 and in most cases this will do what you need. In some cases, however, the built-in
 renderer may not cut it. If you really need a proper LaTeX installation, you'll
 have to do a bit of extra work to get your build to pass on GitHub Actions.
-First, add the following step to the ``build.yml`` and ``build-pull-request.yml``
-workflows in your ``.github/workflows`` folder, just before the |showyourwork|
+First, add the following step to the `build.yml` and `build-pull-request.yml`
+workflows in your `.github/workflows` folder, just before the |showyourwork|
 ``build`` step:
 
 .. code-block:: yaml
@@ -241,9 +247,9 @@ that this step also installs the ``type1cm`` and ``cm-super`` LaTeX packages,
 which may be required by ``matplotlib``. You can specify additional packages
 in the same line if needed.
 
-Then, in order for ``matplotlib`` to execute ``latex``, the ``~/bin`` path needs to
+Then, in order for ``matplotlib`` to execute ``latex``, the `~/bin` path needs to
 be in the system ``$PATH``. This variable gets overwritten when running scripts inside isolated
-``conda`` environments (as |showyourwork| does), so you'll need to add ``~\bin``
+``conda`` environments (as |showyourwork| does), so you'll need to add `~\bin`
 to the ``$PATH`` *within* your Python script. Therefore, add the
 following bit of boilerplate to the top of any scripts that require LaTeX parsing:
 
@@ -254,18 +260,18 @@ following bit of boilerplate to the top of any scripts that require LaTeX parsin
     os.environ["PATH"] += os.pathsep + str(Path.home() / "bin")
 
 To save some typing, you could instead add this boilerplate to the
-``src/scripts/paths.py`` file so that
+`src/scripts/paths.py` file so that
 these commands get executed whenever that file is imported into your scripts.
 
 
-Using ``paths.py`` within ``scripts`` subdirectories
-----------------------------------------------------
+Using `paths.py` within subdirectories
+--------------------------------------
 
-For complicated workflows, you may wish to organize your ``scripts`` directory into subdirectories.
-However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on ``paths.py`` being in the same directory as your scripts.
+For complicated workflows, you may wish to organize your `scripts` directory into subdirectories.
+However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on `paths.py` being in the same directory as your scripts.
 
 There is a simple workaround for this issue.
-Simply add ``showyourwork`` as a dependency in ``environment.yml``, and add the following to the top of your scripts:
+Simply add ``showyourwork`` as a dependency in `environment.yml`, and add the following to the top of your scripts:
 
 .. code-block:: python
 
@@ -276,14 +282,14 @@ Simply add ``showyourwork`` as a dependency in ``environment.yml``, and add the 
 
 You can now use ``paths.data``, ``paths.figures``, etc. as usual.
 
-Note that if you decide to take this approach, we recommend that you pin the version of ``showyourwork`` in ``environment.yml`` to the same version specified in the ``showyourwork.yml`` config file. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
+Note that if you decide to take this approach, we recommend that you pin the version of ``showyourwork`` in `environment.yml` to the same version specified in the `showyourwork.yml` config file. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
 
 
 Using LaTeX fonts in matplotlib without installing LaTeX
 --------------------------------------------------------
 
 If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript, you can accomplish this without the full LaTeX installation described above.
-Just add the following lines to ``src/scripts/matplotlibrc``:
+Just add the following lines to `src/scripts/matplotlibrc`:
 
 .. code-block:: python
 
@@ -298,7 +304,7 @@ Using LaTeX Workshop in VSCode
 ------------------------------
 
 If you edit and build your articles in `VSCode <https://code.visualstudio.com/>`_, you need to specify some settings so that VSCode knows to use |showyourwork| to build your document.
-You can do this by creating (or editing) a workspace-specific settings file, ``.vscode/settings.json``, in the root directory of your repo.
+You can do this by creating (or editing) a workspace-specific settings file, `.vscode/settings.json`, in the root directory of your repo.
 At minimum, you should add the following lines:
 
 .. code-block:: python
@@ -347,11 +353,11 @@ If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), 
     }
 
 
-Errors in the ``conda_env.py`` module
--------------------------------------
+Errors in the `conda_env.py` module
+-----------------------------------
 
 Version ``0.3.1`` of |showyourwork| introduced a change to the
-way ``showyourwork`` versions are specified in the ``showyourwork.yml`` config
+way ``showyourwork`` versions are specified in the `showyourwork.yml` config
 file. Previously, the ``version:`` keyword accepted a string corresponding
 to a version number, a GitHub ref, or a local path to a ``showyourwork``
 installation. As of ``0.3.1``, the workflow accepts mappings of the form
@@ -392,3 +398,66 @@ This error can be fixed by simply upgrading your local installation of ``showyou
 .. code-block:: bash
 
   pip install -U showyourwork
+
+
+Figures not getting generated
+-----------------------------
+
+If you are getting LaTeX build errors due to a figure not being present, the first
+thing you should do is check the build logs in `.showyourwork/logs/showyourwork.log`.
+Did the figure script get executed? If so, perhaps the figure was saved to the incorrect
+path (did you remember to save it to `src/tex/figures`? See :ref:`paths.py <paths>`). If the figure script is not
+being executed, check if you included the appropriate ``\script`` command in the figure
+environment in your manuscript (see :doc:`latex`). One other common pitfall is either a
+missing figure ``\label`` or a duplicate one. Figure nodes in the article graph are
+labeled according to the figure ``\label``, so defining the same label for two different
+figures means only one will be indexed by `showyourwork`!
+
+
+Missing LaTeX class files
+-------------------------
+
+If your manuscript uses a custom class file that ``tectonic`` isn't able to automatically
+download (like those required by some journals) you may run into a LaTeX compilation
+error like this one:
+
+.. code-block:: text
+
+  Failed to compile manuscript. Perhaps you forgot to `\usepackage{showyourwork}`?
+  For more information, check out the log file:
+  .showyourwork/logs/tectonic.log
+
+The errors printed to the terminal are often cryptic, but if we open the log file
+linked above, we can see that the issue is due to a missing class file (in this case,
+`aastex631.cls`):
+
+.. code-block:: text
+
+  **
+  (ms.tex
+  LaTeX2e <2020-02-02> patch level 5
+  L3 programming layer <2020-03-06>
+
+  ! LaTeX Error: File `aastex631.cls' not found.
+
+  Type X to quit or <RETURN> to proceed,
+  or enter new name. (Default extension: cls)
+
+  Enter file name:
+
+Prior to version ``0.3.1``, `showyourwork` shipped with class files for some of the
+major astronomy journals (ApJ, A&A, and MNRAS), so if you were using any of those
+you were unlikely to run into this error. However, for various reasons
+(such as issues with long-term maintenance of these classes and
+better interfacing with Overleaf) we decided it was
+best to stop automatically providing these class files as of version ``0.3.1``.
+
+Therefore, articles that define a version of `showyourwork` greater than or equal
+to ``0.3.1`` in `showyourwork.yml` must provide all the necessary class and auxiliary
+files in `src/tex` as ``git``-tracked files. This applies to both articles created using
+``showyourwork setup`` and articles for which the version in `showyourwork.yml` is manually
+upgraded. (It does not apply to articles with older version specs, *even if you upgrade your
+local installation of showyourwork*.)
+
+So, if you run into this error, we recommend you download all required files directly from
+the journal and include them (making sure to ``git add`` them) in your `src/tex` folder.

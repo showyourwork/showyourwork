@@ -1,5 +1,4 @@
 import os
-import re
 from collections import ChainMap, OrderedDict
 from contextlib import contextmanager
 from pathlib import Path
@@ -92,31 +91,6 @@ def get_run_type():
 
     """
     return os.getenv("SNAKEMAKE_RUN_TYPE", "other")
-
-
-def get_class_name(ms_name):
-    """Infer the document class used in the main TeX file.
-
-    Args:
-        ms_name (str): The manuscript file name (no path or extension).
-
-    Raises:
-        exceptions.UnableToInferClassName: If the name cannot be inferred
-            by parsing the TeX file.
-
-    Returns:
-        str: The LaTeX class used in the manuscript.
-    """
-    with open(paths.user().tex / f"{ms_name}.tex", "r") as f:
-        lines = f.readlines()
-        for line in lines:
-            match = re.match(r"[ \t]*\\documentclass\[?.*?\]?\{(.*?)\}", line)
-            if hasattr(match, "groups"):
-                name = match.groups()[0]
-                break
-        else:
-            raise exceptions.UnableToInferClassName(ms_name)
-        return name
 
 
 def as_dict(x, depth=0, maxdepth=30):
@@ -352,21 +326,10 @@ def parse_config():
         # Path to the workflow
         config["workflow_abspath"] = paths.showyourwork().workflow.as_posix()
 
-        # TeX class name
-        config["class_name"] = get_class_name(config["ms_name"])
-
         # TeX auxiliary files
         config["tex_files_in"] = [
             file.as_posix()
             for file in (paths.showyourwork().resources / "tex").glob("*")
-        ]
-        config["tex_files_in"] += [
-            file.as_posix()
-            for file in (
-                paths.showyourwork().resources
-                / "classes"
-                / config["class_name"]
-            ).glob("*")
         ]
         config["tex_files_out"] = [
             (
