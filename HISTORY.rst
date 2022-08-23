@@ -1,6 +1,6 @@
 .. :changelog:
 
-0.3.1 (2022-08-19)
+0.3.1 (2022-08-23)
 ++++++++++++++++++
 
 - Fixed bug related to displaying figure caption icons for cached datasets.
