@@ -196,9 +196,9 @@ class Repo(NamedTuple):
         try:
             self._do_apply(diff, exclude=exclude)
 
-        except CannotApplyDiff:
+        except ApplyConflict:
             if require_fast_forward:
-                raise CannotApplyDiff()
+                raise ApplyConflict()
 
         else:
             return True, sha
