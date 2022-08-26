@@ -1,20 +1,47 @@
-"""
-Implements the logic for merging two disparate git histories. This is used for
-Overleaf support, but implemented separately to make testing and maintenance
-easier.
-"""
-
+import re
+import shutil
 from contextlib import contextmanager
+from functools import cached_property
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Iterable, NamedTuple, Optional, Tuple
 
 from plumbum import ProcessExecutionError, local
 
-from . import exceptions
+from . import exceptions, paths
 
 git = local["git"]
 rm = local["rm"]
+
+OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
+    [
+        r"\\documentclass{article}",
+        r"\\usepackage\[utf8\]{inputenc}",
+        r"\\title{[^\n{}]+?}",
+        r"\\author{[^\n{}]+?}",
+        r"\\date{[^\n{}]+?}",
+        r"\\begin{document}",
+        r"\\maketitle",
+        r"\\section{Introduction}",
+        r"\\end{document}",
+    ]
+)
+
+OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{blank project}
+\author{Rodrigo Luger}
+\date{April 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\end{document}
+"""
 
 
 class MergeError(exceptions.ShowyourworkException):
@@ -32,7 +59,8 @@ class ApplyConflict(exceptions.ShowyourworkException):
 
 
 class RebaseConflict(exceptions.ShowyourworkException):
-    def __init__(self, stdout, stderr):
+    def __init__(self, new_sha, stdout, stderr):
+        self.new_sha = new_sha
         super().__init__(
             "Unable to automatically merge histories; "
             "fix conflicts and continue the rebase as described below:\n\n"
@@ -82,7 +110,7 @@ class Repo(NamedTuple):
 
             yield self._replace(path=Path(d))
 
-    def _add_and_commit(
+    def add_and_commit(
         self,
         message: str,
         include: Optional[Iterable[str]] = None,
@@ -130,7 +158,7 @@ class Repo(NamedTuple):
             with local.cwd(old_copy.path):
                 rm("-rf", ".git", retcode=None)
                 git("init", retcode=None)
-                old_copy._add_and_commit(
+                old_copy.add_and_commit(
                     "dummy commit", include=include, exclude=exclude
                 )
                 git(
@@ -211,7 +239,7 @@ class Repo(NamedTuple):
 
             # Make a dummy commit on this old copy
             old_copy.git("checkout", "-b", branch)
-            old_copy._add_and_commit(message, exclude=exclude)
+            old_copy.add_and_commit(message, exclude=exclude)
             sha = old_copy.current_sha()
 
             # Rebase the current version onto the patched old one
@@ -227,7 +255,7 @@ class Repo(NamedTuple):
                     git("rebase", "FETCH_HEAD")
 
                 except ProcessExecutionError as e:
-                    raise RebaseConflict(e.stdout, e.stderr)
+                    raise RebaseConflict(sha, e.stdout, e.stderr)
 
                 finally:
                     git("remote", "rm", upstream)
@@ -253,3 +281,147 @@ class Repo(NamedTuple):
             diff, exclude=exclude, require_fast_forward=require_fast_forward
         )
         return ff, self._replace(base_sha=sha)
+
+
+class Overleaf(NamedTuple):
+    local: Repo
+    remote: Repo
+
+    @classmethod
+    def from_project_id(
+        cls,
+        project_id: str,
+        path: Optional[str] = None,
+        local_sha: Optional[str] = None,
+        remote_sha: Optional[str] = None,
+    ) -> "Overleaf":
+        return cls.from_url(
+            f"https://git.overleaf.com/{project_id}",
+            path=path,
+            local_sha=local_sha,
+            remote_sha=remote_sha,
+        )
+
+    @classmethod
+    def from_url(
+        cls,
+        url: str,
+        path: Optional[str] = None,
+        local_sha: Optional[str] = None,
+        remote_sha: Optional[str] = None,
+    ) -> "Overleaf":
+        user_paths = paths.user(path=path)
+        with local.cwd(user_paths.repo):
+            local_branch = git("rev-parse", "--abbrev-ref", "HEAD").strip()
+        return cls(
+            local=Repo(
+                url=f"file://{user_paths.repo}",
+                branch=local_branch,
+                path=user_paths.repo,
+                base_sha=local_sha,
+                subdirectory=str(user_paths.tex.relative_to(user_paths.repo)),
+            ),
+            remote=Repo(
+                url=url,
+                branch="master",
+                path=user_paths.overleaf,
+                base_sha=remote_sha,
+            ),
+        )
+
+    def init_remote(self):
+        if self.remote.path.exists():
+            shutil.rmtree(self.remote.path)
+        self.remote.path.mkdir(exist_ok=True)
+        self.remote.git("init")
+        self.remote.git("branch", "-M", self.remote.branch)
+        self.remote.git("pull", self.remote.url)
+
+    def push_remote(self):
+        self.remote.git("push", self.remote.url)
+
+    def setup_remote(self, force: bool = False):
+        self.init_remote()
+
+        # If we're not forcing the overwrite, check to make sure that the
+        # project is blank.
+        if not force:
+            files = [f for f in self.remote.path.glob("*") if f.name != ".git"]
+            if len(files) != 1 or not re.match(
+                OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE, open(files[0]).read()
+            ):
+                raise exceptions.OverleafError(
+                    "Overleaf repository is not a blank project. "
+                    "Use force=True to overwrite."
+                )
+
+        # Remove all the files in the remote
+        self.remote.git("rm", "-r", "*")
+
+        # Copy over the local files
+        files = self.local.git(
+            "ls-tree",
+            "-r",
+            "--name-only",
+            "HEAD",
+            self.local.subdirectory,
+        ).splitlines()
+        for f in files:
+            f = Path(f)
+            base_file = f.relative_to(self.local.subdirectory)
+            local = self.local.path / f
+            remote = self.remote.path / base_file
+            if local.is_dir():
+                if remote.exists():
+                    shutil.rmtree(remote)
+                shutil.copytree(local, remote)
+            else:
+                shutil.copy(local, remote)
+            self.remote.git("add", str(base_file))
+
+        # Commit the changes
+        self.remote.add_and_commit("[showyourwork] Initial setup")
+        self.push_remote()
+
+        # Save the new base SHA
+        return self._replace(
+            remote=self.remote._replace(base_sha=self.remote.current_sha())
+        )
+
+    @cached_property
+    def _rebase_lock_path(self) -> Path:
+        return paths.user(path=self.local.path).temp / "overleaf-rebase.lock"
+
+    def _save_rebase_lock(self, sha: str):
+        with open(self._rebase_lock_path, "w") as f:
+            f.write(sha)
+
+    def _load_rebase_lock(self):
+        if not self._rebase_lock_path.exists():
+            raise exceptions.OverleafError("No rebase in progress")
+        with open(self._rebase_lock_path, "r") as f:
+            return f.read()
+
+    def sync_from_remote(self) -> "Overleaf":
+        try:
+            _, new_sha = self.local.merge_or_rebase(self.remote)
+        except RebaseConflict as e:
+            new_sha = e.new_sha
+            self._save_rebase_lock(new_sha)
+            raise
+        self.finish_sync_from_remote(new_sha)
+
+    def abort_sync_from_remote(self):
+        self._load_rebase_lock()
+        self.local.git("rebase", "--abort")
+
+    def continue_sync_from_remote(self) -> "Overleaf":
+        new_sha = self._load_rebase_lock()
+        try:
+            self.local.git("rebase", "--continue")
+        except ProcessExecutionError as e:
+            raise RebaseConflict(new_sha, e.stdout, e.stderr)
+        return self.finish_sync_from_remote(new_sha)
+
+    def finish_sync_from_remote(self, new_sha: str) -> "Overleaf":
+        return self._replace(remote=self.remote._replace(base_sha=new_sha))

@@ -6,27 +6,14 @@ import pytest
 from plumbum import local
 
 from showyourwork import exceptions
-from showyourwork.merge import RebaseConflict, Repo
+from showyourwork.overleaf2 import (
+    OVERLEAF_BLANK_PROJECT,
+    Overleaf,
+    RebaseConflict,
+    Repo,
+)
 
 git = local["git"]
-
-
-TEST_FILE = r"""
-\documentclass{article}
-\usepackage[utf8]{inputenc}
-
-\title{blank project}
-\author{Rodrigo Luger}
-\date{April 2022}
-
-\begin{document}
-
-\maketitle
-
-\section{Introduction}
-
-\end{document}
-"""
 
 
 def _new_repo(path, branch):
@@ -39,12 +26,16 @@ def _new_repo(path, branch):
 
 
 @contextmanager
-def overleaf_like(empty=False):
+def overleaf_like(empty=False, blank=False):
     with TemporaryDirectory() as d:
-        if not empty:
+        if blank:
+            p = Path(d)
+            with open(p / "main.tex", "w") as f:
+                f.write(OVERLEAF_BLANK_PROJECT)
+        elif not empty:
             p = Path(d)
             with open(p / "ms.tex", "w") as f:
-                f.write(TEST_FILE)
+                f.write(OVERLEAF_BLANK_PROJECT)
             with open(p / "bib.bib", "w") as f:
                 f.write("This is bib.bib\n")
             (p / "figures").mkdir(parents=True)
@@ -53,6 +44,7 @@ def overleaf_like(empty=False):
 
         _new_repo(d, "master")
         repo = Repo(url=f"file://{d}", branch="master", path=Path(d))
+        repo.git("config", "receive.denyCurrentBranch", "ignore")
         yield repo._replace(base_sha=repo.current_sha())
 
 
@@ -63,7 +55,7 @@ def syw_like(empty=False):
             p = Path(d) / "src" / "tex"
             p.mkdir(parents=True)
             with open(p / "ms.tex", "w") as f:
-                f.write(TEST_FILE)
+                f.write(OVERLEAF_BLANK_PROJECT)
             with open(p / "bib.bib", "w") as f:
                 f.write("This is bib.bib\n")
 
@@ -78,9 +70,9 @@ def syw_like(empty=False):
 
 
 @contextmanager
-def repo_pair(order, syw_empty=False, ovl_empty=False):
+def repo_pair(order, syw_empty=False, ovl_empty=False, blank=False):
     with syw_like(empty=syw_empty) as local_repo, overleaf_like(
-        empty=ovl_empty
+        empty=ovl_empty, blank=blank
     ) as remote_repo:
         if order:
             yield local_repo, remote_repo
@@ -172,8 +164,38 @@ def test_conflict(order):
         with pytest.raises(RebaseConflict):
             syw.merge_or_rebase(ovl)
 
-        expected = TEST_FILE + "This is an additional line\n"
+        expected = OVERLEAF_BLANK_PROJECT + "This is an additional line\n"
         open(syw_fn, "w").write(expected)
         syw.git("add", syw_fn)
         syw.git("rebase", "--continue")
         assert open(syw_fn, "r").read() == expected
+
+
+def test_setup():
+    with repo_pair(True, blank=True) as (syw, ovl):
+        overleaf = Overleaf.from_url(
+            ovl.url,
+            path=syw.path,
+            local_sha=syw.base_sha,
+            remote_sha=ovl.base_sha,
+        )
+        overleaf.setup_remote()
+        ovl.git("reset", "--hard", "HEAD")
+
+        assert not (ovl.source_path / "main.tex").exists()
+        assert (
+            open(ovl.source_path / "ms.tex").read()
+            == open(syw.source_path / "ms.tex").read()
+        )
+
+
+def test_setup_not_blank():
+    with repo_pair(True) as (syw, ovl):
+        overleaf = Overleaf.from_url(
+            ovl.url,
+            path=syw.path,
+            local_sha=syw.base_sha,
+            remote_sha=ovl.base_sha,
+        )
+        with pytest.raises(exceptions.OverleafError):
+            overleaf.setup_remote()
