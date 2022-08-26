@@ -268,10 +268,7 @@ class Repo(NamedTuple):
         exclude: Optional[Iterable[str]] = None,
         require_fast_forward: bool = False,
     ) -> Tuple[bool, "Repo"]:
-        """Merge or rebase the changes from another repo into this one
-
-        If possible this will
-        """
+        """Merge or rebase the changes from another repo into this one"""
         if self.is_dirty():
             raise exceptions.OverleafError(
                 "Local project is dirty; please commit or stash before syncing"
@@ -338,7 +335,7 @@ class Overleaf(NamedTuple):
         self.remote.git("pull", self.remote.url)
 
     def push_remote(self):
-        self.remote.git("push", self.remote.url)
+        self.remote.git("push", self.remote.url, self.remote.branch)
 
     def setup_remote(self, force: bool = False):
         self.init_remote()
@@ -404,16 +401,17 @@ class Overleaf(NamedTuple):
 
     def sync_from_remote(self) -> "Overleaf":
         try:
-            _, new_sha = self.local.merge_or_rebase(self.remote)
+            _, new_local = self.local.merge_or_rebase(self.remote)
         except RebaseConflict as e:
             new_sha = e.new_sha
             self._save_rebase_lock(new_sha)
             raise
-        self.finish_sync_from_remote(new_sha)
+        return self.finish_sync_from_remote(new_local.base_sha)
 
     def abort_sync_from_remote(self):
         self._load_rebase_lock()
         self.local.git("rebase", "--abort")
+        self._rebase_lock_path.unlink(missing_ok=True)
 
     def continue_sync_from_remote(self) -> "Overleaf":
         new_sha = self._load_rebase_lock()
@@ -424,4 +422,11 @@ class Overleaf(NamedTuple):
         return self.finish_sync_from_remote(new_sha)
 
     def finish_sync_from_remote(self, new_sha: str) -> "Overleaf":
+        self._rebase_lock_path.unlink(missing_ok=True)
         return self._replace(remote=self.remote._replace(base_sha=new_sha))
+
+    def sync_to_remote(self) -> "Overleaf":
+        _, new_remote = self.remote.merge_or_rebase(
+            self.local, require_fast_forward=True
+        )
+        return self._replace(remote=new_remote)
