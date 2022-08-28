@@ -220,10 +220,9 @@ def test_sync_remote_changes():
             f.write("This is an additional line\n")
         source_repo.add_and_commit("Adding an additional line")
         overleaf = sync(overleaf, source_repo)
-        assert (
-            open(source_repo.source_path / "ms.tex").read()
-            == open(overleaf.local.source_path / "ms.tex").read()
-        )
+        expect = open(overleaf.local.source_path / "ms.tex").read()
+        assert open(source_repo.source_path / "ms.tex").read() == expect
+        assert expect.endswith("This is an additional line\n")
 
 
 def test_sync_local_changes():
@@ -232,10 +231,9 @@ def test_sync_local_changes():
             f.write("This is an additional line\n")
         overleaf.local.add_and_commit("Adding an additional line")
         overleaf = sync(overleaf, source_repo)
-        assert (
-            open(source_repo.source_path / "ms.tex").read()
-            == open(overleaf.local.source_path / "ms.tex").read()
-        )
+        expect = open(overleaf.local.source_path / "ms.tex").read()
+        assert open(source_repo.source_path / "ms.tex").read() == expect
+        assert expect.endswith("This is an additional line\n")
 
 
 def test_sync_both_changes():
@@ -250,7 +248,53 @@ def test_sync_both_changes():
         overleaf.local.add_and_commit("Adding a different additional line")
 
         overleaf = sync(overleaf, source_repo)
-        assert (
-            open(source_repo.source_path / "ms.tex").read()
-            == open(overleaf.local.source_path / "ms.tex").read()
-        )
+        expect = open(overleaf.local.source_path / "ms.tex").read()
+        assert open(source_repo.source_path / "ms.tex").read() == expect
+        assert expect.startswith("This is a new first line\n")
+        assert expect.endswith("This is an additional line\n")
+
+
+def test_sync_rebase_abort():
+    with setup_overleaf() as (overleaf, source_repo):
+        with open(source_repo.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        source_repo.add_and_commit("Adding an additional line")
+
+        with open(overleaf.local.source_path / "ms.tex", "a") as f:
+            f.write("This is a different additional line\n")
+        overleaf.local.add_and_commit("Adding a different additional line")
+        expect = open(overleaf.local.source_path / "ms.tex").read()
+
+        with pytest.raises(RebaseConflict):
+            sync(overleaf, source_repo)
+
+        overleaf.abort_sync_from_remote()
+        assert open(overleaf.local.source_path / "ms.tex").read() == expect
+
+
+def test_sync_rebase_merge():
+    with setup_overleaf() as (overleaf, source_repo):
+        with open(source_repo.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        source_repo.add_and_commit("Adding an additional line")
+
+        baseline = open(overleaf.local.source_path / "ms.tex").read()
+        with open(overleaf.local.source_path / "ms.tex", "a") as f:
+            f.write("This is a different additional line\n")
+        overleaf.local.add_and_commit("Adding a different additional line")
+
+        with pytest.raises(RebaseConflict):
+            sync(overleaf, source_repo)
+
+        # Fix the conflict
+        with open(overleaf.local.source_path / "ms.tex", "w") as f:
+            f.write(baseline + "This is a rebased additional line\n")
+        overleaf.local.git("add", overleaf.local.source_path / "ms.tex")
+
+        overleaf = overleaf.continue_sync_from_remote()
+        overleaf = overleaf.sync_to_remote()
+        source_repo.git("reset", "--hard", "HEAD")
+
+        expect = open(overleaf.local.source_path / "ms.tex").read()
+        assert open(source_repo.source_path / "ms.tex").read() == expect
+        assert expect.endswith("This is a rebased additional line\n")

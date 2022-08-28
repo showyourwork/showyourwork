@@ -5,12 +5,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Iterable, NamedTuple, Optional, Tuple
 
-from plumbum import ProcessExecutionError, local
+from plumbum import ProcessExecutionError, local, FG
 
 from . import exceptions, paths
-
-git = local["git"]
-rm = local["rm"]
 
 OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
     [
@@ -43,11 +40,11 @@ OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
 """
 
 
-class MergeError(exceptions.ShowyourworkException):
+class MergeError(Exception):
     pass
 
 
-class ApplyConflict(exceptions.ShowyourworkException):
+class ApplyConflict(Exception):
     def __init__(self):
         super().__init__(
             "Cannot apply diff. This generally means that you made local "
@@ -57,7 +54,7 @@ class ApplyConflict(exceptions.ShowyourworkException):
         )
 
 
-class RebaseConflict(exceptions.ShowyourworkException):
+class RebaseConflict(Exception):
     def __init__(self, new_sha, stdout, stderr):
         self.new_sha = new_sha
         super().__init__(
@@ -83,7 +80,8 @@ class Repo(NamedTuple):
 
     def git(self, *args: str, **kwargs: str) -> str:
         with local.cwd(self.path):
-            return git(*args, **kwargs)
+            with local.env(GIT_TRACE="2"):
+                return local["git"](*args, **kwargs)
 
     def current_sha(self) -> str:
         return self.git("rev-parse", "HEAD").strip()
@@ -99,13 +97,13 @@ class Repo(NamedTuple):
             # If there's no base commit, we want the whole history
             if old and self.base_sha is None:
                 with local.cwd(d):
-                    git("init")
+                    local["git"]("init")
 
             else:
-                git("clone", "--branch", self.branch, self.url, d)
+                local["git"]("clone", "--branch", self.branch, self.url, d)
                 if old:
                     with local.cwd(d):
-                        git("reset", "--hard", self.base_sha)
+                        local["git"]("reset", "--hard", self.base_sha)
 
             yield self._replace(path=Path(d))
 
@@ -116,7 +114,7 @@ class Repo(NamedTuple):
         exclude: Optional[Iterable[str]] = None,
     ):
         with local.cwd(self.path):
-            add_cmd = git["add"]
+            add_cmd = local["git"]["add"]
             if include is not None:
                 assert not exclude
                 if self.subdirectory is None:
@@ -136,6 +134,11 @@ class Repo(NamedTuple):
                     for p in exclude:
                         add_cmd = add_cmd[f":!{Path(self.subdirectory) / p}"]
             add_cmd()
+        self.commit(message)
+
+    def commit(self, message):
+        with local.cwd(self.path):
+            git = local["git"]
             git("config", "user.name", "showyourwork")
             git("config", "user.email", "showyourwork@showyourwork")
             try:
@@ -155,7 +158,8 @@ class Repo(NamedTuple):
             old=True
         ) as old_copy, self.checkout_temp() as new_copy:
             with local.cwd(old_copy.path):
-                rm("-rf", ".git", retcode=None)
+                git = local["git"]
+                local["rm"]("-rf", ".git", retcode=None)
                 git("init", retcode=None)
                 old_copy.add_and_commit(
                     "dummy commit", include=include, exclude=exclude
@@ -187,7 +191,7 @@ class Repo(NamedTuple):
         self, diff: str, exclude: Optional[Iterable[str]] = None
     ) -> None:
         with local.cwd(self.path):
-            apply_cmd = git["apply", "--reject", "--whitespace=fix"]
+            apply_cmd = local["git"]["apply", "--whitespace=fix"]
             if self.subdirectory is not None:
                 (self.path / self.subdirectory).mkdir(
                     parents=True, exist_ok=True
@@ -243,6 +247,7 @@ class Repo(NamedTuple):
 
             # Rebase the current version onto the patched old one
             with local.cwd(self.path):
+                git = local["git"]
                 git(
                     "remote",
                     "add",
@@ -310,7 +315,9 @@ class Overleaf(NamedTuple):
     ) -> "Overleaf":
         user_paths = paths.user(path=path)
         with local.cwd(user_paths.repo):
-            local_branch = git("rev-parse", "--abbrev-ref", "HEAD").strip()
+            local_branch = local["git"](
+                "rev-parse", "--abbrev-ref", "HEAD"
+            ).strip()
         return cls(
             local=Repo(
                 url=f"file://{user_paths.repo}",
@@ -421,7 +428,7 @@ class Overleaf(NamedTuple):
     def continue_sync_from_remote(self) -> "Overleaf":
         new_sha = self._load_rebase_lock()
         try:
-            self.local.git("rebase", "--continue")
+            self.local.git("-c", "core.editor=true", "rebase", "--continue")
         except ProcessExecutionError as e:
             raise RebaseConflict(new_sha, e.stdout, e.stderr)
         return self.finish_sync_from_remote(new_sha)
