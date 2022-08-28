@@ -64,6 +64,15 @@ class RebaseConflict(Exception):
         )
 
 
+class MergeConflict(Exception):
+    def __init__(self, stdout, stderr):
+        super().__init__(
+            "Unable to automatically merge histories; "
+            "fix conflicts as described below:\n\n"
+            f"{stdout}\n{stderr}"
+        )
+
+
 class Repo(NamedTuple):
     url: str
     branch: str
@@ -78,10 +87,19 @@ class Repo(NamedTuple):
         else:
             return self.path / self.subdirectory
 
-    def git(self, *args: str, **kwargs: str) -> str:
+    def git(self, *args: str, with_config: bool = False, **kwargs: str) -> str:
+        if with_config:
+            args = (
+                "-c",
+                "core.editor=true",
+                "-c",
+                "user.name=showyourwork",
+                "-c",
+                "user.email=showyourwork@showyourwork",
+                *args,
+            )
         with local.cwd(self.path):
-            with local.env(GIT_TRACE="2"):
-                return local["git"](*args, **kwargs)
+            return local["git"](*args, **kwargs)
 
     def current_sha(self) -> str:
         return self.git("rev-parse", "HEAD").strip()
@@ -137,17 +155,15 @@ class Repo(NamedTuple):
         self.commit(message)
 
     def commit(self, message):
-        with local.cwd(self.path):
-            git = local["git"]
-            git("config", "user.name", "showyourwork")
-            git("config", "user.email", "showyourwork@showyourwork")
-            try:
-                git("commit", "--allow-empty", "-am", message)
-            except ProcessExecutionError:
-                # The first commit may fail if pre-commit is in use
-                git("commit", "--allow-empty", "-am", message)
-            git("config", "--unset", "user.name")
-            git("config", "--unset", "user.email")
+        try:
+            self.git(
+                "commit", "--allow-empty", "-am", message, with_config=True
+            )
+        except ProcessExecutionError:
+            # The first commit may fail if pre-commit is in use
+            self.git(
+                "commit", "--allow-empty", "-am", message, with_config=True
+            )
 
     def diff(
         self,
@@ -427,16 +443,8 @@ class Overleaf(NamedTuple):
 
     def continue_sync_from_remote(self) -> "Overleaf":
         new_sha = self._load_rebase_lock()
-        args = (
-            "-c",
-            "core.editor=true",
-            "-c",
-            "user.name=showyourwork",
-            "-c",
-            "user.email=showyourwork@showyourwork",
-        )
         try:
-            self.local.git(*args, "rebase", "--continue")
+            self.local.git("rebase", "--continue", with_config=True)
         except ProcessExecutionError as e:
             raise RebaseConflict(new_sha, e.stdout, e.stderr)
         return self.finish_sync_from_remote(new_sha)
@@ -454,5 +462,17 @@ class Overleaf(NamedTuple):
 
     def finish_sync_to_remote(self) -> "Overleaf":
         self.remote.add_and_commit("[showyourwork] Updating overleaf")
-        self.push_remote()
+        try:
+            self.push_remote()
+        except ProcessExecutionError:
+            try:
+                self.remote.git(
+                    "pull",
+                    self.remote.url,
+                    self.remote.branch,
+                    with_config=True,
+                )
+            except ProcessExecutionError as e:
+                raise MergeConflict(e.stdout, e.stderr)
+            self.push_remote()
         return self.to_current()

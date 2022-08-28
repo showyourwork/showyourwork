@@ -8,6 +8,7 @@ from plumbum import local
 from showyourwork import exceptions
 from showyourwork.overleaf2 import (
     OVERLEAF_BLANK_PROJECT,
+    MergeConflict,
     Overleaf,
     RebaseConflict,
     Repo,
@@ -298,3 +299,48 @@ def test_sync_rebase_merge():
         expect = open(overleaf.local.source_path / "ms.tex").read()
         assert open(source_repo.source_path / "ms.tex").read() == expect
         assert expect.endswith("This is a rebased additional line\n")
+
+
+def test_remote_changes_during_sync():
+    with setup_overleaf() as (overleaf, source_repo):
+        initial = open(source_repo.source_path / "ms.tex", "r").read()
+        with open(source_repo.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        source_repo.add_and_commit("Adding an additional line")
+        overleaf.init_remote()
+
+        # Add a change that happens during the sync
+        expect = initial + "This is a different additional line\n"
+        with open(source_repo.source_path / "ms.tex", "w") as f:
+            f.write(expect)
+        source_repo.add_and_commit("Adding a different line")
+
+        overleaf = sync(overleaf, source_repo, reinit=False)
+        assert open(source_repo.source_path / "ms.tex").read() == expect
+
+
+def test_remote_changes_during_sync_with_conflict():
+    with setup_overleaf() as (overleaf, source_repo):
+        initial = open(overleaf.local.source_path / "ms.tex", "r").read()
+        with open(overleaf.local.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        overleaf.local.add_and_commit("Adding an additional line")
+        overleaf = overleaf.sync_from_remote()
+
+        # Add a change that happens during the sync
+        expect = initial + "This is a different additional line\n"
+        with open(source_repo.source_path / "ms.tex", "w") as f:
+            f.write(expect)
+        source_repo.add_and_commit("Adding a different line")
+
+        # This should fail with a merge conflict
+        with pytest.raises(MergeConflict):
+            overleaf.sync_to_remote()
+
+        # Fix the merge conflict and finish the sync
+        with open(overleaf.local.source_path / "ms.tex", "w") as f:
+            f.write(expect)
+        overleaf.local.git("add", overleaf.local.source_path / "ms.tex")
+        overleaf = overleaf.continue_sync_to_remote()
+
+        assert open(source_repo.source_path / "ms.tex").read() == expect
