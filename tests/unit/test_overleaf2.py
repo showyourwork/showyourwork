@@ -54,6 +54,8 @@ def syw_like(empty=False):
         if not empty:
             p = Path(d) / "src" / "tex"
             p.mkdir(parents=True)
+            with open(Path(d) / ".gitignore", "w") as f:
+                f.write(".showyourwork\n")
             with open(p / "ms.tex", "w") as f:
                 f.write(OVERLEAF_BLANK_PROJECT)
             with open(p / "bib.bib", "w") as f:
@@ -171,31 +173,84 @@ def test_conflict(order):
         assert open(syw_fn, "r").read() == expected
 
 
-def test_setup():
-    with repo_pair(True, blank=True) as (syw, ovl):
-        overleaf = Overleaf.from_url(
-            ovl.url,
-            path=syw.path,
-            local_sha=syw.base_sha,
-            remote_sha=ovl.base_sha,
-        )
-        overleaf.setup_remote()
+@contextmanager
+def setup_overleaf(**kwargs):
+    kwargs["blank"] = kwargs.get("blank", True)
+    with repo_pair(True, **kwargs) as (syw, ovl):
+        overleaf = Overleaf.from_url(ovl.url, path=syw.path)
+        overleaf = overleaf.setup_remote()
         ovl.git("reset", "--hard", "HEAD")
+        yield overleaf, ovl
 
-        assert not (ovl.source_path / "main.tex").exists()
+
+def sync(overleaf, source_repo, reinit=True):
+    # This re-pulls the remote, incorporating the changes we just made. If
+    # we didn't do this, it would be as if these changes were made during
+    # the sync process
+    if reinit:
+        overleaf.init_remote()
+
+    overleaf = overleaf.sync_from_remote()
+    overleaf = overleaf.sync_to_remote()
+
+    # Sync the pushed changes
+    source_repo.git("reset", "--hard", "HEAD")
+
+    return overleaf
+
+
+def test_setup():
+    with setup_overleaf() as (overleaf, _):
+        assert not (overleaf.remote.source_path / "main.tex").exists()
         assert (
-            open(ovl.source_path / "ms.tex").read()
-            == open(syw.source_path / "ms.tex").read()
+            open(overleaf.remote.source_path / "ms.tex").read()
+            == open(overleaf.local.source_path / "ms.tex").read()
         )
 
 
 def test_setup_not_blank():
-    with repo_pair(True) as (syw, ovl):
-        overleaf = Overleaf.from_url(
-            ovl.url,
-            path=syw.path,
-            local_sha=syw.base_sha,
-            remote_sha=ovl.base_sha,
+    with pytest.raises(exceptions.OverleafError):
+        with setup_overleaf(blank=False):
+            pass
+
+
+def test_sync_remote_changes():
+    with setup_overleaf() as (overleaf, source_repo):
+        with open(source_repo.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        source_repo.add_and_commit("Adding an additional line")
+        overleaf = sync(overleaf, source_repo)
+        assert (
+            open(source_repo.source_path / "ms.tex").read()
+            == open(overleaf.local.source_path / "ms.tex").read()
         )
-        with pytest.raises(exceptions.OverleafError):
-            overleaf.setup_remote()
+
+
+def test_sync_local_changes():
+    with setup_overleaf() as (overleaf, source_repo):
+        with open(overleaf.local.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        overleaf.local.add_and_commit("Adding an additional line")
+        overleaf = sync(overleaf, source_repo)
+        assert (
+            open(source_repo.source_path / "ms.tex").read()
+            == open(overleaf.local.source_path / "ms.tex").read()
+        )
+
+
+def test_sync_both_changes():
+    with setup_overleaf() as (overleaf, source_repo):
+        with open(source_repo.source_path / "ms.tex", "a") as f:
+            f.write("This is an additional line\n")
+        source_repo.add_and_commit("Adding an additional line")
+
+        data = open(overleaf.local.source_path / "ms.tex").read()
+        with open(overleaf.local.source_path / "ms.tex", "w") as f:
+            f.write("This is a new first line\n" + data)
+        overleaf.local.add_and_commit("Adding a different additional line")
+
+        overleaf = sync(overleaf, source_repo)
+        assert (
+            open(source_repo.source_path / "ms.tex").read()
+            == open(overleaf.local.source_path / "ms.tex").read()
+        )

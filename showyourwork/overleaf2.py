@@ -1,7 +1,6 @@
 import re
 import shutil
 from contextlib import contextmanager
-from functools import cached_property
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Iterable, NamedTuple, Optional, Tuple
@@ -217,7 +216,7 @@ class Repo(NamedTuple):
         exclude: Optional[Iterable[str]] = None,
         require_fast_forward: bool = False,
     ) -> Tuple[bool, str]:
-        sha = self.current_sha()
+        # sha = self.current_sha()
 
         # First we try to just apply the diff. If we can, then it's possible to
         # do a fast-forward merge.
@@ -229,7 +228,7 @@ class Repo(NamedTuple):
                 raise ApplyConflict()
 
         else:
-            return True, sha
+            return True, self.base_sha
 
         # If we get here, we're going to need to merge these divergent histories
         # using a rebase.
@@ -274,6 +273,8 @@ class Repo(NamedTuple):
                 "Local project is dirty; please commit or stash before syncing"
             )
         diff = remote_repo.diff(include=include, exclude=exclude)
+        if diff.strip() == "":
+            return True, self
         ff, sha = self.apply(
             diff, exclude=exclude, require_fast_forward=require_fast_forward
         )
@@ -324,6 +325,12 @@ class Overleaf(NamedTuple):
                 path=user_paths.overleaf,
                 base_sha=remote_sha,
             ),
+        )
+
+    def to_current(self) -> "Overleaf":
+        return self._replace(
+            local=self.local._replace(base_sha=self.local.current_sha()),
+            remote=self.remote._replace(base_sha=self.remote.current_sha()),
         )
 
     def init_remote(self):
@@ -381,11 +388,9 @@ class Overleaf(NamedTuple):
         self.push_remote()
 
         # Save the new base SHA
-        return self._replace(
-            remote=self.remote._replace(base_sha=self.remote.current_sha())
-        )
+        return self.to_current()
 
-    @cached_property
+    @property
     def _rebase_lock_path(self) -> Path:
         return paths.user(path=self.local.path).temp / "overleaf-rebase.lock"
 
@@ -423,10 +428,16 @@ class Overleaf(NamedTuple):
 
     def finish_sync_from_remote(self, new_sha: str) -> "Overleaf":
         self._rebase_lock_path.unlink(missing_ok=True)
-        return self._replace(remote=self.remote._replace(base_sha=new_sha))
+        return self._replace(local=self.local._replace(base_sha=new_sha))
 
     def sync_to_remote(self) -> "Overleaf":
-        _, new_remote = self.remote.merge_or_rebase(
-            self.local, require_fast_forward=True
-        )
-        return self._replace(remote=new_remote)
+        self.remote.merge_or_rebase(self.local, require_fast_forward=True)
+        return self.finish_sync_to_remote()
+
+    def continue_sync_to_remote(self) -> "Overleaf":
+        return self.finish_sync_to_remote()
+
+    def finish_sync_to_remote(self) -> "Overleaf":
+        self.remote.add_and_commit("[showyourwork] Updating overleaf")
+        self.push_remote()
+        return self.to_current()
