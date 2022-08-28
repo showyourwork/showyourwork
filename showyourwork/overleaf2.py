@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Iterable, NamedTuple, Optional, Tuple
 
-from plumbum import ProcessExecutionError, local, FG
+from plumbum import FG, ProcessExecutionError, local
 
 from . import exceptions, paths
 
