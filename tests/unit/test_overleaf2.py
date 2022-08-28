@@ -129,7 +129,7 @@ def test_merge_same_file(order):
 
         expected = open(syw_fn, "r").read() + open(ovl_fn, "r").readlines()[-1]
 
-        ff, _ = syw.merge_or_rebase(ovl)
+        _, ff, _ = syw.merge_or_rebase(ovl)
         assert ff
         assert open(syw_fn, "r").read() == expected
 
@@ -147,7 +147,7 @@ def test_merge_different_files(order):
         syw.git("commit", "-am", "additional line: syw")
         expected_bib = open(syw_fn, "r").read()
 
-        ff, _ = syw.merge_or_rebase(ovl)
+        _, ff, _ = syw.merge_or_rebase(ovl)
         assert ff
         assert open(syw.source_path / "ms.tex", "r").read() == expected_ms
         assert open(syw.source_path / "bib.bib", "r").read() == expected_bib
@@ -213,6 +213,13 @@ def test_setup_not_blank():
     with pytest.raises(exceptions.OverleafError):
         with setup_overleaf(blank=False):
             pass
+
+
+def test_sync_no_changes():
+    with setup_overleaf() as (overleaf, source_repo):
+        overleaf = sync(overleaf, source_repo)
+        expect = open(overleaf.local.source_path / "ms.tex").read()
+        assert open(source_repo.source_path / "ms.tex").read() == expect
 
 
 def test_sync_remote_changes():

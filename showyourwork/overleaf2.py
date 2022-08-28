@@ -5,9 +5,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator, Iterable, NamedTuple, Optional, Tuple
 
-from plumbum import FG, ProcessExecutionError, local
+from plumbum import ProcessExecutionError, local
 
-from . import exceptions, paths
+from . import exceptions, logging, paths
 
 OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
     [
@@ -40,37 +40,68 @@ OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
 """
 
 
-class MergeError(Exception):
-    pass
-
-
-class ApplyConflict(Exception):
-    def __init__(self):
+class ApplyConflict(exceptions.OverleafError):
+    def __init__(self, level: str = "debug"):
         super().__init__(
-            "Cannot apply diff. This generally means that you made local "
-            "(or remote) changes to a file that is owned by remote (or "
-            "local); re-run `sync` with the argument `--force` to "
-            "overwrite changes"
+            "There was an unsolvable conflict when applying a diff. "
+            "This generally only occurs when the stored commit hashes "
+            "for the local and/or Overleaf repo get out of sync. "
+            "To resolve this issue, make sure that the remote Overleaf "
+            "documents are all up to date and then run "
+            "'showyourwork sync --force' to force acceptance of remote "
+            "changes.",
+            level=level,
         )
 
 
-class RebaseConflict(Exception):
-    def __init__(self, new_sha, stdout, stderr):
+class Conflict(exceptions.OverleafError):
+    def __init__(self, message: str, repo: "Repo", level: str = "error"):
+        conflicts = repo.git(
+            "diff", "--name-only", "--diff-filter=U"
+        ).splitlines()
+        conflicts = "\n".join(f"- {f}" for f in conflicts)
+        super().__init__(
+            f"{message}; "
+            f"fix the conflicts in '{repo.path}' and mark them as resolved "
+            "using 'git add', then run 'showyourwork sync --continue' to finish"
+            f"\nconflicts were found in the following files:\n{conflicts}",
+            level=level,
+        )
+
+
+class RebaseConflict(Conflict):
+    def __init__(self, new_sha: str, repo: "Repo", level: str = "error"):
         self.new_sha = new_sha
         super().__init__(
-            "Unable to automatically merge histories; "
-            "fix conflicts and continue the rebase as described below:\n\n"
-            f"{stdout}\n{stderr}"
+            "Unable to automatically merge remote changes into local",
+            repo,
+            level=level,
         )
 
 
-class MergeConflict(Exception):
-    def __init__(self, stdout, stderr):
+class MergeConflict(Conflict):
+    def __init__(self, repo: "Repo", level: str = "error"):
         super().__init__(
-            "Unable to automatically merge histories; "
-            "fix conflicts as described below:\n\n"
-            f"{stdout}\n{stderr}"
+            "Unable to automatically merge local changes into remote",
+            repo,
+            level=level,
         )
+
+
+class PushError(exceptions.OverleafError):
+    def __init__(self, stdout, stderr, level: str = "error"):
+        super().__init__(
+            "Overleaf rejected the pushed changes with the following "
+            "message:\n\n"
+            f"captured stdout:\n{stdout}\n\ncaptured stderr:\n{stderr}",
+            level=level,
+        )
+
+
+class MergeOrRebaseResult(NamedTuple):
+    changed: bool
+    fast_forward: bool
+    updated: "Repo"
 
 
 class Repo(NamedTuple):
@@ -245,7 +276,7 @@ class Repo(NamedTuple):
 
         except ApplyConflict:
             if require_fast_forward:
-                raise ApplyConflict()
+                raise ApplyConflict(level="error")
 
         else:
             return True, self.base_sha
@@ -274,8 +305,8 @@ class Repo(NamedTuple):
                 try:
                     git("rebase", "FETCH_HEAD")
 
-                except ProcessExecutionError as e:
-                    raise RebaseConflict(sha, e.stdout, e.stderr)
+                except ProcessExecutionError:
+                    raise RebaseConflict(sha, self, level="debug")
 
                 finally:
                     git("remote", "rm", upstream)
@@ -287,7 +318,7 @@ class Repo(NamedTuple):
         include: Optional[Iterable[str]] = None,
         exclude: Optional[Iterable[str]] = None,
         require_fast_forward: bool = False,
-    ) -> Tuple[bool, "Repo"]:
+    ) -> MergeOrRebaseResult:
         """Merge or rebase the changes from another repo into this one"""
         if self.is_dirty():
             raise exceptions.OverleafError(
@@ -295,11 +326,15 @@ class Repo(NamedTuple):
             )
         diff = remote_repo.diff(include=include, exclude=exclude)
         if diff.strip() == "":
-            return True, self
+            return MergeOrRebaseResult(
+                changed=False, fast_forward=True, updated=self
+            )
         ff, sha = self.apply(
             diff, exclude=exclude, require_fast_forward=require_fast_forward
         )
-        return ff, self._replace(base_sha=sha)
+        return MergeOrRebaseResult(
+            changed=True, fast_forward=ff, updated=self._replace(base_sha=sha)
+        )
 
 
 class Overleaf(NamedTuple):
@@ -414,8 +449,26 @@ class Overleaf(NamedTuple):
         return self.to_current()
 
     @property
+    def logger(self):
+        return logging.get_logger()
+
+    @property
+    def _sync_stage_path(self) -> Path:
+        return paths.user(path=self.local.path).sync / "stage"
+
+    def _save_sync_stage(self, stage: str):
+        with open(self._sync_stage_path, "w") as f:
+            f.write(stage)
+
+    def _load_sync_stage(self) -> str:
+        if not self._sync_stage_path.exists():
+            raise exceptions.OverleafError("No sync is currently in progress")
+        with open(self._sync_stage_path, "r") as f:
+            return f.read()
+
+    @property
     def _rebase_lock_path(self) -> Path:
-        return paths.user(path=self.local.path).temp / "overleaf-rebase.lock"
+        return paths.user(path=self.local.path).sync / "rebase.lock"
 
     def _save_rebase_lock(self, sha: str):
         with open(self._rebase_lock_path, "w") as f:
@@ -423,30 +476,100 @@ class Overleaf(NamedTuple):
 
     def _load_rebase_lock(self):
         if not self._rebase_lock_path.exists():
-            raise exceptions.OverleafError("No rebase in progress")
+            raise exceptions.OverleafError(
+                "No rebase is currently in progress"
+            )
         with open(self._rebase_lock_path, "r") as f:
             return f.read()
 
+    def sync(self) -> "Overleaf":
+        if self._sync_stage_path.exists():
+            stage = self._load_sync_stage()
+            if stage == "from remote":
+                raise exceptions.OverleafError(
+                    "A sync is already in progress; you may need to fix rebase "
+                    "conflicts in your local directory and then continue the sync"
+                )
+            elif stage == "to remote":
+                raise exceptions.OverleafError(
+                    "A sync is already in progress; you may need to fix merge "
+                    f"conflicts in your {paths.user(path=self.local.path).overleaf} "
+                    "and then continue the sync"
+                )
+            raise exceptions.OverleafError("Sync already in progress")
+
+        self.init_remote()
+
+        self._save_sync_stage("from remote")
+        new_self = self.sync_from_remote()
+
+        new_self._save_sync_stage("to remote")
+        new_self = new_self.sync_to_remote()
+
+        new_self._save_sync_stage.unlink(missing_ok=True)
+
+        return new_self
+
+    def continue_sync(self) -> "Overleaf":
+        if not self._sync_stage_path.exists():
+            raise exceptions.OverleafError("No sync is currently in progress")
+
+        stage = self._load_sync_stage()
+        if stage == "from remote":
+            new_self = self.continue_sync_from_remote()
+            new_self._save_sync_stage("to remote")
+            new_self = new_self.sync_to_remote()
+        elif stage == "to remote":
+            new_self = self.continue_sync_to_remote()
+        else:
+            raise exceptions.OverleafError(
+                f"Unrecognized sync stage name: {stage}"
+            )
+
+        new_self._save_sync_stage.unlink(missing_ok=True)
+        return new_self
+
     def sync_from_remote(self) -> "Overleaf":
+        self.logger.info("Pulling remote changes from Overleaf")
         try:
-            _, new_local = self.local.merge_or_rebase(self.remote)
+            result = self.local.merge_or_rebase(self.remote)
         except RebaseConflict as e:
             new_sha = e.new_sha
             self._save_rebase_lock(new_sha)
-            raise
-        return self.finish_sync_from_remote(new_local.base_sha)
+            raise RebaseConflict(new_sha, self.local, level="error")
+        if not result.changed:
+            self.logger.info("No remote changes found")
+        elif result.fast_forward:
+            self.logger.info(
+                "Automatically merged remote changes; "
+                "don't forget to push your local changes"
+            )
+        else:
+            self.logger.info(
+                "Automatically rebased against remote changes; "
+                "you'll need to force push your local changes: "
+                f"git push --force origin {self.local.branch}"
+            )
+        return self.finish_sync_from_remote(result.updated.base_sha)
 
     def abort_sync_from_remote(self):
         self._load_rebase_lock()
+        self.logger.info("Aborting rebase against remote changes")
         self.local.git("rebase", "--abort")
         self._rebase_lock_path.unlink(missing_ok=True)
 
     def continue_sync_from_remote(self) -> "Overleaf":
         new_sha = self._load_rebase_lock()
+        self.logger.info("Continuing rebase against remote changes")
         try:
             self.local.git("rebase", "--continue", with_config=True)
         except ProcessExecutionError as e:
-            raise RebaseConflict(new_sha, e.stdout, e.stderr)
+            raise RebaseConflict(new_sha, self.local)
+        self.logger.info(
+            "Finished rebasing against remote changes; "
+            "you'll need to force push your local changes: "
+            f"git push --force origin {self.local.branch}"
+        )
         return self.finish_sync_from_remote(new_sha)
 
     def finish_sync_from_remote(self, new_sha: str) -> "Overleaf":
@@ -454,10 +577,12 @@ class Overleaf(NamedTuple):
         return self._replace(local=self.local._replace(base_sha=new_sha))
 
     def sync_to_remote(self) -> "Overleaf":
+        self.logger.info("Pushing local changes to Overleaf")
         self.remote.merge_or_rebase(self.local, require_fast_forward=True)
         return self.finish_sync_to_remote()
 
     def continue_sync_to_remote(self) -> "Overleaf":
+        self.logger.info("Continuing to push local changes to Overleaf")
         return self.finish_sync_to_remote()
 
     def finish_sync_to_remote(self) -> "Overleaf":
@@ -465,6 +590,8 @@ class Overleaf(NamedTuple):
         try:
             self.push_remote()
         except ProcessExecutionError:
+            # Try to pull and automatically merge; if this fails, the user will
+            # need to fix the conflicts.
             try:
                 self.remote.git(
                     "pull",
@@ -473,6 +600,14 @@ class Overleaf(NamedTuple):
                     with_config=True,
                 )
             except ProcessExecutionError as e:
-                raise MergeConflict(e.stdout, e.stderr)
-            self.push_remote()
+                raise MergeConflict(self.remote)
+
+            # If this still fails, something else went wrong and the user will
+            # need to act on the information provided
+            try:
+                self.push_remote()
+            except ProcessExecutionError as e:
+                raise PushError(e.stdout, e.stderr)
+
+        self.logger.info("Finished pushing local changes to Overleaf")
         return self.to_current()

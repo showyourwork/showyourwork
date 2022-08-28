@@ -79,3 +79,5 @@ class user:
         self.overleaf.mkdir(exist_ok=True)
         self.flags = self.temp / "flags"
         self.flags.mkdir(exist_ok=True)
+        self.sync = self.temp / "sync"
+        self.sync.mkdir(exist_ok=True)
