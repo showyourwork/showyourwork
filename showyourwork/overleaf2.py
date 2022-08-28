@@ -427,8 +427,16 @@ class Overleaf(NamedTuple):
 
     def continue_sync_from_remote(self) -> "Overleaf":
         new_sha = self._load_rebase_lock()
+        args = (
+            "-c",
+            "core.editor=true",
+            "-c",
+            "user.name=showyourwork",
+            "-c",
+            "user.email=showyourwork@showyourwork",
+        )
         try:
-            self.local.git("-c", "core.editor=true", "rebase", "--continue")
+            self.local.git(*args, "rebase", "--continue")
         except ProcessExecutionError as e:
             raise RebaseConflict(new_sha, e.stdout, e.stderr)
         return self.finish_sync_from_remote(new_sha)
