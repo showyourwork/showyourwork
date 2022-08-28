@@ -595,6 +595,7 @@ class Overleaf(NamedTuple):
             try:
                 self.remote.git(
                     "pull",
+                    "--no-rebase",
                     self.remote.url,
                     self.remote.branch,
                     with_config=True,
