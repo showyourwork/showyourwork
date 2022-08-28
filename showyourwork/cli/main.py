@@ -46,7 +46,7 @@ def echo(text="", **kwargs):
         initial_indent="",
     )
     text = text.replace("\n", " ")
-    text = re.sub("``(.*?)``\s*", r"<SPLIT><BR><TAB>`\1`<BR><SPLIT>", text)
+    text = re.sub(r"``(.*?)``\s*", r"<SPLIT><BR><TAB>`\1`<BR><SPLIT>", text)
     lines = [
         line.strip() for line in text.split("<SPLIT>") if line.strip() != ""
     ]
