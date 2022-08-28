@@ -6,7 +6,7 @@ from ...git import get_repo_branch
 from ...overleaf2 import Overleaf
 
 
-def overleaf_sync(force):
+def overleaf_sync(init=False, force=False):
     branch = get_repo_branch()
     with edit_yaml("overleaf.yml") as config:
         version = config["overleaf"].get("version", 1)
