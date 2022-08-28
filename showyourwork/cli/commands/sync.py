@@ -1,6 +1,5 @@
-import os
 
-from ... import exceptions, logging, paths
+from ... import logging, paths
 from ...config import edit_yaml
 from ...git import get_repo_branch
 from ...overleaf2 import Overleaf
