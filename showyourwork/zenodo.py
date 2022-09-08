@@ -506,7 +506,7 @@ class Zenodo:
 
                 # Keep looking in this deposit for a file with the right name
                 logger.debug(
-                    "Cache miss for file {entry['filename']}. Skipping..."
+                    f"Cache miss for file {entry['filename']}. Skipping..."
                 )
 
         # This is caught in the enclosing scope and treated as a cache miss
