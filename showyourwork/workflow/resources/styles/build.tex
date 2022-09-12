@@ -129,15 +129,10 @@
 % Add a GitHub link to the end of the abstract
 \let\oldabstract\abstract
 \let\oldendabstract\endabstract
-\renewenvironment{abstract}{%
-  \oldabstract%
-}{%
-  % AASTex631 hack to reduce margin separation
-  % in the abstract of a two-column document
-  %\ifcsname if@two@col\endcsname%
-  %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
-  %\fi%
-  \marginpar{%
+\@ifclassloaded{ar-1col}{
+  \renewenvironment{abstract}{%
+    \oldabstract%
+  }{%
     \href{\syw@url/tree/\syw@sha/}{%
       \color{sywBlue}%
       \faGithub%
@@ -149,8 +144,32 @@
         \faCheckCircle%
       }%
     \fi
+    \oldendabstract%
   }
-  \oldendabstract%
+}{%
+  \renewenvironment{abstract}{%
+    \oldabstract%
+  }{%
+    % AASTex631 hack to reduce margin separation
+    % in the abstract of a two-column document
+    %\ifcsname if@two@col\endcsname%
+    %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
+    %\fi%
+    \marginpar{%
+      \href{\syw@url/tree/\syw@sha/}{%
+        \color{sywBlue}%
+        \faGithub%
+      }%
+      \ifOnGithubActions
+        \hspace{3pt}%
+        \href{\syw@url/actions/runs/\syw@runid/}{%
+          \color{sywGreen}%
+          \faCheckCircle%
+        }%
+      \fi
+    }%
+    \oldendabstract%
+  }
 }
 
 % Figure script icon
