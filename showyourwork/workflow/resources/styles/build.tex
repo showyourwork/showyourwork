@@ -45,69 +45,26 @@
   \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
-% Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
-\let\oldmaketitle\maketitle
-\def\maketitle{%
-  \let\oldLaTeX\LaTeX
-  \let\oldtoday\today
-  \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
-  \ifcsname gitHeader\endcsname
-    \renewcommand{\today}{\oldtoday.~\gitHeader}
-  \fi
-  \oldmaketitle
-  \let\LaTeX\oldLaTeX
-  \let\today\oldtoday
+% Watermarks
+\newcommand{\syw@Logo}{%
+  \href{https://github.com/showyourwork/showyourwork}{\showyourwork}
+}
+\newcommand{\syw@GitHubLink}{%
+  \href{\syw@url/tree/\syw@sha/}{\color{sywBlue}\faGithub}%
+}
+\newcommand{\syw@GitHubActionsLink}{%
+  \href{\syw@url/actions/runs/\syw@runid/}{\color{sywGreen}\faCheckCircle}%
 }
 
-% MNRAS hack for displaying showyourwork logo
-\@ifclassloaded{mnras}{
-  \ifx\CUP@mtlplain@loaded\undefined
-    \def\@printed{Preprint \tod@y\
-      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version
-      \ifcsname gitHeader\endcsname
-        \,(\gitHeader)
-      \fi
-    }
-  \else
-    \def\@printed{}
-  \fi
-}{}
-
-% A&A hack for displaying showyourwork logo + abstract links
-\@ifclassloaded{aa}{
-  \renewcommand*\aa@manuscriptname{%
-    \LaTeX
-    \hspace{\stretch{1}}%
-    \smash{\stackunder[0.5em]{\copyright ESO \the\year}{%
-        \href{\syw@url/tree/\syw@sha/}{%
-          \color{sywBlue}%
-          \faGithub%
-        }%
-        \ifOnGithubActions
-          \hspace{3pt}%
-          \href{\syw@url/actions/runs/\syw@runid/}{%
-            \color{sywGreen}%
-            \faCheckCircle%
-          }%
-        \fi
-      }
-    }
-  }
-}{}
-
-% Annual Reviews hack for displaying showyourwork logo
-\@ifclassloaded{ar-1col}{
-  \let\oldjournalinfo\journalinfo
-  \def\journalinfo{%
-    \oldjournalinfo%
-    \vskip6\p@{\jinfofont%
-      Compiled using\begin{minipage}{7.3em}\includegraphics[width=7.3em]{showyourwork-logo.pdf}\end{minipage}\endgraf%
-      \ifcsname gitHeader\endcsname
-        \,(\gitHeader)\endgraf
-      \fi
-    }%
-  }
-}{}
+% TODO: Add watermarks! Make position configurable in the `showyourwork.yml' config,
+% imported above from `showyourwork-metadata.tex', which is generated in
+% `showyourwork/workflow/scripts/pdf.py'
+%
+%
+%
+%
+%
+%
 
 % Custom margin icon
 \newcommand\marginicon[1]{
@@ -125,52 +82,6 @@
 \newcommand\GitHubURL{\syw@url}
 \newcommand\GitHubSHA{\syw@sha}
 \newcommand\GitHubIcon{\faGithub\xspace}
-
-% Add a GitHub link to the end of the abstract
-\let\oldabstract\abstract
-\let\oldendabstract\endabstract
-\@ifclassloaded{ar-1col}{
-  \renewenvironment{abstract}{%
-    \oldabstract%
-  }{%
-    \href{\syw@url/tree/\syw@sha/}{%
-      \color{sywBlue}%
-      \faGithub%
-    }%
-    \ifOnGithubActions
-      \hspace{3pt}%
-      \href{\syw@url/actions/runs/\syw@runid/}{%
-        \color{sywGreen}%
-        \faCheckCircle%
-      }%
-    \fi
-    \oldendabstract%
-  }
-}{%
-  \renewenvironment{abstract}{%
-    \oldabstract%
-  }{%
-    % AASTex631 hack to reduce margin separation
-    % in the abstract of a two-column document
-    %\ifcsname if@two@col\endcsname%
-    %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
-    %\fi%
-    \marginpar{%
-      \href{\syw@url/tree/\syw@sha/}{%
-        \color{sywBlue}%
-        \faGithub%
-      }%
-      \ifOnGithubActions
-        \hspace{3pt}%
-        \href{\syw@url/actions/runs/\syw@runid/}{%
-          \color{sywGreen}%
-          \faCheckCircle%
-        }%
-      \fi
-    }%
-    \oldendabstract%
-  }
-}
 
 % Figure script icon
 \newcommand\syw@Script[1]{%
