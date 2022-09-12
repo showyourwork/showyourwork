@@ -21,6 +21,9 @@ def ensure_top_level():
         raise exceptions.ShowyourworkException(
             "The `showyourwork` command must be called "
             "from the top level of a git repository."
+            "\n"
+            "`showyourwork` by itself runs a document build. "
+            "Did you mean to run `showyourwork setup`?"
         )
 
 
@@ -192,7 +195,7 @@ def validate_slug(context, param, slug):
 
 
 @entry_point.command()
-@click.argument("slug", callback=validate_slug)
+@click.argument("slug", callback=validate_slug, metavar="<user/repo>")
 @click.option(
     "-y",
     "--yes",
