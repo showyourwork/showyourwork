@@ -313,6 +313,15 @@ def parse_config():
         #: Optimize the DAG by removing jobs upstream of cache hits
         config["optimize_caching"] = config.get("optimize_caching", False)
 
+        #: Showyourwork logo / watermark settings
+        config["watermark"] = as_dict(config.get("watermark", {}))
+        config["watermark"]["enabled"] = config["watermark"].get(
+            "enabled", True
+        )
+        config["watermark"]["xpos"] = config["watermark"].get("xpos", 0.10)
+        config["watermark"]["ypos"] = config["watermark"].get("ypos", -0.20)
+        config["watermark"]["angle"] = config["watermark"].get("angle", 0)
+
         #
         # -- Internal settings --
         #

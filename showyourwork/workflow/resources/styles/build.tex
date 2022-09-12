@@ -19,6 +19,9 @@
 % Is this running on GitHub Actions?
 \newif\ifOnGithubActions
 
+% Should we add a showyourwork watermark?
+\newif\ifAddWatermark
+
 % Key-value pairs used to assemble the hyperlinks for figures
 % See https://tex.stackexchange.com/a/48931
 \def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{#2}}
@@ -67,6 +70,8 @@
 }
 
 % Watermark position hacks (class-specific)
+% Note that \syw@wmkX and \syw@wmkY are defined
+% in showyourwork-metadata.tex
 \@ifclassloaded{aastex631}{
   \newcommand{\syw@wmkXOffset}{0.65}
   \newcommand{\syw@wmkYOffset}{0.00}
@@ -75,22 +80,16 @@
   \newcommand{\syw@wmkYOffset}{0.00}
 }
 
-% Watermark position, in inches relative to top left of paper.
-% TODO: Make this position configurable in the
-% `showyourwork.yml' config, imported above from
-% `showyourwork-metadata.tex', which is generated in
-% `showyourwork/workflow/scripts/pdf.py'
-\newcommand{\syw@wmkX}{0.10}
-\newcommand{\syw@wmkY}{-0.20}
-
 % Generate the watermark on the first page
-\AtBeginDocument{%
-  \makeatletter
-  \begin{tikzpicture}[remember picture,overlay]
-    \node [anchor=west] at ($(current page.north west) + (\syw@wmkX in + \syw@wmkXOffset in, \syw@wmkY in + \syw@wmkYOffset in)$) {\syw@Watermark};
-  \end{tikzpicture}
-  \makeatother
-}
+\ifAddWatermark
+  \AtBeginDocument{%
+    \makeatletter%
+    \begin{tikzpicture}[remember picture,overlay]%
+      \node [anchor=west] at ($(current page.north west) + (\syw@wmkX in + \syw@wmkXOffset in, \syw@wmkY in + \syw@wmkYOffset in)$) [rotate=\syw@wmkAngle] {\syw@Watermark};%
+    \end{tikzpicture}%
+    \makeatother%
+  }
+\fi
 
 % Custom margin icon
 \newcommand\marginicon[1]{

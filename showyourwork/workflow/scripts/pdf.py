@@ -26,6 +26,15 @@ if __name__ == "__main__":
     \def\syw@sha{((- git_sha -))}
     \def\syw@runid{((- github_runid -))}
 
+    ((* if watermark.enabled *))
+    \AddWatermarktrue
+    ((* else *))
+    \AddWatermarkfalse
+    ((* endif *))
+    \newcommand{\syw@wmkX}{((- watermark.xpos -))}
+    \newcommand{\syw@wmkY}{((- watermark.ypos -))}
+    \newcommand{\syw@wmkAngle}{((- watermark.angle -))}
+
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}
     ((* endfor *))

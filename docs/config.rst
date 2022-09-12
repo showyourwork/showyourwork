@@ -840,3 +840,109 @@ the |showyourwork| repo specified by ``version.fork``.
 
   version:
     ref: main
+
+
+.. _config.watermark:
+
+``watermark``
+^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Mapping controlling the display of the |showyourwork| logo and
+GitHub icon watermark on the title page.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  watermark:
+    enabled: true
+
+
+.. _config.watermark_enabled:
+
+``watermark.enabled``
+^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** If ``false``, will not display the watermark on the rendered PDF.
+
+**Required:** no
+
+**Default:** ``true``
+
+**Example:**
+
+.. code-block:: yaml
+
+  watermark:
+    enabled: true
+
+
+.. _config.watermark_angle:
+
+``watermark.angle``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The watermark rotation angle in degrees.
+
+**Required:** no
+
+**Default:** ``0.0``
+
+**Example:**
+
+.. code-block:: yaml
+
+  watermark:
+    angle: 90
+
+
+.. _config.watermark_xpos:
+
+``watermark.xpos``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The absolute horizontal position of the watermark in inches,
+measured from the left edge of the page.
+
+**Required:** no
+
+**Default:** ``0.10``
+
+**Example:**
+
+.. code-block:: yaml
+
+  watermark:
+    xpos: 0.10
+
+
+.. _config.watermark_ypos:
+
+``watermark.ypos``
+^^^^^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The absolute vertical position of the watermark in inches,
+measured from the top edge of the page (negative corresponds to downwards).
+
+**Required:** no
+
+**Default:** ``-0.20``
+
+**Example:**
+
+.. code-block:: yaml
+
+  watermark:
+    ypos: -0.20
