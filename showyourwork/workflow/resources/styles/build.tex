@@ -12,6 +12,7 @@
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
+\RequirePackage{etoolbox} % ifcsmacro
 
 % Is this running on GitHub Actions?
 \newif\ifOnGithubActions
@@ -147,29 +148,26 @@
     \oldendabstract%
   }
 }{%
-  \renewenvironment{abstract}{%
-    \oldabstract%
-  }{%
-    % AASTex631 hack to reduce margin separation
-    % in the abstract of a two-column document
-    %\ifcsname if@two@col\endcsname%
-    %\if@two@col\setlength{\marginparsep}{-45pt}\fi%
-    %\fi%
-    \marginpar{%
-      \href{\syw@url/tree/\syw@sha/}{%
-        \color{sywBlue}%
-        \faGithub%
-      }%
-      \ifOnGithubActions
-        \hspace{3pt}%
-        \href{\syw@url/actions/runs/\syw@runid/}{%
-          \color{sywGreen}%
-          \faCheckCircle%
+  \ifcsmacro{abstract}{%
+    \renewenvironment{abstract}{%
+      \oldabstract%
+    }{%
+      \marginpar{%
+        \href{\syw@url/tree/\syw@sha/}{%
+          \color{sywBlue}%
+          \faGithub%
         }%
-      \fi
+        \ifOnGithubActions
+          \hspace{3pt}%
+          \href{\syw@url/actions/runs/\syw@runid/}{%
+            \color{sywGreen}%
+            \faCheckCircle%
+          }%
+        \fi
+      }%
+      \oldendabstract%
     }%
-    \oldendabstract%
-  }
+  }{}%
 }
 
 % Figure script icon

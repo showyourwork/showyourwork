@@ -11,6 +11,7 @@
 \RequirePackage[notref, notcite]{showkeys} % get label refs
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
+\RequirePackage{etoolbox} % ifcsmacro
 
 % Logging
 \newwrite\syw@LogFile
@@ -41,44 +42,50 @@
 }
 
 % Log figures
-\let\oldfigure\figure
-\let\oldendfigure\endfigure
-\renewenvironment{figure}{%
-  \syw@LogMessage{<FIGURE>}%
-  \oldfigure%
-}{%
-  \oldendfigure%
-  \syw@LogMessage{</FIGURE>}%
-}
-\renewenvironment{figure*}{%
-  \syw@LogMessage{<FIGURE>}%
-  \oldfigure%
-}{%
-  \oldendfigure%
-  \syw@LogMessage{</FIGURE>}%
-}
+\ifcsmacro{figure}{
+  \let\oldfigure\figure
+  \let\oldendfigure\endfigure
+  \renewenvironment{figure}{%
+    \syw@LogMessage{<FIGURE>}%
+    \oldfigure%
+  }{%
+    \oldendfigure%
+    \syw@LogMessage{</FIGURE>}%
+  }
+  \renewenvironment{figure*}{%
+    \syw@LogMessage{<FIGURE>}%
+    \oldfigure%
+  }{%
+    \oldendfigure%
+    \syw@LogMessage{</FIGURE>}%
+  }
+}{}
 
 % Log equations
-\let\oldalign\align
-\let\oldendalign\endalign
-\renewenvironment{align}{%
-  \syw@LogMessage{<ALIGN>}%
-  \oldalign%
-}{%
-  \oldendalign%
-  \syw@LogMessage{</ALIGN>}%
-}
-\renewenvironment{align*}{%
-  \syw@LogMessage{<ALIGN>}%
-  \oldalign%
-}{%
-  \oldendalign%
-  \syw@LogMessage{</ALIGN>}%
-}
+\ifcsmacro{align}{
+  \let\oldalign\align
+  \let\oldendalign\endalign
+  \renewenvironment{align}{%
+    \syw@LogMessage{<ALIGN>}%
+    \oldalign%
+  }{%
+    \oldendalign%
+    \syw@LogMessage{</ALIGN>}%
+  }
+  \renewenvironment{align*}{%
+    \syw@LogMessage{<ALIGN>}%
+    \oldalign%
+  }{%
+    \oldendalign%
+    \syw@LogMessage{</ALIGN>}%
+  }
+}{}
 
 % Log figure captions
-\renewcommand{\caption}{%
-  \syw@LogMessage{<CAPTION />}%
+\ifcsmacro{caption}{
+  \renewcommand{\caption}{%
+    \syw@LogMessage{<CAPTION />}%
+  }
 }
 
 % Log graphics
