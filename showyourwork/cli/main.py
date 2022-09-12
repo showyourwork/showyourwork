@@ -21,6 +21,9 @@ def ensure_top_level():
         raise exceptions.ShowyourworkException(
             "The `showyourwork` command must be called "
             "from the top level of a git repository."
+            "\n"
+            "`showyourwork` by itself runs a document build. "
+            "Did you mean to run `showyourwork setup`?"
         )
 
 
