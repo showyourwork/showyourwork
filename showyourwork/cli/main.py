@@ -195,7 +195,7 @@ def validate_slug(context, param, slug):
 
 
 @entry_point.command()
-@click.argument("slug", callback=validate_slug)
+@click.argument("slug", callback=validate_slug, metavar="<user/repo>")
 @click.option(
     "-y",
     "--yes",
