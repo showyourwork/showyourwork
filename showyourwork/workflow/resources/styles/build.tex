@@ -12,6 +12,9 @@
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
+\RequirePackage{tikz} % watermark
+\usetikzlibrary{calc}
+\usetikzlibrary{math}
 
 % Is this running on GitHub Actions?
 \newif\ifOnGithubActions
@@ -42,29 +45,52 @@
 
 % Showyourwork logo
 \newcommand{\showyourwork}{%
-  \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
+  \smash{\raisebox{-1.7ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
-% Watermarks
+% Define watermark
 \newcommand{\syw@Logo}{%
   \href{https://github.com/showyourwork/showyourwork}{\showyourwork}
 }
 \newcommand{\syw@GitHubLink}{%
-  \href{\syw@url/tree/\syw@sha/}{\color{sywBlue}\faGithub}%
+  \href{\syw@url/tree/\syw@sha/}{\color{sywBlue}\faGithub}\xspace%
 }
 \newcommand{\syw@GitHubActionsLink}{%
-  \href{\syw@url/actions/runs/\syw@runid/}{\color{sywGreen}\faCheckCircle}%
+  \ifOnGithubActions
+    \href{\syw@url/actions/runs/\syw@runid/}{\color{sywGreen}\faCheckCircle}\xspace%
+  \else
+    {\color{gray}\faQuestionCircle}\xspace%
+  \fi
+}
+\newcommand{\syw@Watermark}{
+  \normalsize \bfseries \syw@Logo / \syw@GitHubLink \hspace{-0.3em} / \syw@GitHubActionsLink
 }
 
-% TODO: Add watermarks! Make position configurable in the `showyourwork.yml' config,
-% imported above from `showyourwork-metadata.tex', which is generated in
+% Watermark position hacks (class-specific)
+\@ifclassloaded{aastex631}{
+  \newcommand{\syw@wmkXOffset}{0.65}
+  \newcommand{\syw@wmkYOffset}{0.00}
+}{
+  \newcommand{\syw@wmkXOffset}{0.00}
+  \newcommand{\syw@wmkYOffset}{0.00}
+}
+
+% Watermark position, in inches relative to top left of paper.
+% TODO: Make this position configurable in the
+% `showyourwork.yml' config, imported above from
+% `showyourwork-metadata.tex', which is generated in
 % `showyourwork/workflow/scripts/pdf.py'
-%
-%
-%
-%
-%
-%
+\newcommand{\syw@wmkX}{0.10}
+\newcommand{\syw@wmkY}{-0.20}
+
+% Generate the watermark on the first page
+\AtBeginDocument{%
+  \makeatletter
+  \begin{tikzpicture}[remember picture,overlay]
+    \node [anchor=west] at ($(current page.north west) + (\syw@wmkX in + \syw@wmkXOffset in, \syw@wmkY in + \syw@wmkYOffset in)$) {\syw@Watermark};
+  \end{tikzpicture}
+  \makeatother
+}
 
 % Custom margin icon
 \newcommand\marginicon[1]{
