@@ -23,6 +23,7 @@ if __name__ == "__main__":
     \OnGithubActionsfalse
     ((* endif *))
     \def\syw@url{((- git_url -))}
+    \def\syw@shortUrl{((- git_url.replace("https://", "").replace("http://", "") -))}
     \def\syw@slug{((- git_slug -))}
     \def\syw@sha{((- git_sha -))}
     \def\syw@runid{((- github_runid -))}
