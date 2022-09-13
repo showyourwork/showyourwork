@@ -13,9 +13,10 @@
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
 \RequirePackage{tikz} % stamp
+\RequirePackage{etoolbox} % ifcsmacro
 \usetikzlibrary{calc}
 \usetikzlibrary{math}
-\RequirePackage{etoolbox} % ifcsmacro
+\usetikzlibrary{decorations.text}
 
 % Is this running on GitHub Actions?
 \newif\ifOnGithubActions
@@ -39,6 +40,7 @@
   \input{showyourwork-metadata.tex}
 }{
   \OnGithubActionsfalse
+  \AddStampfalse
   \def\syw@url{https://github.com/showyourwork/showyourwork-example}
   \def\syw@sha{dev}
   \def\syw@runid{0}
@@ -52,34 +54,36 @@
   \smash{\raisebox{-1.7ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
-% Define stamp
-% Note that \syw@stampSize is defined
-% in showyourwork-metadata.tex
-\newcommand{\syw@Stamp}{%
-  \href{https://github.com/showyourwork/showyourwork}{%
-    \includegraphics[width=\syw@stampSize in]{showyourwork-stamp.pdf}%
-  }
-}
-
-
-% Stamp position hacks (class-specific, as needed)
-% Note that \syw@stampX and \syw@stampY are defined
-% in showyourwork-metadata.tex
-\@ifclassloaded{aastex631}{
-  \newcommand{\syw@stampXOffset}{-0.60}
-  \newcommand{\syw@stampYOffset}{0.00}
-}{
-  \newcommand{\syw@stampXOffset}{0.00}
-  \newcommand{\syw@stampYOffset}{0.00}
-}
+% Define custom colors
+\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
+\definecolor{sywStampRed}{rgb}{0.80,0.45,0.45}
+\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
+\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
+\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
 
 % Generate the stamp on the first page
 \ifAddStamp
+  % Stamp position hacks (class-specific, as needed)
+  \@ifclassloaded{aastex631}{
+    \newcommand{\syw@stampXOffset}{-0.60}
+    \newcommand{\syw@stampYOffset}{0.00}
+  }{
+    \newcommand{\syw@stampXOffset}{0.00}
+    \newcommand{\syw@stampYOffset}{0.00}
+  }
+
+  % Render it
   \AtBeginDocument{%
     \makeatletter%
-    \begin{tikzpicture}[remember picture,overlay]%
-      \node at ($(current page.north east) - (\syw@stampX in + \syw@stampXOffset in + \syw@stampRadius in, \syw@stampY in + \syw@stampYOffset in + \syw@stampRadius in)$) [rotate=\syw@stampAngle] {\syw@Stamp};%
-    \end{tikzpicture}%
+    \href{\syw@url/tree/\syw@sha/}{%
+      \begin{tikzpicture}[remember picture,overlay]%
+        \node (STAMP) at ($(current page.north east) - (\syw@stampX in + \syw@stampXOffset in + \syw@stampRadius in, \syw@stampY in + \syw@stampYOffset in + \syw@stampRadius in)$) [rotate=\syw@stampAngle] {\includegraphics[width=\syw@stampSize in]{showyourwork-stamp.pdf}};%
+        %
+        \draw[draw=none,postaction={decorate},decoration={text along path,text={|\syw@stampFormat|\syw@slug},text align=center,text color=sywStampRed}]
+        ($(STAMP.center) - (\syw@stampOuterRadius in, 0 in)$) arc [start angle=180,end angle=360,radius=\syw@stampOuterRadius in];
+      \end{tikzpicture}%
+    }%
     \makeatother%
   }
 \fi
@@ -88,13 +92,6 @@
 \newcommand\marginicon[1]{
   \renewcommand\showkeyslabelformat[1]{#1}%
 }
-
-% Define custom colors
-\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
-\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
-\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
-\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
-\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
 
 % User-facing commands
 \newcommand\GitHubURL{\syw@url}
