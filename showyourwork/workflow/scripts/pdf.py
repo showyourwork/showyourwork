@@ -26,14 +26,16 @@ if __name__ == "__main__":
     \def\syw@sha{((- git_sha -))}
     \def\syw@runid{((- github_runid -))}
 
-    ((* if watermark.enabled *))
-    \AddWatermarktrue
+    ((* if stamp.enabled *))
+    \AddStamptrue
     ((* else *))
-    \AddWatermarkfalse
+    \AddStampfalse
     ((* endif *))
-    \newcommand{\syw@wmkX}{((- watermark.xpos -))}
-    \newcommand{\syw@wmkY}{((- watermark.ypos -))}
-    \newcommand{\syw@wmkAngle}{((- watermark.angle -))}
+    \newcommand{\syw@stampX}{((- stamp.xpos -))}
+    \newcommand{\syw@stampY}{((- stamp.ypos -))}
+    \newcommand{\syw@stampSize}{((- stamp.size -))}
+    \newcommand{\syw@stampRadius}{((- stamp.size / 2 -))}
+    \newcommand{\syw@stampAngle}{((- stamp.angle -))}
 
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}

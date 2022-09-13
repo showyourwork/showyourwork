@@ -12,7 +12,7 @@
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
-\RequirePackage{tikz} % watermark
+\RequirePackage{tikz} % stamp
 \usetikzlibrary{calc}
 \usetikzlibrary{math}
 \RequirePackage{etoolbox} % ifcsmacro
@@ -20,8 +20,8 @@
 % Is this running on GitHub Actions?
 \newif\ifOnGithubActions
 
-% Should we add a showyourwork watermark?
-\newif\ifAddWatermark
+% Should we add a showyourwork stamp?
+\newif\ifAddStamp
 
 % Key-value pairs used to assemble the hyperlinks for figures
 % See https://tex.stackexchange.com/a/48931
@@ -52,41 +52,33 @@
   \smash{\raisebox{-1.7ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
-% Define watermark
-\newcommand{\syw@Logo}{%
-  \href{https://github.com/showyourwork/showyourwork}{\showyourwork}
-}
-\newcommand{\syw@GitHubLink}{%
-  \href{\syw@url/tree/\syw@sha/}{\color{sywBlue}\faGithub}\xspace%
-}
-\newcommand{\syw@GitHubActionsLink}{%
-  \ifOnGithubActions
-    \href{\syw@url/actions/runs/\syw@runid/}{\color{sywGreen}\faCheckCircle}\xspace%
-  \else
-    {\color{gray}\faQuestionCircle}\xspace%
-  \fi
-}
-\newcommand{\syw@Watermark}{
-  \normalsize \bfseries \syw@Logo / \syw@GitHubLink \hspace{-0.3em} / \syw@GitHubActionsLink
+% Define stamp
+% Note that \syw@stampSize is defined
+% in showyourwork-metadata.tex
+\newcommand{\syw@Stamp}{%
+  \href{https://github.com/showyourwork/showyourwork}{%
+    \includegraphics[width=\syw@stampSize in]{showyourwork-stamp.pdf}%
+  }
 }
 
-% Watermark position hacks (class-specific)
-% Note that \syw@wmkX and \syw@wmkY are defined
+
+% Stamp position hacks (class-specific, as needed)
+% Note that \syw@stampX and \syw@stampY are defined
 % in showyourwork-metadata.tex
 \@ifclassloaded{aastex631}{
-  \newcommand{\syw@wmkXOffset}{0.65}
-  \newcommand{\syw@wmkYOffset}{0.00}
+  \newcommand{\syw@stampXOffset}{-0.60}
+  \newcommand{\syw@stampYOffset}{0.00}
 }{
-  \newcommand{\syw@wmkXOffset}{0.00}
-  \newcommand{\syw@wmkYOffset}{0.00}
+  \newcommand{\syw@stampXOffset}{0.00}
+  \newcommand{\syw@stampYOffset}{0.00}
 }
 
-% Generate the watermark on the first page
-\ifAddWatermark
+% Generate the stamp on the first page
+\ifAddStamp
   \AtBeginDocument{%
     \makeatletter%
     \begin{tikzpicture}[remember picture,overlay]%
-      \node [anchor=west] at ($(current page.north west) + (\syw@wmkX in + \syw@wmkXOffset in, \syw@wmkY in + \syw@wmkYOffset in)$) [rotate=\syw@wmkAngle] {\syw@Watermark};%
+      \node at ($(current page.north east) - (\syw@stampX in + \syw@stampXOffset in + \syw@stampRadius in, \syw@stampY in + \syw@stampYOffset in + \syw@stampRadius in)$) [rotate=\syw@stampAngle] {\syw@Stamp};%
     \end{tikzpicture}%
     \makeatother%
   }

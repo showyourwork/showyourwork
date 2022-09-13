@@ -842,15 +842,15 @@ the |showyourwork| repo specified by ``version.fork``.
     ref: main
 
 
-.. _config.watermark:
+.. _config.stamp:
 
-``watermark``
-^^^^^^^^^^^^^
+``stamp``
+^^^^^^^^^
 
 **Type:** ``mapping``
 
-**Description:** Mapping controlling the display of the |showyourwork| logo and
-GitHub icon watermark on the title page.
+**Description:** Mapping controlling the display of the |showyourwork| stamp
+on the title page.
 
 **Required:** no
 
@@ -858,18 +858,18 @@ GitHub icon watermark on the title page.
 
 .. code-block:: yaml
 
-  watermark:
+  stamp:
     enabled: true
 
 
-.. _config.watermark_enabled:
+.. _config.stamp_enabled:
 
-``watermark.enabled``
-^^^^^^^^^^^^^^^^^^^^^
+``stamp.enabled``
+^^^^^^^^^^^^^^^^^
 
 **Type:** ``bool``
 
-**Description:** If ``false``, will not display the watermark on the rendered PDF.
+**Description:** If ``false``, will not display the stamp on the rendered PDF.
 
 **Required:** no
 
@@ -879,70 +879,91 @@ GitHub icon watermark on the title page.
 
 .. code-block:: yaml
 
-  watermark:
+  stamp:
     enabled: true
 
 
-.. _config.watermark_angle:
+.. _config.stamp_angle:
 
-``watermark.angle``
-^^^^^^^^^^^^^^^^^^
+``stamp.angle``
+^^^^^^^^^^^^^^^
 
 **Type:** ``float``
 
-**Description:** The watermark rotation angle in degrees.
+**Description:** The stamp rotation angle in degrees.
 
 **Required:** no
 
-**Default:** ``0.0``
+**Default:** ``-20.0``
 
 **Example:**
 
 .. code-block:: yaml
 
-  watermark:
-    angle: 90
+  stamp:
+    angle: -20.0
 
 
-.. _config.watermark_xpos:
+.. _config.stamp_size:
 
-``watermark.xpos``
-^^^^^^^^^^^^^^^^^^
+``stamp.size``
+^^^^^^^^^^^^^^
 
 **Type:** ``float``
 
-**Description:** The absolute horizontal position of the watermark in inches,
-measured from the left edge of the page.
+**Description:** The size (width) of the stamp in inches.
 
 **Required:** no
 
-**Default:** ``0.10``
+**Default:** ``0.75``
 
 **Example:**
 
 .. code-block:: yaml
 
-  watermark:
-    xpos: 0.10
+  stamp:
+    size: 0.75
 
 
-.. _config.watermark_ypos:
+.. _config.stamp_xpos:
 
-``watermark.ypos``
-^^^^^^^^^^^^^^^^^^
+``stamp.xpos``
+^^^^^^^^^^^^^^
 
 **Type:** ``float``
 
-**Description:** The absolute vertical position of the watermark in inches,
-measured from the top edge of the page (negative corresponds to downwards).
+**Description:** The absolute horizontal position of the stamp in inches,
+measured from the right edge of the page (values increase to the left).
 
 **Required:** no
 
-**Default:** ``-0.20``
+**Default:** ``0.50``
 
 **Example:**
 
 .. code-block:: yaml
 
-  watermark:
-    ypos: -0.20
+  stamp:
+    xpos: 0.50
+
+
+.. _config.stamp_ypos:
+
+``stamp.ypos``
+^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The absolute vertical position of the stamp in inches,
+measured from the top edge of the page (values increase downward).
+
+**Required:** no
+
+**Default:** ``0.50``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    ypos: 0.50
