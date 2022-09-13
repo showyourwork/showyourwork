@@ -35,8 +35,6 @@ if __name__ == "__main__":
     \newcommand{\syw@stampX}{((- stamp.xpos -))}
     \newcommand{\syw@stampY}{((- stamp.ypos -))}
     \newcommand{\syw@stampSize}{((- stamp.size -))}
-    \newcommand{\syw@stampRadius}{((- stamp.size / 2 -))}
-    \newcommand{\syw@stampOuterRadius}{((- 1.33 * stamp.size / 2 -))}
     \newcommand{\syw@stampAngle}{((- stamp.angle -))}
     \newcommand{\syw@stampFormat}{((- stamp.format -))}
 

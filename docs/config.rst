@@ -862,27 +862,6 @@ on the title page.
     enabled: true
 
 
-.. _config.stamp_enabled:
-
-``stamp.enabled``
-^^^^^^^^^^^^^^^^^
-
-**Type:** ``bool``
-
-**Description:** If ``false``, will not display the stamp on the rendered PDF.
-
-**Required:** no
-
-**Default:** ``true``
-
-**Example:**
-
-.. code-block:: yaml
-
-  stamp:
-    enabled: true
-
-
 .. _config.stamp_angle:
 
 ``stamp.angle``
@@ -902,6 +881,27 @@ on the title page.
 
   stamp:
     angle: -20.0
+
+
+.. _config.stamp_enabled:
+
+``stamp.enabled``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** If ``false``, will not display the stamp on the rendered PDF.
+
+**Required:** no
+
+**Default:** ``true``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    enabled: true
 
 
 .. _config.stamp_size:
