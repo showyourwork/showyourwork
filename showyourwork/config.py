@@ -320,9 +320,6 @@ def parse_config():
         config["stamp"]["xpos"] = config["stamp"].get("xpos", 0.50)
         config["stamp"]["ypos"] = config["stamp"].get("ypos", 0.50)
         config["stamp"]["angle"] = config["stamp"].get("angle", -20)
-        config["stamp"]["format"] = config["stamp"].get(
-            "format", r"\bfseries\sffamily\normalsize"
-        )
 
         #
         # -- Internal settings --
@@ -401,6 +398,17 @@ def parse_config():
     # Git info for the repo
     config["git_sha"] = git.get_repo_sha()
     config["git_url"] = git.get_repo_url()
+    config["git_short_url"] = (
+        config["git_url"]
+        .replace("https://", "")
+        .replace("http://", "")
+        .replace("_", "-")
+    )
+    max_url_len = 50
+    if len(config["git_short_url"]) > max_url_len:
+        config["git_short_url"] = (
+            config["git_short_url"][: max_url_len - 3] + "..."
+        )
     config["git_slug"] = git.get_repo_slug()
     config["git_branch"] = git.get_repo_branch()
     config["github_actions"] = os.getenv("CI", "false") == "true"

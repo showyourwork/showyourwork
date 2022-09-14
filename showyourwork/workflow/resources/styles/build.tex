@@ -75,23 +75,23 @@
   % Render it
   \AtBeginDocument{%
     \makeatletter%
-    \pgfmathsetmacro{\radius}{\syw@stampSize*0.666}%
+    \pgfmathsetmacro{\radius}{\syw@stampSize*0.63}%
     \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset + \syw@stampSize/2}%
     \pgfmathsetmacro{\sy}{\syw@stampY + \syw@stampYOffset + \syw@stampSize/2}%
-    \pgfmathsetmacro{\ax}{\radius*cos(\syw@stampAngle)}%
-    \pgfmathsetmacro{\ay}{\radius*sin(\syw@stampAngle)}%
+    \pgfmathsetmacro{\ax}{\radius*sin(\syw@stampAngle)}%
+    \pgfmathsetmacro{\ay}{-\radius*cos(\syw@stampAngle)}%
     \href{\syw@url/tree/\syw@sha/}{%
       \begin{tikzpicture}[remember picture,overlay]
         \node (STAMP) at ($(current page.north east) - (\sx in, \sy in)$)
           [rotate=\syw@stampAngle]
           {\includegraphics[width=\syw@stampSize in]{showyourwork-stamp.pdf}};
         \draw[draw=none,postaction={decorate},decoration={
-          text along path,text={|\syw@stampFormat|\syw@shortUrl},
+          text along path,text={|\bfseries\ttfamily\syw@stampFontSize|\syw@shortUrl},
           text align=center,text color=sywStampRed}]
           ($(STAMP.center) - (\ax in, \ay in)$)
           arc
-          [start angle={\syw@stampAngle+180},
-          end angle={\syw@stampAngle+360},
+          [start angle={\syw@stampAngle+90},
+          end angle={\syw@stampAngle+450},
           radius=\radius in];
       \end{tikzpicture}%
     }%

@@ -23,7 +23,7 @@ if __name__ == "__main__":
     \OnGithubActionsfalse
     ((* endif *))
     \def\syw@url{((- git_url -))}
-    \def\syw@shortUrl{((- git_url.replace("https://", "").replace("http://", "") -))}
+    \def\syw@shortUrl{((- git_short_url -))}
     \def\syw@slug{((- git_slug -))}
     \def\syw@sha{((- git_sha -))}
     \def\syw@runid{((- github_runid -))}
@@ -37,7 +37,11 @@ if __name__ == "__main__":
     \newcommand{\syw@stampY}{((- stamp.ypos -))}
     \newcommand{\syw@stampSize}{((- stamp.size -))}
     \newcommand{\syw@stampAngle}{((- stamp.angle -))}
-    \newcommand{\syw@stampFormat}{((- stamp.format -))}
+    ((* if stamp.size >= 1 *))
+    \newcommand{\syw@stampFontSize}{\normalsize}
+    ((* else *))
+    \newcommand{\syw@stampFontSize}{\footnotesize}
+    ((* endif *))
 
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}
