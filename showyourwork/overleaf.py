@@ -433,7 +433,7 @@ def pull_files(
     error_if_missing=False,
     error_if_local_changes=False,
     path=None,
-    commit_changes=True
+    commit_changes=True,
 ):
     """
     Pull files from the Overleaf remote.
@@ -561,7 +561,7 @@ def pull_files(
             get_stdout(["diff", remote_file, file], callback=callback)
 
     if commit_changes:
-        
+
         def callback(code, stdout, stderr):
             if code == 0:
                 logger.info(
