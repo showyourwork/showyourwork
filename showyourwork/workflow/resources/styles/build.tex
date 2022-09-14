@@ -85,9 +85,14 @@
         \node (STAMP) at ($(current page.north east) - (\sx in, \sy in)$)
           [rotate=\syw@stampAngle]
           {\includegraphics[width=\syw@stampSize in]{showyourwork-stamp.pdf}};
-        \draw[draw=none,postaction={decorate},decoration={
-          text along path,text={|\bfseries\ttfamily\syw@stampFontSize|\syw@shortUrl},
-          text align=center,text color=sywStampRed}]
+        \draw[draw=none,
+          postaction={decorate},
+          decoration={
+            text along path,
+            text={|\bfseries\ttfamily\syw@stampFontSize|\syw@shortUrl},
+            text align=center,
+            text color=sywStampRed
+          }]
           ($(STAMP.center) - (\ax in, \ay in)$)
           arc
           [start angle={\syw@stampAngle+90},
