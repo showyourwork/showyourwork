@@ -13,7 +13,7 @@
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
 \RequirePackage{tikz} % stamp
-\RequirePackage{etoolbox} % ifcsmacro
+\RequirePackage{etoolbox} % ifcsmacro, AfterEndPreamble
 \usetikzlibrary{calc}
 \usetikzlibrary{math}
 \usetikzlibrary{decorations.text}
@@ -73,9 +73,7 @@
     \newcommand{\syw@stampYOffset}{0.00}
   }
   % Render it
-  \let\oldmaketitle\maketitle
-  \renewcommand\maketitle{%
-    \oldmaketitle%
+  \AfterEndPreamble{%
     \makeatletter%
     \pgfmathsetmacro{\radius}{\syw@stampSize*0.63}%
     \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset + \syw@stampSize/2}%
