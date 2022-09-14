@@ -20,7 +20,7 @@ jobs:
         uses: andymckay/labeler@5c59dabdfd4dd5bd9c6e6d255b01b9d764af4414
         with:
           remove-labels: "safe to test"
-        
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
