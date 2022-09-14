@@ -13,7 +13,8 @@
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
 \RequirePackage{tikz} % stamp
-\RequirePackage{etoolbox} % ifcsmacro, AfterEndPreamble
+\RequirePackage{etoolbox} % ifcsmacro
+\RequirePackage{eso-pic} % AddToShipoutPictureBG
 \usetikzlibrary{calc}
 \usetikzlibrary{math}
 \usetikzlibrary{decorations.text}
@@ -72,9 +73,8 @@
     \newcommand{\syw@stampXOffset}{0.00}
     \newcommand{\syw@stampYOffset}{0.00}
   }
-  % Render it
-  \AfterEndPreamble{%
-    \makeatletter%
+  % Define the stamp
+  \newcommand{\syw@stamp}{%
     \pgfmathsetmacro{\radius}{\syw@stampSize*0.63}%
     \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset + \syw@stampSize/2}%
     \pgfmathsetmacro{\sy}{\syw@stampY + \syw@stampYOffset + \syw@stampSize/2}%
@@ -100,6 +100,11 @@
           radius=\radius in];
       \end{tikzpicture}%
     }%
+  }
+  % Render it as a background image on current page
+  \AddToShipoutPictureBG*{
+    \makeatletter%
+    \syw@stamp%
     \makeatother%
   }
 \fi
