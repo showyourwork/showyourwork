@@ -402,7 +402,8 @@ def parse_config():
         config["git_url"]
         .replace("https://", "")
         .replace("http://", "")
-        .replace("_", "{\_}")
+        .replace("_", r"{\_}")
+        .replace("github.com", r"{\faGithub}")
     )
     max_url_len = 50
     if len(config["git_short_url"]) > max_url_len:
