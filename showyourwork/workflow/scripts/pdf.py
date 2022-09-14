@@ -37,11 +37,7 @@ if __name__ == "__main__":
     \newcommand{\syw@stampY}{((- stamp.ypos -))}
     \newcommand{\syw@stampSize}{((- stamp.size -))}
     \newcommand{\syw@stampAngle}{((- stamp.angle -))}
-    ((* if stamp.size >= 1 *))
-    \newcommand{\syw@stampFontSize}{\normalsize}
-    ((* else *))
     \newcommand{\syw@stampFontSize}{\footnotesize}
-    ((* endif *))
 
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}

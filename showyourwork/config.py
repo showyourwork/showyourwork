@@ -316,10 +316,13 @@ def parse_config():
         #: Showyourwork stamp settings
         config["stamp"] = as_dict(config.get("stamp", {}))
         config["stamp"]["enabled"] = config["stamp"].get("enabled", True)
-        config["stamp"]["size"] = config["stamp"].get("size", 0.75)
+        config["stamp"]["size"] = max(0.75, config["stamp"].get("size", 0.75))
         config["stamp"]["xpos"] = config["stamp"].get("xpos", 0.50)
         config["stamp"]["ypos"] = config["stamp"].get("ypos", 0.50)
         config["stamp"]["angle"] = config["stamp"].get("angle", -20)
+        config["stamp"]["max_url_len"] = int(
+            config["stamp"]["size"] * (50 / 0.75)
+        )
 
         #
         # -- Internal settings --
@@ -401,10 +404,10 @@ def parse_config():
     config["git_short_url"] = (
         config["git_url"].replace("https://", "").replace("http://", "")
     )
-    max_url_len = 50
-    if len(config["git_short_url"]) > max_url_len:
+    if len(config["git_short_url"]) > config["stamp"]["max_url_len"]:
         config["git_short_url"] = (
-            config["git_short_url"][: max_url_len - 3] + "..."
+            config["git_short_url"][: config["stamp"]["max_url_len"] - 3]
+            + "..."
         )
     config["git_short_url"] = (
         config["git_short_url"]
