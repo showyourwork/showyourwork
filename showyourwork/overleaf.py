@@ -434,6 +434,7 @@ def pull_files(
     error_if_local_changes=False,
     path=None,
     commit_changes=True,
+    push_changes=False
 ):
     """
     Pull files from the Overleaf remote.
@@ -451,6 +452,9 @@ def pull_files(
             (if running from a different directory).
         commit_changes (bool, optional): Commit changes to the article
             repository? Default ``True``.
+        push_changes (bool, optional): Push committed changes to the remote article
+            repository? Only applicable if ``commit_changes`` is ``True``. 
+            Default ``False``.
 
     """
     # Disable if user didn't specify an id or if there are no files
@@ -591,3 +595,10 @@ def pull_files(
             cwd=paths.user(path=path).repo,
             callback=callback,
         )
+        
+        if push_changes:
+            
+            get_stdout(
+                ["git", "push"],
+                cwd=paths.user(path=path).repo
+            )
