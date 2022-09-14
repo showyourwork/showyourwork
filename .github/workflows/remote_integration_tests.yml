@@ -15,6 +15,12 @@ jobs:
     name: Run remote integration tests
     concurrency: showyourwork-remote
     steps:
+      - name: Remove `safe to test` label
+        if: ${{ (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
+        uses: andymckay/labeler@5c59dabdfd4dd5bd9c6e6d255b01b9d764af4414
+        with:
+          remove-labels: "safe to test"
+        
       - name: Checkout
         uses: actions/checkout@v3
         with:
