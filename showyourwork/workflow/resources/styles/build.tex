@@ -73,7 +73,9 @@
     \newcommand{\syw@stampYOffset}{0.00}
   }
   % Render it
-  \AtBeginDocument{%
+  \let\oldmaketitle\maketitle
+  \renewcommand\maketitle{%
+    \oldmaketitle%
     \makeatletter%
     \pgfmathsetmacro{\radius}{\syw@stampSize*0.63}%
     \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset + \syw@stampSize/2}%
