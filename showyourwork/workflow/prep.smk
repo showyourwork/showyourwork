@@ -60,5 +60,6 @@ onstart:
     if run_type == "preprocess" and get_repo_branch() == "main":
         overleaf.pull_files(
             config["overleaf"]["pull"],
-            config["overleaf"]["id"]
+            config["overleaf"]["id"],
+            commit_changes=not config["github_actions"]
         )
