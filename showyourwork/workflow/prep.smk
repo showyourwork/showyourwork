@@ -61,5 +61,6 @@ onstart:
         overleaf.pull_files(
             config["overleaf"]["pull"],
             config["overleaf"]["id"],
-            commit_changes=not config["github_actions"]
+            commit_changes=not config["github_actions"],
+            push_changes=config["github_actions"] and config["overleaf"]["gh_actions_sync"]
         )
