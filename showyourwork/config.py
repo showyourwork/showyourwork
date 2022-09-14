@@ -399,17 +399,18 @@ def parse_config():
     config["git_sha"] = git.get_repo_sha()
     config["git_url"] = git.get_repo_url()
     config["git_short_url"] = (
-        config["git_url"]
-        .replace("https://", "")
-        .replace("http://", "")
-        .replace("_", r"{\_}")
-        .replace("github.com", r"{\faGithub}")
+        config["git_url"].replace("https://", "").replace("http://", "")
     )
     max_url_len = 50
     if len(config["git_short_url"]) > max_url_len:
         config["git_short_url"] = (
             config["git_short_url"][: max_url_len - 3] + "..."
         )
+    config["git_short_url"] = (
+        config["git_short_url"]
+        .replace("_", r"{\_}")
+        .replace("github.com", r"{\faGithub}")
+    )
     config["git_slug"] = git.get_repo_slug()
     config["git_branch"] = git.get_repo_branch()
     config["github_actions"] = os.getenv("CI", "false") == "true"
