@@ -316,13 +316,11 @@ def parse_config():
         #: Showyourwork stamp settings
         config["stamp"] = as_dict(config.get("stamp", {}))
         config["stamp"]["enabled"] = config["stamp"].get("enabled", True)
-        config["stamp"]["size"] = max(0.75, config["stamp"].get("size", 0.75))
-        config["stamp"]["xpos"] = config["stamp"].get("xpos", 0.50)
-        config["stamp"]["ypos"] = config["stamp"].get("ypos", 0.50)
+        config["stamp"]["size"] = config["stamp"].get("size", 0.75)
+        config["stamp"]["xpos"] = config["stamp"].get("xpos", 1.0)
+        config["stamp"]["ypos"] = config["stamp"].get("ypos", 1.0)
         config["stamp"]["angle"] = config["stamp"].get("angle", -20)
-        config["stamp"]["max_url_len"] = int(
-            config["stamp"]["size"] * (50 / 0.75)
-        )
+        config["stamp"]["maxlen"] = config["stamp"].get("maxlen", 30)
 
         #
         # -- Internal settings --
@@ -401,19 +399,6 @@ def parse_config():
     # Git info for the repo
     config["git_sha"] = git.get_repo_sha()
     config["git_url"] = git.get_repo_url()
-    config["git_short_url"] = (
-        config["git_url"].replace("https://", "").replace("http://", "")
-    )
-    if len(config["git_short_url"]) > config["stamp"]["max_url_len"]:
-        config["git_short_url"] = (
-            config["git_short_url"][: config["stamp"]["max_url_len"] - 3]
-            + "..."
-        )
-    config["git_short_url"] = (
-        config["git_short_url"]
-        .replace("_", r"{\_}")
-        .replace("github.com", r"{\faGithub}")
-    )
     config["git_slug"] = git.get_repo_slug()
     config["git_branch"] = git.get_repo_branch()
     config["github_actions"] = os.getenv("CI", "false") == "true"
@@ -436,3 +421,17 @@ def parse_config():
     config["cache"][config["git_branch"]]["sandbox"] = config["cache"][
         config["git_branch"]
     ].get("sandbox", None)
+
+    # Url text that wraps around the showyourwork stamp
+    stamp_text = (
+        config["git_url"].replace("https://", "").replace("http://", "")
+    )
+    if (
+        trim := len(stamp_text.replace("github.com", "X"))
+        - config["stamp"]["maxlen"]
+    ) > 0:
+        stamp_text = stamp_text[: -(trim + 3)] + "..."
+    stamp_text = stamp_text.replace("_", r"{\_}").replace(
+        "github.com", r"{\faGithub}"
+    )
+    config["stamp"]["text"] = stamp_text

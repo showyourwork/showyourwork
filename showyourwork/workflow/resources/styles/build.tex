@@ -73,32 +73,43 @@
     \newcommand{\syw@stampXOffset}{0.00}
     \newcommand{\syw@stampYOffset}{0.00}
   }
+
   % Define the stamp
   \newcommand{\syw@stamp}{%
-    \pgfmathsetmacro{\radius}{\syw@stampSize*0.66}%
-    \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset + \syw@stampSize/2}%
-    \pgfmathsetmacro{\sy}{\syw@stampY + \syw@stampYOffset + \syw@stampSize/2}%
-    \pgfmathsetmacro{\ax}{\radius*sin(\syw@stampAngle)}%
-    \pgfmathsetmacro{\ay}{-\radius*cos(\syw@stampAngle)}%
-    \href{\syw@url/tree/\syw@sha/}{%
-      \begin{tikzpicture}[remember picture,overlay]
-        \node (STAMP) at ($(current page.north east) - (\sx in, \sy in)$)
-          [rotate=\syw@stampAngle]
-          {\includegraphics[width=\syw@stampSize in]{showyourwork-stamp.pdf}};
-        \draw[draw=none,
-          postaction={decorate},
-          decoration={
-            text along path,
-            text={|\bfseries\ttfamily\syw@stampFontSize|\syw@shortUrl},
-            text align=center,
-            text color=sywStampRed
-          }]
-          ($(STAMP.center) - (\ax in, \ay in)$)
-          arc
-          [start angle={\syw@stampAngle+90},
-          end angle={\syw@stampAngle+450},
-          radius=\radius in];
-      \end{tikzpicture}%
+    \pgfmathsetmacro{\sr}{0.50}%
+    \pgfmathsetmacro{\tr}{1.33*\sr}%
+    \pgfmathsetmacro{\vr}{0.15}%
+    \pgfmathsetmacro{\sd}{2*\sr}%
+    \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset}%
+    \pgfmathsetmacro{\sy}{\syw@stampY + \syw@stampYOffset}%
+    \pgfmathsetmacro{\tx}{\tr*sin(\syw@stampAngle)}%
+    \pgfmathsetmacro{\ty}{-\tr*cos(\syw@stampAngle)}%
+    \pgfmathsetmacro{\vx}{\vr*sin(\syw@stampAngle)}%
+    \pgfmathsetmacro{\vy}{-\vr*cos(\syw@stampAngle)}%
+    \pgfmathsetmacro{\invsz}{1/\syw@stampSize}%
+    \scalebox{\syw@stampSize}{%
+      \href{\syw@url/tree/\syw@sha/}{%
+        \begin{tikzpicture}[remember picture,overlay]
+          \node (STAMP) at ($\invsz*(current page.north east) - \invsz*(\sx in, \sy in)$)
+            [rotate=\syw@stampAngle]
+            {\includegraphics[width=\sd in]{showyourwork-stamp.pdf}};
+          \node (VERSION) at ($(STAMP.center) - (\vx in, \vy in)$)
+            [rotate=\syw@stampAngle,font=\fontsize{5}{7}\selectfont\ttfamily,color=sywStampRed]
+            {v0.3.1};
+          \draw[draw=none,
+            postaction={decorate},
+            decoration={text along path,
+              text={|\ttfamily\normalsize\bfseries|\syw@stampText},
+              text align=center,
+              text color=sywStampRed
+            }]
+            ($(STAMP.center) - (\tx in, \ty in)$)
+            arc
+            [start angle={\syw@stampAngle+90},
+            end angle={\syw@stampAngle+450},
+            radius=\tr in];
+        \end{tikzpicture}%
+      }%
     }%
   }
   % Render it as a background image on current page
