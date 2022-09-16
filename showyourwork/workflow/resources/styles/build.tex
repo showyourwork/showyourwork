@@ -58,6 +58,7 @@
 % Define custom colors
 \definecolor{sywRed}{rgb}{0.80,0.14,0.19}
 \definecolor{sywStampRed}{rgb}{0.80,0.45,0.45}
+\definecolor{sywStampLightRed}{rgb}{0.90,0.74,0.74}
 \definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
 \definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
 \definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
@@ -94,8 +95,8 @@
             [rotate=\syw@stampAngle]
             {\includegraphics[width=\sd in]{showyourwork-stamp.pdf}};
           \node (VERSION) at ($(STAMP.center) - (\vx in, \vy in)$)
-            [rotate=\syw@stampAngle,font=\fontsize{5}{7}\selectfont\ttfamily,color=sywStampRed]
-            {v0.3.1};
+            [rotate=\syw@stampAngle,font=\fontsize{5}{7}\selectfont\ttfamily\bfseries,color=sywStampLightRed]
+            {\syw@stampVersion};
           \draw[draw=none,
             postaction={decorate},
             decoration={text along path,

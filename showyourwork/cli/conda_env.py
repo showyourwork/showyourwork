@@ -1,13 +1,12 @@
 import filecmp
-import re
 import shutil
 import subprocess
-from pathlib import Path
 
 import jinja2
 import yaml
 
 from .. import exceptions, paths
+from ..config import parse_syw_spec
 from ..logging import get_logger
 from ..subproc import get_stdout
 
@@ -137,52 +136,3 @@ def run_in_env(command, **kwargs):
         shell=True,
         **kwargs,
     )
-
-
-def parse_syw_spec(syw_spec):
-    # No specific version provided; default to any
-    if not syw_spec:
-        return "showyourwork"
-
-    # For backwards compatibility, parse the version string into a structured
-    # spec that we understand
-    if isinstance(syw_spec, str):
-        if re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
-            syw_spec = {"pip": syw_spec}
-        elif re.match("[0-9a-f]{5,40}", syw_spec):
-            syw_spec = {"ref": syw_spec}
-        elif syw_spec in ["main", "dev"]:
-            syw_spec = {"ref": syw_spec}
-        else:
-            syw_spec = {"path": syw_spec}
-
-    if "pip" in syw_spec:
-        version = syw_spec.pop("pip")
-        solved = f"showyourwork=={version}"
-    elif "path" in syw_spec:
-        path = syw_spec.pop("path")
-        if not Path(path).is_absolute():
-            path = (paths.user().repo / path).resolve()
-        else:
-            path = Path(path).resolve()
-        if not path.exists():
-            raise exceptions.ShowyourworkNotFoundError(path)
-        solved = f"-e {path}"
-    else:
-        fork = syw_spec.pop(
-            "fork", "https://github.com/showyourwork/showyourwork.git"
-        )
-        spec = syw_spec.pop("ref", None)
-        if not spec:
-            solved = f"git+{fork}#egg=showyourwork"
-        else:
-            solved = f"git+{fork}@{spec}#egg=showyourwork"
-
-    if syw_spec:
-        raise exceptions.ShowyourworkException(
-            "Invalid specification of the showyourwork version. "
-            f"We solved the version as '{solved}', but the following (unrecognized or "
-            f"invalid) fields were also set: {syw_spec}"
-        )
-
-    return solved

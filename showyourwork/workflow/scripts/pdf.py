@@ -37,6 +37,7 @@ if __name__ == "__main__":
     \newcommand{\syw@stampSize}{((- stamp.size -))}
     \newcommand{\syw@stampAngle}{((- stamp.angle -))}
     \newcommand{\syw@stampText}{((- stamp.text -))}
+    \newcommand{\syw@stampVersion}{((- stamp.version -))}
 
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}
