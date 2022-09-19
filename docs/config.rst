@@ -933,7 +933,8 @@ on the title page.
 **Type:** ``float``
 
 **Description:** The absolute horizontal position of the stamp in inches,
-measured from the right edge of the page (values increase to the left).
+measured from the right edge of the page to the center of the stamp
+(values increase to the left).
 
 **Required:** no
 
@@ -955,7 +956,8 @@ measured from the right edge of the page (values increase to the left).
 **Type:** ``float``
 
 **Description:** The absolute vertical position of the stamp in inches,
-measured from the top edge of the page (values increase downward).
+measured from the top edge of the page to the center of the stamp
+(values increase downward).
 
 **Required:** no
 
@@ -967,3 +969,75 @@ measured from the top edge of the page (values increase downward).
 
   stamp:
     ypos: 0.50
+
+
+.. _config.stamp.url:
+
+``stamp.url``
+^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Options controlling the display of the article repository URL
+in the stamp.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    url:
+      enabled: true
+      maxlen: 40
+
+
+.. _config.stamp.url.enabled:
+
+``stamp.url.enabled``
+^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Whether or not to display the URL of the repository in the
+stamp. If ``true``, displays it along a circular arc on the outside of the
+stamp.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    url:
+      enabled: true
+
+
+.. _config.stamp.url.maxlen:
+
+``stamp.url.maxlen``
+^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``int``
+
+**Description:** The maximum length of the repository URL to be displayed in
+the stamp. If the URL is longer than this value, it will be truncated with
+``...`` when displayed (this does not, of course, affect the actual hyperlink
+URL).
+
+**Required:** no
+
+**Default:** ``40``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    url:
+      enabled: true
+      maxlen: 40

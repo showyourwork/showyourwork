@@ -374,7 +374,13 @@ def parse_config():
         config["stamp"]["xpos"] = config["stamp"].get("xpos", 1.0)
         config["stamp"]["ypos"] = config["stamp"].get("ypos", 1.0)
         config["stamp"]["angle"] = config["stamp"].get("angle", -20)
-        config["stamp"]["maxlen"] = config["stamp"].get("maxlen", 30)
+        config["stamp"]["url"] = as_dict(config["stamp"].get("url", {}))
+        config["stamp"]["url"]["enabled"] = config["stamp"]["url"].get(
+            "enabled", False
+        )
+        config["stamp"]["url"]["maxlen"] = config["stamp"]["url"].get(
+            "maxlen", 40
+        )
 
         #
         # -- Internal settings --
@@ -477,18 +483,22 @@ def parse_config():
     ].get("sandbox", None)
 
     # Showyourwork stamp metadata
-    stamp_text = (
-        config["git_url"].replace("https://", "").replace("http://", "")
-    )
-    if (
-        trim := len(stamp_text.replace("github.com", "X"))
-        - config["stamp"]["maxlen"]
-    ) > 0:
-        stamp_text = stamp_text[: -(trim + 3)] + "..."
-    stamp_text = stamp_text.replace("_", r"{\_}").replace(
-        "github.com", r"{\faGithub}"
-    )
-    config["stamp"]["text"] = stamp_text
+    if config["stamp"]["url"]["enabled"]:
+        stamp_text = (
+            config["git_url"].replace("https://", "").replace("http://", "")
+        )
+        if (
+            trim := len(stamp_text.replace("github.com", "X"))
+            - config["stamp"]["url"]["maxlen"]
+        ) > 0:
+            stamp_text = stamp_text[: -(trim + 3)] + "..."
+        stamp_text = stamp_text.replace("_", r"{\_}").replace(
+            "github.com", r"{\faGithub}"
+        )
+        config["stamp"]["text"] = stamp_text
+    else:
+        config["stamp"]["text"] = ""
+
     stamp_version = parse_syw_spec(config["version"])
     if stamp_version.startswith("showyourwork=="):
         config["stamp"]["version"] = stamp_version.replace(
