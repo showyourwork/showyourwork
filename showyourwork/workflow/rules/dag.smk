@@ -134,13 +134,17 @@ def infer_variable_provenance(dag):
 
     # Gather \variable provenance info so we can access it on the TeX side
     config["variables"] = {}
+
+    # Loop over all files defined in \variable commands
     for file in config["tree"]["files"]:
         file = Path(file).resolve()
-
-        # Assemble input-output information
         for job in dag.jobs:
+            # Find the job (and rule) that generates `file`
             if file in [Path(str(file)).resolve() for file in job.output]:
+                # Get the path to the Snakefile that defines that rule
                 rulepath = str(Path(job.rule.snakefile).relative_to(paths.user().repo))
+                # Try to find the line number; if we can't, simply link to the
+                # Snakefile, without line number highlighting
                 with open(job.rule.snakefile, "r") as f:
                     for n, line in enumerate(f.readlines()):
                         if re.match(rf"\s*rule\s*{job.rule.name}:", line):
