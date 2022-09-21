@@ -1,3 +1,4 @@
+import pytest
 from helpers import TemporaryShowyourworkRepository
 
 from showyourwork.config import edit_yaml
@@ -15,6 +16,8 @@ age = np.random.normal(14.0, 1.0)
 with open(paths.output / "age_of_universe.txt", "w") as f:
     f.write(f"{age:.3f}")
 """
+
+pytestmark = pytest.mark.remote
 
 
 class TestLatexVariable(TemporaryShowyourworkRepository):
