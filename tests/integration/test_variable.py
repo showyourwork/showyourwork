@@ -1,3 +1,4 @@
+import pytest
 from helpers import TemporaryShowyourworkRepository
 
 from showyourwork.config import edit_yaml
@@ -16,12 +17,11 @@ with open(paths.output / "age_of_universe.txt", "w") as f:
     f.write(f"{age:.3f}")
 """
 
+pytestmark = pytest.mark.remote
+
 
 class TestLatexVariable(TemporaryShowyourworkRepository):
     """Test a workflow with dynamic quantities imported into the tex file."""
-
-    # No need to test this on CI
-    local_build_only = True
 
     def customize(self):
         """Create and edit all the necessary files for the workflow."""
