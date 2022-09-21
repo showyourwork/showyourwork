@@ -20,9 +20,6 @@ with open(paths.output / "age_of_universe.txt", "w") as f:
 class TestLatexVariable(TemporaryShowyourworkRepository):
     """Test a workflow with dynamic quantities imported into the tex file."""
 
-    # No need to test this on CI
-    local_build_only = True
-
     def customize(self):
         """Create and edit all the necessary files for the workflow."""
         # Create the script
