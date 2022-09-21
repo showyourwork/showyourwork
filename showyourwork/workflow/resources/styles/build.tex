@@ -66,14 +66,11 @@
 
 % Generate the stamp on the first page
 \ifAddStamp
-  % Stamp position hacks (class-specific, as needed)
-  \@ifclassloaded{aastex631}{
-    \newcommand{\syw@stampXOffset}{-0.60}
-    \newcommand{\syw@stampYOffset}{0.00}
-  }{
-    \newcommand{\syw@stampXOffset}{0.00}
-    \newcommand{\syw@stampYOffset}{0.00}
-  }
+  % No-op offsets. Override these for, e.g.,
+  % specific documentclasses that require a
+  % different default stamp position.
+  \newcommand{\syw@stampXOffset}{0.00}
+  \newcommand{\syw@stampYOffset}{0.00}
 
   % Define the stamp
   \newcommand{\syw@stamp}{%
