@@ -255,7 +255,7 @@ class TemporaryShowyourworkRepository:
                     return
                 else:
                     raise Exception(
-                        "[{self.repo}] GitHub Actions workflow terminated "
+                        f"[{self.repo}] GitHub Actions workflow terminated "
                         f"with status {conclusion}.\n"
                         f"For details, see {url}"
                     )
@@ -267,7 +267,7 @@ class TemporaryShowyourworkRepository:
                 await asyncio.sleep(self.action_interval)
         else:
             raise Exception(
-                "[{self.repo}] GitHub Actions workflow timed out.\n"
+                f"[{self.repo}] GitHub Actions workflow timed out.\n"
                 f"For details, see {url}"
             )
 

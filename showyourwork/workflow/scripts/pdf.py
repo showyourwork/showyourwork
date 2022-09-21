@@ -23,8 +23,21 @@ if __name__ == "__main__":
     \OnGithubActionsfalse
     ((* endif *))
     \def\syw@url{((- git_url -))}
+    \def\syw@slug{((- git_slug -))}
     \def\syw@sha{((- git_sha -))}
     \def\syw@runid{((- github_runid -))}
+
+    ((* if stamp.enabled *))
+    \AddStamptrue
+    ((* else *))
+    \AddStampfalse
+    ((* endif *))
+    \newcommand{\syw@stampX}{((- stamp.xpos -))}
+    \newcommand{\syw@stampY}{((- stamp.ypos -))}
+    \newcommand{\syw@stampSize}{((- stamp.size -))}
+    \newcommand{\syw@stampAngle}{((- stamp.angle -))}
+    \newcommand{\syw@stampText}{((- stamp.text -))}
+    \newcommand{\syw@stampVersion}{((- stamp.version -))}
 
     ((* for key, value in labels.items() *))
     \addvalue{((- key -))}{((- value -))}

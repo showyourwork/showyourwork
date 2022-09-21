@@ -1,4 +1,5 @@
 import os
+import re
 from collections import ChainMap, OrderedDict
 from contextlib import contextmanager
 from pathlib import Path
@@ -91,6 +92,59 @@ def get_run_type():
 
     """
     return os.getenv("SNAKEMAKE_RUN_TYPE", "other")
+
+
+def parse_syw_spec(syw_spec):
+    """
+    Resolve the version of showyourwork from the value provided in the config.
+
+    """
+    # No specific version provided; default to any
+    if not syw_spec:
+        return "showyourwork"
+
+    # For backwards compatibility, parse the version string into a structured
+    # spec that we understand
+    if isinstance(syw_spec, str):
+        if re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
+            syw_spec = {"pip": syw_spec}
+        elif re.match("[0-9a-f]{5,40}", syw_spec):
+            syw_spec = {"ref": syw_spec}
+        elif syw_spec in ["main", "dev"]:
+            syw_spec = {"ref": syw_spec}
+        else:
+            syw_spec = {"path": syw_spec}
+
+    if "pip" in syw_spec:
+        version = syw_spec.pop("pip")
+        solved = f"showyourwork=={version}"
+    elif "path" in syw_spec:
+        path = syw_spec.pop("path")
+        if not Path(path).is_absolute():
+            path = (paths.user().repo / path).resolve()
+        else:
+            path = Path(path).resolve()
+        if not path.exists():
+            raise exceptions.ShowyourworkNotFoundError(path)
+        solved = f"-e {path}"
+    else:
+        fork = syw_spec.pop(
+            "fork", "https://github.com/showyourwork/showyourwork.git"
+        )
+        spec = syw_spec.pop("ref", None)
+        if not spec:
+            solved = f"git+{fork}#egg=showyourwork"
+        else:
+            solved = f"git+{fork}@{spec}#egg=showyourwork"
+
+    if syw_spec:
+        raise exceptions.ShowyourworkException(
+            "Invalid specification of the showyourwork version. "
+            f"We solved the version as '{solved}', but the following (unrecognized or "
+            f"invalid) fields were also set: {syw_spec}"
+        )
+
+    return solved
 
 
 def as_dict(x, depth=0, maxdepth=30):
@@ -313,6 +367,21 @@ def parse_config():
         #: Optimize the DAG by removing jobs upstream of cache hits
         config["optimize_caching"] = config.get("optimize_caching", False)
 
+        #: Showyourwork stamp settings
+        config["stamp"] = as_dict(config.get("stamp", {}))
+        config["stamp"]["enabled"] = config["stamp"].get("enabled", True)
+        config["stamp"]["size"] = config["stamp"].get("size", 0.75)
+        config["stamp"]["xpos"] = config["stamp"].get("xpos", 1.0)
+        config["stamp"]["ypos"] = config["stamp"].get("ypos", 1.0)
+        config["stamp"]["angle"] = config["stamp"].get("angle", -20)
+        config["stamp"]["url"] = as_dict(config["stamp"].get("url", {}))
+        config["stamp"]["url"]["enabled"] = config["stamp"]["url"].get(
+            "enabled", False
+        )
+        config["stamp"]["url"]["maxlen"] = config["stamp"]["url"].get(
+            "maxlen", 40
+        )
+
         #
         # -- Internal settings --
         #
@@ -390,6 +459,7 @@ def parse_config():
     # Git info for the repo
     config["git_sha"] = git.get_repo_sha()
     config["git_url"] = git.get_repo_url()
+    config["git_slug"] = git.get_repo_slug()
     config["git_branch"] = git.get_repo_branch()
     config["github_actions"] = os.getenv("CI", "false") == "true"
     config["github_runid"] = os.getenv("GITHUB_RUN_ID", "")
@@ -411,3 +481,28 @@ def parse_config():
     config["cache"][config["git_branch"]]["sandbox"] = config["cache"][
         config["git_branch"]
     ].get("sandbox", None)
+
+    # Showyourwork stamp metadata
+    if config["stamp"]["url"]["enabled"]:
+        stamp_text = (
+            config["git_url"].replace("https://", "").replace("http://", "")
+        )
+        if (
+            trim := len(stamp_text.replace("github.com", "X"))
+            - config["stamp"]["url"]["maxlen"]
+        ) > 0:
+            stamp_text = stamp_text[: -(trim + 3)] + "..."
+        stamp_text = stamp_text.replace("_", r"{\_}").replace(
+            "github.com", r"{\faGithub}"
+        )
+        config["stamp"]["text"] = stamp_text
+    else:
+        config["stamp"]["text"] = ""
+
+    stamp_version = parse_syw_spec(config["version"])
+    if stamp_version.startswith("showyourwork=="):
+        config["stamp"]["version"] = stamp_version.replace(
+            "showyourwork==", ""
+        )
+    else:
+        config["stamp"]["version"] = "dev"

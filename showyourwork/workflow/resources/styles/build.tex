@@ -12,10 +12,18 @@
 \RequirePackage{xspace} % better spacing after icons
 \RequirePackage{graphicx} % includegraphics
 \RequirePackage{stackengine} % stacking figure links
+\RequirePackage{tikz} % stamp
 \RequirePackage{etoolbox} % ifcsmacro
+\RequirePackage{eso-pic} % AddToShipoutPictureBG
+\usetikzlibrary{calc}
+\usetikzlibrary{math}
+\usetikzlibrary{decorations.text}
 
 % Is this running on GitHub Actions?
 \newif\ifOnGithubActions
+
+% Should we add a showyourwork stamp?
+\newif\ifAddStamp
 
 % Key-value pairs used to assemble the hyperlinks for figures
 % See https://tex.stackexchange.com/a/48931
@@ -33,6 +41,7 @@
   \input{showyourwork-metadata.tex}
 }{
   \OnGithubActionsfalse
+  \AddStampfalse
   \def\syw@url{https://github.com/showyourwork/showyourwork-example}
   \def\syw@sha{dev}
   \def\syw@runid{0}
@@ -43,132 +52,84 @@
 
 % Showyourwork logo
 \newcommand{\showyourwork}{%
-  \smash{\raisebox{-1.6ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
+  \smash{\raisebox{-1.7ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
-% Generic: replace \LaTeX with \Latex + showyourwork in \maketitle
-\let\oldmaketitle\maketitle
-\def\maketitle{%
-  \let\oldLaTeX\LaTeX
-  \let\oldtoday\today
-  \def\LaTeX{\oldLaTeX/\href{https://github.com/showyourwork/showyourwork}{\showyourwork}}
-  \ifcsname gitHeader\endcsname
-    \renewcommand{\today}{\oldtoday.~\gitHeader}
-  \fi
-  \oldmaketitle
-  \let\LaTeX\oldLaTeX
-  \let\today\oldtoday
-}
+% Define custom colors
+\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
+\definecolor{sywStampRed}{rgb}{0.80,0.45,0.45}
+\definecolor{sywStampLightRed}{rgb}{0.90,0.74,0.74}
+\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
+\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
+\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
+\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
 
-% MNRAS hack for displaying showyourwork logo
-\@ifclassloaded{mnras}{
-  \ifx\CUP@mtlplain@loaded\undefined
-    \def\@printed{Preprint \tod@y\
-      \qquad\qquad\qquad Compiled using \showyourwork/MNRAS \LaTeX\ style file v\@version
-      \ifcsname gitHeader\endcsname
-        \,(\gitHeader)
-      \fi
-    }
-  \else
-    \def\@printed{}
-  \fi
-}{}
-
-% A&A hack for displaying showyourwork logo + abstract links
-\@ifclassloaded{aa}{
-  \renewcommand*\aa@manuscriptname{%
-    \LaTeX
-    \hspace{\stretch{1}}%
-    \smash{\stackunder[0.5em]{\copyright ESO \the\year}{%
-        \href{\syw@url/tree/\syw@sha/}{%
-          \color{sywBlue}%
-          \faGithub%
-        }%
-        \ifOnGithubActions
-          \hspace{3pt}%
-          \href{\syw@url/actions/runs/\syw@runid/}{%
-            \color{sywGreen}%
-            \faCheckCircle%
-          }%
-        \fi
-      }
-    }
+% Generate the stamp on the first page
+\ifAddStamp
+  % Stamp position hacks (class-specific, as needed)
+  \@ifclassloaded{aastex631}{
+    \newcommand{\syw@stampXOffset}{-0.60}
+    \newcommand{\syw@stampYOffset}{0.00}
+  }{
+    \newcommand{\syw@stampXOffset}{0.00}
+    \newcommand{\syw@stampYOffset}{0.00}
   }
-}{}
 
-% Annual Reviews hack for displaying showyourwork logo
-\@ifclassloaded{ar-1col}{
-  \let\oldjournalinfo\journalinfo
-  \def\journalinfo{%
-    \oldjournalinfo%
-    \vskip6\p@{\jinfofont%
-      Compiled using\begin{minipage}{7.3em}\includegraphics[width=7.3em]{showyourwork-logo.pdf}\end{minipage}\endgraf%
-      \ifcsname gitHeader\endcsname
-        \,(\gitHeader)\endgraf
-      \fi
+  % Define the stamp
+  \newcommand{\syw@stamp}{%
+    \pgfmathsetmacro{\sr}{0.50}%
+    \pgfmathsetmacro{\tr}{1.33*\sr}%
+    \pgfmathsetmacro{\vr}{0.15}%
+    \pgfmathsetmacro{\sd}{2*\sr}%
+    \pgfmathsetmacro{\sx}{\syw@stampX + \syw@stampXOffset}%
+    \pgfmathsetmacro{\sy}{\syw@stampY + \syw@stampYOffset}%
+    \pgfmathsetmacro{\tx}{\tr*sin(\syw@stampAngle)}%
+    \pgfmathsetmacro{\ty}{-\tr*cos(\syw@stampAngle)}%
+    \pgfmathsetmacro{\vx}{\vr*sin(\syw@stampAngle)}%
+    \pgfmathsetmacro{\vy}{-\vr*cos(\syw@stampAngle)}%
+    \pgfmathsetmacro{\invsz}{1/\syw@stampSize}%
+    \scalebox{\syw@stampSize}{%
+      \href{\syw@url/tree/\syw@sha/}{%
+        \begin{tikzpicture}[remember picture,overlay]
+          \node (STAMP) at ($\invsz*(current page.north east) - \invsz*(\sx in, \sy in)$)
+            [rotate=\syw@stampAngle]
+            {\includegraphics[width=\sd in]{showyourwork-stamp.pdf}};
+          \node (VERSION) at ($(STAMP.center) - (\vx in, \vy in)$)
+            [rotate=\syw@stampAngle,font=\fontsize{5}{7}\selectfont\ttfamily\bfseries,color=sywStampLightRed]
+            {\syw@stampVersion};
+          \draw[draw=none,
+            postaction={decorate},
+            decoration={text along path,
+              text={|\ttfamily\normalsize\bfseries|\syw@stampText},
+              text align=center,
+              text color=sywStampRed
+            }]
+            ($(STAMP.center) - (\tx in, \ty in)$)
+            arc
+            [start angle={\syw@stampAngle+90},
+            end angle={\syw@stampAngle+450},
+            radius=\tr in];
+        \end{tikzpicture}%
+      }%
     }%
   }
-}{}
+  % Render it as a background image on current page
+  \AddToShipoutPictureBG*{
+    \makeatletter%
+    \syw@stamp%
+    \makeatother%
+  }
+\fi
 
 % Custom margin icon
 \newcommand\marginicon[1]{
   \renewcommand\showkeyslabelformat[1]{#1}%
 }
 
-% Define custom colors
-\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
-\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
-\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
-\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
-\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
-
 % User-facing commands
 \newcommand\GitHubURL{\syw@url}
 \newcommand\GitHubSHA{\syw@sha}
 \newcommand\GitHubIcon{\faGithub\xspace}
-
-% Add a GitHub link to the end of the abstract
-\let\oldabstract\abstract
-\let\oldendabstract\endabstract
-\@ifclassloaded{ar-1col}{
-  \renewenvironment{abstract}{%
-    \oldabstract%
-  }{%
-    \href{\syw@url/tree/\syw@sha/}{%
-      \color{sywBlue}%
-      \faGithub%
-    }%
-    \ifOnGithubActions
-      \hspace{3pt}%
-      \href{\syw@url/actions/runs/\syw@runid/}{%
-        \color{sywGreen}%
-        \faCheckCircle%
-      }%
-    \fi
-    \oldendabstract%
-  }
-}{%
-  \ifcsmacro{abstract}{%
-    \renewenvironment{abstract}{%
-      \oldabstract%
-    }{%
-      \marginpar{%
-        \href{\syw@url/tree/\syw@sha/}{%
-          \color{sywBlue}%
-          \faGithub%
-        }%
-        \ifOnGithubActions
-          \hspace{3pt}%
-          \href{\syw@url/actions/runs/\syw@runid/}{%
-            \color{sywGreen}%
-            \faCheckCircle%
-          }%
-        \fi
-      }%
-      \oldendabstract%
-    }%
-  }{}%
-}
 
 % Figure script icon
 \newcommand\syw@Script[1]{%

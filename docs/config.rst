@@ -840,3 +840,204 @@ the |showyourwork| repo specified by ``version.fork``.
 
   version:
     ref: main
+
+
+.. _config.stamp:
+
+``stamp``
+^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Mapping controlling the display of the |showyourwork| stamp
+on the title page.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    enabled: true
+
+
+.. _config.stamp_angle:
+
+``stamp.angle``
+^^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The stamp rotation angle in degrees.
+
+**Required:** no
+
+**Default:** ``-20.0``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    angle: -20.0
+
+
+.. _config.stamp_enabled:
+
+``stamp.enabled``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** If ``false``, will not display the stamp on the rendered PDF.
+
+**Required:** no
+
+**Default:** ``true``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    enabled: true
+
+
+.. _config.stamp_size:
+
+``stamp.size``
+^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The size (width) of the stamp in inches.
+
+**Required:** no
+
+**Default:** ``0.75``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    size: 0.75
+
+
+.. _config.stamp_xpos:
+
+``stamp.xpos``
+^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The absolute horizontal position of the stamp in inches,
+measured from the right edge of the page to the center of the stamp
+(values increase to the left).
+
+**Required:** no
+
+**Default:** ``0.50``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    xpos: 0.50
+
+
+.. _config.stamp_ypos:
+
+``stamp.ypos``
+^^^^^^^^^^^^^^
+
+**Type:** ``float``
+
+**Description:** The absolute vertical position of the stamp in inches,
+measured from the top edge of the page to the center of the stamp
+(values increase downward).
+
+**Required:** no
+
+**Default:** ``0.50``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    ypos: 0.50
+
+
+.. _config.stamp.url:
+
+``stamp.url``
+^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Options controlling the display of the article repository URL
+in the stamp.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    url:
+      enabled: true
+      maxlen: 40
+
+
+.. _config.stamp.url.enabled:
+
+``stamp.url.enabled``
+^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Whether or not to display the URL of the repository in the
+stamp. If ``true``, displays it along a circular arc on the outside of the
+stamp.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    url:
+      enabled: true
+
+
+.. _config.stamp.url.maxlen:
+
+``stamp.url.maxlen``
+^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``int``
+
+**Description:** The maximum length of the repository URL to be displayed in
+the stamp. If the URL is longer than this value, it will be truncated with
+``...`` when displayed (this does not, of course, affect the actual hyperlink
+URL).
+
+**Required:** no
+
+**Default:** ``40``
+
+**Example:**
+
+.. code-block:: yaml
+
+  stamp:
+    url:
+      enabled: true
+      maxlen: 40
