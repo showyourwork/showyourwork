@@ -179,7 +179,16 @@
   }%
 }
 
-% Hack `showkeys' to show margin links for figures
+% Variable script icon: links to a line in the Snakefile
+\newcommand\syw@Variable[1]{%
+  \raisebox{0pt}[6pt][0pt]{%
+    \href{\syw@url/blob/\syw@sha/\usevalue{#1}}{%
+      \color{sywBlue}\faGithub%
+    }%
+  }%
+}
+
+% Hack `showkeys' to show margin links for figures and variables
 % See https://tex.stackexchange.com/a/580553
 \renewcommand\showkeyslabelformat[1]{%
   \normalfont%
@@ -191,6 +200,9 @@
     \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{\syw@DatasetOne{#1_datasetOne}}
     \IfEq*{\usevalue{#1_script}}{KEYNOTFOUND}{}{\syw@Script{#1_script}}
   }
+  % Link to the line in the Snakefile that generates a given variable
+  % in the texfile
+  \IfEq*{\usevalue{#1_rule}}{KEYNOTFOUND}{}{\syw@Variable{#1_rule}}
 }
 
 % Set the graphics path for all figures
@@ -198,5 +210,5 @@
 
 % Alias of \input for syw-controlled files
 \newcommand\variable[1]{%
-  \input{#1}\unskip%
+  \input{#1}\label{#1}\unskip%
 }

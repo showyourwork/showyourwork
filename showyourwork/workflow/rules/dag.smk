@@ -11,6 +11,8 @@ from showyourwork.config import get_upstream_dependencies
 from showyourwork.patches import get_snakemake_variable, patch_snakemake_cache_optimization
 from showyourwork.zenodo import get_dataset_urls
 import snakemake
+import os
+import re
 from collections import defaultdict
 
 
@@ -121,6 +123,34 @@ def add_dag_metadata_to_config(dag):
     config["dag_dependencies_recursive"] = recursive_dependencies
 
 
+def infer_variable_provenance(dag):
+    """
+    Try to infer the Snakefiles and line numbers where the rules generating
+    files specified in the `\variable` command are defined.
+
+    """
+    # Snakemake config
+    config = snakemake.workflow.config
+
+    # Gather \variable provenance info so we can access it on the TeX side
+    config["variables"] = {}
+    for file in config["tree"]["files"]:
+        file = Path(file).resolve()
+
+        # Assemble input-output information
+        for job in dag.jobs:
+            if file in [Path(str(file)).resolve() for file in job.output]:
+                rulepath = str(Path(job.rule.snakefile).relative_to(paths.user().repo))
+                with open(job.rule.snakefile, "r") as f:
+                    for n, line in enumerate(f.readlines()):
+                        if re.match(rf"\s*rule\s*{job.rule.name}:", line):
+                            rulepath += rf"\#L{n+1}"
+                            break
+                pre = Path(os.path.commonprefix([file, paths.user().tex]))
+                filename = str(file.relative_to(pre))
+                config["variables"][f"{filename}_rule"] = rulepath
+
+
 def WORKFLOW_GRAPH(*args):
     """
     This is a dummy input function for the main rules of the build (``syw__pdf``
@@ -153,6 +183,9 @@ def WORKFLOW_GRAPH(*args):
         # Infer figure deps from the DAG
         logger.debug("Inferring figure dependencies recursively...")
         infer_additional_figure_dependencies()
+
+        # Infer variable deps from the DAG
+        infer_variable_provenance(dag)
 
         # Optimize the DAG by removing jobs upstream of cache hits
         if config["optimize_caching"]:
