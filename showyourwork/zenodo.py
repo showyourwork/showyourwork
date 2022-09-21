@@ -453,7 +453,7 @@ class Zenodo:
         for entry in data:
 
             logger.debug(
-                f"Inspecting candidate file `{entry['filename']}` with hash `{file.name}`..."
+                f"Inspecting candidate file `{entry['filename']}` with hash `{rule_hashes.get(rule_name, None)}`..."
             )
 
             if (
