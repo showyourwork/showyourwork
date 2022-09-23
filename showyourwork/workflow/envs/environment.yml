@@ -2,8 +2,8 @@ dependencies:
   - python=3.9
   - pip=21.0.1
   - conda-forge::tectonic=0.8.0
-  - conda-forge::mamba=0.23.3
-  - bioconda::snakemake-minimal=6.15.5
+  - conda-forge::mamba=0.25.0
+  - bioconda::snakemake-minimal=7.14.0
   - conda-forge::imagemagick
   - graphviz
   - pip:
