@@ -375,7 +375,10 @@ def patch_snakemake_wait_for_files():
     """
 
     def wait_for_files(
-        files, latency_wait=3, force_stay_on_remote=False, ignore_pipe=False
+        files,
+        latency_wait=3,
+        force_stay_on_remote=False,
+        ignore_pipe_or_service=False,
     ):
         """Wait for given files to be present in the filesystem."""
         files = list(files)
@@ -392,7 +395,13 @@ def patch_snakemake_wait_for_files():
                         and (force_stay_on_remote or f.should_stay_on_remote)
                     )
                     else os.path.exists(f)
-                    if not (snakemake.io.is_flagged(f, "pipe") and ignore_pipe)
+                    if not (
+                        (
+                            snakemake.io.is_flagged(f, "pipe")
+                            or snakemake.io.is_flagged(f, "service")
+                        )
+                        and ignore_pipe_or_service
+                    )
                     else True
                 )
             ]
