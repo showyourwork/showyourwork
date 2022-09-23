@@ -1,11 +1,10 @@
 dependencies:
-  - anaconda::python=3.9
-  - anaconda::pip=21.0.1
+  - conda-forge::python=3.9
+  - conda-forge::pip=21.0.1
   - conda-forge::tectonic=0.8.0
   - conda-forge::mamba=0.25.0
   - bioconda::snakemake-minimal=7.14.0
-  - conda-forge::imagemagick
-  - anaconda::graphviz
+  - conda-forge::imagemagick=7.1.0.27
   - pip:
       - click==8.0.4
       - pyyaml==6.0
