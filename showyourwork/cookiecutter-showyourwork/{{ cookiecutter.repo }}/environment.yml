@@ -1,6 +1,6 @@
 dependencies:
-  - numpy=1.19.2
-  - pip=21.0.1
-  - python=3.9
+  - anaconda::numpy=1.19.2
+  - anaconda::pip=21.0.1
+  - anaconda::python=3.9
   - pip:
       - matplotlib==3.4.3
