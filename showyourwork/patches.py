@@ -379,9 +379,14 @@ def patch_snakemake_wait_for_files():
         latency_wait=3,
         force_stay_on_remote=False,
         ignore_pipe_or_service=False,
+        **kwargs,
     ):
         """Wait for given files to be present in the filesystem."""
         files = list(files)
+
+        # Compat for older versions of Snakemake
+        if ignore_pipe := kwargs.get("ignore_pipe") is not None:
+            ignore_pipe_or_service = ignore_pipe
 
         def get_missing():
             return [
