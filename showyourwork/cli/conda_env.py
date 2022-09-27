@@ -120,7 +120,7 @@ def run_in_env(command, **kwargs):
             "Creating a new conda environment in ~/.showyourwork/env..."
         )
         get_stdout(
-            f"CONDARC={paths.showyourwork().envs / '.condarc'} conda create -p {paths.user().env} -f {workflow_envfile} -q",
+            f"conda env create --strict-channel-priority -p {paths.user().env} -f {workflow_envfile} -q",
             shell=True,
         )
         shutil.copy(workflow_envfile, cached_envfile)
@@ -137,7 +137,7 @@ def run_in_env(command, **kwargs):
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
             get_stdout(
-                f"CONDARC={paths.showyourwork().envs / '.condarc'} conda update -p {paths.user().env} -f {workflow_envfile} --prune -q",
+                f"conda env update --strict-channel-priority -p {paths.user().env} -f {workflow_envfile} --prune -q",
                 shell=True,
             )
             shutil.copy(workflow_envfile, cached_envfile)
