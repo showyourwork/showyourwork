@@ -2,8 +2,9 @@
 Implements functions that modify the behavior of Snakemake.
 
 This functionality is pretty hacky and is almost certainly not future-proof,
-so if we change the Snakemake version (currently pinned at 16.5.5), we may have
-to update the code in this file.
+so if we change the Snakemake version (currently pinned at 7.14.0), we may have
+to update the code in this file and thoroughly test it on workflows requesting
+earlier versions.
 
 """
 import inspect
@@ -379,14 +380,9 @@ def patch_snakemake_wait_for_files():
         latency_wait=3,
         force_stay_on_remote=False,
         ignore_pipe_or_service=False,
-        **kwargs,
     ):
         """Wait for given files to be present in the filesystem."""
         files = list(files)
-
-        # Compat for older versions of Snakemake
-        if ignore_pipe := kwargs.get("ignore_pipe") is not None:
-            ignore_pipe_or_service = ignore_pipe
 
         def get_missing():
             return [
