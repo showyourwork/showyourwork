@@ -389,14 +389,26 @@ build your article. You can read more about environment files
 By default, only the bare minimum specs are included
 (e.g., ``numpy`` and ``matplotlib``). Feel free to manually add to this list
 (noting that packages that can only be installed via ``pip`` should be placed in
-the ``pip`` section). It's recommended to either pin a specific version
-(i.e., ``matplotlib==3.3.4``) or specify a minimum version
-(i.e., ``matplotlib>=3.0.0``) for your packages. Just be aware that overconstrained
-requirements may break on other platforms
+the ``pip`` section). For packages listed under ``dependencies``, it is highly
+recommended that users specify **explict channels** and pin **exact versions**, e.g.:
+
+.. code-block:: text
+
+  dependencies:
+    - conda-forge::python=3.9
+
+For ``pip`` dependencies, users should also pin exact versions, e.g.:
+
+.. code-block:: text
+
+  - pip:
+    - matplotlib==3.3.4
+
+Note that overconstrained requirements may break the installation on other platforms
 (see `this post <https://stackoverflow.com/questions/39280638/how-to-share-conda-environments-across-platforms>`_),
-so you should probably only pin the direct dependencies of your project.
-If you alread have a ``conda`` environment for your project, you can export
-these direct dependencies -- the ones that you explicitly installed in the enviornment --
+so users should consider only pinning the *direct* dependencies of their project.
+If a ``conda`` environment already exists for a project, one can export
+these direct dependencies -- the ones whose installation was explicitly requested in the enviornment --
 by running
 
 .. code-block:: bash
@@ -404,8 +416,7 @@ by running
     conda env export --from-history | grep -v "^prefix: " > environment.yml
 
 The ``grep`` command removes the line in the environment file with the absolute path
-to your ``conda`` environment, which probably won't be useful to anyone else running
-your code!
+to the ``conda`` environment.
 
 
 .. _license:
