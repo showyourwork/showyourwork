@@ -21,7 +21,7 @@ except ImportError:
 
 
 # Require this version of conda or greater
-MIN_CONDA_VERSION = Version("4.14.0")
+MIN_CONDA_VERSION = Version("4.12.0")
 
 
 def run_in_env(command, **kwargs):
