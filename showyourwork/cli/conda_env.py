@@ -74,7 +74,9 @@ def run_in_env(command, **kwargs):
     # Get conda version
     conda_version = get_stdout("conda -V", shell=True)
     try:
-        conda_version = Version(re.match("^conda (.*?)$", foo).groups()[0])
+        conda_version = Version(
+            re.match("^conda (.*?)$", conda_version).groups()[0]
+        )
     except:
         raise exceptions.CondaVersionError(MIN_CONDA_VERSION)
     if conda_version < MIN_CONDA_VERSION:
