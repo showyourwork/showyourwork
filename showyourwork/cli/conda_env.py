@@ -1,9 +1,11 @@
 import filecmp
+import re
 import shutil
 import subprocess
 
 import jinja2
 import yaml
+from packaging.version import Version
 
 from .. import exceptions, paths
 from ..config import parse_syw_spec
@@ -16,6 +18,10 @@ try:
 except ImportError:
     # If LibYAML not installed
     from yaml import Dumper, Loader
+
+
+# Require this version of conda or greater
+MIN_CONDA_VERSION = Version("4.14.0")
 
 
 def run_in_env(command, **kwargs):
@@ -46,6 +52,8 @@ def run_in_env(command, **kwargs):
     Raises:
         ``exceptions.CondaNotFoundError``:
             If conda is not found.
+        ``exceptions.CondaVersionError``:
+            If an incompatible version of conda installed.
         ``exceptions.ShowyourworkException``:
             If the cwd is not the top level of a showyourwork project.
         ``exceptions.ShowyourworkNotFoundError``:
@@ -62,6 +70,15 @@ def run_in_env(command, **kwargs):
     except:
         raise exceptions.CondaNotFoundError()
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
+
+    # Get conda version
+    conda_version = get_stdout("conda -V", shell=True)
+    try:
+        conda_version = Version(re.match("^conda (.*?)$", foo).groups()[0])
+    except:
+        raise exceptions.CondaVersionError(MIN_CONDA_VERSION)
+    if conda_version < MIN_CONDA_VERSION:
+        raise exceptions.CondaVersionError(MIN_CONDA_VERSION, conda_version)
 
     # Various conda environment files
     syw_envfile = paths.showyourwork().envs / "environment.yml"
@@ -101,7 +118,7 @@ def run_in_env(command, **kwargs):
             "Creating a new conda environment in ~/.showyourwork/env..."
         )
         get_stdout(
-            f"CONDARC={paths.showyourwork().envs / '.condarc'} conda env create -p {paths.user().env} -f {workflow_envfile} -q",
+            f"conda create --strict-channel-priority -p {paths.user().env} --file {workflow_envfile} -q",
             shell=True,
         )
         shutil.copy(workflow_envfile, cached_envfile)
@@ -118,7 +135,7 @@ def run_in_env(command, **kwargs):
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
             get_stdout(
-                f"conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
+                f"conda update --strict-channel-priority -p {paths.user().env} --file {workflow_envfile} --prune -q",
                 shell=True,
             )
             shutil.copy(workflow_envfile, cached_envfile)
