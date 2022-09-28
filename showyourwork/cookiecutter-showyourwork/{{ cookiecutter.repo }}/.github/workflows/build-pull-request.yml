@@ -17,6 +17,9 @@ jobs:
       - name: Build the article PDF
         id: build
         uses: showyourwork/showyourwork-action@v1
+        {%- if cookiecutter.showyourwork_spec %}
+        with:
+          showyourwork-spec: {{ cookiecutter.showyourwork_spec }}{% endif %}
         env:
           SANDBOX_TOKEN: ${{ "{{" }} secrets.SANDBOX_TOKEN {{ "}}" }}
           OVERLEAF_EMAIL: ${{ "{{" }} secrets.OVERLEAF_EMAIL {{ "}}" }}

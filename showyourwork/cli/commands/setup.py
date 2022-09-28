@@ -12,7 +12,9 @@ from ...subproc import get_stdout
 from ...zenodo import Zenodo
 
 
-def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
+def setup(
+    slug, cache, overleaf_id, ssh, showyourwork_version, showyourwork_spec
+):
     """Set up a new article repo.
 
     Args:
@@ -21,6 +23,7 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
         overleaf_id (str or NoneType): Overleaf ID of the article.
         ssh (bool): If True, use SSH to clone the repository. Otherwise, use HTTPS.
         showyourwork_version (str): Version of showyourwork to use.
+        showyourwork_spec (str or None): Showyourwork version passed to showyourwork-action in `.github/workflows/*.yml`
 
     """
     # Parse the slug
@@ -82,6 +85,7 @@ def setup(slug, cache, overleaf_id, ssh, showyourwork_version):
             "cache_sandbox_doi": cache_sandbox_doi,
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
+            "showyourwork_spec": showyourwork_spec,
         },
         overwrite_if_exists=True,
     )
