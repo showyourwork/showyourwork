@@ -28,6 +28,12 @@ def pytest_addoption(parser):
         default=get_repo_sha(),
         help="version of showyourwork to use in showyourwork.yml",
     )
+    parser.addoption(
+        "--action-spec",
+        action="store",
+        default=get_repo_sha(),
+        help="version spec of showyourwork to install on GH Actions",
+    )
 
 
 def pytest_configure(config):
@@ -36,6 +42,9 @@ def pytest_configure(config):
     )
     os.environ["WORKFLOW_VERSION"] = str(
         config.getoption("--workflow-version")
+    )
+    os.environ["ACTION_SPEC"] = str(
+        config.getoption("--action-spec")
     )
 
 
