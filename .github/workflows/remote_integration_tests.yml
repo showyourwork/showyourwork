@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         workflow-version:
-          - ${{ (github.event_name == "push" && github.sha) || (github.event.pull_request.head.repo.clone_url + "@" + github.event.pull_request.head.sha) }}
+          - ${{ (github.event_name == 'push' && github.sha) || (github.event.pull_request.head.repo.clone_url + '@' + github.event.pull_request.head.sha) }}
           - 0.3.1
     steps:
       - name: Remove `safe to test` label
