@@ -31,7 +31,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--action-spec",
         action="store",
-        default=get_repo_sha(),
+        default="showyourwork",
         help="version spec of showyourwork to install on GH Actions",
     )
 
