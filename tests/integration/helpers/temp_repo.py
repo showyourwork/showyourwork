@@ -45,8 +45,6 @@ class TemporaryShowyourworkRepository:
     action_wait = 240
     action_max_tries = 10
     action_interval = 60
-    use_local_showyourwork = debug
-    showyourwork_version = None
     local_build_only = debug
     require_local_build = False
     delete_remote_on_success = False
@@ -84,21 +82,14 @@ class TemporaryShowyourworkRepository:
         """Subclass me to run post-build local checks."""
         pass
 
-    def create_local(self, use_local=False):
+    def create_local(self):
         """Create the repo locally."""
         # Delete any local repos
         self.delete_local()
 
         # Parse options
         command = "showyourwork setup"
-        if use_local or self.showyourwork_version is None:
-            if use_local or self.use_local_showyourwork:
-                version = str(Path(showyourwork.__file__).parents[1])
-            else:
-                version = get_repo_sha()
-        else:
-            version = self.showyourwork_version
-        options = f"--quiet --version={version} "
+        options = f"--quiet --version={os.getenv('WORKFLOW_VERSION')} "
         if self.cache:
             # Enable zenodo caching
             options += "--cache"
@@ -159,19 +150,6 @@ class TemporaryShowyourworkRepository:
         )
         with open(self.cwd / "README.md", "w") as f:
             f.write(contents)
-
-        # Update the version in the config file to point to the correct fork if required
-        fork = os.environ.get("SHOWYOURWORK_FORK", "").strip()
-        if fork:
-            ref = (
-                os.environ.get("SHOWYOURWORK_REF", "").strip()
-                or get_repo_sha()
-            )
-            with open(self.cwd / "showyourwork.yml", "r") as f:
-                contents = yaml.load(f, Loader=Loader)
-            contents["version"] = {"fork": fork, "ref": ref}
-            with open(self.cwd / "showyourwork.yml", "w") as f:
-                yaml.dump(contents, f, Dumper=Dumper)
 
     def create_remote(self):
         """Create the repo on GitHub if needed."""
@@ -318,7 +296,7 @@ class TemporaryShowyourworkRepository:
             self.startup()
 
             # Set up the repo
-            self.create_local(use_local=True)
+            self.create_local()
 
             # Customize the repo
             self.customize()
