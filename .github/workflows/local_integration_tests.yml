@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run local integration tests
     strategy:
+      fail-fast: false
       matrix:
         workflow-version:
           - ${{ github.sha }}
