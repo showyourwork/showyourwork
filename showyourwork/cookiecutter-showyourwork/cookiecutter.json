@@ -6,6 +6,7 @@
   "cache_sandbox_doi": null,
   "overleaf_id": null,
   "year": null,
+  "showyourwork_spec": null,
   "_copy_without_render": [
     "src/tex/aasjournal.bst",
     "src/tex/aastex631.cls",
