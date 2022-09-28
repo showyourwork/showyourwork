@@ -14,6 +14,27 @@ customize several aspects of the workflow. Below is a list of all
 available options.
 
 
+.. _config.cache_on_zenodo:
+
+``cache_on_zenodo``
+^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Flag controlling whether or not caching on Zenodo/Zenodo Sandbox
+should be performed. Set this to ``false`` to disable caching.
+
+**Required:** no
+
+**Default:** ``true``
+
+**Example:**
+
+.. code-block:: yaml
+
+    cache_on_zenodo: true
+
+
 .. _config.dag:
 
 ``dag``
