@@ -16,6 +16,7 @@ jobs:
     concurrency: showyourwork-remote
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         workflow-version:
           - ${{ (github.event_name == 'push' && github.sha) || format('{0}@{1}', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
