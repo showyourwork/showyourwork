@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from helpers import TemporaryShowyourworkRepository
 
