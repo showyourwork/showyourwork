@@ -14,10 +14,10 @@ customize several aspects of the workflow. Below is a list of all
 available options.
 
 
-.. _config.cache:
+.. _config.cache_on_zenodo:
 
-``cache``
-^^^^^^^^^
+``cache_on_zenodo``
+^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``bool``
 
@@ -32,7 +32,7 @@ should be performed. Set this to ``false`` to disable caching.
 
 .. code-block:: yaml
 
-    cache: true
+    cache_on_zenodo: true
 
 
 .. _config.dag:

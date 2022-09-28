@@ -63,7 +63,7 @@ def render_config(cwd="."):
     config = yaml.safe_load(config)
 
     # Merge with the zenodo config file, if present
-    if config.pop("cache", True):
+    if config.get("cache_on_zenodo", True):
         file = Path(cwd) / "zenodo.yml"
         if file.exists():
             with open(file, "r") as f:
