@@ -14,6 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Run remote integration tests
     concurrency: showyourwork-remote
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow-version:
+          - ${{ github.event.pull_request.head.repo.clone_url }}@${{ github.event.pull_request.head.sha }}
+          - 0.3.1
     steps:
       - name: Remove `safe to test` label
         if: ${{ (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
@@ -41,12 +47,10 @@ jobs:
 
       - name: Run remote integration tests
         shell: bash -l {0}
-        run: python -m pytest --remote -m "remote" tests/integration
+        run: python -m pytest --remote -m "remote" tests/integration --workflow-version ${{ matrix.workflow-version }}
         env:
           ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
           OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
-          SHOWYOURWORK_FORK: ${{ github.event.pull_request.head.repo.clone_url }}
-          SHOWYOURWORK_REF: ${{ github.event.pull_request.head.sha }}
