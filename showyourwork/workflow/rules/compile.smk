@@ -21,7 +21,8 @@ rule:
         config["dependencies"][config["ms_tex"]],
         "dag.pdf" if config["dag"]["render"] else [],
         WORKFLOW_GRAPH,
-        "showyourwork.yml"
+        "showyourwork.yml",
+        "zenodo.yml" if (paths.user() / "zenodo.yml").exists() else []
     output:
         config["ms_pdf"],
         temp(config["tex_files_out"]),
