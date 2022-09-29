@@ -573,33 +573,6 @@ repository. Exact names are required; no glob syntax allowed.
             - src/tex/figures
 
 
-.. _config.require_inputs:
-
-``require_inputs``
-^^^^^^^^^^^^^^^^^^
-
-**Type:** ``bool``
-
-**Description:** If there is no valid rule to generate a given output file
-(because of, e.g., a missing input file), but the output file itself is present on disk,
-Snakemake will not by default raise an error. This can be useful for running
-workflows locally, but it can compromise the reproducibility of a workflow when
-a third party attempts to run it. Therefore, the default behavior in |showyourwork|
-is to require all output files to be programmatically generatable when running
-the workflow, *even if* the output files exist on disk already. Otherwise, an
-error is thrown. Set this option to ``false`` to override this behavior.
-
-**Required:** no
-
-**Default:** ``true``
-
-**Example:**
-
-.. code-block:: yaml
-
-    require_inputs: true
-
-
 .. _config.run_cache_rules_on_ci:
 
 ``run_cache_rules_on_ci``

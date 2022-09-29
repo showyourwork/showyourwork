@@ -8,8 +8,6 @@ to update the code in this file.
 """
 import inspect
 import logging
-import os
-import time
 import types
 
 from . import exceptions, paths
@@ -43,30 +41,6 @@ class SnakemakeFormatter(logging.Formatter):
             message = message.replace(key, value)
         record.message = message
         return message
-
-
-def patch_snakemake_missing_input_leniency():
-    """
-    Patches snakemake to raise an error if there are no producers for
-    any of the output files in the DAG.
-
-    """
-    _dag_debug = snakemake.dag.logger.dag_debug
-
-    def dag_debug(msg):
-        if type(msg) is dict:
-            if "No producers found, but file is present on disk" in msg.get(
-                "msg", ""
-            ):
-                file = msg["file"]
-                msg = str(msg["exception"])
-                raise exceptions.MissingDependencyError(
-                    f"File {file} is present on disk, but there "
-                    f"is no valid rule to generate it.\n{msg}"
-                )
-        _dag_debug(msg)
-
-    snakemake.dag.logger.dag_debug = dag_debug
 
 
 def get_snakemake_variable(name, default=None):
@@ -359,80 +333,6 @@ def patch_snakemake_logging():
 
     # Allow all conda messages to come through
     snakemake.deployment.conda.logger = logger
-
-
-def patch_snakemake_wait_for_files():
-    """
-    Replace Snakemake's ``wait_for_files`` method with a custom version
-    that prints a different error message.
-
-    If an expected output of a rule is not found after running it,
-    Snakemake prints an error recommending that the user increase the
-    filesystem latency tolerance. This is **almost never** a latency issue --
-    the far more likely scenario is the user simply did not code up the rule
-    properly, or the output file was saved with the wrong path.
-
-    """
-
-    def wait_for_files(
-        files,
-        latency_wait=3,
-        force_stay_on_remote=False,
-        ignore_pipe_or_service=False,
-        **kwargs,
-    ):
-        """Wait for given files to be present in the filesystem."""
-        files = list(files)
-
-        # Compat for older versions of Snakemake
-        if ignore_pipe := kwargs.get("ignore_pipe") is not None:
-            ignore_pipe_or_service = ignore_pipe
-
-        def get_missing():
-            return [
-                f
-                for f in files
-                if not (
-                    f.exists_remote
-                    if (
-                        isinstance(f, snakemake.io._IOFile)
-                        and f.is_remote
-                        and (force_stay_on_remote or f.should_stay_on_remote)
-                    )
-                    else os.path.exists(f)
-                    if not (
-                        (
-                            snakemake.io.is_flagged(f, "pipe")
-                            or snakemake.io.is_flagged(f, "service")
-                        )
-                        and ignore_pipe_or_service
-                    )
-                    else True
-                )
-            ]
-
-        missing = get_missing()
-        if missing:
-            get_logger().info(
-                "Waiting at most {} seconds for missing files.".format(
-                    latency_wait
-                )
-            )
-            for _ in range(latency_wait):
-                missing = get_missing()
-                if not missing:
-                    return
-                time.sleep(1)
-            missing = "\n".join(get_missing())
-            raise exceptions.MissingFigureOutputError(
-                f"Missing files after {latency_wait} seconds:\n" f"{missing}"
-            )
-
-    # Apply the patch
-    snakemake.wait_for_files = wait_for_files
-    snakemake.io.wait_for_files = wait_for_files
-    snakemake.dag.wait_for_files = wait_for_files
-    snakemake.jobs.wait_for_files = wait_for_files
 
 
 def job_is_cached(job):
