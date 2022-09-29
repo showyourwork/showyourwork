@@ -63,10 +63,11 @@ def render_config(cwd="."):
     config = yaml.safe_load(config)
 
     # Merge with the zenodo config file, if present
-    file = Path(cwd) / "zenodo.yml"
-    if file.exists():
-        with open(file, "r") as f:
-            config.update(yaml.safe_load(f.read()))
+    if config.get("cache_on_zenodo", True):
+        file = Path(cwd) / "zenodo.yml"
+        if file.exists():
+            with open(file, "r") as f:
+                config.update(yaml.safe_load(f.read()))
 
     # Save to a temporary YAML file
     with open(paths.user().temp / "showyourwork.yml", "w") as f:
@@ -112,6 +113,15 @@ def parse_syw_spec(syw_spec):
             syw_spec = {"ref": syw_spec}
         elif syw_spec in ["main", "dev"]:
             syw_spec = {"ref": syw_spec}
+        elif syw_spec.startswith("https://") or syw_spec.startswith("http://"):
+            if "@" in syw_spec:
+                fork, ref = syw_spec.split("@")
+                if "#" in ref:
+                    ref, _ = ref.split("#")
+            else:
+                fork = syw_spec
+                ref = None
+            syw_spec = {"fork": fork, "ref": ref}
         else:
             syw_spec = {"path": syw_spec}
 

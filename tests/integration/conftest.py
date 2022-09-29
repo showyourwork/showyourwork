@@ -1,7 +1,10 @@
+import os
 import shutil
 from pathlib import Path
 
 import pytest
+
+from showyourwork.git import get_repo_sha
 
 
 def pytest_sessionstart(session):
@@ -19,12 +22,28 @@ def pytest_addoption(parser):
         default=False,
         help="enable remote tests",
     )
+    parser.addoption(
+        "--workflow-version",
+        action="store",
+        default=get_repo_sha(),
+        help="version of showyourwork to use in showyourwork.yml",
+    )
+    parser.addoption(
+        "--action-spec",
+        action="store",
+        default="showyourwork",
+        help="version spec of showyourwork to install on GH Actions",
+    )
 
 
 def pytest_configure(config):
     config.addinivalue_line(
         "markers", "remote: a test that requires remote access"
     )
+    os.environ["WORKFLOW_VERSION"] = str(
+        config.getoption("--workflow-version")
+    )
+    os.environ["ACTION_SPEC"] = str(config.getoption("--action-spec"))
 
 
 def pytest_collection_modifyitems(config, items):

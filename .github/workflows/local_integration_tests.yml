@@ -11,6 +11,12 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     name: Run local integration tests
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow-version:
+          - ${{ github.sha }}
+          - 0.3.1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,4 +38,4 @@ jobs:
 
       - name: Run local integration tests
         shell: bash -l {0}
-        run: python -m pytest tests/integration
+        run: python -m pytest tests/integration --workflow-version ${{ matrix.workflow-version }}
