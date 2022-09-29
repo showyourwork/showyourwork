@@ -241,15 +241,14 @@ def validate_slug(context, param, slug):
     default=None,
     type=type("VERSION", (str,), {}),
 )
-def setup(
-    slug,
-    yes,
-    quiet,
-    cache,
-    overleaf,
-    ssh,
-    version,
-):
+@click.option(
+    "-a",
+    "--action-spec",
+    help="Version spec of showyourwork to use in the GitHub action. Default is the latest version on PyPI.",
+    default=None,
+    type=type("SPEC", (str,), {}),
+)
+def setup(slug, yes, quiet, cache, overleaf, ssh, version, action_spec):
     """
     Set up a new article repository in the current working directory.
 
@@ -257,7 +256,7 @@ def setup(
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    commands.setup(slug, cache, overleaf, ssh, version)
+    commands.setup(slug, cache, overleaf, ssh, version, action_spec)
 
 
 @entry_point.command()
