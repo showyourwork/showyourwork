@@ -33,7 +33,8 @@ rule:
         "Setting up the workflow..."
     input:
         config["ms_tex"],
-        "showyourwork.yml"
+        "showyourwork.yml",
+        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else []
     output:
         config["config_json"],
         temp(config["tex_files_out"]),
