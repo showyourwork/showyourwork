@@ -43,9 +43,7 @@ def pytest_configure(config):
     os.environ["WORKFLOW_VERSION"] = str(
         config.getoption("--workflow-version")
     )
-    os.environ["ACTION_SPEC"] = str(
-        config.getoption("--action-spec")
-    )
+    os.environ["ACTION_SPEC"] = str(config.getoption("--action-spec"))
 
 
 def pytest_collection_modifyitems(config, items):
