@@ -121,10 +121,9 @@ incomplete. When this happens, ``showyourwork`` tells the user:
 .. code-block:: text
 
   If you are sure that certain files are not incomplete, mark them as complete with
+  the --cleanup-metadata <filenames> flag.
 
-    showyourwork build --cleanup-metadata <filenames>
-
-  To re-generate the files rerun showyourwork build with the --rerun-incomplete flag.
+  To re-generate the files rerun your command with the --rerun-incomplete flag.
 
 Sometimes, however, the ``--cleanup-metadata`` argument does not successfully
 clean up the incomplete files. This may be due to either an issue with Snakemake
