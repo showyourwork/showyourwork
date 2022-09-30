@@ -19,29 +19,6 @@ except ModuleNotFoundError:
     snakemake = None
 
 
-class SnakemakeFormatter(logging.Formatter):
-    """
-    Format Snakemake errors before displaying them on stdout.
-
-    Sometimes, Snakemake fails with suggestions for commands to fix certain
-    issues. We intercept those suggestions here, replacing them with the
-    corresponding showyourwork syntax for convenience.
-    """
-
-    replacements = {
-        "snakemake --cleanup-metadata": "showyourwork build --cleanup-metadata",
-        "rerun your command with the --rerun-incomplete flag": "rerun showyourwork build with the --rerun-incomplete flag",
-        "It can be removed with the --unlock argument": "It can be removed by passing --unlock to showyourwork build",
-    }
-
-    def format(self, record):
-        message = record.getMessage()
-        for key, value in self.replacements.items():
-            message = message.replace(key, value)
-        record.message = message
-        return message
-
-
 def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     """
     Patches the Snakemake cache functionality to
@@ -255,9 +232,6 @@ def patch_snakemake_logging():
     if not hasattr(snakemake_logger, "custom_stream_handler"):
         snakemake_logger.custom_stream_handler = ColorizingStreamHandler()
         snakemake_logger.custom_stream_handler.setLevel(logging.ERROR)
-        snakemake_logger.custom_stream_handler.setFormatter(
-            SnakemakeFormatter()
-        )
         snakemake_logger.logger.addHandler(
             snakemake_logger.custom_stream_handler
         )

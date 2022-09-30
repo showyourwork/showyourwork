@@ -170,7 +170,12 @@ def WORKFLOW_GRAPH(*args):
     snakemake.workflow.checkpoints.syw__dag.get()
 
     # Get the workflow graph
-    dag = snakemake.workflow.dag
+    dag = None
+    if hasattr(snakemake.workflow, "dag"):
+        dag = snakemake.workflow.dag
+    elif hasattr(snakemake.workflow, "workflow"):
+        if hasattr(snakemake.workflow.workflow, "dag"):
+            dag = snakemake.workflow.dag
 
     if dag is None:
 
