@@ -6,7 +6,6 @@ so if we change the Snakemake version (currently pinned at 16.5.5), we may have
 to update the code in this file.
 
 """
-import inspect
 import logging
 import types
 
@@ -41,23 +40,6 @@ class SnakemakeFormatter(logging.Formatter):
             message = message.replace(key, value)
         record.message = message
         return message
-
-
-def get_snakemake_variable(name, default=None):
-    """
-    Infer the value of a variable within Snakemake.
-
-    This is extremely hacky, as it inspects local variables across
-    various frames in the call stack. This function should be used for
-    debugging/development, but not in production.
-
-    """
-    levels = inspect.stack()
-    for level in levels:
-        value = level.frame.f_locals.get(name, None)
-        if value is not None:
-            return value
-    return default
 
 
 def patch_snakemake_cache(zenodo_doi, sandbox_doi):

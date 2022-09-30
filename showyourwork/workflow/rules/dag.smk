@@ -8,7 +8,7 @@ itself.
 """
 from showyourwork import paths, logging
 from showyourwork.config import get_upstream_dependencies
-from showyourwork.patches import get_snakemake_variable, patch_snakemake_cache_optimization
+from showyourwork.patches import patch_snakemake_cache_optimization
 from showyourwork.zenodo import get_dataset_urls
 import snakemake
 import os
@@ -170,7 +170,7 @@ def WORKFLOW_GRAPH(*args):
     snakemake.workflow.checkpoints.syw__dag.get()
 
     # Get the workflow graph
-    dag = get_snakemake_variable("dag", None)
+    dag = snakemake.workflow.dag
 
     if dag is None:
 
