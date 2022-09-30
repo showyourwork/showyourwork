@@ -175,7 +175,7 @@ def WORKFLOW_GRAPH(*args):
         dag = snakemake.workflow.dag
     elif hasattr(snakemake.workflow, "workflow"):
         if hasattr(snakemake.workflow.workflow, "dag"):
-            dag = snakemake.workflow.dag
+            dag = snakemake.workflow.workflow.dag
 
     if dag is None:
 
