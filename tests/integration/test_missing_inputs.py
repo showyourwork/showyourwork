@@ -25,7 +25,7 @@ class TestMissingScript(
         try:
             super().build_local()
         except Exception as e:
-            if not "src/tex/figures/test_figure.pdf" in str(e):
+            if not "ms.pdf" in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
             raise Exception(
@@ -60,7 +60,7 @@ class TestDeletedScript(
         try:
             super().build_local()
         except Exception as e:
-            if not "src/scripts/test_figure.py" in str(e):
+            if not "src/tex/figures/test_figure.pdf" in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
             raise Exception(
