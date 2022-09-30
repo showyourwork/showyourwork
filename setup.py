@@ -26,6 +26,7 @@ setup(
         "cookiecutter",
         "packaging",
         "lastversion",
+        "plumbum",
     ],
     extras_require={"tests": ["pytest", "pytest-asyncio-cooperative"]},
     entry_points={
