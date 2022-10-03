@@ -394,7 +394,10 @@ def patch_snakemake_wait_for_files():
                     )
                     else os.path.exists(f)
                     if not (
-                        (is_flagged(f, "pipe") or is_flagged(f, "service"))
+                        (
+                            snakemake.io.is_flagged(f, "pipe")
+                            or snakemake.io.is_flagged(f, "service")
+                        )
                         and ignore_pipe_or_service
                     )
                     else True
