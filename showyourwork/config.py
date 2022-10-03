@@ -99,7 +99,7 @@ def get_run_type():
 
 def get_env_and_condarc_from_pip(version):
     return get_env_and_condarc_from_git(
-        "https://github.com/showyourwork/showyourwork", ref=version
+        "https://github.com/showyourwork/showyourwork", ref=f"v{version}"
     )
 
 
