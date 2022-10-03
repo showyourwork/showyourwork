@@ -64,8 +64,8 @@ def run_in_env(command, **kwargs):
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
 
     # Various conda environment files
-    syw_envfile = paths.showyourwork().envs / "environment.yml"
     workflow_envfile = paths.user().temp / "environment.yml"
+    workflow_condarc = paths.user().temp / ".condarc"
     cached_envfile = paths.user().home_temp / "environment.yml"
 
     # Infer the `showyourwork` version from the user's config file
@@ -81,18 +81,21 @@ def run_in_env(command, **kwargs):
         .render(),
         Loader=Loader,
     )
-    syw_spec = parse_syw_spec(user_config.get("version", None))
+    syw_spec, syw_env, syw_condarc = parse_syw_spec(
+        user_config.get("version", None), return_env_and_condarc=True
+    )
 
     # Copy the showyourwork environment file to a temp location,
     # and add the user's requested showyourwork version as a dependency
     # so we can import it within Snakemake
-    with open(syw_envfile, "r") as f:
-        syw_env = yaml.load(f, Loader=Loader)
     for dep in syw_env["dependencies"]:
         if type(dep) is dict and "pip" in dep:
             dep["pip"].append(syw_spec)
+            break
     with open(workflow_envfile, "w") as f:
         print(yaml.dump(syw_env, Dumper=Dumper), file=f)
+    with open(workflow_condarc, "w") as f:
+        print(yaml.dump(syw_condarc, Dumper=Dumper), file=f)
 
     # Set up or update our isolated conda env
     if not paths.user().env.exists():
@@ -101,7 +104,7 @@ def run_in_env(command, **kwargs):
             "Creating a new conda environment in ~/.showyourwork/env..."
         )
         get_stdout(
-            f"CONDARC={paths.showyourwork().envs / '.condarc'} conda env create -p {paths.user().env} -f {workflow_envfile} -q",
+            f"CONDARC={workflow_condarc} conda env create -p {paths.user().env} -f {workflow_envfile} -q",
             shell=True,
         )
         shutil.copy(workflow_envfile, cached_envfile)
@@ -118,7 +121,7 @@ def run_in_env(command, **kwargs):
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
             get_stdout(
-                f"CONDARC={paths.showyourwork().envs / '.condarc'} conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
+                f"CONDARC={workflow_condarc} conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
                 shell=True,
             )
             shutil.copy(workflow_envfile, cached_envfile)
