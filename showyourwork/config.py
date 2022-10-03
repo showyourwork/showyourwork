@@ -113,11 +113,11 @@ def get_env_and_condarc_from_path(path):
             / "environment.yml",
             "r",
         ) as f:
-            env = f.read()
+            env = yaml.load(f, Loader=Loader)
         with open(
             Path(path) / "showyourwork" / "workflow" / "envs" / ".condarc", "r"
         ) as f:
-            condarc = f.read()
+            condarc = yaml.load(f, Loader=Loader)
     except:
         raise exceptions.ShowyourworkNotFoundError(path)
     return env, condarc
@@ -133,12 +133,12 @@ def get_env_and_condarc_from_git(url, ref="main"):
             f"https://raw.githubusercontent.com/{user}/{repo}/{ref}/"
             "showyourwork/workflow/envs/environment.yml"
         ) as f:
-            env = f.read().decode("utf-8")
+            env = yaml.load(f, Loader=Loader)
         with urllib.request.urlopen(
             f"https://raw.githubusercontent.com/{user}/{repo}/{ref}/"
             "showyourwork/workflow/envs/.condarc"
         ) as f:
-            condarc = f.read().decode("utf-8")
+            condarc = yaml.load(f, Loader=Loader)
     except:
         raise exceptions.RequestError(
             message=f"Unable to retrieve environment info from `{url}@{ref}`."
