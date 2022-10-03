@@ -8,6 +8,12 @@ import click
 from .. import __version__, exceptions, git
 from . import commands
 
+# Store command & option metadata here so we can make `build`
+# the default subcommand in __init__.py
+DEFAULT_SUBCOMMAND = "build"
+SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
+OPTIONS = ["-v", "--version", "--help"]
+
 
 def ensure_top_level():
     """Ensures we're running commands in the top level of a git repo.
@@ -67,7 +73,7 @@ def echo(text="", **kwargs):
         click.echo(text, **kwargs)
 
 
-@click.group(invoke_without_command=True)
+@click.group
 @click.option(
     "-v",
     "--version",
@@ -75,7 +81,7 @@ def echo(text="", **kwargs):
     help="Show the program version and exit.",
 )
 @click.pass_context
-def entry_point(context, version):
+def main(context, version):
     """Easily build open-source, reproducible scientific articles."""
     # Parse
     if version:
@@ -85,7 +91,7 @@ def entry_point(context, version):
         context.invoke(build)
 
 
-@entry_point.command(
+@main.command(
     context_settings=dict(
         ignore_unknown_options=True,
     )
@@ -194,7 +200,7 @@ def validate_slug(context, param, slug):
         raise click.BadParameter("Must have the form `user/repo`.")
 
 
-@entry_point.command()
+@main.command()
 @click.argument("slug", callback=validate_slug, metavar="<user/repo>")
 @click.option(
     "-y",
@@ -259,7 +265,7 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, version, action_spec):
     commands.setup(slug, cache, overleaf, ssh, version, action_spec)
 
 
-@entry_point.command()
+@main.command()
 @click.option(
     "-f",
     "--force",
@@ -278,7 +284,7 @@ def clean(force, deep):
     commands.clean(force, deep)
 
 
-@entry_point.command()
+@main.command()
 def tarball():
     """Generate a tarball of the build in the current working directory."""
     ensure_top_level()
@@ -286,7 +292,7 @@ def tarball():
     commands.tarball()
 
 
-@entry_point.group()
+@main.group()
 @click.pass_context
 def cache(ctx):
     """Caching-related operations."""

@@ -1,9 +1,11 @@
 import filecmp
+import re
 import shutil
 import subprocess
 
 import jinja2
 import yaml
+from packaging.version import Version
 
 from .. import exceptions, paths
 from ..config import parse_syw_spec
@@ -16,6 +18,10 @@ try:
 except ImportError:
     # If LibYAML not installed
     from yaml import Dumper, Loader
+
+
+# Require this version of conda or greater
+MIN_CONDA_VERSION = Version("4.12.0")
 
 
 def run_in_env(command, **kwargs):
@@ -46,6 +52,8 @@ def run_in_env(command, **kwargs):
     Raises:
         ``exceptions.CondaNotFoundError``:
             If conda is not found.
+        ``exceptions.CondaVersionError``:
+            If an incompatible version of conda installed.
         ``exceptions.ShowyourworkException``:
             If the cwd is not the top level of a showyourwork project.
         ``exceptions.ShowyourworkNotFoundError``:
@@ -62,6 +70,17 @@ def run_in_env(command, **kwargs):
     except:
         raise exceptions.CondaNotFoundError()
     conda_setup = f". {conda_prefix}/etc/profile.d/conda.sh"
+
+    # Get conda version
+    conda_version = get_stdout("conda -V", shell=True)
+    try:
+        conda_version = Version(
+            re.match("^conda (.*?)$", conda_version).groups()[0]
+        )
+    except:
+        raise exceptions.CondaVersionError(MIN_CONDA_VERSION)
+    if conda_version < MIN_CONDA_VERSION:
+        raise exceptions.CondaVersionError(MIN_CONDA_VERSION, conda_version)
 
     # Various conda environment files
     workflow_envfile = paths.user().temp / "environment.yml"
