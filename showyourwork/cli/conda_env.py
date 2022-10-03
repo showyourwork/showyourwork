@@ -118,7 +118,7 @@ def run_in_env(command, **kwargs):
         if not cache_hit:
             logger.info("Updating conda environment in ~/.showyourwork/env...")
             get_stdout(
-                f"conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
+                f"CONDARC={paths.showyourwork().envs / '.condarc'} conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
                 shell=True,
             )
             shutil.copy(workflow_envfile, cached_envfile)
