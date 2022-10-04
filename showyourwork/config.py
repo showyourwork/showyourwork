@@ -1,11 +1,13 @@
 import os
 import re
+import urllib.request
 from collections import ChainMap, OrderedDict
 from contextlib import contextmanager
 from pathlib import Path
 
 import jinja2
 import yaml
+from lastversion import latest
 
 from . import exceptions, git, paths
 
@@ -95,18 +97,68 @@ def get_run_type():
     return os.getenv("SNAKEMAKE_RUN_TYPE", "other")
 
 
-def parse_syw_spec(syw_spec):
+def get_env_and_condarc_from_pip(version):
+    return get_env_and_condarc_from_git(
+        "https://github.com/showyourwork/showyourwork", ref=f"v{version}"
+    )
+
+
+def get_env_and_condarc_from_path(path):
+    try:
+        with open(
+            Path(path)
+            / "showyourwork"
+            / "workflow"
+            / "envs"
+            / "environment.yml",
+            "r",
+        ) as f:
+            env = yaml.load(f, Loader=Loader)
+        with open(
+            Path(path) / "showyourwork" / "workflow" / "envs" / ".condarc", "r"
+        ) as f:
+            condarc = yaml.load(f, Loader=Loader)
+    except:
+        raise exceptions.ShowyourworkNotFoundError(path)
+    return env, condarc
+
+
+def get_env_and_condarc_from_git(url, ref="main"):
+    try:
+        user, repo = re.match(
+            "http(?:s)?://(?:www.)?github.com/(.*?)/(.*?)(?:.git)?(?:/.*?)?$",
+            url,
+        ).groups()
+        with urllib.request.urlopen(
+            f"https://raw.githubusercontent.com/{user}/{repo}/{ref}/"
+            "showyourwork/workflow/envs/environment.yml"
+        ) as f:
+            env = yaml.load(f, Loader=Loader)
+        with urllib.request.urlopen(
+            f"https://raw.githubusercontent.com/{user}/{repo}/{ref}/"
+            "showyourwork/workflow/envs/.condarc"
+        ) as f:
+            condarc = yaml.load(f, Loader=Loader)
+    except:
+        raise exceptions.RequestError(
+            message=f"Unable to retrieve environment info from `{url}@{ref}`."
+        )
+    return env, condarc
+
+
+def parse_syw_spec(syw_spec, return_env_and_condarc=False):
     """
     Resolve the version of showyourwork from the value provided in the config.
 
     """
-    # No specific version provided; default to any
+    # No specific version provided; default to latest release
     if not syw_spec:
-        return "showyourwork"
-
+        syw_spec = {
+            "pip": str(latest("https://pypi.org/project/showyourwork"))
+        }
     # For backwards compatibility, parse the version string into a structured
     # spec that we understand
-    if isinstance(syw_spec, str):
+    elif isinstance(syw_spec, str):
         if re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
             syw_spec = {"pip": syw_spec}
         elif re.match("[0-9a-f]{5,40}", syw_spec):
@@ -128,6 +180,8 @@ def parse_syw_spec(syw_spec):
     if "pip" in syw_spec:
         version = syw_spec.pop("pip")
         solved = f"showyourwork=={version}"
+        if return_env_and_condarc:
+            env_and_condarc = get_env_and_condarc_from_pip(version)
     elif "path" in syw_spec:
         path = syw_spec.pop("path")
         if not Path(path).is_absolute():
@@ -137,6 +191,8 @@ def parse_syw_spec(syw_spec):
         if not path.exists():
             raise exceptions.ShowyourworkNotFoundError(path)
         solved = f"-e {path}"
+        if return_env_and_condarc:
+            env_and_condarc = get_env_and_condarc_from_path(path)
     else:
         fork = syw_spec.pop(
             "fork", "https://github.com/showyourwork/showyourwork.git"
@@ -144,8 +200,12 @@ def parse_syw_spec(syw_spec):
         spec = syw_spec.pop("ref", None)
         if not spec:
             solved = f"git+{fork}#egg=showyourwork"
+            if return_env_and_condarc:
+                env_and_condarc = get_env_and_condarc_from_git(fork)
         else:
             solved = f"git+{fork}@{spec}#egg=showyourwork"
+            if return_env_and_condarc:
+                env_and_condarc = get_env_and_condarc_from_git(fork, ref=spec)
 
     if syw_spec:
         raise exceptions.ShowyourworkException(
@@ -154,7 +214,10 @@ def parse_syw_spec(syw_spec):
             f"invalid) fields were also set: {syw_spec}"
         )
 
-    return solved
+    if return_env_and_condarc:
+        return solved, *env_and_condarc
+    else:
+        return solved
 
 
 def as_dict(x, depth=0, maxdepth=30):

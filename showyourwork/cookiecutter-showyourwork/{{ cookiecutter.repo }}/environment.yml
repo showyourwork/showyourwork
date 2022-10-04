@@ -1,6 +1,6 @@
 dependencies:
-  - numpy=1.19.2
-  - pip=21.0.1
-  - python=3.9
+  - conda-forge::numpy=1.19.2
+  - conda-forge::pip=21.0.1
+  - conda-forge::python=3.9
   - pip:
       - matplotlib==3.4.3

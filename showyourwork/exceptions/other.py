@@ -17,6 +17,14 @@ class CondaNotFoundError(ShowyourworkException):
         )
 
 
+class CondaVersionError(ShowyourworkException):
+    def __init__(self, min_version, version="[unknown]"):
+        super().__init__(
+            f"Showyourwork requires conda version {min_version} or greater, "
+            f"but version {version} is installed. Please upgrade conda."
+        )
+
+
 class ShowyourworkNotFoundError(ShowyourworkException):
     def __init__(self, path):
         super().__init__(
