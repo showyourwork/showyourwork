@@ -103,7 +103,7 @@ def run_in_env(command, **kwargs):
     # Users can always run `showyourwork clean --deep` to remove these dirs.
     syw_hash = hashlib.md5()
     syw_hash.update(syw_spec.encode())
-    syw_hash.hexdigest()
+    syw_hash = syw_hash.hexdigest()
     envdir = paths.user().conda / syw_hash
     if not envdir.exists():
         logger.info(
