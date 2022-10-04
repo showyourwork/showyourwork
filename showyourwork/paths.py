@@ -54,7 +54,8 @@ class user:
         # User home temp (for all repos)
         self.home_temp = Path.home() / ".showyourwork"
         self.home_temp.mkdir(exist_ok=True)
-        self.env = self.home_temp / "env"
+        self.conda = self.home_temp / "conda"
+        self.conda.mkdir(exist_ok=True)
 
         # Temporary paths
         self.temp = self.repo / ".showyourwork"

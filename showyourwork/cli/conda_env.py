@@ -1,6 +1,5 @@
-import filecmp
+import hashlib
 import re
-import shutil
 import subprocess
 
 import jinja2
@@ -82,11 +81,6 @@ def run_in_env(command, **kwargs):
     if conda_version < MIN_CONDA_VERSION:
         raise exceptions.CondaVersionError(MIN_CONDA_VERSION, conda_version)
 
-    # Various conda environment files
-    workflow_envfile = paths.user().temp / "environment.yml"
-    workflow_condarc = paths.user().temp / ".condarc"
-    cached_envfile = paths.user().home_temp / "environment.yml"
-
     # Infer the `showyourwork` version from the user's config file
     if not (paths.user().repo / "showyourwork.yml").exists():
         raise exceptions.ShowyourworkException(
@@ -100,53 +94,50 @@ def run_in_env(command, **kwargs):
         .render(),
         Loader=Loader,
     )
-    syw_spec, syw_env, syw_condarc = parse_syw_spec(
-        user_config.get("version", None), return_env_and_condarc=True
-    )
+    syw_spec = parse_syw_spec(user_config.get("version", None))
 
-    # Copy the showyourwork environment file to a temp location,
-    # and add the user's requested showyourwork version as a dependency
-    # so we can import it within Snakemake
-    for dep in syw_env["dependencies"]:
-        if type(dep) is dict and "pip" in dep:
-            dep["pip"].append(syw_spec)
-            break
-    with open(workflow_envfile, "w") as f:
-        print(yaml.dump(syw_env, Dumper=Dumper), file=f)
-    with open(workflow_condarc, "w") as f:
-        print(yaml.dump(syw_condarc, Dumper=Dumper), file=f)
-
-    # Set up or update our isolated conda env
-    if not paths.user().env.exists():
-        # Set up a new env and cache the envfile
+    # Set up or update our isolated conda env. The conda env
+    # should be uniquely determined by the `syw_spec`, so we'll
+    # cache it in the user's home directory under a folder whose
+    # name is a simple MD5 hash of `syw_spec`.
+    # Users can always run `showyourwork clean --deep` to remove these dirs.
+    syw_hash = hashlib.md5()
+    syw_hash.update(syw_spec.encode())
+    syw_hash.hexdigest()
+    envdir = paths.user().conda / syw_hash
+    if not envdir.exists():
         logger.info(
-            "Creating a new conda environment in ~/.showyourwork/env..."
+            f"Creating a new conda environment in ~/.showyourwork/conda/{syw_hash}..."
         )
+
+        # Get the `environment.yml` file for this version of showyourwork
+        _, syw_env, syw_condarc = parse_syw_spec(
+            user_config.get("version", None), return_env_and_condarc=True
+        )
+
+        # Add the user's requested showyourwork version as a dependency
+        # so we can import it within Snakemake
+        for dep in syw_env["dependencies"]:
+            if type(dep) is dict and "pip" in dep:
+                dep["pip"].append(syw_spec)
+                break
+
+        # Save the `environment.yml` and `.condarc` to a temp location
+        workflow_envfile = paths.user().temp / "environment.yml"
+        workflow_condarc = paths.user().temp / ".condarc"
+        with open(workflow_envfile, "w") as f:
+            print(yaml.dump(syw_env, Dumper=Dumper), file=f)
+        with open(workflow_condarc, "w") as f:
+            print(yaml.dump(syw_condarc, Dumper=Dumper), file=f)
+
+        # Create the conda environment
         get_stdout(
-            f"CONDARC={workflow_condarc} conda env create -p {paths.user().env} -f {workflow_envfile} -q",
+            f"CONDARC={workflow_condarc} conda env create -p {envdir} -f {workflow_envfile} -q",
             shell=True,
         )
-        shutil.copy(workflow_envfile, cached_envfile)
-    else:
-        # We'll update the env based on our spec file if the current
-        # environment differs (based on checking the cached spec file)
-        if cached_envfile.exists():
-            cache_hit = filecmp.cmp(
-                cached_envfile, workflow_envfile, shallow=False
-            )
-        else:
-            cache_hit = False
-
-        if not cache_hit:
-            logger.info("Updating conda environment in ~/.showyourwork/env...")
-            get_stdout(
-                f"CONDARC={workflow_condarc} conda env update -p {paths.user().env} -f {workflow_envfile} --prune -q",
-                shell=True,
-            )
-            shutil.copy(workflow_envfile, cached_envfile)
 
     # Command to activate our environment
-    conda_activate = f"{conda_setup} && conda activate {paths.user().env}"
+    conda_activate = f"{conda_setup} && conda activate {envdir}"
 
     # Command to get the path to the showyourwork installation.
     # This is used to resolve the path to the internal Snakefile.
