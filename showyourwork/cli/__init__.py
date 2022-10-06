@@ -11,6 +11,7 @@ article.
 
 """
 import sys
+
 from .. import __version__
 from .main import DEFAULT_SUBCOMMAND, OPTIONS, SUBCOMMANDS, main
 
