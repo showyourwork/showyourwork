@@ -1,5 +1,6 @@
 import hashlib
 import re
+import shutil
 import subprocess
 
 import jinja2
@@ -135,6 +136,10 @@ def run_in_env(command, **kwargs):
             f"CONDARC={workflow_condarc} conda env create -p {envdir} -f {workflow_envfile} -q",
             shell=True,
         )
+
+        # Copy the envfile and condarc file to the env dir
+        shutil.copyfile(workflow_envfile, envdir / "environment.yml")
+        shutil.copyfile(workflow_condarc, envdir / ".condarc")
 
     # Command to activate our environment
     conda_activate = f"{conda_setup} && conda activate {envdir}"

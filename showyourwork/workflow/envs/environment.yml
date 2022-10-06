@@ -11,4 +11,5 @@ dependencies:
       - requests==2.25.1
       - jinja2==3.0.3
       - graphviz==0.19.1
+      - tabulate==0.8.10 # tabulate==v0.9.0 breaks snakemake==7.14.2
       - snakemake==7.14.2

@@ -5,7 +5,7 @@ from textwrap import TextWrapper
 
 import click
 
-from .. import __version__, exceptions, git
+from .. import exceptions, git
 from . import commands
 
 # Store command & option metadata here so we can make `build`
@@ -74,21 +74,9 @@ def echo(text="", **kwargs):
 
 
 @click.group
-@click.option(
-    "-v",
-    "--version",
-    is_flag=True,
-    help="Show the program version and exit.",
-)
-@click.pass_context
-def main(context, version):
+def main():
     """Easily build open-source, reproducible scientific articles."""
-    # Parse
-    if version:
-        print(__version__)
-    elif context.invoked_subcommand is None:
-        # Default command is `build`
-        context.invoke(build)
+    pass
 
 
 @main.command(

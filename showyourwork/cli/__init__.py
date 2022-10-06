@@ -11,7 +11,7 @@ article.
 
 """
 import sys
-
+from .. import __version__
 from .main import DEFAULT_SUBCOMMAND, OPTIONS, SUBCOMMANDS, main
 
 
@@ -39,4 +39,7 @@ def entry_point():
     """
     if len(sys.argv) == 1 or not (sys.argv[1] in SUBCOMMANDS + OPTIONS):
         sys.argv.insert(1, DEFAULT_SUBCOMMAND)
-    main()
+    if sys.argv[1] in ["-v", "--version"]:
+        print(__version__)
+    else:
+        main()
