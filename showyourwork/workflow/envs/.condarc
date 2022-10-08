@@ -1,5 +1,4 @@
 channels:
   - defaults
   - conda-forge
-  - bioconda
-channel_priority: false
+channel_priority: true

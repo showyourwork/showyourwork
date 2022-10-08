@@ -7,7 +7,6 @@ from showyourwork.exceptions import ShowyourworkException
 @pytest.mark.parametrize(
     "spec,expected",
     [
-        (None, "showyourwork"),
         ("0.3.0", "showyourwork==0.3.0"),
         (
             "893eda2",

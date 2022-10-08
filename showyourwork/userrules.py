@@ -52,16 +52,8 @@ def process_user_rules():
         if not ur.message:
             ur.message = f"Running user rule {ur.name}..."
 
-        # Add script as an explicit input
-        if ur.script:
-            script = ur.script
-            script = script.replace("{wildcards.", "{")
-            ur.set_input(script)
-        elif ur.notebook:
-            notebook = ur.notebook
-            notebook = notebook.replace("{wildcards.", "{")
-            ur.set_input(notebook)
-        elif ur.is_run:
+        # Disallow `run` directives: enforce scripts!
+        if ur.is_run:
             raise exceptions.RunDirectiveNotAllowedInUserRules(ur.name)
 
         # Record any cached output

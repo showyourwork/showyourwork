@@ -20,7 +20,7 @@ setup(
     install_requires=[
         "setuptools_scm",
         "jinja2>=2.11.1",
-        "click",
+        "click>=8.0.0",
         "pyyaml",
         "requests",
         "cookiecutter",

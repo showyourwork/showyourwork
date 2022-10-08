@@ -122,9 +122,9 @@ incomplete. When this happens, ``showyourwork`` tells the user:
 
   If you are sure that certain files are not incomplete, mark them as complete with
 
-    showyourwork build --cleanup-metadata <filenames>
+    showyourwork --cleanup-metadata <filenames>
 
-  To re-generate the files rerun showyourwork build with the --rerun-incomplete flag.
+  To re-generate the files rerun your command with the --rerun-incomplete flag.
 
 Sometimes, however, the ``--cleanup-metadata`` argument does not successfully
 clean up the incomplete files. This may be due to either an issue with Snakemake
@@ -461,3 +461,22 @@ local installation of showyourwork*.)
 
 So, if you run into this error, we recommend you download all required files directly from
 the journal and include them (making sure to ``git add`` them) in your `src/tex` folder.
+
+
+Branch rename failed
+--------------------
+
+In versions of ``showyourwork`` prior to ``0.3.2``, users may occasionally run into the
+following error when attempting to run a third party's workflow:
+
+.. code-block:: text
+  Fetching Overleaf repo...
+  error: refname refs/heads/master not found
+  fatal: Branch rename failed
+
+This is a bug in ``showyourwork`` related to the fact that the default git branch on Overleaf
+projects is called ``master``, while the default branch on GitHub is called ``main``. This
+isn't an issue unless users don't have the correct credentials to access an Overleaf repository,
+in which case the ``git clone`` silently fails and no ``master`` branch is created.
+If you run into this error, simply delete or comment out the ``overleaf:`` section of the ``environment.yml``
+workflow config and re-run the workflow.
