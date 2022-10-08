@@ -10,3 +10,5 @@ overleaf:
     - src/tex/ms.tex
     - src/tex/bib.bib
 {% endif %}
+
+tectonic_args: ["-w", "https://archive.org/services/purl/net/pkgwpub/tectonic-default"]
