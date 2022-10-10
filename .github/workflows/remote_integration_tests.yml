@@ -20,7 +20,7 @@ jobs:
       matrix:
         workflow-version:
           - ${{ (github.event_name == 'push' && github.sha) || format('{0}@{1}', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
-          - 0.3.1
+          - 0.3.1.post1
         action-spec:
           - ${{ (github.event_name == 'push' && format('git+https://github.com/showyourwork/showyourwork.git@{0}#egg=showyourwork', github.sha)) || format('git+{0}@{1}#egg=showyourwork', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
     steps:
