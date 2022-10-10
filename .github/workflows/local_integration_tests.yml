@@ -16,7 +16,7 @@ jobs:
       matrix:
         workflow-version:
           - ${{ github.sha }}
-          - 0.3.1
+          - 0.3.1.post1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
