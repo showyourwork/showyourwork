@@ -433,17 +433,26 @@ def get_json_tree():
     ]
 
     # Separate into dynamic and static figures
-    free_floating_static = [
-        graphic
-        for graphic in free_floating_graphics
-        if (paths.user().repo / graphic).parents[0] == paths.user().figures
-        and (paths.user().static / Path(graphic).name).exists()
-    ]
-    free_floating_dynamic = [
-        graphic
-        for graphic in free_floating_graphics
-        if graphic not in free_floating_static
-    ]
+    free_floating_static = list(
+        set(
+            [
+                graphic
+                for graphic in free_floating_graphics
+                if (paths.user().repo / graphic).parents[0]
+                == paths.user().figures
+                and (paths.user().static / Path(graphic).name).exists()
+            ]
+        )
+    )
+    free_floating_dynamic = list(
+        set(
+            [
+                graphic
+                for graphic in free_floating_graphics
+                if graphic not in free_floating_static
+            ]
+        )
+    )
 
     # Add entries to the tree: dynamic figures
     # (User should provide a custom Snakemake rule)

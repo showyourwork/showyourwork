@@ -3,7 +3,6 @@ import time
 from pathlib import Path
 
 from cookiecutter.main import cookiecutter
-from lastversion import latest
 from packaging import version
 
 from ... import __version__, exceptions, overleaf, paths
@@ -56,15 +55,6 @@ def setup(
 
     name = f"@{user}".replace("_", "")
 
-    # Get current stable version
-    if showyourwork_version is None:
-        if version.parse(__version__).is_devrelease:
-            showyourwork_version = str(
-                latest("https://pypi.org/project/showyourwork")
-            )
-        else:
-            showyourwork_version = version.parse(__version__).base_version
-
     # Create a Zenodo deposit draft for this repo
     if cache:
         deposit_sandbox = Zenodo("sandbox", slug=slug, branch="main")
@@ -81,7 +71,7 @@ def setup(
             "user": user,
             "repo": repo,
             "name": name,
-            "showyourwork_version": showyourwork_version,
+            "showyourwork_version": __version__,
             "cache_sandbox_doi": cache_sandbox_doi,
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,

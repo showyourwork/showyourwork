@@ -1,13 +1,14 @@
 import os
-import re
+import urllib.request
 from collections import ChainMap, OrderedDict
 from contextlib import contextmanager
 from pathlib import Path
 
 import jinja2
 import yaml
+from packaging import version
 
-from . import exceptions, git, paths
+from . import __version__, exceptions, git, paths
 
 try:
     from yaml import CDumper as Dumper
@@ -93,68 +94,6 @@ def get_run_type():
 
     """
     return os.getenv("SNAKEMAKE_RUN_TYPE", "other")
-
-
-def parse_syw_spec(syw_spec):
-    """
-    Resolve the version of showyourwork from the value provided in the config.
-
-    """
-    # No specific version provided; default to any
-    if not syw_spec:
-        return "showyourwork"
-
-    # For backwards compatibility, parse the version string into a structured
-    # spec that we understand
-    if isinstance(syw_spec, str):
-        if re.match(r"(?:(\d+\.[.\d]*\d+))", syw_spec):
-            syw_spec = {"pip": syw_spec}
-        elif re.match("[0-9a-f]{5,40}", syw_spec):
-            syw_spec = {"ref": syw_spec}
-        elif syw_spec in ["main", "dev"]:
-            syw_spec = {"ref": syw_spec}
-        elif syw_spec.startswith("https://") or syw_spec.startswith("http://"):
-            if "@" in syw_spec:
-                fork, ref = syw_spec.split("@")
-                if "#" in ref:
-                    ref, _ = ref.split("#")
-            else:
-                fork = syw_spec
-                ref = None
-            syw_spec = {"fork": fork, "ref": ref}
-        else:
-            syw_spec = {"path": syw_spec}
-
-    if "pip" in syw_spec:
-        version = syw_spec.pop("pip")
-        solved = f"showyourwork=={version}"
-    elif "path" in syw_spec:
-        path = syw_spec.pop("path")
-        if not Path(path).is_absolute():
-            path = (paths.user().repo / path).resolve()
-        else:
-            path = Path(path).resolve()
-        if not path.exists():
-            raise exceptions.ShowyourworkNotFoundError(path)
-        solved = f"-e {path}"
-    else:
-        fork = syw_spec.pop(
-            "fork", "https://github.com/showyourwork/showyourwork.git"
-        )
-        spec = syw_spec.pop("ref", None)
-        if not spec:
-            solved = f"git+{fork}#egg=showyourwork"
-        else:
-            solved = f"git+{fork}@{spec}#egg=showyourwork"
-
-    if syw_spec:
-        raise exceptions.ShowyourworkException(
-            "Invalid specification of the showyourwork version. "
-            f"We solved the version as '{solved}', but the following (unrecognized or "
-            f"invalid) fields were also set: {syw_spec}"
-        )
-
-    return solved
 
 
 def as_dict(x, depth=0, maxdepth=30):
@@ -514,10 +453,7 @@ def parse_config():
     else:
         config["stamp"]["text"] = ""
 
-    stamp_version = parse_syw_spec(config["version"])
-    if stamp_version.startswith("showyourwork=="):
-        config["stamp"]["version"] = stamp_version.replace(
-            "showyourwork==", ""
-        )
-    else:
+    if version.parse(__version__).is_devrelease:
         config["stamp"]["version"] = "dev"
+    else:
+        config["stamp"]["version"] = __version__
