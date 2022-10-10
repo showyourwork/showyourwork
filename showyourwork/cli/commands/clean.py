@@ -2,7 +2,6 @@ import shutil
 import subprocess
 
 from ... import paths
-from ..conda_env import run_in_env
 
 
 def clean(force, deep, options=""):
