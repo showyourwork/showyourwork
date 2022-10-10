@@ -16,7 +16,6 @@ class showyourwork:
         self.workflow = self.module / "workflow"
         self.rules = self.workflow / "rules"
         self.resources = self.workflow / "resources"
-        self.envs = self.workflow / "envs"
         self.cookiecutter = self.module / "cookiecutter-showyourwork"
 
 
@@ -50,12 +49,6 @@ class user:
         self.static = self.src / "static"
         self.figures = self.tex / "figures"
         self.output = self.tex / "output"
-
-        # User home temp (for all repos)
-        self.home_temp = Path.home() / ".showyourwork"
-        self.home_temp.mkdir(exist_ok=True)
-        self.conda = self.home_temp / "conda"
-        self.conda.mkdir(exist_ok=True)
 
         # Temporary paths
         self.temp = self.repo / ".showyourwork"
