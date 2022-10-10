@@ -6,7 +6,6 @@ from pathlib import Path
 
 import jinja2
 import yaml
-from lastversion import latest
 from packaging import version
 
 from . import __version__, exceptions, git, paths
