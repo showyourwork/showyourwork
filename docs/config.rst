@@ -489,6 +489,27 @@ and make sure to check out :doc:`overleaf`.
             - src/tex/bib.bib
 
 
+.. _config.overleaf.gh_actions_sync:
+
+``overleaf.gh_actions_sync``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Commit and push Overleaf changes to the GitHub remote when running on GitHub Actions?
+
+**Default:** ``true``
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+    overleaf:
+        gh_actions_sync: true
+
+
 .. _config.overleaf.id:
 
 ``overleaf.id``

@@ -166,6 +166,11 @@ def parse_overleaf():
     # Make sure `id` is defined
     config["overleaf"]["id"] = config["overleaf"].get("id", None)
 
+    # Set default for `gh_actions_sync`
+    config["overleaf"]["gh_actions_sync"] = config["overleaf"].get(
+        "gh_actions_sync", True
+    )
+
     # Make sure `push` and `pull` are defined and they are lists
     config["overleaf"]["push"] = config["overleaf"].get("push", [])
     if config["overleaf"]["push"] is None:
