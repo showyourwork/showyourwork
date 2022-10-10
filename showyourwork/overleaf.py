@@ -433,6 +433,8 @@ def pull_files(
     error_if_missing=False,
     error_if_local_changes=False,
     path=None,
+    commit_changes=True,
+    push_changes=False,
 ):
     """
     Pull files from the Overleaf remote.
@@ -448,6 +450,11 @@ def pull_files(
             prints a warning but does not interrupt the workflow.
         path (str, optional): The path to the top level of the user's repo
             (if running from a different directory).
+        commit_changes (bool, optional): Commit changes to the article
+            repository? Default ``True``.
+        push_changes (bool, optional): Push committed changes to the remote article
+            repository? Only applicable if ``commit_changes`` is ``True``.
+            Default ``False``.
 
     """
     # Disable if user didn't specify an id or if there are no files
@@ -557,32 +564,38 @@ def pull_files(
 
             get_stdout(["diff", remote_file, file], callback=callback)
 
-    def callback(code, stdout, stderr):
-        if code == 0:
-            logger.info(
-                "Overleaf changes committed to the repo. Don't forget to push!"
-            )
-        else:
-            if (
-                "Your branch is up to date" in stdout + stderr
-                or "nothing to commit" in stdout + stderr
-                or "nothing added to commit" in stdout + stderr
-            ):
-                logger.warn(f"No Overleaf changes to commit to the repo.")
-            else:
-                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+    if commit_changes:
 
-    get_stdout(
-        [
-            "git",
-            "-c",
-            "user.name='showyourwork'",
-            "-c",
-            "user.email='showyourwork'",
-            "commit",
-            "-m",
-            "[showyourwork] overleaf sync",
-        ],
-        cwd=paths.user(path=path).repo,
-        callback=callback,
-    )
+        def callback(code, stdout, stderr):
+            if code == 0:
+                logger.info(
+                    "Overleaf changes committed to the repo. Don't forget to push!"
+                )
+            else:
+                if (
+                    "Your branch is up to date" in stdout + stderr
+                    or "nothing to commit" in stdout + stderr
+                    or "nothing added to commit" in stdout + stderr
+                ):
+                    logger.warn(f"No Overleaf changes to commit to the repo.")
+                else:
+                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+
+        get_stdout(
+            [
+                "git",
+                "-c",
+                "user.name='showyourwork'",
+                "-c",
+                "user.email='showyourwork'",
+                "commit",
+                "-m",
+                "[showyourwork] overleaf sync",
+            ],
+            cwd=paths.user(path=path).repo,
+            callback=callback,
+        )
+
+        if push_changes:
+
+            get_stdout(["git", "push"], cwd=paths.user(path=path).repo)
