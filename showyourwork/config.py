@@ -453,7 +453,7 @@ def parse_config():
     else:
         config["stamp"]["text"] = ""
 
-    if version.parse(__version__).is_devrelease():
+    if version.parse(__version__).is_devrelease:
         config["stamp"]["version"] = "dev"
     else:
         config["stamp"]["version"] = __version__
