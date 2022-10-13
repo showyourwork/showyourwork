@@ -18,21 +18,23 @@ setup(
         "write_to_template": '__version__ = "{version}"\n',
     },
     install_requires=[
-        "setuptools_scm>=7.0.1",
-        "jinja2>=2.11.1",
-        "click>=8.1.3",
-        "pyyaml>=6.0",
-        "requests>=2.28.0",
-        "cookiecutter>=2.1.0",
-        "packaging>=21.3",
+        "graphviz>=0.19.1",
+        "snakemake==7.15.2",
     ],
     extras_require={
-        "tests": ["pytest>=7.0.0", "pytest-asyncio-cooperative>=0.28.0"]
+        "tests": [
+            "pytest>=7.0.0",
+            "pytest-asyncio-cooperative>=0.28.0",
+        ]
     },
     entry_points={
-        "console_scripts": ["showyourwork=showyourwork.cli:entry_point"]
+        "console_scripts": [
+            "showyourwork=showyourwork.cli:entry_point",
+        ]
     },
-    setup_requires=["setuptools_scm>=7.0.1"],
+    setup_requires=[
+        "setuptools_scm>=7.0.1",
+    ],
     include_package_data=True,
     zip_safe=False,
 )

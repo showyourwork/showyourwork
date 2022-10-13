@@ -3,7 +3,6 @@ import time
 from pathlib import Path
 
 from cookiecutter.main import cookiecutter
-from packaging import version
 
 from ... import __version__, exceptions, overleaf, paths
 from ...logging import get_logger
