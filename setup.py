@@ -19,7 +19,12 @@ setup(
     },
     install_requires=[
         "graphviz>=0.19.1",
+        "jinja2>=3.0.3",
+        "pyyaml>=6.0",
+        "requests>=2.25.1",
+        "click>=8.0.4",
         "snakemake==7.15.2",
+        "cookiecutter>=2.1.1"
     ],
     extras_require={
         "tests": [
