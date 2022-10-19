@@ -19,7 +19,7 @@ jobs:
       max-parallel: 1
       matrix:
         showyourwork-spec:
-          - ${{ (github.event_name == 'push' && '.') || format('git+{0}@{1}#egg=showyourwork', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
+          - ${{ (github.event_name == 'push' && format('git+https://github.com/showyourwork/showyourwork.git@{0}#egg=showyourwork', github.sha)) || format('git+{0}@{1}#egg=showyourwork', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
     steps:
       - name: Remove `safe to test` label
         if: ${{ (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
@@ -47,7 +47,7 @@ jobs:
 
       - name: Run remote integration tests
         shell: bash -l {0}
-        run: python -m pytest --remote -m "remote" tests/integration --action-spec ${{ matrix.showyourwork-spec }}
+        run: python -m pytest --remote -m "remote" tests/integration --action-spec ${{ matrix.action-spec }}
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
