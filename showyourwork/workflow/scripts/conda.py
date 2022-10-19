@@ -1,6 +1,5 @@
-
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 envfile = snakemake.params.envfile
 envdir = snakemake.params.envdir
@@ -14,7 +13,11 @@ for file in Path(envdir).glob("*.yaml"):
         envfile_ = f.read()
     if envfile == envfile_:
         env = str(file.parents[0] / file.stem)
-        conda_prefix = subprocess.run(["conda", "info", "--base"], stdout=subprocess.PIPE).stdout.decode().replace("\n", "")
+        conda_prefix = (
+            subprocess.run(["conda", "info", "--base"], stdout=subprocess.PIPE)
+            .stdout.decode()
+            .replace("\n", "")
+        )
         conda_activate = f". {conda_prefix}/etc/profile.d/conda.sh && conda activate {env} && "
         break
 else:

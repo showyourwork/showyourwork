@@ -57,7 +57,7 @@ def compile_tex(config, output_dir=None, args=[], stylesheet=None):
 
     # Activate the showyourwork conda environment
     conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
-    
+
     get_stdout(
         f"{conda_activate} tectonic {' '.join(args)} {' '.join(force_args)} {' '.join(config['user_args'])} {paths.user().repo / config['ms_tex']}",
         shell=True,
