@@ -15,7 +15,7 @@ setup(
     packages=find_packages(),
     use_scm_version={
         "write_to": Path("showyourwork") / "_showyourwork_version.py",
-        "write_to_template": '__version__ = "{version}"\n',
+        "write_to_template": '__version__ = "{version}"',
     },
     install_requires=[
         "graphviz>=0.19.1",
@@ -24,7 +24,7 @@ setup(
         "requests>=2.25.1",
         "click>=8.0.4",
         "snakemake==7.15.2",
-        "cookiecutter>=2.1.1"
+        "cookiecutter>=2.1.1",
     ],
     extras_require={
         "tests": [
