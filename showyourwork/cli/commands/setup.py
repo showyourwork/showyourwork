@@ -10,9 +10,7 @@ from ...subproc import get_stdout
 from ...zenodo import Zenodo
 
 
-def setup(
-    slug, cache, overleaf_id, ssh, action_spec
-):
+def setup(slug, cache, overleaf_id, ssh, action_spec):
     """Set up a new article repo.
 
     Args:
