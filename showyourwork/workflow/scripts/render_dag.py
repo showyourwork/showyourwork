@@ -310,7 +310,11 @@ if __name__ == "__main__":
     dot.save(directory=paths.user().repo)
 
     # Render the PDF
-    get_stdout(f"{conda_activate} dot -Tpdf dag.gv > dag.pdf", shell=True, cwd=paths.user().repo)
+    get_stdout(
+        f"{conda_activate} dot -Tpdf dag.gv > dag.pdf",
+        shell=True,
+        cwd=paths.user().repo,
+    )
 
     # Remove temporary files
     for figure in figures:
