@@ -22,10 +22,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          activate-environment: showyourwork
-          environment-file: environment.yml
-          condarc-file: .condarc
-          auto-activate-base: false
+          python-version: "3.9"
 
       - name: Install showyourwork
         shell: bash -l {0}

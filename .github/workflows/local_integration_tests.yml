@@ -13,9 +13,7 @@ jobs:
     name: Run local integration tests
     strategy:
       fail-fast: false
-      matrix:
-        workflow-version:
-          - ${{ github.sha }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,10 +25,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          activate-environment: showyourwork
-          environment-file: environment.yml
-          condarc-file: .condarc
-          auto-activate-base: false
+          python-version: "3.9"
 
       - name: Install showyourwork
         shell: bash -l {0}
@@ -40,4 +35,4 @@ jobs:
 
       - name: Run local integration tests
         shell: bash -l {0}
-        run: python -m pytest tests/integration --workflow-version ${{ matrix.workflow-version }}
+        run: python -m pytest tests/integration

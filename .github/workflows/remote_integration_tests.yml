@@ -18,10 +18,8 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        workflow-version:
-          - ${{ (github.event_name == 'push' && github.sha) || format('{0}@{1}', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
-        action-spec:
-          - ${{ (github.event_name == 'push' && format('git+https://github.com/showyourwork/showyourwork.git@{0}#egg=showyourwork', github.sha)) || format('git+{0}@{1}#egg=showyourwork', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
+        showyourwork-spec:
+          - ${{ (github.event_name == 'push' && '.') || format('git+{0}@{1}#egg=showyourwork', github.event.pull_request.head.repo.clone_url, github.event.pull_request.head.sha) }}
     steps:
       - name: Remove `safe to test` label
         if: ${{ (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test')) }}
@@ -39,20 +37,17 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          activate-environment: showyourwork
-          environment-file: environment.yml
-          condarc-file: .condarc
-          auto-activate-base: false
+          python-version: "3.9"
 
       - name: Install showyourwork
         shell: bash -l {0}
         run: |
           python -m pip install -U pip
-          python -m pip install -e ".[tests]"
+          python -m pip install -e "${{ matrix.showyourwork-spec }}[tests]"
 
       - name: Run remote integration tests
         shell: bash -l {0}
-        run: python -m pytest --remote -m "remote" tests/integration --workflow-version ${{ matrix.workflow-version }} --action-spec ${{ matrix.action-spec }}
+        run: python -m pytest --remote -m "remote" tests/integration --action-spec ${{ matrix.showyourwork-spec }}
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}

@@ -23,12 +23,6 @@ def pytest_addoption(parser):
         help="enable remote tests",
     )
     parser.addoption(
-        "--workflow-version",
-        action="store",
-        default=get_repo_sha(),
-        help="version of showyourwork to use in showyourwork.yml",
-    )
-    parser.addoption(
         "--action-spec",
         action="store",
         default="showyourwork",
@@ -39,9 +33,6 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     config.addinivalue_line(
         "markers", "remote: a test that requires remote access"
-    )
-    os.environ["WORKFLOW_VERSION"] = str(
-        config.getoption("--workflow-version")
     )
     os.environ["ACTION_SPEC"] = str(config.getoption("--action-spec"))
 
