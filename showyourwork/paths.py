@@ -16,6 +16,7 @@ class showyourwork:
         self.workflow = self.module / "workflow"
         self.rules = self.workflow / "rules"
         self.resources = self.workflow / "resources"
+        self.envs = self.workflow / "envs"
         self.cookiecutter = self.module / "cookiecutter-showyourwork"
 
 
@@ -53,6 +54,7 @@ class user:
         # Temporary paths
         self.temp = self.repo / ".showyourwork"
         self.temp.mkdir(exist_ok=True)
+        self.snakemake = self.repo / ".snakemake"
         self.cache = self.temp / "cache"
         self.cache.mkdir(exist_ok=True)
         self.preprocess = self.temp / "preprocess"

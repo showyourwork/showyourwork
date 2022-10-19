@@ -17,7 +17,7 @@ def clean(force, deep, options=""):
         shutil.rmtree(paths.user().repo / ".snakemake" / "incomplete")
     for file in ["build.smk", "prep.smk"]:
         snakefile = paths.showyourwork().workflow / file
-        snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --reason --cache"
+        snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
         command = f"{snakemake} {options} -s {snakefile} --delete-all-output"
         result = subprocess.run(command, shell=True, check=False)
     if (paths.user().repo / "arxiv.tar.gz").exists():

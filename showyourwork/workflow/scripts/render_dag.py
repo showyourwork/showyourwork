@@ -15,6 +15,9 @@ try:
 except:
     graphviz = None
 
+# Activate the showyourwork conda environment
+conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
+
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
     """
@@ -23,15 +26,16 @@ def convert_to_png(file):
     On error, returns None.
     """
     try:
+
         aspect = float(
             get_stdout(
-                f'convert {file} -format "%[fx:w/h]" info:',
+                f'{conda_activate} convert {file} -format "%[fx:w/h]" info:',
                 shell=True,
             )
         )
         width = aspect * 500
         get_stdout(
-            f"convert -resize {width}x500 -background white -alpha remove "
+            f"{conda_activate} convert -resize {width}x500 -background white -alpha remove "
             f"-bordercolor black -border 15 {file} {file}.png",
             shell=True,
         )
@@ -306,7 +310,7 @@ if __name__ == "__main__":
     dot.save(directory=paths.user().repo)
 
     # Render the PDF
-    get_stdout("dot -Tpdf dag.gv > dag.pdf", shell=True, cwd=paths.user().repo)
+    get_stdout(f"{conda_activate} dot -Tpdf dag.gv > dag.pdf", shell=True, cwd=paths.user().repo)
 
     # Remove temporary files
     for figure in figures:

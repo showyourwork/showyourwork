@@ -64,6 +64,7 @@ if (paths.user().temp / "config.json").exists():
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
     include: "rules/render_dag.smk"
+    include: "rules/conda.smk"
 
     # Resolve ambiguities in rule order
     ruleorder: syw__compile > syw__arxiv

@@ -22,7 +22,8 @@ rule:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
         WORKFLOW_GRAPH,
-        "showyourwork.yml"
+        "showyourwork.yml",
+        paths.user().flags / "SYW__CONDA"
     output:
        "dag.pdf"
     script:
