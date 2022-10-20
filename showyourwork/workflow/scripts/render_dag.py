@@ -10,10 +10,7 @@ from showyourwork import exceptions, paths
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import get_dataset_dois
 
-try:
-    import graphviz
-except:
-    graphviz = None
+import graphviz
 
 # Activate the showyourwork conda environment
 conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
@@ -24,7 +21,7 @@ def is_relative_to(path, other):
 
     """
     try:
-        path.relative_to(*other)
+        path.relative_to(other)
         return True
     except ValueError:
         return False
