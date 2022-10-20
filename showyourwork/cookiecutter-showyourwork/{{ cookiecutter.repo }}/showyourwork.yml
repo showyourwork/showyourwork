@@ -41,7 +41,7 @@ optimize_caching: false
 # Overleaf sync settings
 overleaf:
   # Overleaf project ID (blank = disabled)
-  id: { { cookiecutter.overleaf_id } }
+  id: {{ cookiecutter.overleaf_id }}
   # Perform sync on GitHub Actions?
   gh_actions_sync: true
   # List of files to push to Overleaf
@@ -89,4 +89,4 @@ tectonic_args: # ["-Z", "shell-escape"]
 verbose: false
 
 # Version of `showyourwork` used to create this workflow
-version: { { cookiecutter.showyourwork_version } }
+version: {{ cookiecutter.showyourwork_version }}
