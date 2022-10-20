@@ -1,5 +1,10 @@
 .. :changelog:
 
+0.4.0 (TBD)
+++++++++++++++++++
+
+- Major update to the versioning system for ``showyourwork`` articles.
+
 0.3.1 (2022-08-23)
 ++++++++++++++++++
 
