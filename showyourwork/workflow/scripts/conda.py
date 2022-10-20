@@ -2,10 +2,10 @@
 Figure out which ``conda`` environment in the ``.snakemake`` folder corresponds
 to ``showyourwork/showyourwork/workflow/envs/environment.yml`` and record the
 command to activate it in a temporary file. This allows us to temporarily
-activate it to run commands like ``tectonic``, ``dot`` (from ``graphviz``), and 
+activate it to run commands like ``tectonic``, ``dot`` (from ``graphviz``), and
 ``convert`` (from ``imagemagick``).
 
-.. todo:: 
+.. todo::
 
     This is hacky, since we should just be running these commands
     within isolated rules that explicitly depend on that environment! This is

@@ -21,8 +21,8 @@ rule:
     easily run commands like ``tectonic`` and ``dot`` within that environment
     within rules that depend on ``.showyourwork/flags/SYW_CONDA`` as an input.
 
-    .. todo:: 
-    
+    .. todo::
+
         This is hacky, since we should just be running these commands
         within isolated rules that explicitly depend on that environment! This is
         tricky because currently we're running things like ``tectonic`` deep in

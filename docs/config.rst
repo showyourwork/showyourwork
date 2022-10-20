@@ -784,8 +784,8 @@ crank up the verbosity even more by passing the ``--verbose`` argument to
 **Type:** ``str``
 
 **Description:** The version of the |showyourwork| package used to create the
-workflow. As of ``0.4.0`` this setting no longer has any effect on the build 
-process, as articles are now always compiled using the installed version of 
+workflow. As of ``0.4.0`` this setting no longer has any effect on the build
+process, as articles are now always compiled using the installed version of
 ``showyourwork``. However, to improve compatibility with previous versions of
 the code, we recommend keeping this setting in your config file.
 
