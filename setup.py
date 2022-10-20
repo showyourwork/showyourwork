@@ -17,6 +17,7 @@ setup(
         "write_to": Path("showyourwork") / "_showyourwork_version.py",
         "write_to_template": '__version__ = "{version}"',
     },
+    python_requires=">=3.9",
     install_requires=[
         "graphviz>=0.19.1",
         "jinja2>=3.0.3",

@@ -18,6 +18,17 @@ except:
 # Activate the showyourwork conda environment
 conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
 
+def is_relative_to(path, other):
+    """
+    Local implementation of `pathlib.Path.is_relative_to` (for python < 3.9).
+
+    """
+    try:
+        path.relative_to(*other)
+        return True
+    except ValueError:
+        return False
+
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
     """
@@ -111,13 +122,13 @@ if __name__ == "__main__":
     figures = []
     others = []
     for file in files:
-        if Path(file).absolute().is_relative_to(paths.user().data):
+        if is_relative_to(Path(file).absolute(), paths.user().data):
             datasets.append(file)
-        elif Path(file).absolute().is_relative_to(paths.user().scripts):
+        elif is_relative_to(Path(file).absolute(), paths.user().scripts):
             scripts.append(file)
-        elif Path(file).absolute().is_relative_to(paths.user().figures):
+        elif is_relative_to(Path(file).absolute(), paths.user().figures):
             figures.append(file)
-        elif Path(file).absolute().is_relative_to(paths.user().tex):
+        elif is_relative_to(Path(file).absolute(), paths.user().tex):
             texfiles.append(file)
         elif file == config["ms_pdf"]:
             pass

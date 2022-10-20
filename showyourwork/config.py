@@ -191,7 +191,9 @@ def parse_overleaf():
 
     # Ensure all files in `push` and `pull` are in the `src/tex` directory
     for file in config["overleaf"]["push"] + config["overleaf"]["pull"]:
-        if not Path(file).resolve().is_relative_to(paths.user().tex):
+        try:
+            Path(file).resolve().relative_to(paths.user().tex)
+        except ValueError:
             raise exceptions.ConfigError(
                 "Error parsing the config. "
                 "Files specified in `overleaf.push` and `overleaf.pull` must "
