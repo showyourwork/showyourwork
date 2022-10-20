@@ -18,6 +18,7 @@ except:
 # Activate the showyourwork conda environment
 conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
 
+
 def is_relative_to(path, other):
     """
     Local implementation of `pathlib.Path.is_relative_to` (for python < 3.9).
@@ -28,6 +29,7 @@ def is_relative_to(path, other):
         return True
     except ValueError:
         return False
+
 
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
