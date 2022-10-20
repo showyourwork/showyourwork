@@ -83,7 +83,7 @@ stamp:
     maxlen: 40
 
 # Command-line options to be passed to tectonic when building the manuscript
-tectonic_args: # ["-Z", "shell-escape"]
+tectonic_args: []
 
 # Enable verbose output?
 verbose: false
