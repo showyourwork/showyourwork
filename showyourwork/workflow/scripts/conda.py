@@ -20,27 +20,30 @@ activate it to run commands like ``tectonic``, ``dot`` (from ``graphviz``), and
 import subprocess
 from pathlib import Path
 
-envfile = snakemake.params.envfile
-envdir = snakemake.params.envdir
-output = snakemake.output[0]
 
-with open(envfile, "r") as f:
-    envfile = f.read()
+if __name__ == "__main__":
+    
+    envfile = snakemake.params.envfile
+    envdir = snakemake.params.envdir
+    output = snakemake.output[0]
 
-for file in Path(envdir).glob("*.yaml"):
-    with open(file, "r") as f:
-        envfile_ = f.read()
-    if envfile == envfile_:
-        env = str(file.parents[0] / file.stem)
-        conda_prefix = (
-            subprocess.run(["conda", "info", "--base"], stdout=subprocess.PIPE)
-            .stdout.decode()
-            .replace("\n", "")
-        )
-        conda_activate = f". {conda_prefix}/etc/profile.d/conda.sh && conda activate {env} && "
-        break
-else:
-    conda_activate = ""
+    with open(envfile, "r") as f:
+        envfile = f.read()
 
-with open(output, "w") as f:
-    f.write(conda_activate)
+    for file in Path(envdir).glob("*.yaml"):
+        with open(file, "r") as f:
+            envfile_ = f.read()
+        if envfile == envfile_:
+            env = str(file.parents[0] / file.stem)
+            conda_prefix = (
+                subprocess.run(["conda", "info", "--base"], stdout=subprocess.PIPE)
+                .stdout.decode()
+                .replace("\n", "")
+            )
+            conda_activate = f". {conda_prefix}/etc/profile.d/conda.sh && conda activate {env} && "
+            break
+    else:
+        conda_activate = ""
+
+    with open(output, "w") as f:
+        f.write(conda_activate)
