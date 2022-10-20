@@ -4,13 +4,12 @@ Generates a directed acyclic graph (DAG) of the build process.
 """
 from pathlib import Path
 
+import graphviz
 from jinja2 import BaseLoader, Environment
 
 from showyourwork import exceptions, paths
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import get_dataset_dois
-
-import graphviz
 
 # Activate the showyourwork conda environment
 conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
