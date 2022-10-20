@@ -380,7 +380,7 @@ def push_files(files, project_id, path=None):
     # Remove missing files from the list
     if skip:
         skip_list = " ".join([str(s) for s in skip])
-        logger.warn(f"Skipping missing file(s): {skip_list}")
+        logger.warning(f"Skipping missing file(s): {skip_list}")
         files = list(set(files) - set(skip))
 
     # Commit callback
@@ -394,7 +394,7 @@ def push_files(files, project_id, path=None):
                 or "nothing to commit" in stdout + stderr
                 or "nothing added to commit" in stdout + stderr
             ):
-                logger.warn(f"No changes to commit to Overleaf: {file_list}")
+                logger.warning(f"No changes to commit to Overleaf: {file_list}")
             else:
                 raise exceptions.CalledProcessError(stdout + "\n" + stderr)
         else:
@@ -577,7 +577,7 @@ def pull_files(
                     or "nothing to commit" in stdout + stderr
                     or "nothing added to commit" in stdout + stderr
                 ):
-                    logger.warn(f"No Overleaf changes to commit to the repo.")
+                    logger.warning(f"No Overleaf changes to commit to the repo.")
                 else:
                     raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 

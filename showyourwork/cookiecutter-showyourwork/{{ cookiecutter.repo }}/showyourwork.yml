@@ -41,7 +41,7 @@ optimize_caching: false
 # Overleaf sync settings
 overleaf:
   # Overleaf project ID (blank = disabled)
-  id: {{ cookiecutter.overleaf_id }}
+  id: {% if cookiecutter.overleaf_id %}{{ cookiecutter.overleaf_id }}{% endif %}
   # Perform sync on GitHub Actions?
   gh_actions_sync: true
   # List of files to push to Overleaf
