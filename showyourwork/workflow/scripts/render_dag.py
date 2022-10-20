@@ -90,6 +90,7 @@ if __name__ == "__main__":
         config["stylesheet"],
         config["stylesheet_meta_file"],
         str(paths.user().flags / "SYW__DAG"),
+        str(paths.user().flags / "SYW__CONDA"),
         str(paths.user().compile),
         "dag.pdf",
         "showyourwork.yml",

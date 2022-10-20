@@ -1,12 +1,119 @@
+# Version of `showyourwork` used to create the workflow
 version: {{ cookiecutter.showyourwork_version }}
 
 {% if cookiecutter.overleaf_id -%}
+# Overleaf sync settings
 overleaf:
+  # Overleaf project ID (blank = disabled)
   id: {{ cookiecutter.overleaf_id }}
+  # Perform sync on GitHub Actions?
+  gh_actions_sync: true
+  # List of files to push to Overleaf
   push:
     - src/tex/figures
     - src/tex/output
+  # List of files to pull from Overleaf
   pull:
     - src/tex/ms.tex
     - src/tex/bib.bib
-{% endif %}
+
+{% endif -%}
+# # ---------------------------------------------------------------------------
+# #                             Additional settings
+# #
+# #              See show-your.work/en/latest/config for details
+# # ---------------------------------------------------------------------------
+
+# # Enable rule caching on Zenodo (Sandbox)?
+# cache_on_zenodo: true
+
+# # Settings controlling the workflow graph (DAG) generation
+# dag:
+#   # Generate ``dag.pdf`` on each build?
+#   render: false
+#   # Graphviz layout engine
+#   engine: sfdp
+#   # Group files by type into plates?
+#   group_by_type: false
+#   # Custom graph attributes; see graphviz.org/doc/info/attrs.html
+#   graph_attr:
+#     ranksep: "1"
+#     nodesep: "0.65"
+#   # Custom node attributes; see graphviz.org/doc/info/attrs.html
+#   node_attr:
+#     shape: "box"
+#     penwidth: "2"
+#     width: "1"
+
+# # Externally-hosted datasets, e.g. on Zenodo
+# datasets:
+#   10.5281/zenodo.6468327:
+#     contents:
+#       TOI640b.json: src/data/TOI640b.json
+
+# # Custom dependencies needed to run scripts or build the TeX document
+# dependencies:
+#   src/scripts/my_script.py:
+#     - src/data/dataset_for_my_script.dat
+#   src/tex/ms.tex:
+#     - src/tex/stylesheet.tex
+
+# # Name of the `.tex` manuscript and corresponding `.pdf` article
+# ms_name: ms
+
+# # Optimize the graph by removing unnecessary jobs upstream of cache hits?
+# optimize_caching: false
+
+{%- if not cookiecutter.overleaf_id %}
+
+# # Overleaf sync settings
+# overleaf:
+#   # Overleaf project ID (blank = disabled)
+#   id: 
+#   # Perform sync on GitHub Actions?
+#   gh_actions_sync: true
+#   # List of files to push to Overleaf
+#   push:
+#     - src/tex/figures
+#     - src/tex/output
+#   # List of files to pull from Overleaf
+#   pull:
+#     - src/tex/ms.tex
+#     - src/tex/bib.bib
+{%- endif %}
+
+# # Always require all input files to be present on disk for workflow to pass
+# require_inputs: true
+
+# # Allow cacheable rules to run on GitHub Actions?
+# run_cache_rules_on_ci: false
+
+# # Mapping of script file extensions to instructions for executing them
+# scripts:
+#   py: python {script}
+#   ipynb: jupyter execute {script}
+
+# # Settings controlling the display of the showyourwork! stamp on first page
+# stamp:
+#   # Show the stamp?
+#   enabled: true
+#   # Stamp angle in degrees
+#   angle: -20.0
+#   # Stamp size in inches
+#   size: 0.75
+#   # Horizontal position in inches from right edge of paper
+#   xpos: 0.50
+#   # Vertical position in inches from top edge of paper
+#   ypos: 0.50
+#   # Settings controlling the display of the repo URL
+#   url:
+#     # Show the URL?
+#     enabled: true
+#     # Maximum URL length to display
+#     maxlen: 40
+
+# # Command-line options to be passed to tectonic when building the manuscript
+# tectonic_args:
+
+# # Enable verbose output?
+# verbose: false

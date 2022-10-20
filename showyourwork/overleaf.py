@@ -122,7 +122,7 @@ def clone(project_id, path=None):
     # Overleaf uses a branch called 'master' by default. If the local config
     # uses a different name, we need to change it.
     get_stdout(
-        ["git", "branch", "-M", "master"],
+        ["git", "checkout", "-b", "master"],
         cwd=str(paths.user(path=path).overleaf),
     )
 
@@ -157,7 +157,7 @@ def wipe_remote(project_id):
     """
     with TemporaryDirectory() as cwd:
         get_stdout(["git", "init"], cwd=cwd)
-        get_stdout(["git", "branch", "-M", "master"], cwd=cwd)
+        get_stdout(["git", "checkout", "-b", "master"], cwd=cwd)
         (
             overleaf_email,
             overleaf_password,
