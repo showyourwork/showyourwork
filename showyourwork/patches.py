@@ -32,9 +32,7 @@ class SnakemakeFormatter(logging.Formatter):
     """
 
     replacements = {
-        "snakemake --cleanup-metadata": "showyourwork build --cleanup-metadata",
-        "rerun your command with the --rerun-incomplete flag": "rerun showyourwork build with the --rerun-incomplete flag",
-        "It can be removed with the --unlock argument": "It can be removed by passing --unlock to showyourwork build",
+        "snakemake --cleanup-metadata": "showyourwork --cleanup-metadata",
     }
 
     def format(self, record):
@@ -168,7 +166,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                     except exceptions.FileNotFoundOnZenodo:
                         # Cache miss; not fatal
                         exceptions.restore_trace()
-                        logger.warn(
+                        logger.warning(
                             f"Required version of file not found in cache: {outputfile}."
                         )
                         if config.get("github_actions") and not config.get(
@@ -179,11 +177,11 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                                 "`run_cache_rules_on_ci` is set to `False`."
                             )
                         else:
-                            logger.warn(f"Running rule from scratch...")
+                            logger.warning(f"Running rule from scratch...")
                     except Exception as e:
                         # NOTE: we treat all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        logger.warn(
+                        logger.warning(
                             "File not found on remote cache. See logs for details."
                         )
                         if len(str(e)):
@@ -196,7 +194,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                                 "`run_cache_rules_on_ci` is set to `False`."
                             )
                         else:
-                            logger.warn(f"Running rule from scratch...")
+                            logger.warning(f"Running rule from scratch...")
                 else:
                     # We're good
                     logger.info(f"Restoring from local cache: {outputfile}...")
@@ -222,7 +220,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                     except Exception as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        logger.warn(
+                        logger.warning(
                             f"Failed to sync {outputfile} with Zenodo Sandbox cache. See logs for details."
                         )
                         if len(str(e)):
@@ -258,7 +256,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                     except Exception as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
-                        logger.warn(
+                        logger.warning(
                             f"Failed to upload {outputfile} to Zenodo Sandbox cache. See logs for details."
                         )
                         if len(str(e)):
@@ -375,7 +373,10 @@ def patch_snakemake_wait_for_files():
     """
 
     def wait_for_files(
-        files, latency_wait=3, force_stay_on_remote=False, ignore_pipe=False
+        files,
+        latency_wait=3,
+        force_stay_on_remote=False,
+        ignore_pipe_or_service=False,
     ):
         """Wait for given files to be present in the filesystem."""
         files = list(files)
@@ -392,7 +393,13 @@ def patch_snakemake_wait_for_files():
                         and (force_stay_on_remote or f.should_stay_on_remote)
                     )
                     else os.path.exists(f)
-                    if not (snakemake.io.is_flagged(f, "pipe") and ignore_pipe)
+                    if not (
+                        (
+                            snakemake.io.is_flagged(f, "pipe")
+                            or snakemake.io.is_flagged(f, "service")
+                        )
+                        and ignore_pipe_or_service
+                    )
                     else True
                 )
             ]
@@ -570,7 +577,7 @@ def patch_snakemake_cache_optimization(dag):
                         # outputs to trick Snakemake & keep going
                         for output in job.output:
                             if not output.exists:
-                                logger.warn(
+                                logger.warning(
                                     f"Skipping job {job.name} because "
                                     "of a downstream cache hit."
                                 )

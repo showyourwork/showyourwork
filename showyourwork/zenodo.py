@@ -326,7 +326,7 @@ class Zenodo:
                 logger.debug(r.text)
 
         # No dice
-        logger.warn(f"User is not authenticated to edit {self.doi}.")
+        logger.warning(f"User is not authenticated to edit {self.doi}.")
         cache_file_false.touch()
         return False
 
@@ -833,7 +833,7 @@ class Zenodo:
             },
         )
         if r.status_code > 204:
-            logger.warn(
+            logger.warning(
                 f"{self.service} authentication failed. Unable to upload cache for rule {rule_name}."
             )
             try:
@@ -851,7 +851,7 @@ class Zenodo:
         if len(data):
             data = data[0]
         else:
-            logger.warn(
+            logger.warning(
                 f"{self.service} authentication failed. Unable to upload cache for rule {rule_name}."
             )
             return

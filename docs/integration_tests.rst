@@ -111,8 +111,8 @@ workflow in `.github/workflows` of the ``showyourwork/showyourwork`` repository
 on ``push`` events. These do not get run on forks, since they do not have
 write access to the ``showyourwork`` organization. This means pull request
 tests can only check unit tests and local integration tests. In order to run
-remote tests on pull requests, maintainers may label them with the ``safe to test``
+remote tests on pull requests, maintainers may label them with the ``safe to test``
 label, in which case the `remote_integration_tests.yml` worfklow is executed with the
 ``pull_request_target`` trigger. Maintainers should carefully review the proposed
-changes to check for malicious code before marking PRs as ``safe to test``, since
+changes to check for malicious code before marking PRs as ``safe to test``, since
 the workflow will have full write privileges to the organization!

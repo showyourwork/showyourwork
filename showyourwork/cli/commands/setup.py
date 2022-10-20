@@ -3,8 +3,6 @@ import time
 from pathlib import Path
 
 from cookiecutter.main import cookiecutter
-from lastversion import latest
-from packaging import version
 
 from ... import __version__, exceptions, overleaf, paths
 from ...logging import get_logger
@@ -12,9 +10,7 @@ from ...subproc import get_stdout
 from ...zenodo import Zenodo
 
 
-def setup(
-    slug, cache, overleaf_id, ssh, showyourwork_version, showyourwork_spec
-):
+def setup(slug, cache, overleaf_id, ssh, action_spec):
     """Set up a new article repo.
 
     Args:
@@ -22,8 +18,7 @@ def setup(
         cache (bool): If True, enable caching on Zenodo Sandbox.
         overleaf_id (str or NoneType): Overleaf ID of the article.
         ssh (bool): If True, use SSH to clone the repository. Otherwise, use HTTPS.
-        showyourwork_version (str): Version of showyourwork to use.
-        showyourwork_spec (str or None): Showyourwork version passed to showyourwork-action in `.github/workflows/*.yml`
+        action_spec (str or None): Showyourwork version passed to showyourwork-action in `.github/workflows/*.yml`
 
     """
     # Parse the slug
@@ -56,15 +51,6 @@ def setup(
 
     name = f"@{user}".replace("_", "")
 
-    # Get current stable version
-    if showyourwork_version is None:
-        if version.parse(__version__).is_devrelease:
-            showyourwork_version = str(
-                latest("https://pypi.org/project/showyourwork")
-            )
-        else:
-            showyourwork_version = version.parse(__version__).base_version
-
     # Create a Zenodo deposit draft for this repo
     if cache:
         deposit_sandbox = Zenodo("sandbox", slug=slug, branch="main")
@@ -81,11 +67,11 @@ def setup(
             "user": user,
             "repo": repo,
             "name": name,
-            "showyourwork_version": showyourwork_version,
+            "showyourwork_version": __version__,
             "cache_sandbox_doi": cache_sandbox_doi,
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
-            "showyourwork_spec": showyourwork_spec,
+            "action_spec": action_spec,
         },
         overwrite_if_exists=True,
     )

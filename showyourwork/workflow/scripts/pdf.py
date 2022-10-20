@@ -46,11 +46,6 @@ if __name__ == "__main__":
     ((* for key, value in variables.items() *))
     \addvalue{((- key -))}{((- value -))}
     ((* endfor *))
-
-    % Check if the Git tag is set (i.e. is it an empty string)
-    ((* if sha_tag_header != "" *))
-    \newcommand{\gitHeader}{((- sha_tag_header -))}
-    ((* endif *))
     """
 
     # Custom jinja environment for LaTeX

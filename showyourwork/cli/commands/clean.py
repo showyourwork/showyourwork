@@ -1,8 +1,7 @@
 import shutil
-from pathlib import Path
+import subprocess
 
 from ... import paths
-from ..conda_env import run_in_env
 
 
 def clean(force, deep, options=""):
@@ -17,10 +16,10 @@ def clean(force, deep, options=""):
     if (paths.user().repo / ".snakemake" / "incomplete").exists():
         shutil.rmtree(paths.user().repo / ".snakemake" / "incomplete")
     for file in ["build.smk", "prep.smk"]:
-        snakefile = snakefile = Path("${SYW_PATH}") / "workflow" / file
-        snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --reason --cache"
+        snakefile = paths.showyourwork().workflow / file
+        snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
         command = f"{snakemake} {options} -s {snakefile} --delete-all-output"
-        result = run_in_env(command)
+        result = subprocess.run(command, shell=True, check=False)
     if (paths.user().repo / "arxiv.tar.gz").exists():
         (paths.user().repo / "arxiv.tar.gz").unlink()
     if paths.user().temp.exists():

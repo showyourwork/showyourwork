@@ -4,16 +4,28 @@ Generates a directed acyclic graph (DAG) of the build process.
 """
 from pathlib import Path
 
+import graphviz
 from jinja2 import BaseLoader, Environment
 
 from showyourwork import exceptions, paths
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import get_dataset_dois
 
-try:
-    import graphviz
-except:
-    graphviz = None
+# Activate the showyourwork conda environment
+conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
+
+
+def is_relative_to(path, other):
+    """
+    Local implementation of `pathlib.Path.is_relative_to` (for python < 3.9).
+
+    """
+    try:
+        path.relative_to(other)
+        return True
+    except ValueError:
+        return False
+
 
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
@@ -23,15 +35,16 @@ def convert_to_png(file):
     On error, returns None.
     """
     try:
+
         aspect = float(
             get_stdout(
-                f'convert {file} -format "%[fx:w/h]" info:',
+                f'{conda_activate} convert {file} -format "%[fx:w/h]" info:',
                 shell=True,
             )
         )
         width = aspect * 500
         get_stdout(
-            f"convert -resize {width}x500 -background white -alpha remove "
+            f"{conda_activate} convert -resize {width}x500 -background white -alpha remove "
             f"-bordercolor black -border 15 {file} {file}.png",
             shell=True,
         )
@@ -86,6 +99,7 @@ if __name__ == "__main__":
         config["stylesheet"],
         config["stylesheet_meta_file"],
         str(paths.user().flags / "SYW__DAG"),
+        str(paths.user().flags / "SYW__CONDA"),
         str(paths.user().compile),
         "dag.pdf",
         "showyourwork.yml",
@@ -106,13 +120,13 @@ if __name__ == "__main__":
     figures = []
     others = []
     for file in files:
-        if Path(file).absolute().is_relative_to(paths.user().data):
+        if is_relative_to(Path(file).absolute(), paths.user().data):
             datasets.append(file)
-        elif Path(file).absolute().is_relative_to(paths.user().scripts):
+        elif is_relative_to(Path(file).absolute(), paths.user().scripts):
             scripts.append(file)
-        elif Path(file).absolute().is_relative_to(paths.user().figures):
+        elif is_relative_to(Path(file).absolute(), paths.user().figures):
             figures.append(file)
-        elif Path(file).absolute().is_relative_to(paths.user().tex):
+        elif is_relative_to(Path(file).absolute(), paths.user().tex):
             texfiles.append(file)
         elif file == config["ms_pdf"]:
             pass
@@ -306,7 +320,11 @@ if __name__ == "__main__":
     dot.save(directory=paths.user().repo)
 
     # Render the PDF
-    get_stdout("dot -Tpdf dag.gv > dag.pdf", shell=True, cwd=paths.user().repo)
+    get_stdout(
+        f"{conda_activate} dot -Tpdf dag.gv > dag.pdf",
+        shell=True,
+        cwd=paths.user().repo,
+    )
 
     # Remove temporary files
     for figure in figures:

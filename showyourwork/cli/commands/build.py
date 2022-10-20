@@ -1,8 +1,7 @@
 import os
-from pathlib import Path
+import subprocess
 
 from ... import paths
-from ..conda_env import run_in_env
 
 
 def build(snakemake_args=[]):
@@ -15,9 +14,9 @@ def build(snakemake_args=[]):
         snakemake_args (list): Additional arguments to pass to ``Snakemake``.
 
     """
-    snakefile = Path("${SYW_PATH}") / "workflow" / "build.smk"
-    snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='build' snakemake -c1 --use-conda --reason --cache"
+    snakefile = paths.showyourwork().workflow / "build.smk"
+    snakemake = f"SNAKEMAKE_OUTPUT_CACHE={paths.user().cache} SNAKEMAKE_RUN_TYPE='build' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
     command = f"{snakemake} {' '.join(snakemake_args)} -s {snakefile}"
-    result = run_in_env(command, check=False)
+    result = subprocess.run(command, shell=True, check=False)
     if result.returncode > 0:
         os._exit(1)

@@ -51,14 +51,10 @@ class user:
         self.figures = self.tex / "figures"
         self.output = self.tex / "output"
 
-        # User home temp (for all repos)
-        self.home_temp = Path.home() / ".showyourwork"
-        self.home_temp.mkdir(exist_ok=True)
-        self.env = self.home_temp / "env"
-
         # Temporary paths
         self.temp = self.repo / ".showyourwork"
         self.temp.mkdir(exist_ok=True)
+        self.snakemake = self.repo / ".snakemake"
         self.cache = self.temp / "cache"
         self.cache.mkdir(exist_ok=True)
         self.preprocess = self.temp / "preprocess"

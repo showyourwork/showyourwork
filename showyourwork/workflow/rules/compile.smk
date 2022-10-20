@@ -22,7 +22,8 @@ rule:
         "dag.pdf" if config["dag"]["render"] else [],
         WORKFLOW_GRAPH,
         "showyourwork.yml",
-        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else []
+        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
+        paths.user().flags / "SYW__CONDA"
     output:
         config["ms_pdf"],
         temp(config["tex_files_out"]),

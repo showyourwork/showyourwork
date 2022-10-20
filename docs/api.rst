@@ -8,8 +8,7 @@ tool, a cookiecutter template, a GitHub Action, and a conda environment manager.
 The code is wrapped up into a pip-installable Python package, but users should
 never have to actually import ``showyourwork`` into their scripts. Users should
 only ever interact with the code via the command line interface, which spawns
-child processes that themselves install ``showyourwork`` (since workflows *define*
-specific versions of ``showyourwork`` to use).
+child processes that themselves import ``showyourwork``.
 
 But if you're reading this, you're probably interested in learning how ``showyourwork``
 actually works, and possibly in tweaking it or adding new features. The documentation

@@ -414,8 +414,8 @@ Finally, dependencies of the manuscript file are also allowed:
 .. code-block:: yaml
 
   dependencies:
-    src/ms.tex:
-        - src/answer.tex
+    src/tex/ms.tex:
+        - src/tex/stylesheet.tex
 
 
 .. _config.ms:
@@ -691,199 +691,6 @@ notebook as follows:
       jupyter execute {script}
 
 
-.. _config.style:
-
-``style``
-^^^^^^^^^
-
-**Type:** ``mapping``
-
-**Description:** Specifies custom modifications to the article stylesheet.
-
-**Required:** no
-
-
-.. _config.style.show_git_sha_or_tag:
-
-``style.show_git_sha_or_tag``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Type:** ``bool``
-
-**Description:** Show the git SHA in the article PDF header.
-If the HEAD commit corresponds to a git tag, show the tag name in the
-header.
-
-**Required:** no
-
-**Default:** ``false``
-
-**Example:**
-
-.. code-block:: yaml
-
-  style:
-    show_git_sha_or_tag: true
-
-
-.. _config.tectonic_args:
-
-``tectonic_args``
-^^^^^^^^^^^^^^^^^
-
-**Type:** ``list``
-
-**Description:** A list of additional command-line options to be passed directly to
-``tectonic`` when building the manuscript.
-
-**Default:** ``[]``
-
-**Required:** no
-
-**Example:**
-
-.. code-block:: yaml
-
-  tectonic_args: ["-Z", "shell-escape"]
-
-to enable TeX shell escape functionality (allows the script to run
-arbitrary commands within TeX; be careful as this could be a security hazard).
-This is required to use the ``minted`` package for syntax highlighting of code
-snippets.
-
-.. _config.verbose:
-
-``verbose``
-^^^^^^^^^^^
-
-**Type:** ``bool``
-
-**Description:** Enable verbose output? Useful for debugging runs. By default,
-|showyourwork| suppresses nearly all Snakemake output, sending it directly
-to the log file (see :doc:`logging`). Setting ``verbose: true`` results in all
-Snakemake output being printed to the screen as well. Note that you can
-crank up the verbosity even more by passing the ``--verbose`` argument to
-``snakemake build``, which makes Snakemake itself more talkative.
-
-**Required:** no
-
-**Default:** ``false``
-
-**Example:**
-
-.. code-block:: yaml
-
-  verbose: true
-
-
-.. _config.version:
-
-``version``
-^^^^^^^^^^^
-
-**Type:** ``mapping`` (or ``str``)
-
-**Description:** The version of the |showyourwork| package required to build
-the article, populated automatically when ``showyouwork setup`` is run. Users
-may change this to upgrade/downgrade to a different version of the
-package. Please see the nested keys (``pip``, ``path``, ``fork``, and ``ref``)
-below for information on how to specify an exact version.
-
-For backwards compatibility, the ``version`` option also accepts a string
-corresponding to:
-
-- any pip-installable version number (e.g., ``0.3.0``)
-- a 5-character (short) or 40-character (long) GitHub commit SHA (e.g, ``abcde``) corresponding to a specific commit to the `showyourwork/showyourwork <https://github.com/showyourwork/showyourwork>`_ repo
-
-**Required:** yes
-
-**Example:**
-
-.. code-block:: yaml
-
-  version: 0.3.0
-
-.. _config.version_pip:
-
-``version.pip``
-^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** A version number for |showyourwork| that is available on PyPI.
-
-**Required:** no
-
-**Example:**
-
-.. code-block:: yaml
-
-  version:
-    pip: 0.3.0
-
-.. _config.version_path:
-
-``version.path``
-^^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** A relative (to the project repository root) or absolute path to
-a local version of |showyourwork|. Note that this should only be used during
-development, since third-party users of your workflow may not have |showyourwork|
-installed in the same path locally!
-
-**Required:** no
-
-**Example:**
-
-.. code-block:: yaml
-
-  version:
-    path: ./local/version/of/showyourwork
-
-.. _config.version_fork:
-
-``version.fork``
-^^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** The URL of a fork of the |showyourwork| repo.
-
-**Required:** no
-
-**Default:** ``https://github.com/showyourwork/showyourwork.git``
-
-**Example:**
-
-.. code-block:: yaml
-
-  version:
-    fork: https://github.com/SOMEUSER/showyourwork.git
-
-.. _config.version_ref:
-
-``version.ref``
-^^^^^^^^^^^^^^^
-
-**Type:** ``str``
-
-**Description:** The name of a specific branch, tag, or commit on the fork of
-the |showyourwork| repo specified by ``version.fork``.
-
-**Required:** no
-
-**Default:** ``null``
-
-**Example:**
-
-.. code-block:: yaml
-
-  version:
-    ref: main
-
-
 .. _config.stamp:
 
 ``stamp``
@@ -1083,3 +890,67 @@ URL).
     url:
       enabled: true
       maxlen: 40
+
+
+.. _config.tectonic_args:
+
+``tectonic_args``
+^^^^^^^^^^^^^^^^^
+
+**Type:** ``list``
+
+**Description:** A list of additional command-line options to be passed directly to
+``tectonic`` when building the manuscript.
+
+**Default:** ``[]``
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  tectonic_args: ["-Z", "shell-escape"]
+
+to enable TeX shell escape functionality (allows the script to run
+arbitrary commands within TeX; be careful as this could be a security hazard).
+This is required to use the ``minted`` package for syntax highlighting of code
+snippets.
+
+.. _config.verbose:
+
+``verbose``
+^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Enable verbose output? Useful for debugging runs. By default,
+|showyourwork| suppresses nearly all Snakemake output, sending it directly
+to the log file (see :doc:`logging`). Setting ``verbose: true`` results in all
+Snakemake output being printed to the screen as well. Note that you can
+crank up the verbosity even more by passing the ``--verbose`` argument to
+``snakemake build``, which makes Snakemake itself more talkative.
+
+**Required:** no
+
+**Default:** ``false``
+
+**Example:**
+
+.. code-block:: yaml
+
+  verbose: true
+
+
+.. _config.version:
+
+``version``
+^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** The version of the |showyourwork| package used to create the
+workflow. As of ``0.4.0`` this setting no longer has any effect on the build
+process, as articles are now always compiled using the installed version of
+``showyourwork``. However, to improve compatibility with previous versions of
+the code, we recommend keeping this setting in your config file.

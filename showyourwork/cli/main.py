@@ -5,8 +5,14 @@ from textwrap import TextWrapper
 
 import click
 
-from .. import __version__, exceptions, git
+from .. import exceptions, git
 from . import commands
+
+# Store command & option metadata here so we can make `build`
+# the default subcommand in __init__.py
+DEFAULT_SUBCOMMAND = "build"
+SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
+OPTIONS = ["-v", "--version", "--help"]
 
 
 def ensure_top_level():
@@ -67,25 +73,13 @@ def echo(text="", **kwargs):
         click.echo(text, **kwargs)
 
 
-@click.group(invoke_without_command=True)
-@click.option(
-    "-v",
-    "--version",
-    is_flag=True,
-    help="Show the program version and exit.",
-)
-@click.pass_context
-def entry_point(context, version):
+@click.group
+def main():
     """Easily build open-source, reproducible scientific articles."""
-    # Parse
-    if version:
-        print(__version__)
-    elif context.invoked_subcommand is None:
-        # Default command is `build`
-        context.invoke(build)
+    pass
 
 
-@entry_point.command(
+@main.command(
     context_settings=dict(
         ignore_unknown_options=True,
     )
@@ -194,7 +188,7 @@ def validate_slug(context, param, slug):
         raise click.BadParameter("Must have the form `user/repo`.")
 
 
-@entry_point.command()
+@main.command()
 @click.argument("slug", callback=validate_slug, metavar="<user/repo>")
 @click.option(
     "-y",
@@ -235,20 +229,13 @@ def validate_slug(context, param, slug):
     help="Use ssh to authenticate with GitHub? Default is to use https.",
 )
 @click.option(
-    "-v",
-    "--version",
-    help="Version of showyourwork to use. Default is the current version.",
-    default=None,
-    type=type("VERSION", (str,), {}),
-)
-@click.option(
     "-a",
     "--action-spec",
     help="Version spec of showyourwork to use in the GitHub action. Default is the latest version on PyPI.",
     default=None,
     type=type("SPEC", (str,), {}),
 )
-def setup(slug, yes, quiet, cache, overleaf, ssh, version, action_spec):
+def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     """
     Set up a new article repository in the current working directory.
 
@@ -256,10 +243,10 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, version, action_spec):
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    commands.setup(slug, cache, overleaf, ssh, version, action_spec)
+    commands.setup(slug, cache, overleaf, ssh, action_spec)
 
 
-@entry_point.command()
+@main.command()
 @click.option(
     "-f",
     "--force",
@@ -278,7 +265,7 @@ def clean(force, deep):
     commands.clean(force, deep)
 
 
-@entry_point.command()
+@main.command()
 def tarball():
     """Generate a tarball of the build in the current working directory."""
     ensure_top_level()
@@ -286,7 +273,7 @@ def tarball():
     commands.tarball()
 
 
-@entry_point.group()
+@main.group()
 @click.pass_context
 def cache(ctx):
     """Caching-related operations."""
