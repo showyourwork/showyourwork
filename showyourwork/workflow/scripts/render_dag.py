@@ -27,6 +27,17 @@ def is_relative_to(path, other):
         return False
 
 
+def removeprefix(s, prefix):
+    """
+    Local implementation of `str.removeprefix` (for python < 3.9).
+
+    """
+    if s.startswith(prefix):
+        s = s[len(prefix):]
+    return s
+
+
+
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
     """
@@ -178,7 +189,7 @@ if __name__ == "__main__":
             label="src/data/",
         )
         for file in datasets:
-            label = file.removeprefix("src/data/")
+            label = removeprefix(file, "src/data/")
             c.node(
                 file,
                 label=label,
@@ -198,7 +209,7 @@ if __name__ == "__main__":
             label="src/scripts/",
         )
         for file in scripts:
-            label = file.removeprefix("src/scripts/")
+            label = removeprefix(file, "src/scripts/")
             c.node(
                 file,
                 label=label,
@@ -217,7 +228,7 @@ if __name__ == "__main__":
             label="src/tex/",
         )
         for file in texfiles:
-            label = file.removeprefix("src/tex/")
+            label = removeprefix(file, "src/tex/")
             c.node(
                 file,
                 label=label,
@@ -253,7 +264,7 @@ if __name__ == "__main__":
                 )
             else:
                 # Couldn't convert to PNG; display text instead
-                label = file.removeprefix("src/data/")
+                label = removeprefix(file, "src/data/")
                 c.node(
                     file,
                     label=label,
