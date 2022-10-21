@@ -7,6 +7,9 @@ taking a look at the `issues <https://github.com/showyourwork/showyourwork/issue
 page on |showyourwork| GitHub repo. Also make sure to check out the list of
 `closed issues <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aclosed>`__,
 where you might find that others have run into your exact problem before.
+Finally, always make sure you are using the latest version of |showyourwork|, as 
+your error could be due to a bug we have since fixed! You can always upgrade to 
+the latest version by running ``pip install -U showyourwork``.
 
 
 Debugging local builds
@@ -17,6 +20,7 @@ The workflow will try its best to give you an informative error message, but
 if you can't figure out what the problem is (or you don't know how to fix it),
 consider the following tips:
 
+- Upgrade |showyourwork| by running ``pip install -U showyourwork``.
 - Inspect the build logs. These live in `.showyourwork/logs` and contain a lot of
   the verbose output that's suppressed from the terminal by default (see :doc:`logging`).
 - Run ``showyourwork clean`` or, if that doesn't help, ``showyourwork clean --force``.
@@ -39,16 +43,17 @@ consider the following tips:
 - Sometimes, cryptic errors can occur if you've made a mistake in the config file. Certain
   settings require a very specific YAML syntax, so please check :doc:`config` to ensure
   you've provided, e.g., the ``datasets`` information correctly.
-- Make sure you are using the latest version of |showyourwork|, as your error could
-  be due to a bug we have since fixed! You can always upgrade to the latest version
-  by running ``pip install -U showyourwork``.
 - Check the `GitHub Issues <https://github.com/showyourwork/showyourwork/issues>`__
   to see if others have run into the same issue. It's also worth checking out the
   `closed issues <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aclosed>`__
   for ones that have already been resolved!
 - If all else fails, feel free to `raise a new issue <https://github.com/showyourwork/showyourwork/issues/new>`__,
   and we will do our best to get back to you with suggestions promptly.
-
+- Finally, if you're really stumped and you suspect the error is in |showyourwork| itself,
+  you can try cloning `the showyourwork repository <https://github.com/showyourwork/showyourwork>`__ and
+  installing |showyourwork| in development mode (run ``python setup.py develop`` inside the
+  repository), which will allow you to tinker with the code, add breakpoints, print
+  statements, etc.
 
 Debugging remote builds
 -----------------------
@@ -267,22 +272,24 @@ these commands get executed whenever that file is imported into your scripts.
 Using `paths.py` within subdirectories
 --------------------------------------
 
-For complicated workflows, you may wish to organize your `scripts` directory into subdirectories.
-However, this creates a problem with using the ``paths`` module, since ``import paths`` relies on `paths.py` being in the same directory as your scripts.
+For complicated workflows, you may wish to organize your `scripts` directory into 
+subdirectories. However, this creates a problem with using the ``paths`` module, 
+since ``import paths`` relies on `paths.py` being in the same directory as your scripts.
 
-There is a simple workaround for this issue.
-Simply add ``showyourwork`` as a dependency in `environment.yml`, and add the following to the top of your scripts:
+In this case, you can simply copy or simlink the `paths.py` file to whichever 
+subdirectories you need to call it from. Alternatively, you could also
+add ``showyourwork`` as a dependency in `environment.yml`, and add the 
+following to the top of your scripts:
 
 .. code-block:: python
 
     from showyourwork.paths import user as Paths
 
-    # instantiate the paths
     paths = Paths()
 
 You can now use ``paths.data``, ``paths.figures``, etc. as usual.
-
-Note that if you decide to take this approach, we recommend that you pin the version of ``showyourwork`` in `environment.yml` to the same version specified in the `showyourwork.yml` config file. See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ for a brief discussion.
+See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ 
+for a brief discussion.
 
 
 Using LaTeX fonts in matplotlib without installing LaTeX
@@ -353,53 +360,6 @@ If you also want to use LaTeX Workshop's AutoBuild on save (or on file change), 
     }
 
 
-Errors in the `conda_env.py` module
------------------------------------
-
-Version ``0.3.1`` of |showyourwork| introduced a change to the
-way ``showyourwork`` versions are specified in the `showyourwork.yml` config
-file. Previously, the ``version:`` keyword accepted a string corresponding
-to a version number, a GitHub ref, or a local path to a ``showyourwork``
-installation. As of ``0.3.1``, the workflow accepts mappings of the form
-``pip: <version-on-PyPI>`` and ``fork: <fork-name>``, in addition to the
-old syntax (in which the workflow infers whether the provided value is a
-version number, a ref, or a path). Even though this is backwards-compatible
-in that the old syntax is still allowed, repositories that use the new syntax
-cannot be built using older versions of ``showyourwork`` (which will fail
-when trying to parse the new syntax of the ``version:`` key). Users may run
-into errors that look something like this:
-
-.. code-block:: text
-
-  File "/home/runner/.local/bin/showyourwork", line 8, in <module>
-    sys.exit(entry_point())
-  File "/usr/lib/python3/dist-packages/click/core.py", line 764, in __call__
-    return self.main(*args, **kwargs)
-  File "/usr/lib/python3/dist-packages/click/core.py", line 717, in main
-    rv = self.invoke(ctx)
-  File "/usr/lib/python3/dist-packages/click/core.py", line 1137, in invoke
-    return _process_result(sub_ctx.command.invoke(sub_ctx))
-  File "/usr/lib/python3/dist-packages/click/core.py", line 956, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-  File "/usr/lib/python3/dist-packages/click/core.py", line 555, in invoke
-    return callback(*args, **kwargs)
-  File "/home/runner/.local/lib/python3.8/site-packages/showyourwork/cli/main.py", line 92, in build
-    commands.preprocess()
-  File "/home/runner/.local/lib/python3.8/site-packages/showyourwork/cli/commands/preprocess.py", line 16, in preprocess
-    result = run_in_env(command, check=False)
-  File "/home/runner/.local/lib/python3.8/site-packages/showyourwork/cli/conda_env.py", line 83, in run_in_env
-    elif re.match(r"(?:(/d+/.[./d]*/d+))", syw_spec):
-  File "/usr/lib/python3.8/re.py", line 191, in match
-    return _compile(pattern, flags).match(string)
-  TypeError: expected string or bytes-like object
-
-This error can be fixed by simply upgrading your local installation of ``showyourwork``:
-
-.. code-block:: bash
-
-  pip install -U showyourwork
-
-
 Figures not getting generated
 -----------------------------
 
@@ -466,7 +426,7 @@ the journal and include them (making sure to ``git add`` them) in your `src/tex
 Branch rename failed
 --------------------
 
-In versions of ``showyourwork`` prior to ``0.3.2``, users may occasionally run into the
+In versions of ``showyourwork`` prior to ``0.4.0``, users may occasionally run into the
 following error when attempting to run a third party's workflow:
 
 .. code-block:: text
@@ -478,5 +438,5 @@ This is a bug in ``showyourwork`` related to the fact that the default git branc
 projects is called ``master``, while the default branch on GitHub is called ``main``. This
 isn't an issue unless users don't have the correct credentials to access an Overleaf repository,
 in which case the ``git clone`` silently fails and no ``master`` branch is created.
-If you run into this error, simply delete or comment out the ``overleaf:`` section of the ``environment.yml``
-workflow config and re-run the workflow.
+If you run into this error, delete or comment out the ``overleaf:`` section of the ``environment.yml``
+workflow config and re-run the workflow, or simply upgrade |showyourwork|.
