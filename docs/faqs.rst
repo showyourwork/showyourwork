@@ -7,8 +7,8 @@ taking a look at the `issues <https://github.com/showyourwork/showyourwork/issue
 page on |showyourwork| GitHub repo. Also make sure to check out the list of
 `closed issues <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aclosed>`__,
 where you might find that others have run into your exact problem before.
-Finally, always make sure you are using the latest version of |showyourwork|, as 
-your error could be due to a bug we have since fixed! You can always upgrade to 
+Finally, always make sure you are using the latest version of |showyourwork|, as
+your error could be due to a bug we have since fixed! You can always upgrade to
 the latest version by running ``pip install -U showyourwork``.
 
 
@@ -272,13 +272,13 @@ these commands get executed whenever that file is imported into your scripts.
 Using `paths.py` within subdirectories
 --------------------------------------
 
-For complicated workflows, you may wish to organize your `scripts` directory into 
-subdirectories. However, this creates a problem with using the ``paths`` module, 
+For complicated workflows, you may wish to organize your `scripts` directory into
+subdirectories. However, this creates a problem with using the ``paths`` module,
 since ``import paths`` relies on `paths.py` being in the same directory as your scripts.
 
-In this case, you can simply copy or simlink the `paths.py` file to whichever 
+In this case, you can simply copy or simlink the `paths.py` file to whichever
 subdirectories you need to call it from. Alternatively, you could also
-add ``showyourwork`` as a dependency in `environment.yml`, and add the 
+add ``showyourwork`` as a dependency in `environment.yml`, and add the
 following to the top of your scripts:
 
 .. code-block:: python
@@ -288,7 +288,7 @@ following to the top of your scripts:
     paths = Paths()
 
 You can now use ``paths.data``, ``paths.figures``, etc. as usual.
-See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_ 
+See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_
 for a brief discussion.
 
 

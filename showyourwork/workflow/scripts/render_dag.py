@@ -33,9 +33,8 @@ def removeprefix(s, prefix):
 
     """
     if s.startswith(prefix):
-        s = s[len(prefix):]
+        s = s[len(prefix) :]
     return s
-
 
 
 # Convert to PNG & get aspect ratio
