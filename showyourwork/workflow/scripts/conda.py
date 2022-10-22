@@ -20,9 +20,8 @@ activate it to run commands like ``tectonic``, ``dot`` (from ``graphviz``), and
 import subprocess
 from pathlib import Path
 
-
 if __name__ == "__main__":
-    
+
     envfile = snakemake.params.envfile
     envdir = snakemake.params.envdir
     output = snakemake.output[0]
@@ -36,7 +35,9 @@ if __name__ == "__main__":
         if envfile == envfile_:
             env = str(file.parents[0] / file.stem)
             conda_prefix = (
-                subprocess.run(["conda", "info", "--base"], stdout=subprocess.PIPE)
+                subprocess.run(
+                    ["conda", "info", "--base"], stdout=subprocess.PIPE
+                )
                 .stdout.decode()
                 .replace("\n", "")
             )

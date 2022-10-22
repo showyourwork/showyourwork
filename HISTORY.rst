@@ -5,7 +5,7 @@
 
 - **Major update to the versioning system** for ``showyourwork`` articles, and
   to how dependencies are managed. As of this version, ``showyourwork`` no
-  longer manages its own ``conda`` environment -- this led to various 
+  longer manages its own ``conda`` environment -- this led to various
   issues such as inconsistencies in the environment when the version of
   ``showyourwork`` used to launch the workflow differed from the version
   specified *in* the workflow.
@@ -16,7 +16,7 @@
   are committed to make sure changes to the code are backwards compatible,
   so the latest version of ``showyourwork`` will be able to execute any
   workflow created with a previous version. This makes it **much** easier to
-  maintain the workflow, since any issues with the code or any of its 
+  maintain the workflow, since any issues with the code or any of its
   dependencies can be resolved by simply upgrading the locally installed version
   (as opposed to having to patch all previous versions, for example
   `here <https://github.com/showyourwork/showyourwork/issues/215>`__).
@@ -27,26 +27,26 @@
   and the comments in
   `this PR <https://github.com/showyourwork/showyourwork/pull/217>`__ and
   `this PR <https://github.com/showyourwork/showyourwork/pull/221>`__.
-- ``showyourwork`` no longer has explicit non-python dependencies; packages 
-  like ``tectonic`` are specified within ``conda`` environments to specific rules, 
+- ``showyourwork`` no longer has explicit non-python dependencies; packages
+  like ``tectonic`` are specified within ``conda`` environments to specific rules,
   so non-python dependency management is relagated to ``snakemake``.
 - Now enforcing strict channel provenance in ``environment.yml`` files.
 - Upgraded the pinned version of ``Snakemake`` to ``7.15.2``, which fixes
-  several bugs and adds new features 
+  several bugs and adds new features
   (such as `this one <https://github.com/showyourwork/showyourwork/issues/199>`__).
-- Removes ``showyourwork`` logo and abstract margin icon in favor of a 
-  ``showyourwork`` stamp in the upper right hand corner of the first page 
-  of the article. This approach is class-independent and fixes several issues 
-  with specific classes (such as "Float(s) lost" errors with MNRAS and ARA&A). 
-  The positioning and style of the stamp is configurable in 
+- Removes ``showyourwork`` logo and abstract margin icon in favor of a
+  ``showyourwork`` stamp in the upper right hand corner of the first page
+  of the article. This approach is class-independent and fixes several issues
+  with specific classes (such as "Float(s) lost" errors with MNRAS and ARA&A).
+  The positioning and style of the stamp is configurable in
   ``showyourwork.yml``.
-- Check if figure, abstract defined before redefining them; allows usage of 
-  ``showyourwork`` with document classes such as ``article``, which don't 
+- Check if figure, abstract defined before redefining them; allows usage of
+  ``showyourwork`` with document classes such as ``article``, which don't
   define an ``abstract`` environment.
 - Added GitHub margin links for ``\variable{}`` commands.
 - The repository template now includes all available options (set to their
   default values) in the ``showyourwork.yml`` config file.
-- The preprocessing step is now automatically re-run when ``zenodo.yml`` 
+- The preprocessing step is now automatically re-run when ``zenodo.yml``
   changes.
 - Miscellaneous bug fixes, docs improvements, and deprecation warning fixes.
 - Changelog: `v0.3.1...v0.4.0 <https://github.com/showyourwork/showyourwork/compare/v0.3.1...v0.4.0>`_
