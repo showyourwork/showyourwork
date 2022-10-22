@@ -430,9 +430,10 @@ In versions of ``showyourwork`` prior to ``0.4.0``, users may occasionally run i
 following error when attempting to run a third party's workflow:
 
 .. code-block:: text
-  Fetching Overleaf repo...
-  error: refname refs/heads/master not found
-  fatal: Branch rename failed
+
+   Fetching Overleaf repo...
+   error: refname refs/heads/master not found
+   fatal: Branch rename failed
 
 This is a bug in ``showyourwork`` related to the fact that the default git branch on Overleaf
 projects is called ``master``, while the default branch on GitHub is called ``main``. This
