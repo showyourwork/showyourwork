@@ -78,6 +78,7 @@ def main():
     """Easily build open-source, reproducible scientific articles."""
     pass
 
+
 @main.command(
     context_settings=dict(
         ignore_unknown_options=True,

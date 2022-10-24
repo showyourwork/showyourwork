@@ -106,25 +106,31 @@ if __name__ == "__main__":
     prefix = str(paths.user().repo / "x")[:-1]
     dependencies = {}
     for f, d in deps.items():
-        dependencies[removeprefix(f, prefix)] = [removeprefix(file, prefix) for file in d]
+        dependencies[removeprefix(f, prefix)] = [
+            removeprefix(file, prefix) for file in d
+        ]
 
     # Ignore temporary & showyourwork files
     ignore = config["tex_files_out"] + [
         config["stylesheet"],
         config["stylesheet_meta_file"],
         str((paths.user().flags / "SYW__DAG").relative_to(paths.user().repo)),
-        str((paths.user().flags / "SYW__CONDA").relative_to(paths.user().repo)),
+        str(
+            (paths.user().flags / "SYW__CONDA").relative_to(paths.user().repo)
+        ),
         str(paths.user().compile.relative_to(paths.user().repo)),
         "dag.pdf",
         "showyourwork.yml",
-        "zenodo.yml"
+        "zenodo.yml",
     ]
 
     # Ignore user-specified patterns
     user_ignore = []
     for pat in config["dag"]["ignore_files"]:
         file_list = list(Path(paths.user().repo).glob(pat))
-        file_list = [str(file.relative_to(paths.user().repo)) for file in file_list]
+        file_list = [
+            str(file.relative_to(paths.user().repo)) for file in file_list
+        ]
         user_ignore.extend(file_list)
     ignore.extend(user_ignore)
 
