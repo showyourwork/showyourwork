@@ -302,6 +302,11 @@ def parse_config():
         defaults = {"ranksep": "1", "nodesep": "0.65"}
         defaults.update(config["dag"].get("graph_attr", {}))
         config["dag"]["graph_attr"] = defaults
+        config["dag"]["ignore_files"] = config["dag"].get("ignore_files", [])
+        if config["dag"]["ignore_files"] is None:
+            config["dag"]["ignore_files"] = []
+        elif type(config["dag"]["ignore_files"]) is str:
+            config["dag"]["ignore_files"] = [config["dag"]["ignore_files"]]
 
         #: Tectonic settings
         config["user_args"] = config.get("tectonic_args", [])

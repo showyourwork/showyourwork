@@ -102,24 +102,37 @@ if __name__ == "__main__":
     )
 
     # Collect all dependency information
-    dependencies = config["dag_dependencies"]
+    deps = config["dag_dependencies"]
+    prefix = str(paths.user().repo / "x")[:-1]
+    dependencies = {}
+    for f, d in deps.items():
+        dependencies[removeprefix(f, prefix)] = [removeprefix(file, prefix) for file in d]
 
     # Ignore temporary & showyourwork files
     ignore = config["tex_files_out"] + [
         config["stylesheet"],
         config["stylesheet_meta_file"],
-        str(paths.user().flags / "SYW__DAG"),
-        str(paths.user().flags / "SYW__CONDA"),
-        str(paths.user().compile),
+        str((paths.user().flags / "SYW__DAG").relative_to(paths.user().repo)),
+        str((paths.user().flags / "SYW__CONDA").relative_to(paths.user().repo)),
+        str(paths.user().compile.relative_to(paths.user().repo)),
         "dag.pdf",
         "showyourwork.yml",
+        "zenodo.yml"
     ]
+
+    # Ignore user-specified patterns
+    user_ignore = []
+    for pat in config["dag"]["ignore_files"]:
+        file_list = list(Path(paths.user().repo).glob(pat))
+        file_list = [str(file.relative_to(paths.user().repo)) for file in file_list]
+        user_ignore.extend(file_list)
+    ignore.extend(user_ignore)
 
     # Assemble all files
     files = []
-    for file in config["dag_dependencies"]:
+    for file in dependencies:
         files.append(file)
-        files.extend(config["dag_dependencies"][file])
+        files.extend(dependencies[file])
     files = list(set(files))
     files = [file for file in files if file not in ignore]
 
@@ -145,7 +158,10 @@ if __name__ == "__main__":
 
     # Get permalink for file
     def file2url(file):
-        return f"{config['git_url']}/blob/{config['git_sha']}/{file}"
+        if file.startswith("src/tex/output/"):
+            return None
+        else:
+            return f"{config['git_url']}/blob/{config['git_sha']}/{file}"
 
     # Zenodo nodes
     with dot.subgraph(name=f"{subgraph_prefix}zenodo") as c:

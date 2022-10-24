@@ -164,7 +164,7 @@ class Zenodo:
                 logger.debug(str(e))
                 self.user_is_owner = False
 
-    def _get_access_token(self, error_if_missing=False):
+    def _get_access_token(self):
         """
         Return the API access token (stored in an environment variable).
 
@@ -293,37 +293,39 @@ class Zenodo:
         if cache_file_false.exists():
             return False
 
-        logger.debug(f"Testing if user is authenticated for {self.doi}...")
+        if self.access_token:
 
-        # Search for both concept and version DOIs
-        r = requests.get(
-            f"https://{self.url}/api/deposit/depositions",
-            params={
-                "q": f"recid:{self.deposit_id} conceptrecid:{self.deposit_id}",
-                "all_versions": 1,
-                "access_token": self.access_token,
-            },
-        )
+            logger.debug(f"Testing if user is authenticated for {self.doi}...")
 
-        # See if we find the deposit
-        if r.status_code <= 204:
-            if type(r.json()) is list and len(r.json()):
-                if get_run_type() == "build":
-                    logger.info(
-                        f"User authentication for {self.doi} is valid."
-                    )
+            # Search for both concept and version DOIs
+            r = requests.get(
+                f"https://{self.url}/api/deposit/depositions",
+                params={
+                    "q": f"recid:{self.deposit_id} conceptrecid:{self.deposit_id}",
+                    "all_versions": 1,
+                    "access_token": self.access_token,
+                },
+            )
+
+            # See if we find the deposit
+            if r.status_code <= 204:
+                if type(r.json()) is list and len(r.json()):
+                    if get_run_type() == "build":
+                        logger.info(
+                            f"User authentication for {self.doi} is valid."
+                        )
+                    else:
+                        logger.debug(
+                            f"User authentication for {self.doi} is valid."
+                        )
+                    cache_file_true.touch()
+                    return True
                 else:
                     logger.debug(
-                        f"User authentication for {self.doi} is valid."
+                        "Error establishing whether user is authenticated."
                     )
-                cache_file_true.touch()
-                return True
-            else:
-                logger.debug(
-                    "Error establishing whether user is authenticated."
-                )
-                logger.debug("HTTP response:")
-                logger.debug(r.text)
+                    logger.debug("HTTP response:")
+                    logger.debug(r.text)
 
         # No dice
         logger.warning(f"User is not authenticated to edit {self.doi}.")
