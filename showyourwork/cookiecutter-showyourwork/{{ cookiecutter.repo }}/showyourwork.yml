@@ -18,6 +18,10 @@ dag:
     shape: "box"
     penwidth: "2"
     width: "1"
+  # Files and glob patterns to ignore
+  # ignore_files:
+  #  - src/tex/orcid-ID.png
+
 
 # Externally-hosted datasets, e.g. on Zenodo
 datasets:

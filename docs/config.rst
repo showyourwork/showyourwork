@@ -128,6 +128,30 @@ the figure scripts, datasets, figure outputs, etc.
       group_by_type: true
 
 
+.. _config.dag.ignore_files:
+
+``dag.ignore_files``
+^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``list``
+
+**Description:** List of files and/or patterns to ignore when drawing the article DAG.
+
+**Required:** no
+
+**Default:** ``[]``
+
+**Example:**
+
+.. code-block:: yaml
+
+    dag:
+      render: true
+      ignore_files:
+        - src/tex/orcid-ID.png
+        - src/scripts/*.jl
+
+
 ``dag.node_attr``
 ^^^^^^^^^^^^^^^^^
 
