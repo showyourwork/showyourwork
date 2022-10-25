@@ -66,11 +66,17 @@ if __name__ == "__main__":
         meta = ENV.from_string(TEMPLATE).render(**snakemake.config)
         print(meta, file=f)
 
+    # Custom tectonic args for this step
+    args = []
+    if snakemake.config["synctex"]:
+        args = ["--synctex"]
+
     # Build the paper
     compile_tex(
         snakemake.config,
         output_dir=paths.user().compile,
         stylesheet=paths.showyourwork().resources / "styles" / "build.tex",
+        args=args
     )
 
     # Copy the PDF to the user dir
@@ -79,8 +85,7 @@ if __name__ == "__main__":
         str(Path(snakemake.config["ms_pdf"])),
     )
 
-    # Copy the synctex file (if present) to the user dir
-    for file in [".synctex", ".synctex.gz"]:
-        path = paths.user().compile / (snakemake.config["ms_name"] + file)
-        if path.exists():
-            shutil.copy(str(path), file)
+    # Copy the synctex file to the user dir
+    if snakemake.config["synctex"]:
+        path = paths.user().compile / (snakemake.config["ms_name"] + ".synctex.gz")
+        shutil.copy(str(path), file)
