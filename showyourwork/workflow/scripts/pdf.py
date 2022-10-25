@@ -78,3 +78,9 @@ if __name__ == "__main__":
         str(paths.user().compile / (snakemake.config["ms_name"] + ".pdf")),
         str(Path(snakemake.config["ms_pdf"])),
     )
+
+    # Copy the synctex file (if present) to the user dir
+    for file in [".synctex", ".synctex.gz"]:
+        path = paths.user().compile / (snakemake.config["ms_name"] + file)
+        if path.exists():
+            shutil.copy(str(path), file)
