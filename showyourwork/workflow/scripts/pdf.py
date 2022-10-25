@@ -76,7 +76,7 @@ if __name__ == "__main__":
         snakemake.config,
         output_dir=paths.user().compile,
         stylesheet=paths.showyourwork().resources / "styles" / "build.tex",
-        args=args
+        args=args,
     )
 
     # Copy the PDF to the user dir
@@ -87,5 +87,7 @@ if __name__ == "__main__":
 
     # Copy the synctex file to the user dir
     if snakemake.config["synctex"]:
-        path = paths.user().compile / (snakemake.config["ms_name"] + ".synctex.gz")
+        path = paths.user().compile / (
+            snakemake.config["ms_name"] + ".synctex.gz"
+        )
         shutil.copy(str(path), file)

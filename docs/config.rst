@@ -936,7 +936,7 @@ in the compiled PDF.
 .. code-block:: yaml
 
   synctex: true
-  
+
 
 .. _config.tectonic_args:
 
