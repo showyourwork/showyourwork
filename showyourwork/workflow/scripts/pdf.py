@@ -90,4 +90,4 @@ if __name__ == "__main__":
         path = paths.user().compile / (
             snakemake.config["ms_name"] + ".synctex.gz"
         )
-        shutil.copy(str(path), file)
+        shutil.copy(str(path), ".synctex.gz")
