@@ -25,6 +25,7 @@ setup(
         "requests>=2.25.1",
         "click>=8.1.3",
         "cookiecutter>=2.1.1",
+        "packaging>=21.3",
         "snakemake==7.15.2",
     ],
     extras_require={
