@@ -137,7 +137,7 @@ upgrade ``conda``:
 
     conda upgrade conda
 
-Another common error is the ``UnsatisfiableError`` thrown when ``conda`` fails to 
+Another common error is the ``UnsatisfiableError`` thrown when ``conda`` fails to
 resolve dependencies while setting up a new environment. Quite often,
 these issues arise when the ``channel_priority`` config setting is set to ``strict``;
 read more about that `here <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html>`__.
@@ -146,21 +146,21 @@ You may, in particular, get a long error message that looks something like this:
 .. code-block:: text
 
     Collecting package metadata (repodata.json): done
-    Solving environment: \ 
+    Solving environment: \
     Found conflicts! Looking for incompatible packages.
     This can take several minutes.  Press CTRL-C to abort.
-    failed                                                                                                                                                                          \ 
-    Solving environment: \ 
+    failed                                                                                                                                                                          \
+    Solving environment: \
     Found conflicts! Looking for incompatible packages.
     This can take several minutes.  Press CTRL-C to abort.
-    failed                                                                                                                                                                            
+    failed
 
     UnsatisfiableError: The following specifications were found to be incompatible with each other:
 
     Output in format: Requested package -> Available versions
 
     Package python conflicts for:
-    
+
     ...
 
     Note that strict channel priority may have removed packages required for satisfiability.
@@ -168,7 +168,7 @@ You may, in particular, get a long error message that looks something like this:
 The last sentence is key: consider running
 
 .. code-block:: bash
-    
+
     conda config --set channel_priority false
 
 or change the corresponding setting in your ``.condarc`` file (if you have one). This will give
@@ -177,8 +177,8 @@ or change the corresponding setting in your ``.condarc`` file (if you have one).
 better to require specific, explicit provenances for every package to ensure identical builds on
 all machines. However, there are still **lots of wrinkles** to be sorted out regarding strict
 channel priorities on the ``conda`` side -- `see here <https://github.com/conda/conda/issues/11555>`__.
-For a longer discussion on issues and best practice recommendations related to the reproducibility 
-of ``conda`` environments -- and a discussion of reproducibility of software in general -- 
+For a longer discussion on issues and best practice recommendations related to the reproducibility
+of ``conda`` environments -- and a discussion of reproducibility of software in general --
 please check out :doc:`reproducibility`.
 
 
@@ -187,7 +187,7 @@ Issues with ``datrie``
 
 The ``datrie`` package, a dependency  of ``snakemake``, does not currently (as of
 the writing of these docs) have
-`wheels built for distributions of Python >= 3.9 <https://pypi.org/project/datrie/#files>`__. 
+`wheels built for distributions of Python >= 3.9 <https://pypi.org/project/datrie/#files>`__.
 If you don't have a valid ``C/C++``
 compiler set up on your machine, the installation of this dependency might fail
 when running ``pip install showyourwork``. One workaround is to install ``datrie``
@@ -318,7 +318,7 @@ The simplest workaround is to disable LaTeX rendering in ``matplotlib``:
     plt.rcParams.update({"text.usetex": False})
 
 Math-mode strings can still be parsed using the built-in ``matplotlib`` renderer,
-and in most cases this will do what you need. 
+and in most cases this will do what you need.
 Alternatively, if you just want to use the LaTeX font in your plots, see :ref:`latex_matplotlib_no_install` below.
 In some cases, however, the built-in
 renderer may not cut it. If you really need a proper LaTeX installation, you'll
@@ -364,7 +364,7 @@ these commands get executed whenever that file is imported into your scripts.
 Using LaTeX fonts in matplotlib without installing LaTeX
 --------------------------------------------------------
 
-If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript, 
+If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript,
 you can accomplish this without the full LaTeX installation described above.
 Just add the following lines to `src/scripts/matplotlibrc`:
 
