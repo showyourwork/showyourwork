@@ -86,6 +86,9 @@ stamp:
     # Maximum URL length to display
     maxlen: 40
 
+# Enable SyncTeX?
+synctex: True
+
 # Command-line options to be passed to tectonic when building the manuscript
 tectonic_args: []
 

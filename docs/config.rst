@@ -916,6 +916,28 @@ URL).
       maxlen: 40
 
 
+.. _config.synctex:
+
+``synctex``
+^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Enable SyncTeX when building the article? This generates a `*.synctex.gz` file that
+allows certain editors (like VSCode) to automatically sync locations in your manuscript with locations
+in the compiled PDF.
+
+**Default:** ``true``
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+  synctex: true
+
+
 .. _config.tectonic_args:
 
 ``tectonic_args``

@@ -26,6 +26,7 @@ rule:
         paths.user().flags / "SYW__CONDA"
     output:
         config["ms_pdf"],
+        (config["ms_name"] + ".synctex.gz" if config["synctex"] else []),
         temp(config["tex_files_out"]),
         temp(config["stylesheet"]),
         temp(config["stylesheet_meta_file"]),
