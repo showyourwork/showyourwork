@@ -53,6 +53,7 @@ Contents
    overleaf
    logging
    migrating
+   reproducibility
    faqs
    api/showyourwork
    changelog
