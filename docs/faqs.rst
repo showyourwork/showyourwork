@@ -21,39 +21,50 @@ if you can't figure out what the problem is (or you don't know how to fix it),
 consider the following tips:
 
 - Upgrade |showyourwork| by running ``pip install -U showyourwork``.
+
+- Upgrade ``conda`` by running ``conda upgrade conda``.
+
 - Inspect the build logs. These live in `.showyourwork/logs` and contain a lot of
   the verbose output that's suppressed from the terminal by default (see :doc:`logging`).
+
 - Run ``showyourwork clean`` or, if that doesn't help, ``showyourwork clean --force``.
   These commands remove all build output, which could help resolve issues caused by
   builds that are interrupted by an error or when the user cancels them halfway.
   If you don't want to lose your output, you could also try just deleting the
   temporary `.showyourwork` directory (instead of running the ``clean`` command),
   which removes the cache and forces re-evaluation of the build graph.
+
 - Identify which part of the workflow is causing the problem. Is it during the run of a
   particular figure script? Consider adding a ``breakpoint``
   in your code to enable interactive debugging. Or is the problem specific to the LaTeX build
   step? LaTeX errors, in particular, can be extremely cryptic. Inspect the
   `.showyourwork/logs/tectonic.log` file for details. Consider commenting out
   portions of your manuscript to identify which part is causing the problem.
+
 - If one of your figures is causing a new error, it can be helpful to temporarily
   bypass it by placing the old figure output (e.g., the `.pdf` file) in the ``src/static``
   directory and commenting out the ``\script`` command in the TeX file. This causes
   |showyourwork| to treat the figure as static, preventing it from trying to re-generate
   it the next time you run ``showyourwork``.
+
 - Sometimes, cryptic errors can occur if you've made a mistake in the config file. Certain
   settings require a very specific YAML syntax, so please check :doc:`config` to ensure
   you've provided, e.g., the ``datasets`` information correctly.
+
 - Check the `GitHub Issues <https://github.com/showyourwork/showyourwork/issues>`__
   to see if others have run into the same issue. It's also worth checking out the
   `closed issues <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aclosed>`__
   for ones that have already been resolved!
+
 - If all else fails, feel free to `raise a new issue <https://github.com/showyourwork/showyourwork/issues/new>`__,
   and we will do our best to get back to you with suggestions promptly.
+
 - Finally, if you're really stumped and you suspect the error is in |showyourwork| itself,
   you can try cloning `the showyourwork repository <https://github.com/showyourwork/showyourwork>`__ and
   installing |showyourwork| in development mode (run ``python setup.py develop`` inside the
   repository), which will allow you to tinker with the code, add breakpoints, print
   statements, etc.
+
 
 Debugging remote builds
 -----------------------
@@ -110,6 +121,83 @@ things could be going on.
   of the error, it could also make sense to look into tools that allow direct
   interaction with the runner on GitHub Actions, such as
   `action-tmate <https://github.com/mxschmitt/action-tmate>`_.
+
+
+Issues with ``conda``
+---------------------
+
+|showyourwork| relies heavily on ``conda`` to manage virtual environments and
+package/dependencies installations
+(if you don't have ``conda`` installed in the first place, please see :doc:`install`).
+If you're running into issues when creating,
+activating, or using ``conda`` environments, the first thing you should do is
+upgrade ``conda``:
+
+.. code-block:: bash
+
+    conda upgrade conda
+
+Another common error is the ``UnsatisfiableError`` thrown when ``conda`` fails to
+resolve dependencies while setting up a new environment. Quite often,
+these issues arise when the ``channel_priority`` config setting is set to ``strict``;
+read more about that `here <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html>`__.
+You may, in particular, get a long error message that looks something like this:
+
+.. code-block:: text
+
+    Collecting package metadata (repodata.json): done
+    Solving environment: \
+    Found conflicts! Looking for incompatible packages.
+    This can take several minutes.  Press CTRL-C to abort.
+    failed                                                                                                                                                                          \
+    Solving environment: \
+    Found conflicts! Looking for incompatible packages.
+    This can take several minutes.  Press CTRL-C to abort.
+    failed
+
+    UnsatisfiableError: The following specifications were found to be incompatible with each other:
+
+    Output in format: Requested package -> Available versions
+
+    Package python conflicts for:
+
+    ...
+
+    Note that strict channel priority may have removed packages required for satisfiability.
+
+The last sentence is key: consider running
+
+.. code-block:: bash
+
+    conda config --set channel_priority false
+
+or change the corresponding setting in your ``.condarc`` file (if you have one). This will give
+``conda`` more flexibility in choosing the channels from which to install packages. Note that
+``snakemake`` may explicitly warn you that this is a *bad idea* for reproducibility -- it's much
+better to require specific, explicit provenances for every package to ensure identical builds on
+all machines. However, there are still **lots of wrinkles** to be sorted out regarding strict
+channel priorities on the ``conda`` side -- `see here <https://github.com/conda/conda/issues/11555>`__.
+For a longer discussion on issues and best practice recommendations related to the reproducibility
+of ``conda`` environments -- and a discussion of reproducibility of software in general --
+please check out :doc:`reproducibility`.
+
+
+Issues with ``datrie``
+---------------------
+
+The ``datrie`` package, a dependency  of ``snakemake``, does not currently (as of
+the writing of these docs) have
+`wheels built for distributions of Python >= 3.9 <https://pypi.org/project/datrie/#files>`__.
+If you don't have a valid ``C/C++``
+compiler set up on your machine, the installation of this dependency might fail
+when running ``pip install showyourwork``. One workaround is to install ``datrie``
+using ``conda``:
+
+.. code-block:: bash
+
+    conda install -c conda-forge datrie
+
+and then re-run ``pip install showyourwork``.
 
 
 `IncompleteFilesException`
@@ -230,7 +318,9 @@ The simplest workaround is to disable LaTeX rendering in ``matplotlib``:
     plt.rcParams.update({"text.usetex": False})
 
 Math-mode strings can still be parsed using the built-in ``matplotlib`` renderer,
-and in most cases this will do what you need. In some cases, however, the built-in
+and in most cases this will do what you need.
+Alternatively, if you just want to use the LaTeX font in your plots, see :ref:`latex_matplotlib_no_install` below.
+In some cases, however, the built-in
 renderer may not cut it. If you really need a proper LaTeX installation, you'll
 have to do a bit of extra work to get your build to pass on GitHub Actions.
 First, add the following step to the `build.yml` and `build-pull-request.yml`
@@ -269,6 +359,24 @@ To save some typing, you could instead add this boilerplate to the
 these commands get executed whenever that file is imported into your scripts.
 
 
+.. _latex_matplotlib_no_install:
+
+Using LaTeX fonts in matplotlib without installing LaTeX
+--------------------------------------------------------
+
+If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript,
+you can accomplish this without the full LaTeX installation described above.
+Just add the following lines to `src/scripts/matplotlibrc`:
+
+.. code-block:: python
+
+    # set font to match LaTeX's Computer Modern
+    font.family: serif
+    font.serif: cmr10
+    mathtext.fontset: cm
+    axes.formatter.use_mathtext: True # needed when using cm=cmr10 for normal text
+
+
 Using `paths.py` within subdirectories
 --------------------------------------
 
@@ -290,21 +398,6 @@ following to the top of your scripts:
 You can now use ``paths.data``, ``paths.figures``, etc. as usual.
 See `this comment <https://github.com/showyourwork/showyourwork/issues/110#issuecomment-1156785408>`_
 for a brief discussion.
-
-
-Using LaTeX fonts in matplotlib without installing LaTeX
---------------------------------------------------------
-
-If you just want ``matplotlib`` to use Computer Modern fonts so that the font in your plots matches the font in your manuscript, you can accomplish this without the full LaTeX installation described above.
-Just add the following lines to `src/scripts/matplotlibrc`:
-
-.. code-block:: python
-
-    # set font to match LaTeX's Computer Modern
-    font.family: serif
-    font.serif: cmr10
-    mathtext.fontset: cm
-    axes.formatter.use_mathtext: True # needed when using cm=cmr10 for normal text
 
 
 Using LaTeX Workshop in VSCode
