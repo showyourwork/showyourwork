@@ -1,5 +1,17 @@
 .. :changelog:
 
+0.4.1 (2022-10-26)
+++++++++++++++++++
+
+- Fixed ``string.removeprefix`` compatibility issue for Python 3.8.
+- Upgraded ``click`` dependency to fix compatibility issue with decorators; added explicit dep on ``packaging`` package.
+- Fixed issue with Zenodo latency when no ``$SANDBOX_TOKEN`` env variable defined.
+- Fixed issue with conda channel priorities and UnsatisfiableError exceptions.
+- Added support for SyncTeX.
+- Added option to ignore certain files when rendering the article DAG.
+- Added entries to the FAQs and cleaned up the docs a bit.
+- Changelog: `v0.2.3...v0.3.0 <https://github.com/showyourwork/showyourwork/compare/v0.4.0...v0.4.1>`_
+
 0.4.0 (2022-10-21)
 ++++++++++++++++++
 
