@@ -10,6 +10,7 @@
   "_copy_without_render": [
     "src/tex/aasjournal.bst",
     "src/tex/aastex631.cls",
+    "src/tex/showyourwork.sty",
     "orcid-ID.png"
   ]
 }
