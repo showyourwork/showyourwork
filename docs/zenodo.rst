@@ -333,7 +333,7 @@ users with access to your account can see their files.
                 "src/figures/figure.pdf"
             script:
                 "src/scripts/figure.py"
-    
+
     You will also need to update the ``showyourwork.yml`` config file to reflect
     the new dependency.
 
