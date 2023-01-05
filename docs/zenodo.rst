@@ -321,21 +321,21 @@ users with access to your account can see their files.
     directory and upload the archive to Zenodo Sandbox, then download and unzip
     it the next time it is needed.
 
-    You will also need to update the rule for any scripts that use the output
-    from this directory to take the rule ouput as an input.
+    Scripts that use the files in this output directory can have their rule 
+    inputs point directly to the directory itself.
 
     .. code-block:: python
 
         rule figure:
             input:
-                rules.simulation.output
+                "src/data/simulation"
             output:
                 "src/figures/figure.pdf"
             script:
                 "src/scripts/figure.py"
 
-    You will also need to update the ``showyourwork.yml`` config file to reflect
-    the new dependency.
+    You will also need to update the ``showyourwork.yml`` config file to 
+    reflect the dependency on the *directory*, rather than the individual files.
 
     .. code-block:: yaml
         :caption: **File:** ``showyourwork.yml``
