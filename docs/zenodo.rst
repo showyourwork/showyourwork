@@ -321,7 +321,7 @@ users with access to your account can see their files.
     directory and upload the archive to Zenodo Sandbox, then download and unzip
     it the next time it is needed.
 
-    Scripts that use the files in this output directory can have their rule 
+    Scripts that use the files in this output directory can have their rule
     inputs point directly to the directory itself.
 
     .. code-block:: python
@@ -334,7 +334,7 @@ users with access to your account can see their files.
             script:
                 "src/scripts/figure.py"
 
-    You will also need to update the ``showyourwork.yml`` config file to 
+    You will also need to update the ``showyourwork.yml`` config file to
     reflect the dependency on the *directory*, rather than the individual files.
 
     .. code-block:: yaml
