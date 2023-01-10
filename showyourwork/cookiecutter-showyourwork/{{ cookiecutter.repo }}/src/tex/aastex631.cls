@@ -6233,7 +6233,7 @@ on page
 %% text to listoftables or listoffigures, which we are not going to use
 %% anyway. This change enables track changes commands to work in captions.
 \def\xtable{table}
-\def\caption{\ifnumlines\nolinenumbers\fi 
+\def\caption{\ifnumlines\nolinenumbers\fi
 \ifx\@captype\@undefined
 \@latex@error {\noexpand \caption outside float}\@ehd
 \expandafter \@gobble \else
