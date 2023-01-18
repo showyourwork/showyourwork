@@ -95,7 +95,7 @@
       "Andrew J. Caruana",
       "Christy J. Kinane",
       "Alexander J. Armstrong",
-      "Tom Arnold",
+      "Thomas Arnold",
       "Joshaniel F. K. Cooper",
       "David L. Cortie",
       "Arwel V. Hughes",
@@ -104,8 +104,11 @@
       "Wojciech Potrzebowski",
       "Vladimir Straostin"
     ],
-    "doi": "arXiv:2207.10406",
-    "url": "https://arxiv.org/abs/2207.10406",
-    "field": "Statistics"
+    "doi": "10.1107/S1600576722011426",
+    "url": "https://doi.org/10.1107/S1600576722011426",
+    "version": "1.0.0".
+    "commits": "82",
+    "date": "2022-01-11T00:00",
+    "field": "Neutron/X-ray Science"
   }
 }
