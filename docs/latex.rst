@@ -256,3 +256,37 @@ A macro that resolves to the current repository URL
 
 A macro that resolves to the current commit SHA
 (i.e., ``31860f2f558b05d8c941d8f73c64f5dbf5ee79db``).
+
+
+Reproducibility paragraph
+-------------------------
+
+Many scientific journals (e.g., those of AAS) will require the authors
+to add a paragraph or appendix describing in a few words how
+|showyourwork| operates and how the article can be reproduced.
+
+The following is an example from the appendix E of `Renzo et al. 2023
+<https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract>`_
+that can be adapted for your own manuscript:
+
+.. code-block:: TeX
+
+   This study was carried out using the reproducibility software
+   \href{https://github.com/showyourwork/showyourwork}{\showyourwork}
+   \citep{Luger2021}, which leverages continuous integration to
+   programmatically download the data from
+   \href{https://zenodo.org/}{zenodo.org}, create the figures, and
+   compile the manuscript. Each figure caption contains two links: one
+   to the dataset stored on zenodo used in the corresponding figure,
+   and the other to the script used to make the figure (at the commit
+   corresponding to the current build of the manuscript). The git
+   repository associated to this study is publicly available at
+   \url{https://github.com/mathren/CE_accretors}, and the release
+   v.2.1 allows anyone to re-build the entire manuscript. The datasets
+   are stored at \url{https://zenodo.org/record/7343715}, including
+   the template setup to recreate them using MESA (version 15140 and
+   the software development kit \texttt{x86\_64-linux-20.12.1}) and
+   the scripts used to produce the figures.
+
+The bibliographic reference ``Luger2021`` can be found at
+`Attribution <https://show-your.work/en/latest/attribution/>`_ .
