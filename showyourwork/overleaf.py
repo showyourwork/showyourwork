@@ -500,11 +500,11 @@ def pull_files(
         # Ensure there are no uncommitted changes to the local file/directory
         try:
             get_stdout(
-                f"git diff --quiet -- {file}",
+                f'git diff --quiet -- "{file}"',
                 shell=True,
                 cwd=paths.user(path=path).repo,
             )
-        except:
+        except Exception:
             msg = (
                 "Uncommitted changes to local file: "
                 f"{remote_file.relative_to(paths.user(path=path).overleaf)}. "
@@ -526,12 +526,12 @@ def pull_files(
 
         try:
             get_stdout(
-                f"git log -n 1 --pretty=format:%s -- {file}",
+                f'git log -n 1 --pretty=format:%s -- "{file}"',
                 shell=True,
                 cwd=paths.user(path=path).repo,
                 callback=callback,
             )
-        except:
+        except Exception:
             msg = (
                 "Local file changed since the last Overleaf sync: "
                 f"{remote_file.relative_to(paths.user(path=path).overleaf)}. "

@@ -41,7 +41,7 @@ if __name__ == "__main__":
                 .stdout.decode()
                 .replace("\n", "")
             )
-            conda_activate = f". {conda_prefix}/etc/profile.d/conda.sh && conda activate {env} && "
+            conda_activate = f'. {conda_prefix}/etc/profile.d/conda.sh && conda activate "{env}" && '
             break
     else:
         conda_activate = ""
