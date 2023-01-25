@@ -7,7 +7,6 @@ from helpers import (
 )
 
 from showyourwork.config import edit_yaml
-from showyourwork.git import get_commit_message
 from showyourwork.subproc import get_stdout
 
 pytestmark = pytest.mark.remote

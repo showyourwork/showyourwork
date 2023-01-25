@@ -7,23 +7,12 @@ import shutil
 from pathlib import Path
 
 import pytest
-import yaml
 
-import showyourwork
 from showyourwork import gitapi
 from showyourwork.config import render_config
-from showyourwork.git import get_repo_sha
 from showyourwork.logging import get_logger
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import Zenodo
-
-try:
-    from yaml import CDumper as Dumper
-    from yaml import CLoader as Loader
-except ImportError:
-    # If LibYAML not installed
-    from yaml import Dumper, Loader
-
 
 # Folder where we'll create our temporary repos
 SANDBOX = Path(__file__).absolute().parents[1] / "sandbox"
@@ -40,6 +29,7 @@ class TemporaryShowyourworkRepository:
     debug = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
     # Editable class settings
+    root_path = SANDBOX
     cache = False
     overleaf_id = None
     action_wait = 240
@@ -64,7 +54,7 @@ class TemporaryShowyourworkRepository:
 
     @property
     def cwd(self):
-        return SANDBOX / self.repo
+        return self.root_path / self.repo
 
     def startup(self):
         """Subclass me to run things at startup."""
@@ -87,6 +77,9 @@ class TemporaryShowyourworkRepository:
         # Delete any local repos
         self.delete_local()
 
+        # Make the sandbox path if it doesn't exist
+        self.root_path.mkdir(exist_ok=True, parents=True)
+
         # Parse options
         command = "showyourwork setup"
         options = f"--quiet --action-spec={os.getenv('ACTION_SPEC')} "
@@ -101,12 +94,12 @@ class TemporaryShowyourworkRepository:
         if os.getenv("CI", "false") == "true":
             get_stdout(
                 "git config --global user.name 'gh-actions'",
-                cwd=SANDBOX,
+                cwd=self.root_path,
                 shell=True,
             )
             get_stdout(
                 "git config --global user.email 'gh-actions'",
-                cwd=SANDBOX,
+                cwd=self.root_path,
                 shell=True,
             )
 
@@ -116,7 +109,7 @@ class TemporaryShowyourworkRepository:
         )
         get_stdout(
             f"{command} {options} showyourwork/{self.repo}",
-            cwd=SANDBOX,
+            cwd=self.root_path,
             shell=True,
         )
 

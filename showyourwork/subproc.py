@@ -70,7 +70,7 @@ def parse_request(r):
     # Try to get the data
     try:
         data = r.json()
-    except:
+    except Exception:
         if len(r.text) == 0:
             # We're good; there's just no data
             data = {}

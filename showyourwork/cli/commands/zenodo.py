@@ -1,6 +1,6 @@
 import os
 
-from ... import exceptions, logging, paths
+from ... import exceptions, logging
 from ...config import edit_yaml
 from ...git import get_repo_branch
 from ...zenodo import Zenodo
@@ -22,7 +22,7 @@ def zenodo_publish(branch):
         with edit_yaml("zenodo.yml") as config:
             sandbox_doi = config["cache"][branch]["sandbox"]
             assert sandbox_doi is not None
-    except:
+    except Exception:
         raise exceptions.ShowyourworkException(
             f"Zenodo Sandbox deposit not found for branch {branch}."
         )
@@ -68,7 +68,7 @@ def zenodo_freeze(branch):
         with edit_yaml("zenodo.yml") as config:
             doi = config["cache"][branch]["sandbox"]
             assert doi is not None
-    except:
+    except Exception:
         raise exceptions.ShowyourworkException(
             f"Zenodo Sandbox deposit not found for branch {branch}."
         )
@@ -97,7 +97,7 @@ def zenodo_create(branch):
         raise exceptions.ShowyourworkException(
             f"Branch {branch} already has an associated Zenodo Sandbox deposit."
         )
-    except:
+    except Exception:
         pass
     deposit = Zenodo("sandbox", branch=branch)
     with edit_yaml("zenodo.yml") as config:
@@ -113,14 +113,13 @@ def zenodo_delete(branch):
     Args:
         branch (str): Branch whose cahce is to be deleted.
     """
-    logger = logging.get_logger()
     if branch is None:
         branch = get_repo_branch()
     try:
         with edit_yaml("zenodo.yml") as config:
             doi = config["cache"][branch]["sandbox"]
             assert doi is not None
-    except:
+    except Exception:
         raise exceptions.ShowyourworkException(
             f"Zenodo Sandbox deposit not found for branch {branch}."
         )

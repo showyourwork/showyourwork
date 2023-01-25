@@ -5,9 +5,8 @@ Generates a directed acyclic graph (DAG) of the build process.
 from pathlib import Path
 
 import graphviz
-from jinja2 import BaseLoader, Environment
 
-from showyourwork import exceptions, paths
+from showyourwork import paths
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import get_dataset_dois
 
@@ -48,17 +47,17 @@ def convert_to_png(file):
 
         aspect = float(
             get_stdout(
-                f'{conda_activate} convert {file} -format "%[fx:w/h]" info:',
+                f'{conda_activate} convert "{file}" -format "%[fx:w/h]" info:',
                 shell=True,
             )
         )
         width = aspect * 500
         get_stdout(
             f"{conda_activate} convert -resize {width}x500 -background white -alpha remove "
-            f"-bordercolor black -border 15 {file} {file}.png",
+            f'-bordercolor black -border 15 "{file}" "{file}.png"',
             shell=True,
         )
-    except:
+    except Exception:
         return None
     else:
         return aspect

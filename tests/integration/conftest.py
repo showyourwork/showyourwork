@@ -4,8 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from showyourwork.git import get_repo_sha
-
 
 def pytest_sessionstart(session):
     # Clean the sandbox
