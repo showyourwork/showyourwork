@@ -3,8 +3,6 @@ from helpers import (
     TemporaryShowyourworkRepository,
 )
 
-from showyourwork import exceptions
-
 
 class TestMissingScript(
     TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
@@ -25,7 +23,7 @@ class TestMissingScript(
         try:
             super().build_local()
         except Exception as e:
-            if not "src/scripts/test_figure.py" in str(e):
+            if "src/scripts/test_figure.py" not in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
             raise Exception(
@@ -60,7 +58,7 @@ class TestDeletedScript(
         try:
             super().build_local()
         except Exception as e:
-            if not "src/scripts/test_figure.py" in str(e):
+            if "src/scripts/test_figure.py" not in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
             raise Exception(
