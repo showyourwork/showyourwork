@@ -14,7 +14,6 @@ from showyourwork.logging import get_logger
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import Zenodo
 
-
 # Folder where we'll create our temporary repos
 SANDBOX = Path(__file__).absolute().parents[1] / "sandbox"
 RESOURCES = Path(__file__).absolute().parents[1] / "resources"
