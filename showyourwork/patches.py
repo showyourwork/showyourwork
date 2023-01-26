@@ -437,7 +437,7 @@ def job_is_cached(job):
     cache = snakemake.workflow.workflow.output_file_cache
 
     # Check if user requested caching for job
-    if not snakemake.workflow.workflow.is_cached_rule(job.rule):
+    if snakemake.workflow.workflow.get_cache_mode(job.rule) != "all":
         logger.debug(f"Job {job.name} is not cacheable.")
         return False
 
