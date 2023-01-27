@@ -58,6 +58,7 @@ if (paths.user().temp / "config.json").exists():
 
 
     # Include all other rules
+    include: "rules/common.smk"
     include: "rules/dag.smk"
     include: "rules/arxiv.smk"
     include: "rules/compile.smk"
