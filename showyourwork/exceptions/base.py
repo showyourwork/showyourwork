@@ -37,7 +37,7 @@ def disable_trace():
     sys.excepthook = custom_excepthook
     try:
         flag = paths.user().flags / "DISABLE_SNAKEMAKE_EXCEPTIONS"
-    except:
+    except Exception:
         pass
     else:
         flag.touch()
@@ -49,7 +49,7 @@ def restore_trace():
     sys.excepthook = excepthook
     try:
         flag = paths.user().flags / "DISABLE_SNAKEMAKE_EXCEPTIONS"
-    except:
+    except Exception:
         pass
     else:
         if flag.exists():

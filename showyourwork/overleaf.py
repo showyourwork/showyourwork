@@ -243,7 +243,7 @@ def setup_remote(project_id, path=None):
                 pass
             else:
                 raise Exception()
-    except:
+    except Exception:
         raise exceptions.OverleafError(
             "Overleaf repository not empty! "
             "Refusing to rewrite files on remote."

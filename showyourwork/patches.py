@@ -310,7 +310,7 @@ def patch_snakemake_logging():
 
             LOGS = paths.user().logs
 
-        except:
+        except Exception:
 
             # Can't resolve path to logs; assume we're not
             # in a showyourwork/git repo and fail silently.
@@ -332,7 +332,7 @@ def patch_snakemake_logging():
         msg["level"] = "job_error"
         try:
             FLAGS = paths.user().flags
-        except:
+        except Exception:
             self.handler(msg)
         else:
             if (FLAGS / "DISABLE_SNAKEMAKE_EXCEPTIONS").exists():
@@ -448,7 +448,7 @@ def job_is_cached(job):
             return True
         else:
             pass
-    except:
+    except Exception:
         # Job is not cacheable (no output files or multiple output files)
         logger.debug(f"Job {job.name} is not cacheable.")
         return False

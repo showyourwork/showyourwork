@@ -162,7 +162,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
                     diff_url = re.search(
                         r"\[PDF with highlighted changes\]\((.*?)\)", comment
                     ).groups()[0]
-                except:
+                except Exception:
                     raise Exception(
                         "Bot did not post the link to the PDF diff."
                     )

@@ -267,7 +267,7 @@ def get_json_tree(xmlfile):
         else:
             graphicspath = re.findall("\{(.*?)\}", graphicspath[-1].text)[0]
             graphicspath = Path(graphicspath)
-    except:
+    except Exception:
         raise exceptions.GraphicsPathError()
 
     # Parse labeled graphics inside `figure` environments

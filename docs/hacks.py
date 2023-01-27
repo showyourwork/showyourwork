@@ -34,7 +34,7 @@ def get_commit_count(repo, API_KEY):
             )
         else:
             commits = 0
-    except:
+    except Exception:
         commits = "N/A"
     return commits
 
@@ -52,7 +52,7 @@ def get_date(repo, API_KEY):
         content = urlopen(req).read()
         content = json.loads(content)
         date = content["pushed_at"]
-    except:
+    except Exception:
         date = "??"
     return date
 
@@ -75,7 +75,7 @@ def get_version(repo, API_KEY):
         )
         content = urlopen(req).read()
         version = yaml.safe_load(content).get("version", "unknown")
-    except:
+    except Exception:
         version = "unknown"
     return version
 
@@ -168,7 +168,7 @@ try:
     content = "The GitHub action\n=================\n\n" + "\n".join(
         content.split("\n")[10:]
     )
-except:
+except Exception:
     content = "The Github action\n=================\n\n"
     content += "Please visit `<https://github.com/showyourwork/showyourwork-action>`_."
     print("ERROR: Unable to generate `action.rst`.")

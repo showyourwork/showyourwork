@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - conda-forge::python=3.9
+  - conda-forge::imagemagick=7.1.0.43
+  - conda-forge::python-graphviz=0.20.1

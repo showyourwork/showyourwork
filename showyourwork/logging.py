@@ -101,7 +101,7 @@ def get_logger():
 
             LOGS = paths.user().logs
 
-        except:
+        except Exception:
 
             # Can't resolve path to logs; assume we're not
             # in a showyourwork/git repo and fail silently.
