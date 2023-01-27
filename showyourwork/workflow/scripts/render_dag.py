@@ -62,8 +62,7 @@ def convert_to_png(file):
 
 def get_dataset_dois(files, datasets):
     """
-    Given a list of `files`, return all associated Zenodo and/or Zenodo Sandbox
-    DOIs.
+    Local version of this function copied from `showyourwork/zenodo.py`
 
     """
     result = []
@@ -131,7 +130,6 @@ if __name__ == "__main__":
         config["stylesheet"],
         config["stylesheet_meta_file"],
         str((params.flags / "SYW__DAG").relative_to(params.repo)),
-        str((params.flags / "SYW__CONDA").relative_to(params.repo)),
         str(params.compile.relative_to(params.repo)),
         "dag.pdf",
         "showyourwork.yml",
