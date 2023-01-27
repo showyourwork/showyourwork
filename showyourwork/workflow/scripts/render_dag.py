@@ -2,8 +2,8 @@
 Generates a directed acyclic graph (DAG) of the build process.
 
 """
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import graphviz
 
