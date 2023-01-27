@@ -10,7 +10,6 @@ from jinja2 import BaseLoader, Environment
 
 from showyourwork import paths
 
-
 if __name__ == "__main__":
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
