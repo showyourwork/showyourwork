@@ -21,61 +21,62 @@ if __name__ == "__main__":
     # Copy over the source files
     shutil.copytree(paths.user().tex, compile_dir, dirs_exist_ok=True)
 
-    # Metadata file jinja template
-    TEMPLATE = r"""
-    ((* if github_actions *))
-    \OnGithubActionstrue
-    ((* else *))
-    \OnGithubActionsfalse
-    ((* endif *))
-    \def\syw@url{((- git_url -))}
-    \def\syw@slug{((- git_slug -))}
-    \def\syw@sha{((- git_sha -))}
-    \def\syw@runid{((- github_runid -))}
+    if snakemake.params.metadata:
+        # Metadata file jinja template
+        TEMPLATE = r"""
+        ((* if github_actions *))
+        \OnGithubActionstrue
+        ((* else *))
+        \OnGithubActionsfalse
+        ((* endif *))
+        \def\syw@url{((- git_url -))}
+        \def\syw@slug{((- git_slug -))}
+        \def\syw@sha{((- git_sha -))}
+        \def\syw@runid{((- github_runid -))}
 
-    ((* if stamp.enabled *))
-    \AddStamptrue
-    ((* else *))
-    \AddStampfalse
-    ((* endif *))
-    \newcommand{\syw@stampX}{((- stamp.xpos -))}
-    \newcommand{\syw@stampY}{((- stamp.ypos -))}
-    \newcommand{\syw@stampSize}{((- stamp.size -))}
-    \newcommand{\syw@stampAngle}{((- stamp.angle -))}
-    \newcommand{\syw@stampText}{((- stamp.text -))}
-    \newcommand{\syw@stampVersion}{((- stamp.version -))}
+        ((* if stamp.enabled *))
+        \AddStamptrue
+        ((* else *))
+        \AddStampfalse
+        ((* endif *))
+        \newcommand{\syw@stampX}{((- stamp.xpos -))}
+        \newcommand{\syw@stampY}{((- stamp.ypos -))}
+        \newcommand{\syw@stampSize}{((- stamp.size -))}
+        \newcommand{\syw@stampAngle}{((- stamp.angle -))}
+        \newcommand{\syw@stampText}{((- stamp.text -))}
+        \newcommand{\syw@stampVersion}{((- stamp.version -))}
 
-    ((* for key, value in labels.items() *))
-    \addvalue{((- key -))}{((- value -))}
-    ((* endfor *))
+        ((* for key, value in labels.items() *))
+        \addvalue{((- key -))}{((- value -))}
+        ((* endfor *))
 
-    ((* for key, value in variables.items() *))
-    \addvalue{((- key -))}{((- value -))}
-    ((* endfor *))
-    """
+        ((* for key, value in variables.items() *))
+        \addvalue{((- key -))}{((- value -))}
+        ((* endfor *))
+        """
 
-    # Custom jinja environment for LaTeX
-    ENV = Environment(
-        block_start_string="((*",
-        block_end_string="*))",
-        variable_start_string="((-",
-        variable_end_string="-))",
-        comment_start_string="((=",
-        comment_end_string="=))",
-        trim_blocks=True,
-        autoescape=False,
-        loader=BaseLoader(),
-    )
+        # Custom jinja environment for LaTeX
+        ENV = Environment(
+            block_start_string="((*",
+            block_end_string="*))",
+            variable_start_string="((-",
+            variable_end_string="-))",
+            comment_start_string="((=",
+            comment_end_string="=))",
+            trim_blocks=True,
+            autoescape=False,
+            loader=BaseLoader(),
+        )
 
-    # Generate the stylesheet metadata file
-    p = compile_dir / Path(config["stylesheet_meta_file"]).name
-    with open(p, "w") as f:
-        meta = ENV.from_string(TEMPLATE).render(**config)
-        print(meta, file=f)
+        # Generate the stylesheet metadata file
+        p = compile_dir / Path(config["stylesheet_meta_file"]).name
+        with open(p, "w") as f:
+            meta = ENV.from_string(TEMPLATE).render(**config)
+            print(meta, file=f)
 
     # Copy over stylesheet
     p = compile_dir / Path(config["stylesheet"]).name
-    shutil.copy(paths.showyourwork().resources / "styles" / "build.tex", p)
+    shutil.copy(snakemake.input.stylesheet, p)
 
     # Copy over TeX auxiliaries
     for file in config["tex_files_in"]:

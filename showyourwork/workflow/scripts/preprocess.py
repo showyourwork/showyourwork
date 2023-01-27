@@ -17,7 +17,6 @@ from xml.etree.ElementTree import parse as ParseXMLTree
 
 from showyourwork import exceptions, paths, zenodo
 from showyourwork.config import get_upstream_dependencies
-from showyourwork.tex import compile_tex
 from showyourwork.zenodo import Zenodo, get_dataset_urls
 
 
@@ -223,28 +222,14 @@ def check_figure_format(figure):
         )
 
 
-def get_xml_tree():
+def get_xml_tree(xmlfile):
     """Compiles the TeX file to generate the XML tree.
 
     Returns:
         xml.etree.ElementTree.ElementTree: The XML tree.
     """
 
-    # Parameters
-    xmlfile = paths.user().preprocess / "showyourwork.xml"
-
-    # Build the paper to get the XML file
-    compile_tex(
-        config,
-        args=[
-            "-r",
-            "0",
-        ],
-        output_dir=paths.user().preprocess,
-        stylesheet=paths.showyourwork().resources
-        / "styles"
-        / "preprocess.tex",
-    )
+    xmlfile = Path(xmlfile)
 
     # Add <HTML></HTML> tags to the XML file
     if xmlfile.exists():
@@ -263,14 +248,14 @@ def get_xml_tree():
     return ParseXMLTree(paths.user().preprocess / "showyourwork.xml").getroot()
 
 
-def get_json_tree():
+def get_json_tree(xmlfile):
     """Builds a dictionary containing mappings between input and output files.
 
     Returns:
         dict: The JSON dependency tree for the article.
     """
     # Get the XML article tree
-    xml_tree = get_xml_tree()
+    xml_tree = get_xml_tree(xmlfile)
 
     # Parse the \graphicspath command
     # Note that if there are multiple graphicspath calls, only the first one
@@ -514,7 +499,7 @@ if __name__ == "__main__":
     parse_datasets()
 
     # Get the article tree
-    config["tree"] = get_json_tree()
+    config["tree"] = get_json_tree(snakemake.input[0])
 
     # Make all of the graphics dependencies of the article
     config["dependencies"][config["ms_tex"]] = config["dependencies"].get(

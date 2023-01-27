@@ -29,9 +29,6 @@ if __name__ == "__main__":
 
     # Tar up everything in the src/tex directory
     with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:
-        # for file in paths.user().compile.rglob("*"):
-        #     if not file.is_dir() and not file.name in exclude:
-        #         tarball.add(file, arcname=file.relative_to(paths.user().tex))
         for file in paths.user().compile.rglob("*"):
             if file.name not in exclude:
                 tarball.add(file, arcname=file.name)

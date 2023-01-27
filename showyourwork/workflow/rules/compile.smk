@@ -19,15 +19,17 @@ rule:
     input:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
-        (paths.showyourwork().resources / "styles" / "build.tex").as_posix(),
         config["tex_files_in"],
         "dag.pdf" if config["dag"]["render"] else [],  # TODO(dfm): remove this?
         WORKFLOW_GRAPH,
         "showyourwork.yml",
-        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else []
+        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
+        stylesheet=(paths.showyourwork().resources / "styles" / "build.tex").as_posix()
     output:
         temporary_tex_files(),
         compile_dir=directory(paths.user().compile.as_posix()),
+    params:
+        metadata=True
     script:
         "../scripts/compile_setup.py"
 
