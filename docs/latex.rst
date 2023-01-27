@@ -261,9 +261,13 @@ A macro that resolves to the current commit SHA
 Reproducibility paragraph
 -------------------------
 
-Many scientific journals (e.g., those of AAS) will require the authors
-to add a paragraph or appendix describing in a few words how
-|showyourwork| operates and how the article can be reproduced.
+To explain to the readers of your article how |showyourwork| operates,
+how they can reproduce your science, and where to find the data and
+scripts used, it can be useful to have a brief paragraph or appendix
+in your manuscript. This is also often helpful to meet the
+reproducibility requirement of scientific journals and make your
+article self-contained. Typically this will also contain the doi of
+the zenodo repository associated to your article.
 
 The following is an example from the appendix E of `Renzo et al. 2023
 <https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract>`_
@@ -283,7 +287,7 @@ that can be adapted for your own manuscript:
    repository associated to this study is publicly available at
    \url{https://github.com/mathren/CE_accretors}, and the release
    v.2.1 allows anyone to re-build the entire manuscript. The datasets
-   are stored at \url{https://zenodo.org/record/7343715}, including
+   are stored at \url{https://doi.org/10.5281/zenodo.7343715}, including
    the template setup to recreate them using MESA (version 15140 and
    the software development kit \texttt{x86\_64-linux-20.12.1}) and
    the scripts used to produce the figures.
