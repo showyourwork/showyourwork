@@ -11,6 +11,7 @@ article.
 
 """
 import sys
+import warnings
 
 from .. import __version__
 from .main import DEFAULT_SUBCOMMAND, OPTIONS, SUBCOMMANDS, main
@@ -18,13 +19,17 @@ from .main import DEFAULT_SUBCOMMAND, OPTIONS, SUBCOMMANDS, main
 
 def entry_point():
     """
-    Modify the call from `showyourwork ...` to `showyourwork build...`
-    if the user didn't explicitly provide a valid subcommand or option.
+    Modify the call from `showyourwork ...` to `showyourwork build...` if the
+    user didn't explicitly provide a valid subcommand or option.
 
-    Click can in principle handle this (the `@click.group` decorator accepts
-    an `invoke_without_command` option) but if we do that I don't _think_
-    we can simultaneously set `ignore_unknown_options`. We need to be able
-    to forward unknown options directly to `snakemake`.
+    This behavior will be deprecated in a future version of `showyourwork`,
+    because it can lead to some unexpected results when invalid arguments are
+    provided.
+
+    Click can in principle handle this (the `@click.group` decorator accepts an
+    `invoke_without_command` option) but if we do that I don't _think_ we can
+    simultaneously set `ignore_unknown_options`. We need to be able to forward
+    unknown options directly to `snakemake`.
 
     This hack allows users to call, e.g.,
 
@@ -34,13 +39,24 @@ def entry_point():
 
         showyourwork build --rerun-incomplete
 
-    (the invocation they had to use previously). We allow this by injecting
-    the `build` subcommand into `sys.argv` prior to click taking control.
+    (the invocation they had to use previously). We allow this by injecting the
+    `build` subcommand into `sys.argv` prior to click taking control.
 
     """
-    if len(sys.argv) == 1 or not (sys.argv[1] in SUBCOMMANDS + OPTIONS):
+    if len(sys.argv) == 1:
         sys.argv.insert(1, DEFAULT_SUBCOMMAND)
+
+    elif sys.argv[1] not in SUBCOMMANDS + OPTIONS:
+        warnings.warn(
+            "The use of the `showyourwork` command line with arguments but without an "
+            "explicit subcommand is deprecated. Use `showyourwork build` for "
+            "consistent results.",
+            FutureWarning,
+        )
+        sys.argv.insert(1, DEFAULT_SUBCOMMAND)
+
     if sys.argv[1] in ["-v", "--version"]:
         print(__version__)
+
     else:
         main()
