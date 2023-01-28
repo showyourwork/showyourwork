@@ -256,3 +256,41 @@ A macro that resolves to the current repository URL
 
 A macro that resolves to the current commit SHA
 (i.e., ``31860f2f558b05d8c941d8f73c64f5dbf5ee79db``).
+
+
+Reproducibility paragraph
+-------------------------
+
+To explain to the readers of your article how |showyourwork| operates,
+how they can reproduce your science, and where to find the data and
+scripts used, it can be useful to have a brief paragraph or appendix
+in your manuscript. This is also often helpful to meet the
+reproducibility requirement of scientific journals and make your
+article self-contained. Typically this will also contain the doi of
+the zenodo repository associated to your article.
+
+The following is an example from the appendix E of `Renzo et al. 2023
+<https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract>`_
+that can be adapted for your own manuscript:
+
+.. code-block:: TeX
+
+   This study was carried out using the reproducibility software
+   \href{https://github.com/showyourwork/showyourwork}{\showyourwork}
+   \citep{Luger2021}, which leverages continuous integration to
+   programmatically download the data from
+   \href{https://zenodo.org/}{zenodo.org}, create the figures, and
+   compile the manuscript. Each figure caption contains two links: one
+   to the dataset stored on zenodo used in the corresponding figure,
+   and the other to the script used to make the figure (at the commit
+   corresponding to the current build of the manuscript). The git
+   repository associated to this study is publicly available at
+   \url{https://github.com/mathren/CE_accretors}, and the release
+   v.2.1 allows anyone to re-build the entire manuscript. The datasets
+   are stored at \url{https://doi.org/10.5281/zenodo.7343715}, including
+   the template setup to recreate them using MESA (version 15140 and
+   the software development kit \texttt{x86\_64-linux-20.12.1}) and
+   the scripts used to produce the figures.
+
+The bibliographic reference ``Luger2021`` can be found at
+`Attribution <https://show-your.work/en/latest/attribution/>`_ .
