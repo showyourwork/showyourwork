@@ -110,5 +110,21 @@
     "commits": "82",
     "date": "2022-01-11T00:00",
     "field": "Neutron/X-ray Science"
+  },
+  "mathren/CE_accretors": {
+    "title": "",
+    "authors": [
+      "Mathieu Renzo",
+      "Emmanouil Zapartas",
+      "Stephen Justham",
+      "Katelyn Breivik",
+      "Mike Lau",
+      "Rob Farmer",
+      "Matteo Cantiello",
+      "Brian D. Metzger"
+    ],
+    "doi": "10.3847/2041-8213/aca4d3",
+    "url": "https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract",
+    "field": "Astronomy"
   }
 }
