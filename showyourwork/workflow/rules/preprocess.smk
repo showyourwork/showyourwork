@@ -83,10 +83,6 @@ rule:
         "Preprocess: Setting up the workflow..."
     input:
         (paths.user().preprocess / "showyourwork.xml").as_posix()
-        # config["ms_tex"],
-        # "showyourwork.yml",
-        # "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
-        # paths.user().flags / "SYW__CONDA"
     output:
         config["config_json"],
     script:

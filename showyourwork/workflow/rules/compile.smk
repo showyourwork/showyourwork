@@ -39,7 +39,7 @@ rule:
 
     """
     name:
-        "syw__pdf"
+        "syw__compile_pdf"
     message:
         "Compiling the article PDF..."
     input:
@@ -68,7 +68,7 @@ rule:
 
 rule:
     name:
-        "syw__copy_pdf"
+        "syw__compile_copy_pdf"
     message:
         "Copying the article PDF..."
     input:
@@ -82,7 +82,7 @@ rule:
 
 rule:
     name:
-        "syw__copy_synctex"
+        "syw__compile_copy_synctex"
     message:
         "Copying the article synctex..."
     input:
