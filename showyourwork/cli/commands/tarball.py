@@ -1,18 +1,19 @@
-import os
-import subprocess
-
 from ... import paths
+from .run_snakemake import run_snakemake
 
 
-def tarball(options=""):
+def tarball(snakemake_args=[], cores=1, conda_frontend="conda"):
     """Build the article tarball.
 
     Args:
         options (str, optional): Additional options to pass to Snakemake.
     """
     snakefile = paths.showyourwork().workflow / "build.smk"
-    snakemake = f"SNAKEMAKE_OUTPUT_CACHE=\"{paths.user().cache}\" SNAKEMAKE_RUN_TYPE='tarball' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
-    command = f'{snakemake} {options} -s "{snakefile}" syw__arxiv_entrypoint'
-    result = subprocess.run(command, shell=True, check=False)
-    if result.returncode > 0:
-        os._exit(1)
+    run_snakemake(
+        snakefile.as_posix(),
+        run_type="tarball",
+        cores=cores,
+        conda_frontend=conda_frontend,
+        extra_args=list(snakemake_args) + ["syw__arxiv_entrypoint"],
+        check=True,
+    )

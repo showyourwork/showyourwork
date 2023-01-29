@@ -1,18 +1,19 @@
-import os
-import subprocess
-
 from ... import paths
+from .run_snakemake import run_snakemake
 
 
-def preprocess(snakemake_args=[]):
+def preprocess(snakemake_args=[], cores=1, conda_frontend="conda"):
     """Pre-processing step for the article build.
 
     Args:
         snakemake_args (list, optional): Additional options to pass to Snakemake.
     """
     snakefile = paths.showyourwork().workflow / "prep.smk"
-    snakemake = f"SNAKEMAKE_OUTPUT_CACHE=\"{paths.user().cache}\" SNAKEMAKE_RUN_TYPE='preprocess' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
-    command = f"{snakemake} {' '.join(snakemake_args)} -s \"{snakefile}\""
-    result = subprocess.run(command, shell=True, check=False)
-    if result.returncode > 0:
-        os._exit(1)
+    run_snakemake(
+        snakefile.as_posix(),
+        run_type="preprocess",
+        cores=cores,
+        conda_frontend=conda_frontend,
+        extra_args=snakemake_args,
+        check=True,
+    )

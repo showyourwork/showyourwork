@@ -84,12 +84,31 @@ def main():
         ignore_unknown_options=True,
     )
 )
+@click.option(
+    "-c",
+    "--cores",
+    default="1",
+    help="Number of cores to use; passed to snakemake.",
+)
+@click.option(
+    "--conda-frontend",
+    default="conda",
+    help="The conda frontend to use; passed to snakemake.",
+)
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
-def build(snakemake_args):
+def build(cores, conda_frontend, snakemake_args):
     """Build an article in the current working directory."""
     ensure_top_level()
-    commands.preprocess()
-    commands.build(snakemake_args)
+    commands.preprocess(
+        snakemake_args=snakemake_args,
+        cores=cores,
+        conda_frontend=conda_frontend,
+    )
+    commands.build(
+        snakemake_args=snakemake_args,
+        cores=cores,
+        conda_frontend=conda_frontend,
+    )
 
 
 def validate_slug(context, param, slug):
@@ -246,7 +265,22 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     commands.setup(slug, cache, overleaf, ssh, action_spec)
 
 
-@main.command()
+@main.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+    )
+)
+@click.option(
+    "-c",
+    "--cores",
+    default="1",
+    help="Number of cores to use; passed to snakemake.",
+)
+@click.option(
+    "--conda-frontend",
+    default="conda",
+    help="The conda frontend to use; passed to snakemake.",
+)
 @click.option(
     "-f",
     "--force",
@@ -259,18 +293,49 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     is_flag=True,
     help="Forcefully remove the `.snakemake` and `~/.showyourwork` directories.",
 )
-def clean(force, deep):
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
+def clean(cores, conda_frontend, force, deep, snakemake_args):
     """Clean the article build in the current working directory."""
     ensure_top_level()
-    commands.clean(force, deep)
+    commands.clean(
+        force,
+        deep,
+        snakemake_args=snakemake_args,
+        cores=cores,
+        conda_frontend=conda_frontend,
+    )
 
 
-@main.command()
-def tarball():
+@main.command(
+    context_settings=dict(
+        ignore_unknown_options=True,
+    )
+)
+@click.option(
+    "-c",
+    "--cores",
+    default="1",
+    help="Number of cores to use; passed to snakemake.",
+)
+@click.option(
+    "--conda-frontend",
+    default="conda",
+    help="The conda frontend to use; passed to snakemake.",
+)
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
+def tarball(cores, conda_frontend, snakemake_args):
     """Generate a tarball of the build in the current working directory."""
     ensure_top_level()
-    commands.preprocess()
-    commands.tarball()
+    commands.preprocess(
+        snakemake_args=snakemake_args,
+        cores=cores,
+        conda_frontend=conda_frontend,
+    )
+    commands.tarball(
+        snakemake_args=snakemake_args,
+        cores=cores,
+        conda_frontend=conda_frontend,
+    )
 
 
 @main.group()

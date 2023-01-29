@@ -1,10 +1,8 @@
-import os
-import subprocess
-
 from ... import paths
+from .run_snakemake import run_snakemake
 
 
-def build(snakemake_args=[]):
+def build(snakemake_args=[], cores=1, conda_frontend="conda"):
     """Build the article.
 
     This function builds the article PDF by running ``Snakemake`` in an isolated
@@ -15,8 +13,11 @@ def build(snakemake_args=[]):
 
     """
     snakefile = paths.showyourwork().workflow / "build.smk"
-    snakemake = f"SNAKEMAKE_OUTPUT_CACHE=\"{paths.user().cache}\" SNAKEMAKE_RUN_TYPE='build' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
-    command = f"{snakemake} {' '.join(snakemake_args)} -s \"{snakefile}\""
-    result = subprocess.run(command, shell=True, check=False)
-    if result.returncode > 0:
-        os._exit(1)
+    run_snakemake(
+        snakefile.as_posix(),
+        run_type="build",
+        cores=cores,
+        conda_frontend=conda_frontend,
+        extra_args=snakemake_args,
+        check=True,
+    )
