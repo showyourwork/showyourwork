@@ -1,10 +1,10 @@
 import shutil
-import subprocess
 
 from ... import paths
+from .run_snakemake import run_snakemake
 
 
-def clean(force, deep, options=""):
+def clean(force, deep, snakemake_args=[], cores=1, conda_frontend="conda"):
     """Clean the article build.
 
     Args:
@@ -17,9 +17,14 @@ def clean(force, deep, options=""):
         shutil.rmtree(paths.user().repo / ".snakemake" / "incomplete")
     for file in ["build.smk", "prep.smk"]:
         snakefile = paths.showyourwork().workflow / file
-        snakemake = f"SNAKEMAKE_OUTPUT_CACHE=\"{paths.user().cache}\" SNAKEMAKE_RUN_TYPE='clean' snakemake -c1 --use-conda --conda-frontend conda --reason --cache"
-        command = f'{snakemake} {options} -s "{snakefile}" --delete-all-output'
-        subprocess.run(command, shell=True, check=False)
+        run_snakemake(
+            snakefile.as_posix(),
+            run_type="clean",
+            cores=cores,
+            conda_frontend=conda_frontend,
+            extra_args=list(snakemake_args) + ["--delete-all-output"],
+            check=False,
+        )
     if (paths.user().repo / "arxiv.tar.gz").exists():
         (paths.user().repo / "arxiv.tar.gz").unlink()
     if paths.user().temp.exists():
