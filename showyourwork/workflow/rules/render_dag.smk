@@ -35,6 +35,7 @@ rule:
         figures=paths.user().figures,
         tex=paths.user().tex,
         compile=paths.user().compile,
+        preprocess=paths.user().preprocess,
         resources=paths.showyourwork().resources,
     script:
         "../scripts/render_dag.py"

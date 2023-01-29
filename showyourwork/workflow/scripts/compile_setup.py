@@ -68,13 +68,13 @@ if __name__ == "__main__":
         )
 
         # Generate the stylesheet metadata file
-        p = compile_dir / Path(config["stylesheet_meta_file"]).name
+        p = compile_dir / config["stylesheet_meta_file"]
         with open(p, "w") as f:
             meta = ENV.from_string(TEMPLATE).render(**config)
             print(meta, file=f)
 
     # Copy over stylesheet
-    p = compile_dir / Path(config["stylesheet"]).name
+    p = compile_dir / config["stylesheet"]
     shutil.copy(snakemake.input.stylesheet, p)
 
     # Copy over TeX auxiliaries

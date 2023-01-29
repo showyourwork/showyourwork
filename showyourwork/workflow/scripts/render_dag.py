@@ -78,6 +78,15 @@ def get_dataset_dois(files, datasets):
     return list(set(result))
 
 
+def should_ignore(ignore, path):
+    path = Path(path).resolve()
+    for pattern in ignore:
+        pattern = Path(pattern).resolve()
+        if path == pattern or is_relative_to(path, pattern):
+            return True
+    return False
+
+
 if __name__ == "__main__":
 
     # Snakemake config (available automagically)
@@ -126,11 +135,11 @@ if __name__ == "__main__":
         ]
 
     # Ignore temporary & showyourwork files
-    ignore = config["tex_files_out"] + [
-        config["stylesheet"],
-        config["stylesheet_meta_file"],
-        str((params.flags / "SYW__DAG").relative_to(params.repo)),
-        str(params.compile.relative_to(params.repo)),
+    ignore = list(config["tex_files_in"]) + [
+        params.resources,
+        params.flags,
+        params.preprocess,
+        params.compile,
         "dag.pdf",
         "showyourwork.yml",
         "zenodo.yml",
@@ -144,13 +153,27 @@ if __name__ == "__main__":
         user_ignore.extend(file_list)
     ignore.extend(user_ignore)
 
+    # Remove ignored files from dependency tree
+    tree = {}
+    for file, parents in dependencies.items():
+        if should_ignore(ignore, file):
+            continue
+        tree[file] = set()
+        for parent in parents:
+            todo = [parent]
+            while len(todo):
+                query = todo.pop()
+                if should_ignore(ignore, query):
+                    todo += dependencies.get(query, [])
+                else:
+                    tree[file] |= {query}
+
     # Assemble all files
     files = []
-    for file in dependencies:
+    for file, parents in tree.items():
         files.append(file)
-        files.extend(dependencies[file])
+        files.extend(parents)
     files = list(set(files))
-    files = [file for file in files if file not in ignore]
 
     # Group into different types
     datasets = []
@@ -342,7 +365,7 @@ if __name__ == "__main__":
 
     # Add the edges
     for file in files:
-        for dependency in dependencies.get(file, []):
+        for dependency in tree.get(file, []):
             if dependency not in ignore:
                 dot.edge(dependency, file, color=colors["edge"])
 

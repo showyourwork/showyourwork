@@ -356,13 +356,6 @@ def parse_config():
             file.as_posix()
             for file in (paths.showyourwork().resources / "tex").glob("*")
         ]
-        config["tex_files_out"] = [
-            (
-                paths.user().tex.relative_to(paths.user().repo)
-                / Path(file).name
-            ).as_posix()
-            for file in config["tex_files_in"]
-        ]
 
         # The main tex file and the compiled pdf
         config["ms_tex"] = (
@@ -379,16 +372,8 @@ def parse_config():
         )
 
         # Paths to the TeX stylesheets
-        config["stylesheet"] = (
-            (paths.user().tex / "showyourwork.tex")
-            .relative_to(paths.user().repo)
-            .as_posix()
-        )
-        config["stylesheet_meta_file"] = (
-            (paths.user().tex / "showyourwork-metadata.tex")
-            .relative_to(paths.user().repo)
-            .as_posix()
-        )
+        config["stylesheet"] = "showyourwork.tex"
+        config["stylesheet_meta_file"] = "showyourwork-metadata.tex"
 
         # Script extensions
         config["script_extensions"] = list(config["scripts"].keys())
