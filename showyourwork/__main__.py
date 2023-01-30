@@ -1,3 +1,3 @@
-from showyourwork.cli import entry_point
+from showyourwork.cli import main
 
-entry_point()
+main()
