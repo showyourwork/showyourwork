@@ -5,9 +5,8 @@ from textwrap import TextWrapper
 
 import click
 
-from .. import exceptions, git, __version__
+from .. import __version__, exceptions, git
 from . import commands
-
 
 SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
 OPTIONS = ["-v", "--version", "--help"]
