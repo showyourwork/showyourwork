@@ -5,7 +5,7 @@ from textwrap import TextWrapper
 
 import click
 
-from .. import exceptions, git
+from .. import exceptions, git, __version__
 from . import commands
 
 # Store command & option metadata here so we can make `build`
@@ -73,6 +73,8 @@ def echo(text="", **kwargs):
 
 
 @click.group
+@click.version_option(__version__, '--version', '-v')
+@click.pass_context
 def main():
     """Easily build open-source, reproducible scientific articles."""
     pass
