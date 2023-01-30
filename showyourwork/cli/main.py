@@ -5,12 +5,9 @@ from textwrap import TextWrapper
 
 import click
 
-from .. import exceptions, git
+from .. import __version__, exceptions, git
 from . import commands
 
-# Store command & option metadata here so we can make `build`
-# the default subcommand in __init__.py
-DEFAULT_SUBCOMMAND = "build"
 SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
 OPTIONS = ["-v", "--version", "--help"]
 
@@ -73,7 +70,14 @@ def echo(text="", **kwargs):
         click.echo(text, **kwargs)
 
 
-@click.group
+@click.group()
+@click.version_option(
+    __version__,
+    "--version",
+    "-v",
+    package_name="showyourwork",
+    message="%(version)s",
+)
 def main():
     """Easily build open-source, reproducible scientific articles."""
     pass
