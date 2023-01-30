@@ -36,7 +36,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "showyourwork=showyourwork.cli:main",
+            "showyourwork=showyourwork.cli:entry_point",
         ]
     },
     setup_requires=[
