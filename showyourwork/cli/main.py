@@ -10,7 +10,6 @@ from . import commands
 
 # Store command & option metadata here so we can make `build`
 # the default subcommand in __init__.py
-DEFAULT_SUBCOMMAND = "build"
 SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
 OPTIONS = ["-v", "--version", "--help"]
 
