@@ -8,8 +8,7 @@ import click
 from .. import exceptions, git, __version__
 from . import commands
 
-# Store command & option metadata here so we can make `build`
-# the default subcommand in __init__.py
+
 SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
 OPTIONS = ["-v", "--version", "--help"]
 
