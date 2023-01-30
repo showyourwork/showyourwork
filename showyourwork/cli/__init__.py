@@ -14,7 +14,7 @@ import sys
 import warnings
 
 from .. import __version__
-from .main import DEFAULT_SUBCOMMAND, OPTIONS, SUBCOMMANDS, main
+from .main import OPTIONS, SUBCOMMANDS, main
 
 
 def entry_point():
@@ -44,17 +44,11 @@ def entry_point():
 
     """
     if len(sys.argv) == 1:
-        sys.argv.insert(1, DEFAULT_SUBCOMMAND)
+        sys.argv.insert(1, '--help')
 
     elif sys.argv[1] not in SUBCOMMANDS + OPTIONS:
-        warnings.warn(
-            "The use of the `showyourwork` command line with arguments but without an "
-            "explicit subcommand is deprecated. Use `showyourwork build` for "
-            "consistent results.",
-            FutureWarning,
-        )
-        sys.argv.insert(1, DEFAULT_SUBCOMMAND)
-
+        sys.argv = ['showyourwork', '--help']
+        
     if sys.argv[1] in ["-v", "--version"]:
         print(__version__)
 
