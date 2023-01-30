@@ -71,10 +71,15 @@ def echo(text="", **kwargs):
         click.echo(text, **kwargs)
 
 
-@click.group(no_args_is_help=True)
-@click.version_option(__version__, '--version', '-v')
-@click.pass_context
-def main(args):
+@click.group()
+@click.version_option(
+    __version__,
+    "--version",
+    "-v",
+    package_name="showyourwork",
+    message="%(version)s",
+)
+def main():
     """Easily build open-source, reproducible scientific articles."""
     pass
 
