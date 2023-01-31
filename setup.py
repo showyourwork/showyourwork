@@ -1,7 +1,7 @@
 """Install script for `showyourwork`."""
 from pathlib import Path
 
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, setup
 
 setup(
     name="showyourwork",
@@ -12,7 +12,7 @@ setup(
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
     license="MIT",
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     use_scm_version={
         "write_to": Path("showyourwork") / "_showyourwork_version.py",
         "write_to_template": '__version__ = "{version}"',
