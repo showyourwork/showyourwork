@@ -43,13 +43,10 @@ def entry_point():
     `build` subcommand into `sys.argv` prior to click taking control.
 
     """
-    if len(sys.argv) == 1:
-        sys.argv.insert(1, DEFAULT_SUBCOMMAND)
-
-    elif sys.argv[1] not in SUBCOMMANDS + OPTIONS:
+    if len(sys.argv) == 1 or sys.argv[1] not in SUBCOMMANDS + OPTIONS:
         warnings.warn(
-            "The use of the `showyourwork` command line with arguments but without an "
-            "explicit subcommand is deprecated. Use `showyourwork build` for "
+            "The use of the `showyourwork` command line without an explicit "
+            "subcommand is deprecated. Use `showyourwork build` for "
             "consistent results.",
             FutureWarning,
         )
