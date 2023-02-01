@@ -481,8 +481,8 @@ def get_json_tree():
     figures["free-floating-static"] = {
         "script": None,
         "graphics": free_floating_static,
-        "datasets": srcs,
-        "dependencies": [],
+        "datasets": [],
+        "dependencies": srcs,
         "command": f"cp {' '.join(srcs)} {dest}",
         "static": True,
     }
