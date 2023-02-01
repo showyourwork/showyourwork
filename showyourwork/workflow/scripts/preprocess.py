@@ -386,9 +386,10 @@ def get_json_tree():
                 command = None
 
         # Collect user-defined dependencies
-        dependencies = (
-            list(config["dependencies"].get(script, [])) + extra_dependencies
-        )
+        dependencies = config["dependencies"].get(script, [])
+        if isinstance(dependencies, str):
+            dependencies = [dependencies]
+        dependencies += list(extra_dependencies)
 
         # Same, but recursing all the way up the graph
         # (i.e., including dependendencies of dependencies, and so forth)
@@ -482,7 +483,7 @@ def get_json_tree():
         "script": None,
         "graphics": free_floating_static,
         "datasets": [],
-        "dependencies": [],
+        "dependencies": srcs,
         "command": f"cp {' '.join(srcs)} {dest}",
         "static": True,
     }
