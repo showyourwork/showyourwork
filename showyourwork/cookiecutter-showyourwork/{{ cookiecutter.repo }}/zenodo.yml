@@ -1,3 +1,0 @@
-cache:
-  main:
-    sandbox: {{ cookiecutter.cache_sandbox_doi }}

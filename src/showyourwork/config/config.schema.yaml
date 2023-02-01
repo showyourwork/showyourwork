@@ -1,0 +1,55 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "showyourwork configuration"
+description: "The schema for version 2 of the showyourwork configuration file"
+type: object
+
+required:
+  - config-version
+
+properties:
+  config-version:
+    type: integer
+    description: "The version of the configuration specification"
+
+  conda:
+    description: "The default conda environment YAML file"
+    type: string
+
+  files:
+    description: "Information about the files required to build the document"
+    type: object
+    properties:
+      static:
+        description: "A list of static files"
+        type: array
+        items:
+          type: string
+
+      remote:
+        description: "A list of remote files"
+        type: array
+        items:
+          type: string
+
+      dynamic:
+        description: "A list of dynamic files"
+        type: array
+        items:
+          anyOf:
+            - type: string
+            - type: object
+              properties:
+                script:
+                  type: string
+                command:
+                  type: string
+                conda:
+                  type: string
+                input:
+                  type: array
+                  items:
+                    type: string
+                output:
+                  type: array
+                  items:
+                    type: string
