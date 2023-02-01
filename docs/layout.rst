@@ -300,8 +300,8 @@ This directory is meant to house figure files that can't be generated from
 scripts, such as photos, flowcharts, reproductions of figures in other papers, etc.
 If you place your figure in here, |showyourwork| will know not to try to
 generate it from any script.
-When a static figure is being updated, the respective caches in the github 
-workflow should be deleted to ensure that the build considers the new figure. 
+When a static figure is being updated, the respective caches in the github
+workflow should be deleted to ensure that the build considers the new figure.
 
 
 .. _tex:
