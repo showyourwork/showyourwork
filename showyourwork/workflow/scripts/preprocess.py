@@ -482,7 +482,7 @@ def get_json_tree():
         "script": None,
         "graphics": free_floating_static,
         "datasets": [],
-        "dependencies": srcs,
+        "dependencies": [],
         "command": f"cp {' '.join(srcs)} {dest}",
         "static": True,
     }
