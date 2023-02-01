@@ -50,9 +50,8 @@ rule syw__main:
 
 
 # Include all other rules
+include: "rules/common.smk"
 include: "rules/preprocess.smk"
-include: "rules/conda.smk"
-
 
 onstart:
 

@@ -4,9 +4,6 @@ Defines the rule ``syw__arxiv`` to generate a tarball for arXiv submission.
 Runs the script :doc:`arxiv` to generate the tarball ``arxiv.tar.gz``.
 
 """
-from showyourwork import paths
-
-
 rule:
     """
     Generate a tarball for arXiv submission.
@@ -17,17 +14,10 @@ rule:
     message:
         "Generating the arXiv tarball..."
     input:
-        config["ms_tex"],
-        config["dependencies"][config["ms_tex"]],
-        WORKFLOW_GRAPH,
-        "showyourwork.yml",
-        paths.user().flags / "SYW__CONDA"
+        temporary_tex_files(),
+        (paths.user().compile / f'{config["ms_name"]}.pdf').as_posix(),
+        compile_dir=paths.user().compile.as_posix()
     output:
         "arxiv.tar.gz",
-        config["ms_pdf"],
-        temp(config["tex_files_out"]),
-        temp(config["stylesheet"]),
-        temp(config["stylesheet_meta_file"]),
-        directory(paths.user().compile.as_posix())
     script:
         "../scripts/arxiv.py"

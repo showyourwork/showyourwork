@@ -402,7 +402,7 @@ class Zenodo:
                     f"{bucket_url}/{rule_name}?access_token={self.access_token}",
                 ]
             )
-        except:
+        except Exception:
             raise exceptions.ZenodoUploadError()
 
         # Delete the tarball if we created it
@@ -484,7 +484,7 @@ class Zenodo:
                                 str(file),
                             ]
                         )
-                    except:
+                    except Exception:
                         raise exceptions.ZenodoDownloadError()
 
                     # If it's a directory tarball, extract it
@@ -605,7 +605,7 @@ class Zenodo:
                     break
             else:
                 raise Exception
-        except:
+        except Exception:
             raise exceptions.ZenodoRecordNotFound(self.deposit_id)
         version_id = data["id"]
         parse_request(
@@ -645,7 +645,7 @@ class Zenodo:
                     break
             else:
                 raise Exception
-        except:
+        except Exception:
             raise exceptions.ZenodoRecordNotFound(self.deposit_id)
         version_id = data["id"]
         parse_request(
@@ -688,7 +688,7 @@ class Zenodo:
         if r.status_code <= 204:
             try:
                 data = r.json()
-            except:
+            except Exception:
                 data = []
             if len(data):
                 data = data[0]
@@ -721,7 +721,7 @@ class Zenodo:
                         )
                         try:
                             data = r.json()
-                        except:
+                        except Exception:
                             pass
                         else:
                             logger.debug(data["message"])
@@ -735,7 +735,7 @@ class Zenodo:
             )
             try:
                 data = r.json()
-            except:
+            except Exception:
                 pass
             else:
                 logger.debug(data["message"])
@@ -748,7 +748,7 @@ class Zenodo:
         if r.status_code > 204:
             try:
                 data = r.json()
-            except:
+            except Exception:
                 data = {}
             if "PID is not registered" in data.get("message", ""):
                 # There is no published record with this id
@@ -776,7 +776,7 @@ class Zenodo:
             if r.status_code <= 204:
                 try:
                     records = r.json().get("hits", {}).get("hits", [])
-                except:
+                except Exception:
                     records = []
                     logger.debug(
                         f"File {rule_name} not found in record with DOI {self.doi}."
@@ -801,7 +801,7 @@ class Zenodo:
                 # Something unexpected happened
                 try:
                     data = r.json()
-                except:
+                except Exception:
                     data = {}
                 raise exceptions.ZenodoError(
                     status=data.get("status", "unknown"),
@@ -840,7 +840,7 @@ class Zenodo:
             )
             try:
                 data = r.json()
-            except:
+            except Exception:
                 pass
             else:
                 logger.debug(data["message"])
@@ -848,7 +848,7 @@ class Zenodo:
 
         try:
             data = r.json()
-        except:
+        except Exception:
             data = []
         if len(data):
             data = data[0]
@@ -910,7 +910,7 @@ class Zenodo:
         if r.status_code <= 204:
             try:
                 data = r.json()
-            except:
+            except Exception:
                 raise exceptions.ZenodoError(
                     message=f"Error accessing latest draft for DOI {self.doi}."
                 )
@@ -930,7 +930,7 @@ class Zenodo:
                     )
                     try:
                         data = r.json()
-                    except:
+                    except Exception:
                         raise exceptions.ZenodoError(
                             message=f"Error accessing latest draft for DOI {self.doi}."
                         )
@@ -988,7 +988,7 @@ class Zenodo:
                     ],
                     cwd=cache_folder,
                 )
-            except:
+            except Exception:
                 raise exceptions.ZenodoDownloadError()
 
         # Return path to cache folder
@@ -1023,7 +1023,7 @@ class Zenodo:
         if r.status_code <= 204:
             try:
                 data = r.json()
-            except:
+            except Exception:
                 raise exceptions.ZenodoError(
                     message=f"Error accessing latest draft for DOI {target_deposit.doi}."
                 )
@@ -1043,7 +1043,7 @@ class Zenodo:
                     )
                     try:
                         data = r.json()
-                    except:
+                    except Exception:
                         raise exceptions.ZenodoError(
                             message=f"Error accessing latest draft for DOI {target_deposit.doi}."
                         )
@@ -1116,7 +1116,7 @@ class Zenodo:
                     ],
                     cwd=cache_folder,
                 )
-            except:
+            except Exception:
                 raise exceptions.ZenodoUploadError()
 
         # We're done

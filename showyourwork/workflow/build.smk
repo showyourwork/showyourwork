@@ -58,13 +58,13 @@ if (paths.user().temp / "config.json").exists():
 
 
     # Include all other rules
+    include: "rules/common.smk"
     include: "rules/dag.smk"
     include: "rules/arxiv.smk"
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
     include: "rules/render_dag.smk"
-    include: "rules/conda.smk"
 
     # Resolve ambiguities in rule order
     ruleorder: syw__compile > syw__arxiv

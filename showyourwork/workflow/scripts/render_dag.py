@@ -2,16 +2,10 @@
 Generates a directed acyclic graph (DAG) of the build process.
 
 """
+import subprocess
 from pathlib import Path
 
 import graphviz
-
-from showyourwork import paths
-from showyourwork.subproc import get_stdout
-from showyourwork.zenodo import get_dataset_dois
-
-# Activate the showyourwork conda environment
-conda_activate = open(paths.user().flags / "SYW__CONDA", "r").read()
 
 
 def is_relative_to(path, other):
@@ -45,28 +39,59 @@ def convert_to_png(file):
     """
     try:
 
-        aspect = float(
-            get_stdout(
-                f'{conda_activate} convert "{file}" -format "%[fx:w/h]" info:',
-                shell=True,
-            )
+        result = subprocess.run(
+            f'convert "{file}" -format "%[fx:w/h]" info:',
+            shell=True,
+            stdout=subprocess.PIPE,
         )
+        assert result.returncode == 0
+        aspect = float(result.stdout.decode())
         width = aspect * 500
-        get_stdout(
-            f"{conda_activate} convert -resize {width}x500 -background white -alpha remove "
+        result = subprocess.run(
+            f"convert -resize {width}x500 -background white -alpha remove "
             f'-bordercolor black -border 15 "{file}" "{file}.png"',
             shell=True,
         )
+        assert result.returncode == 0
+
     except Exception:
         return None
     else:
         return aspect
 
 
+def get_dataset_dois(files, datasets):
+    """
+    Local version of this function copied from `showyourwork/zenodo.py`
+
+    """
+    result = []
+    for doi in datasets:
+        for file in files:
+            if file in datasets[doi]["contents"].values():
+                result.append(doi)
+            else:
+                for zip_file in datasets[doi]["zip_files"]:
+                    if file in datasets[doi]["zip_files"][zip_file].values():
+                        result.append(doi)
+                        break
+    return list(set(result))
+
+
+def should_ignore(ignore, path):
+    path = Path(path).resolve()
+    for pattern in ignore:
+        pattern = Path(pattern).resolve()
+        if path == pattern or is_relative_to(path, pattern):
+            return True
+    return False
+
+
 if __name__ == "__main__":
 
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
+    params = snakemake.params  # type:ignore
 
     # User settings
     node_attr = config["dag"]["node_attr"]
@@ -102,7 +127,7 @@ if __name__ == "__main__":
 
     # Collect all dependency information
     deps = config["dag_dependencies"]
-    prefix = str(paths.user().repo / "x")[:-1]
+    prefix = str(params.repo / "x")[:-1]
     dependencies = {}
     for f, d in deps.items():
         dependencies[removeprefix(f, prefix)] = [
@@ -110,14 +135,11 @@ if __name__ == "__main__":
         ]
 
     # Ignore temporary & showyourwork files
-    ignore = config["tex_files_out"] + [
-        config["stylesheet"],
-        config["stylesheet_meta_file"],
-        str((paths.user().flags / "SYW__DAG").relative_to(paths.user().repo)),
-        str(
-            (paths.user().flags / "SYW__CONDA").relative_to(paths.user().repo)
-        ),
-        str(paths.user().compile.relative_to(paths.user().repo)),
+    ignore = list(config["tex_files_in"]) + [
+        params.resources,
+        params.flags,
+        params.preprocess,
+        params.compile,
         "dag.pdf",
         "showyourwork.yml",
         "zenodo.yml",
@@ -126,20 +148,32 @@ if __name__ == "__main__":
     # Ignore user-specified patterns
     user_ignore = []
     for pat in config["dag"]["ignore_files"]:
-        file_list = list(Path(paths.user().repo).glob(pat))
-        file_list = [
-            str(file.relative_to(paths.user().repo)) for file in file_list
-        ]
+        file_list = list(Path(params.repo).glob(pat))
+        file_list = [str(file.relative_to(params.repo)) for file in file_list]
         user_ignore.extend(file_list)
     ignore.extend(user_ignore)
 
+    # Remove ignored files from dependency tree
+    tree = {}
+    for file, parents in dependencies.items():
+        if should_ignore(ignore, file):
+            continue
+        tree[file] = set()
+        for parent in parents:
+            todo = [parent]
+            while len(todo):
+                query = todo.pop()
+                if should_ignore(ignore, query):
+                    todo += dependencies.get(query, [])
+                else:
+                    tree[file] |= {query}
+
     # Assemble all files
     files = []
-    for file in dependencies:
+    for file, parents in tree.items():
         files.append(file)
-        files.extend(dependencies[file])
+        files.extend(parents)
     files = list(set(files))
-    files = [file for file in files if file not in ignore]
 
     # Group into different types
     datasets = []
@@ -148,13 +182,13 @@ if __name__ == "__main__":
     figures = []
     others = []
     for file in files:
-        if is_relative_to(Path(file).absolute(), paths.user().data):
+        if is_relative_to(Path(file).absolute(), params.data):
             datasets.append(file)
-        elif is_relative_to(Path(file).absolute(), paths.user().scripts):
+        elif is_relative_to(Path(file).absolute(), params.scripts):
             scripts.append(file)
-        elif is_relative_to(Path(file).absolute(), paths.user().figures):
+        elif is_relative_to(Path(file).absolute(), params.figures):
             figures.append(file)
-        elif is_relative_to(Path(file).absolute(), paths.user().tex):
+        elif is_relative_to(Path(file).absolute(), params.tex):
             texfiles.append(file)
         elif file == config["ms_pdf"]:
             pass
@@ -318,9 +352,7 @@ if __name__ == "__main__":
         c.node(
             config["ms_pdf"],
             label="",
-            image=str(
-                paths.showyourwork().resources / "img" / "article-thumb.png"
-            ),
+            image=str(params.resources / "img" / "article-thumb.png"),
             penwidth="0",
             fixedsize="true",
             imagescale="false",
@@ -333,7 +365,7 @@ if __name__ == "__main__":
 
     # Add the edges
     for file in files:
-        for dependency in dependencies.get(file, []):
+        for dependency in tree.get(file, []):
             if dependency not in ignore:
                 dot.edge(dependency, file, color=colors["edge"])
 
@@ -348,20 +380,21 @@ if __name__ == "__main__":
                     )
 
     # Save the graph
-    dot.save(directory=paths.user().repo)
+    dot.save(directory=params.repo)
 
     # Render the PDF
-    get_stdout(
-        f"{conda_activate} dot -Tpdf dag.gv > dag.pdf",
+    result = subprocess.run(
+        "dot -Tpdf dag.gv > dag.pdf",
         shell=True,
-        cwd=paths.user().repo,
+        cwd=params.repo,
     )
+    assert result.returncode == 0
 
     # Remove temporary files
     for figure in figures:
         pngfile = Path(f"{figure}.png")
         if pngfile.exists():
             pngfile.unlink()
-    gvfile = paths.user().repo / "dag.gv"
+    gvfile = params.repo / "dag.gv"
     if gvfile.exists():
         gvfile.unlink()

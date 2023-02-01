@@ -11,6 +11,56 @@ from showyourwork import paths
 
 rule:
     """
+    Setup the temporary files for compilation.
+
+    """
+    name:
+        "syw__preprocess_setup"
+    message:
+        "Preprocess: Setting up..."
+    input:
+        config["ms_tex"],
+        config["tex_files_in"],
+        "showyourwork.yml",
+        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
+        stylesheet=(paths.showyourwork().resources / "styles" / "preprocess.tex").as_posix()
+    output:
+        temporary_tex_files(root=paths.user().preprocess),
+        compile_dir=directory(paths.user().preprocess.as_posix()),
+    params:
+        metadata=False
+    script:
+        "../scripts/compile_setup.py"
+
+rule:
+    """
+    Compile the manuscript into the article PDF.
+
+    """
+    name:
+        "syw__preprocess_xml"
+    message:
+        "Preprocess: Generating XML tree..."
+    input:
+        temporary_tex_files(root=paths.user().preprocess),
+        compile_dir=paths.user().preprocess.as_posix()
+    output:
+        (paths.user().preprocess / "showyourwork.xml").as_posix()
+    conda:
+        (paths.showyourwork().envs / "tectonic.yml").as_posix()
+    shell:
+        """
+        cd "{input.compile_dir}"
+        tectonic                  \\
+            --chatter minimal     \\
+            --keep-logs           \\
+            --keep-intermediates  \\
+            -r 0                  \\
+            "{input[0]}"
+        """
+
+rule:
+    """
     Generate a `config.json` file for the main build.
 
     This rule builds the article using ``tectonic``, but re-defines ``figure``,
@@ -30,16 +80,10 @@ rule:
     name:
         "syw__preprocess"
     message:
-        "Setting up the workflow..."
+        "Preprocess: Setting up the workflow..."
     input:
-        config["ms_tex"],
-        "showyourwork.yml",
-        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
-        paths.user().flags / "SYW__CONDA"
+        (paths.user().preprocess / "showyourwork.xml").as_posix()
     output:
         config["config_json"],
-        temp(config["tex_files_out"]),
-        temp(config["stylesheet"]),
-        directory(paths.user().preprocess.as_posix())
     script:
         "../scripts/preprocess.py"

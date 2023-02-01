@@ -44,7 +44,7 @@ def echo(text="", **kwargs):
     """
     try:
         terminal_size = shutil.get_terminal_size().columns
-    except:
+    except Exception:
         terminal_size = 80
     wrapper = TextWrapper(
         width=terminal_size,
