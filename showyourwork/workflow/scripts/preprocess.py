@@ -328,6 +328,7 @@ def get_json_tree():
 
         # Get the figure \script, if it exists
         scripts = figure.findall("SCRIPT")
+        extra_dependencies = []
         if len(scripts) and scripts[0].text is not None:
 
             # The user provided an argument to \script{}, which we assume
@@ -366,18 +367,17 @@ def get_json_tree():
             # If all the figures in this environment exist in the
             # static directory, set up the command to copy them over
             if static:
-                srcs = " ".join(
-                    [
-                        str(
-                            (
-                                paths.user().static / Path(graphic).name
-                            ).relative_to(paths.user().repo)
+                srcs = [
+                    str(
+                        (paths.user().static / Path(graphic).name).relative_to(
+                            paths.user().repo
                         )
-                        for graphic in graphics
-                    ]
-                )
+                    )
+                    for graphic in graphics
+                ]
+                extra_dependencies = srcs
                 dest = paths.user().figures.relative_to(paths.user().repo)
-                command = f"cp {srcs} {dest}"
+                command = f"cp {' '.join(srcs)} {dest}"
 
             else:
 
@@ -387,6 +387,9 @@ def get_json_tree():
 
         # Collect user-defined dependencies
         dependencies = config["dependencies"].get(script, [])
+        if isinstance(dependencies, str):
+            dependencies = [dependencies]
+        dependencies += list(extra_dependencies)
 
         # Same, but recursing all the way up the graph
         # (i.e., including dependendencies of dependencies, and so forth)
@@ -467,23 +470,21 @@ def get_json_tree():
 
     # Add entries to the tree: static figures
     # (copy them over from the static folder)
-    srcs = " ".join(
-        [
-            str(
-                (paths.user().static / Path(graphic).name).relative_to(
-                    paths.user().repo
-                )
+    srcs = [
+        str(
+            (paths.user().static / Path(graphic).name).relative_to(
+                paths.user().repo
             )
-            for graphic in free_floating_static
-        ]
-    )
+        )
+        for graphic in free_floating_static
+    ]
     dest = paths.user().figures.relative_to(paths.user().repo)
     figures["free-floating-static"] = {
         "script": None,
         "graphics": free_floating_static,
         "datasets": [],
-        "dependencies": [],
-        "command": f"cp {srcs} {dest}",
+        "dependencies": srcs,
+        "command": f"cp {' '.join(srcs)} {dest}",
         "static": True,
     }
 
