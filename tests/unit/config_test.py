@@ -1,49 +1,42 @@
+from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
+from typing import Generator
 
 import pytest
+from showyourwork.config import ConfigVersionError, ValidationError, parse_config
 
-from showyourwork.config import parse_config, ConfigVersionError, ValidationError
+
+@contextmanager
+def temp_config_file(body: str) -> Generator[str, None, None]:
+    with NamedTemporaryFile() as f:
+        f.write(body.encode("utf-8"))
+        f.flush()
+        yield f.name
 
 
 def test_minimal_valid() -> None:
-    with NamedTemporaryFile() as f:
-        f.write(
-            """
-config-version: 2
-        """.encode(
-                "utf-8"
-            )
-        )
-        f.flush()
-        parse_config(f.name)
+    with temp_config_file("config-version: 2") as f:
+        parse_config(f)
 
 
 def test_missing_version() -> None:
-    with NamedTemporaryFile() as f:
-        f.write("".encode("utf-8"))
-        f.flush()
+    with temp_config_file("") as f:
         with pytest.raises(ConfigVersionError):
-            parse_config(f.name)
+            parse_config(f)
 
 
 def test_invalid_version() -> None:
-    with NamedTemporaryFile() as f:
-        f.write("config-version: 1".encode("utf-8"))
-        f.flush()
+    with temp_config_file("config-version: 1") as f:
         with pytest.raises(ConfigVersionError):
-            parse_config(f.name)
+            parse_config(f)
 
 
 def test_invalid_schema() -> None:
-    with NamedTemporaryFile() as f:
-        f.write(
-            """
+    with temp_config_file(
+        """
 config-version: 2
 conda: 1
-""".encode(
-                "utf-8"
-            )
-        )
-        f.flush()
+"""
+    ) as f:
         with pytest.raises(ValidationError):
-            parse_config(f.name)
+            parse_config(f)

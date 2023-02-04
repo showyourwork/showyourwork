@@ -1,0 +1,4 @@
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::tectonic=0.12.0

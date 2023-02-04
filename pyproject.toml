@@ -18,6 +18,7 @@ dynamic = ["version"]
 dependencies = [
     "pyyaml",
     "jsonschema",
+    "snakemake",
     # "graphviz>=0.19.1",
     # "jinja2>=3.0.3",
     # "requests>=2.25.1",
@@ -59,6 +60,6 @@ line-length = 88
 line-length = 88
 update-check = false
 target-version = "py38"
-select = ["F", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW"]
+select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW"]
 ignore = []
 exclude = []

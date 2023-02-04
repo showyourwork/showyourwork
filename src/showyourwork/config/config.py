@@ -1,13 +1,12 @@
-from pathlib import Path
-from typing import Any, Dict, Union
+from importlib.resources import files
+from typing import Any, Dict
 
 import yaml
-from importlib.resources import files
-from jsonschema import validate, ValidationError as JSONSchemaValidationError
+from jsonschema import ValidationError as JSONSchemaValidationError
+from jsonschema import validate
 
+from showyourwork.paths import PathLike
 from showyourwork.version import __version__
-
-PathLike = Union[str, Path]
 
 
 class ConfigVersionError(Exception):
