@@ -1,7 +1,7 @@
 from functools import partial
 
 from showyourwork import paths
-from showyourwork.plugins.tex import add_to_preamble
+from showyourwork.plugins.tex.dependencies import parse_dependencies
 
 plugin_id = "showyourwork.plugins.tex"
 xml_directory = paths.work(config).plugin(plugin_id, "xml")
@@ -68,14 +68,10 @@ rule _syw_plug_tex_xml_tree:
             "{input.manuscript}"
         """
 
-# rule _syw_plug_tex_dependencies:
-#     input:
-#         xml_directory / "showyourwork.xml"
-#     output:
-#         xml_directory / "dependencies.json"
-#     conda: 
-#         paths.package_data(plugin_id, "resources", "tectonic.yml")
-#     shell:
-#         """
-#         tectonic-deps --json "{input}" > "{output}"
-#         """
+rule _syw_plug_tex_dependencies:
+    input:
+        xml_directory / "showyourwork.xml"
+    output:
+        paths.work(config).dependencies
+    run:
+        parse_dependencies(input[0], output[0], paths.repo(config).manuscript.parent) 
