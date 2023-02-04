@@ -11,9 +11,9 @@ def package_data(module: str, *file: str) -> Path:
     path = path.resolve()
     if not path.exists():
         raise FileNotFoundError(
-            f"No file exists at the path {file} for module {module}. This might have "
-            "something to do with how you installed showyourwork or a plugin. Open an "
-            "issue on the relevant repository."
+            f"No file exists at the path {'/'.join(file)} for module {module}. This "
+            "might have something to do with how you installed showyourwork or a "
+            "plugin. Open an issue on the relevant repository."
         )
     return path
 
@@ -44,17 +44,25 @@ class repo(PathMeta):
 
 class work(PathMeta):
     def __init__(self, config: Dict[str, Any]):
-        working_directory = config.get("working-directory", None)
+        self.config = config
+        working_directory = config.get("working_directory", None)
         if working_directory is None:
-            working_directory = find_project_root()
+            working_directory = find_project_root() / ".showyourwork"
         else:
             working_directory = Path(working_directory)
-        working_directory = working_directory / ".showyourwork"
         working_directory.mkdir(parents=True, exist_ok=True)
         self.root = working_directory
 
     def plugin(self, name: str, *others: PathLike) -> Path:
         return self.subdir("plugins", name, *others)
+
+    @property
+    def manuscript(self) -> Path:
+        return self.root / self.config.get("manuscript", "ms.tex")
+
+    @property
+    def dependencies(self) -> Path:
+        return self.root / "dependencies.json"
 
 
 def find_project_root(*input_paths: PathLike) -> Path:

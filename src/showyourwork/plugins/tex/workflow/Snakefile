@@ -1,0 +1,3 @@
+from showyourwork import paths
+
+include: paths.package_data("showyourwork.plugins.tex", "workflow", "rules", "dependencies.smk")

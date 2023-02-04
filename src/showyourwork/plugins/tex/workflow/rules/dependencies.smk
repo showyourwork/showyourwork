@@ -9,7 +9,7 @@ xml_directory = paths.work(config).plugin(plugin_id, "xml")
 #
 rule _syw_plug_tex_copy_ms2xml:
     input:
-        paths.repo(config).manuscript
+        paths.work(config).manuscript
     output:
         xml_directory / "manuscript.tex"
     shell:
@@ -19,7 +19,7 @@ rule _syw_plug_tex_copy_ms2xml:
 
 rule _syw_plug_tex_copy_style2xml:
     input:
-        paths.package_data("resources", "xmlstyle.tex")
+        paths.package_data(plugin_id, "workflow", "resources", "xmlstyle.tex")
     output:
         xml_directory / "showyourwork.tex"
     shell:
@@ -35,7 +35,7 @@ def local_or_provided_style(*args):
     if path.is_file():
         return path
     else:
-        return paths.package_data("resources", "showyourwork.sty")
+        return paths.package_data(plugin_id, "workflow", "resources", "showyourwork.sty")
 
 rule _syw_plug_tex_copy_class2xml:
     input:
@@ -55,7 +55,7 @@ rule _syw_plug_tex_xml_tree:
     output:
         xml_directory / "showyourwork.xml"
     conda: 
-        paths.package_data(plugin_id, "resources", "tectonic.yml")
+        paths.package_data(plugin_id, "workflow", "envs", "tectonic.yml")
     shell:
         """
         tectonic                  \\
@@ -64,3 +64,15 @@ rule _syw_plug_tex_xml_tree:
             --keep-intermediates  \\
             "{input.manuscript}"
         """
+
+# rule _syw_plug_tex_dependencies:
+#     input:
+#         xml_directory / "showyourwork.xml"
+#     output:
+#         xml_directory / "dependencies.json"
+#     conda: 
+#         paths.package_data(plugin_id, "resources", "tectonic.yml")
+#     shell:
+#         """
+#         tectonic-deps --json "{input}" > "{output}"
+#         """

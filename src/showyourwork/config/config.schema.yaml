@@ -7,7 +7,7 @@ required:
   - config-version
 
 properties:
-  config-version:
+  config_version:
     type: integer
     description: "The version of the configuration specification"
 

@@ -5,7 +5,8 @@ plugin_id = "showyourwork.plugins.tex"
 
 def test_basic() -> None:
     with test_util.temporary_project() as d:
-        open(f"{d}/ms.tex", "w").write(
+        p = paths.work({"working_directory": d})
+        open(p.manuscript, "w").write(
             r"""
 \documentclass{article}
 \usepackage{showyourwork}
@@ -15,16 +16,17 @@ Test.
             """
         )
         test_util.run_snakemake(
-            str(paths.package_data(plugin_id, "rules.smk")),
-            ["_syw_plug_tex_xml_tree"],
+            str(paths.package_data(plugin_id, "workflow", "Snakefile")),
+            ["_syw_plug_tex_xml_tree", "--config", f"working_directory={d}"],
             cwd=d,
         )
-        assert (paths.work({}).plugin(plugin_id, "xml") / "showyourwork.xml").is_file()
+        assert (p.plugin(plugin_id, "xml") / "showyourwork.xml").is_file()
 
 
 def test_figure() -> None:
     with test_util.temporary_project() as d:
-        open(f"{d}/ms.tex", "w").write(
+        p = paths.work({"working_directory": d})
+        open(p.manuscript, "w").write(
             r"""
 \documentclass{article}
 \usepackage{showyourwork}
@@ -37,11 +39,11 @@ Test.
             """
         )
         test_util.run_snakemake(
-            str(paths.package_data(plugin_id, "rules.smk")),
-            ["_syw_plug_tex_xml_tree"],
+            str(paths.package_data(plugin_id, "workflow", "Snakefile")),
+            ["_syw_plug_tex_xml_tree", "--config", f"working_directory={d}"],
             cwd=d,
         )
-        xml_tree = paths.work({}).plugin(plugin_id, "xml") / "showyourwork.xml"
+        xml_tree = p.plugin(plugin_id, "xml") / "showyourwork.xml"
         assert xml_tree.is_file()
         assert (
             xml_tree.read_text()

@@ -15,7 +15,7 @@ def temp_config_file(body: str) -> Generator[str, None, None]:
 
 
 def test_minimal_valid() -> None:
-    with temp_config_file("config-version: 2") as f:
+    with temp_config_file("config_version: 2") as f:
         parse_config(f)
 
 
@@ -26,7 +26,7 @@ def test_missing_version() -> None:
 
 
 def test_invalid_version() -> None:
-    with temp_config_file("config-version: 1") as f:
+    with temp_config_file("config_version: 1") as f:
         with pytest.raises(ConfigVersionError):
             parse_config(f)
 
@@ -34,7 +34,7 @@ def test_invalid_version() -> None:
 def test_invalid_schema() -> None:
     with temp_config_file(
         """
-config-version: 2
+config_version: 2
 conda: 1
 """
     ) as f:
