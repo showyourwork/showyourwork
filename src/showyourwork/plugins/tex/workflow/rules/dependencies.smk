@@ -1,8 +1,11 @@
+from functools import partial
+
 from showyourwork import paths
 from showyourwork.plugins.tex import add_to_preamble
 
 plugin_id = "showyourwork.plugins.tex"
 xml_directory = paths.work(config).plugin(plugin_id, "xml")
+resource = partial(paths.package_data, plugin_id, "workflow")
 
 #
 # Rules for generating the XML dependency tree from a TeX manuscript
@@ -19,7 +22,7 @@ rule _syw_plug_tex_copy_ms2xml:
 
 rule _syw_plug_tex_copy_style2xml:
     input:
-        paths.package_data(plugin_id, "workflow", "resources", "xmlstyle.tex")
+        resource("resources", "xmlstyle.tex")
     output:
         xml_directory / "showyourwork.tex"
     shell:
@@ -35,7 +38,7 @@ def local_or_provided_style(*args):
     if path.is_file():
         return path
     else:
-        return paths.package_data(plugin_id, "workflow", "resources", "showyourwork.sty")
+        return resource("resources", "showyourwork.sty")
 
 rule _syw_plug_tex_copy_class2xml:
     input:
@@ -55,7 +58,7 @@ rule _syw_plug_tex_xml_tree:
     output:
         xml_directory / "showyourwork.xml"
     conda: 
-        paths.package_data(plugin_id, "workflow", "envs", "tectonic.yml")
+        resource("envs", "tectonic.yml")
     shell:
         """
         tectonic                  \\
