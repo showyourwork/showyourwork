@@ -4,7 +4,6 @@ from contextlib import contextmanager
 from tempfile import TemporaryDirectory
 from typing import Generator, Optional
 
-
 conda_temporary_directory = TemporaryDirectory(prefix="showyourwork-conda-")
 
 

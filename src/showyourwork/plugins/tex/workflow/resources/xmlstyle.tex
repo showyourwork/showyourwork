@@ -1,5 +1,6 @@
-\RequirePackage{etoolbox}
-\RequirePackage{graphicx}
+\RequirePackage[notref, notcite]{showkeys} % showkeyslabelformat
+\RequirePackage{graphicx} % includegraphics
+\RequirePackage{etoolbox} % ifcsmacro
 
 \newwrite\syw@LogFile
 \immediate\openout\syw@LogFile=showyourwork.xml
@@ -24,9 +25,9 @@
 % }
 
 % Log labels
-% \renewcommand\showkeyslabelformat[1]{%
-%     \syw@LogMessage{<LABEL>#1</LABEL>}%
-% }
+\renewcommand\showkeyslabelformat[1]{%
+    \syw@LogMessage{<LABEL>#1</LABEL>}%
+}
 
 % Log figures
 \ifcsmacro{figure}{

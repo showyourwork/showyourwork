@@ -1,9 +1,17 @@
 import json
 import re
 from pathlib import Path
+from typing import Any
 from xml.etree import ElementTree
 
 from showyourwork import paths
+
+
+class PathEncoder(json.JSONEncoder):
+    def default(self, obj: Any) -> str:
+        if isinstance(obj, Path):
+            return str(obj)
+        return super().default(obj)
 
 
 def parse_dependencies(
@@ -71,4 +79,5 @@ def parse_dependencies(
             f,
             sort_keys=True,
             indent=2,
+            cls=PathEncoder,
         )
