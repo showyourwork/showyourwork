@@ -28,13 +28,17 @@ class ValidationError(Exception):
     pass
 
 
-def parse_config(file: PathLike, required_version: int = 2) -> Dict[str, Any]:
+def load_config(file: PathLike, required_version: int = 2) -> Dict[str, Any]:
     with open(file, "r") as f:
         config = yaml.safe_load(f)
 
     if config is None:
         config = {}
 
+    return parse_config(config, required_version=required_version)
+
+
+def parse_config(config: Dict[str, Any], required_version: int = 2) -> Dict[str, Any]:
     if config.get("config_version", None) != required_version:
         raise ConfigVersionError(config, required_version=required_version)
 

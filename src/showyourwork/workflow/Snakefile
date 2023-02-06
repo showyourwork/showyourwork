@@ -1,0 +1,31 @@
+from functools import partial
+from showyourwork.config import parse_config
+from showyourwork.paths import find_project_root, package_data
+
+project_root = find_project_root()
+
+configfile: package_data("showyourwork.config", "config.defaults.yaml")
+workdir: project_root
+
+config = parse_config(config, required_version=2)
+
+rule _syw_dump_config:
+    output:
+        "config.json"
+    run:
+        import json
+        with open(output[0], "w") as f:
+            json.dump(config, f, indent=2)
+
+include_rules = partial(package_data, "showyourwork", "workflow", "rules")
+include: include_rules("files.smk")
+include: include_rules("dependencies.smk")
+include: include_rules("plugins.smk")
+
+for snakefile in config.get("local_snakefiles", []):
+    include: snakefile
+
+# For backwards compatibility, we include the top-level project Snakefile if it
+# exists
+if (project_root / "Snakefile").is_file():
+    include: "Snakefile"

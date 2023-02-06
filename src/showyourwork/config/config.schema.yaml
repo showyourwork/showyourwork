@@ -4,12 +4,24 @@ description: "The schema for version 2 of the showyourwork configuration file"
 type: object
 
 required:
-  - config-version
+  - config_version
 
 properties:
   config_version:
     type: integer
     description: "The version of the configuration specification"
+
+  plugins:
+    description: "A list of plugins to load"
+    type: array
+    items:
+      type: string
+
+  local_snakefiles:
+    description: "A list of local files with additional Snakemake rules"
+    type: array
+    items:
+      type: string
 
   conda:
     description: "The default conda environment YAML file"
@@ -20,7 +32,7 @@ properties:
     type: object
     properties:
       static:
-        description: "A list of static files"
+        description: "A list of static files and directories"
         type: array
         items:
           type: string

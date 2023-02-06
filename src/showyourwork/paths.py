@@ -64,6 +64,10 @@ class work(PathMeta):
     def dependencies(self) -> Path:
         return self.root / "dependencies.json"
 
+    @property
+    def build(self) -> Path:
+        return self.subdir("build")
+
 
 def find_project_root(*input_paths: PathLike) -> Path:
     """Find the root of the project, defined as the first parent directory that
@@ -92,4 +96,7 @@ def find_project_root(*input_paths: PathLike) -> Path:
         if (directory / "showyourwork.yaml").is_file():
             return directory
 
-    return directory
+    raise RuntimeError(
+        "Could not find project root; are you sure that you're calling showyourwork "
+        "from within a showyourwork project?"
+    )
