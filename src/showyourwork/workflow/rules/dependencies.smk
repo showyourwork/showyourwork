@@ -7,7 +7,7 @@ from showyourwork.dependencies import write_manuscript_dependencies
 
 working_directory = paths.work(config).root
 
-checkpoint _syw_dependency_check:
+checkpoint syw__check_manuscript_dependencies:
     input:
         paths.work(config).dependencies
     output:
@@ -15,12 +15,27 @@ checkpoint _syw_dependency_check:
     run:
         write_manuscript_dependencies(input[0], output[0])
 
-def get_manuscript_dependencies(*_):
+def _get_manuscript_dependencies(*_):
+    with checkpoints.syw__check_manuscript_dependencies.get().output[0].open() as f:
+        deps = json.load(f)
+
+    # Save the manuscript dependencies to the "config" object for downstream
+    # usage.
+    config["_manuscript_dependencies"] = deps
+
+    return deps
+
+rule syw__dag:
+    input:
+        _get_manuscript_dependencies
+    output:
+        touch(working_directory / "dag.flag")
+
+def ensure_manuscript_dependencies(*_):
     # This checkpoint call serves two purposes: (1) it makes sure that we have
     # extracted the list of all dependencies from the manuscript, and (2) it
     # ensures that the DAG of jobs has been constructed.
-    with checkpoints._syw_dependency_check.get().output[0].open() as f:
-        manuscript_dependencies = json.load(f)
+    checkpoints.syw__check_manuscript_dependencies.get()
 
     # Walk up the call stack to find an object called "dag"... yeah, this is a
     # hack, but we haven't found a better approach yet!
@@ -53,18 +68,20 @@ def get_manuscript_dependencies(*_):
     # with access to the computed dependency tree.
     config["_dependency_tree"] = parents
 
-    # Also save the manuscript dependencies to the "config" object for
-    # downstream usage.
-    config["_manuscript_dependencies"] = manuscript_dependencies
+    return []
 
-    return manuscript_dependencies
+# rule dummy:
+#     input:
+#         _get_manuscript_dependencies
+#     output:
+#         touch(working_directory / "dummy.flag")
 
-rule _syw_dump_dependencies:
+rule syw__dump_dependencies:
     input:
-        get_manuscript_dependencies
+        working_directory / "dag.flag",
+        ensure_manuscript_dependencies
     output:
         working_directory / "_dependency_tree.json"
     run:
-
         with open(output[0], "w") as f:
-            json.dump(config["_dependency_tree"], f)
+            json.dump(config["_dependency_tree"], f, indent=2)

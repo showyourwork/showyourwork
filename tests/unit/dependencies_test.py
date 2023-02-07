@@ -18,7 +18,7 @@ def dump_dependencies(dependencies: Any) -> Generator[Path, None, None]:
                     "showyourwork", "workflow", "rules", "dependencies.smk"
                 )
             ),
-            ["_syw_dump_dependencies", "--config", f"working_directory={d}"],
+            ["syw__dump_dependencies", "--config", f"working_directory={d}"],
             cwd=d,
         )
         deps = p.root / "_dependency_tree.json"

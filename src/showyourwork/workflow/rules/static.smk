@@ -1,6 +1,6 @@
 from showyourwork import paths
 
-rule _syw_default_copy_manuscript:
+rule syw__default_copy_manuscript:
     input:
         paths.repo(config).manuscript
     output:
@@ -13,10 +13,10 @@ rule _syw_default_copy_manuscript:
 repo_path = paths.repo(config).root
 build_path = paths.work(config).build
 
-for static_file in config.get("files", {}).get("static", []):
+for static_file in config.get("static", []):
     rule:
         name:
-            f"_syw_default_copy_static_{static_file}"
+            f"syw__static_{paths.path_to_rule_name(static_file)}"
         input:
             repo_path / static_file
         output:

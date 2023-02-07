@@ -10,7 +10,7 @@ resource = partial(paths.package_data, plugin_id, "workflow")
 #
 # Rules for generating the XML dependency tree from a TeX manuscript
 #
-rule _syw_plug_tex_copy_ms2xml:
+rule syw__plug_tex_copy_ms2xml:
     input:
         paths.work(config).manuscript
     output:
@@ -20,7 +20,7 @@ rule _syw_plug_tex_copy_ms2xml:
         cp "{input}" "{output}"
         """
 
-rule _syw_plug_tex_copy_style2xml:
+rule syw__plug_tex_copy_style2xml:
     input:
         resource("resources", "xmlstyle.tex")
     output:
@@ -40,7 +40,7 @@ def local_or_provided_style(*args):
     else:
         return resource("resources", "showyourwork.sty")
 
-rule _syw_plug_tex_copy_class2xml:
+rule syw__plug_tex_copy_class2xml:
     input:
         local_or_provided_style
     output:
@@ -50,7 +50,7 @@ rule _syw_plug_tex_copy_class2xml:
         cp "{input}" "{output}"
         """
 
-rule _syw_plug_tex_xml_tree:
+rule syw__plug_tex_xml_tree:
     input:
         manuscript=xml_directory / "manuscript.tex",
         style=xml_directory / "showyourwork.tex",
@@ -68,7 +68,7 @@ rule _syw_plug_tex_xml_tree:
             "{input.manuscript}"
         """
 
-rule _syw_plug_tex_dependencies:
+rule syw__plug_tex_dependencies:
     input:
         xml_directory / "showyourwork.xml"
     output:

@@ -49,7 +49,7 @@ def test_snakemake_config() -> None:
     with test_util.temporary_project() as d:
         test_util.run_snakemake(
             str(paths.package_data("showyourwork", "workflow", "Snakefile")),
-            ["_syw_dump_config", "--config", f"working_directory={d}"],
+            ["syw__dump_config", "--config", f"working_directory={d}"],
             cwd=d,
         )
         with open(Path(d) / "config.json", "r") as f:

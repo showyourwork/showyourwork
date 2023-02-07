@@ -13,3 +13,4 @@ junit
 dist/*
 .vscode
 build
+*.json

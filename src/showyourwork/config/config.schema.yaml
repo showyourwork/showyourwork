@@ -27,41 +27,37 @@ properties:
     description: "The default conda environment YAML file"
     type: string
 
-  files:
-    description: "Information about the files required to build the document"
-    type: object
-    properties:
-      static:
-        description: "A list of static files and directories"
-        type: array
-        items:
-          type: string
+  static:
+    description: "A list of static files and directories"
+    type: array
+    items:
+      type: string
 
-      remote:
-        description: "A list of remote files"
-        type: array
-        items:
+  dynamic:
+    description: "Information about the scripts required to build the document"
+    type: array
+    items:
+      type: object
+      required:
+        - script
+      properties:
+        script:
           type: string
-
-      dynamic:
-        description: "A list of dynamic files"
-        type: array
-        items:
+        command:
+          type: string
+        conda:
+          type: string
+        input:
+          type: array
+          items:
+            type: string
+        output:
           anyOf:
             - type: string
-            - type: object
-              properties:
-                script:
-                  type: string
-                command:
-                  type: string
-                conda:
-                  type: string
-                input:
-                  type: array
-                  items:
-                    type: string
-                output:
-                  type: array
-                  items:
-                    type: string
+            - type: array
+              items:
+                type: string
+
+  scripts:
+    description: "Rules for running scripts of different types"
+    type: object

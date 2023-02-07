@@ -9,7 +9,7 @@ workdir: project_root
 
 config = parse_config(config, required_version=2)
 
-rule _syw_dump_config:
+rule syw__dump_config:
     output:
         "config.json"
     run:
@@ -18,8 +18,11 @@ rule _syw_dump_config:
             json.dump(config, f, indent=2)
 
 include_rules = partial(package_data, "showyourwork", "workflow", "rules")
-include: include_rules("files.smk")
 include: include_rules("dependencies.smk")
+
+include: include_rules("static.smk")
+include: include_rules("dynamic.smk")
+
 include: include_rules("plugins.smk")
 
 for snakefile in config.get("local_snakefiles", []):

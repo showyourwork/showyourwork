@@ -18,7 +18,8 @@ dynamic = ["version"]
 dependencies = [
     "pyyaml",
     "jsonschema",
-    "snakemake",
+    "snakemake",  # TODO(dfm): figure out what version we need
+    "click",
     # "graphviz>=0.19.1",
     # "jinja2>=3.0.3",
     # "requests>=2.25.1",
@@ -27,6 +28,9 @@ dependencies = [
     # "packaging>=21.3",
     # "snakemake==7.15.2",
 ]
+
+[project.scripts]
+showyourwork = "showyourwork.cli:main"
 
 [project.urls]
 "Homepage" = "https://show-your.work"
@@ -61,5 +65,5 @@ line-length = 88
 update-check = false
 target-version = "py38"
 select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW"]
-ignore = []
+ignore = ["PLR0913"]
 exclude = []

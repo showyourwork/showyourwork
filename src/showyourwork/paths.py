@@ -1,8 +1,42 @@
+import hashlib
 from importlib.resources import as_file, files
 from pathlib import Path
 from typing import Any, Dict, Union
 
 PathLike = Union[str, Path]
+
+
+def find_project_root(*input_paths: PathLike) -> Path:
+    """Find the root of the project, defined as the first parent directory that
+    contains a .git directory or showyourwork.yml file. Based on the implementation from
+    psf/black.
+    """
+    if input_paths:
+        srcs = list(input_paths)
+    else:
+        srcs = [Path.cwd().resolve()]
+    path_srcs = [Path(Path.cwd(), src).resolve() for src in srcs]
+
+    src_parents = [
+        list(path.parents) + ([path] if path.is_dir() else []) for path in path_srcs
+    ]
+    common_base = max(
+        set.intersection(*(set(parents) for parents in src_parents)),
+        key=lambda path: path.parts,
+    )
+
+    for directory in (common_base, *common_base.parents):
+        if (directory / ".git").exists():
+            return directory
+        if (directory / "showyourwork.yml").is_file():
+            return directory
+        if (directory / "showyourwork.yaml").is_file():
+            return directory
+
+    raise RuntimeError(
+        "Could not find project root; are you sure that you're calling showyourwork "
+        "from within a showyourwork project?"
+    )
 
 
 def package_data(module: str, *file: str) -> Path:
@@ -16,6 +50,11 @@ def package_data(module: str, *file: str) -> Path:
             "plugin. Open an issue on the relevant repository."
         )
     return path
+
+
+def path_to_rule_name(path: PathLike) -> str:
+    path_hash = hashlib.md5(str(path).encode()).hexdigest()
+    return f"{Path(path).name.replace('.', '_')}_{path_hash}"
 
 
 class PathMeta:
@@ -67,36 +106,3 @@ class work(PathMeta):
     @property
     def build(self) -> Path:
         return self.subdir("build")
-
-
-def find_project_root(*input_paths: PathLike) -> Path:
-    """Find the root of the project, defined as the first parent directory that
-    contains a .git directory or showyourwork.yml file. Based on the implementation from
-    psf/black.
-    """
-    if input_paths:
-        srcs = list(input_paths)
-    else:
-        srcs = [Path.cwd().resolve()]
-    path_srcs = [Path(Path.cwd(), src).resolve() for src in srcs]
-
-    src_parents = [
-        list(path.parents) + ([path] if path.is_dir() else []) for path in path_srcs
-    ]
-    common_base = max(
-        set.intersection(*(set(parents) for parents in src_parents)),
-        key=lambda path: path.parts,
-    )
-
-    for directory in (common_base, *common_base.parents):
-        if (directory / ".git").exists():
-            return directory
-        if (directory / "showyourwork.yml").is_file():
-            return directory
-        if (directory / "showyourwork.yaml").is_file():
-            return directory
-
-    raise RuntimeError(
-        "Could not find project root; are you sure that you're calling showyourwork "
-        "from within a showyourwork project?"
-    )
