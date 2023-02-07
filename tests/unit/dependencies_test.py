@@ -21,7 +21,7 @@ def dump_dependencies(dependencies: Any) -> Generator[Path, None, None]:
             ["syw__dump_dependencies", "--config", f"working_directory={d}"],
             cwd=d,
         )
-        deps = p.root / "_dependency_tree.json"
+        deps = Path(d) / "dependency_tree.json"
         assert deps.is_file()
         yield deps
 
@@ -30,8 +30,7 @@ def test_empty() -> None:
     with dump_dependencies({}) as f:
         data = json.load(open(f, "r"))
         data = {Path(k).name: v for k, v in data.items()}
-        assert "_dependency_tree.json" in data
-        assert "manuscript_dependencies.json" in data
+        assert "dependency_tree.json" in data
 
 
 def test_basic() -> None:
