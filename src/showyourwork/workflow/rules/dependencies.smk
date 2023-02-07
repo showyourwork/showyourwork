@@ -3,7 +3,6 @@ import json
 from collections import defaultdict
 
 from showyourwork import paths
-from showyourwork.dependencies import write_manuscript_dependencies
 
 working_directory = paths.work(config).root
 
