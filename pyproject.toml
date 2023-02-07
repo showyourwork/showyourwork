@@ -18,8 +18,9 @@ dynamic = ["version"]
 dependencies = [
     "pyyaml",
     "jsonschema",
-    "snakemake",  # TODO(dfm): figure out what version we need
+    "snakemake",   # TODO(dfm): figure out what version we need
     "click",
+    "ensureconda",
     # "graphviz>=0.19.1",
     # "jinja2>=3.0.3",
     # "requests>=2.25.1",

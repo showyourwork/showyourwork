@@ -40,14 +40,15 @@ def main() -> None:
 )
 @click.option(
     "--conda-frontend",
-    default="conda",
+    default=None,
+    type=str,
     help="The conda frontend to use; passed to snakemake",
 )
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def build(
     configfile: Optional[paths.PathLike],
     cores: str,
-    conda_frontend: str,
+    conda_frontend: Optional[str],
     snakemake_args: Iterable[str],
 ) -> None:
     """Build an article in the current working directory."""
@@ -65,7 +66,7 @@ def run_snakemake(
     snakefile: paths.PathLike,
     config_file: Optional[paths.PathLike] = None,
     cores: str = "1",
-    conda_frontend: str = "conda",
+    conda_frontend: Optional[str] = None,
     check: bool = True,
     extra_args: Iterable[str] = (),
 ) -> int:
@@ -79,6 +80,27 @@ def run_snakemake(
                 "No config file found in project root. Please specify a configuration "
                 "file using the '--configfile' command line argument."
             )
+
+    # If the user didn't specify a conda frontend, then we'll try to use mamba
+    # if it exists. If not, we assume that conda is available and let snakemake
+    # handle any issues.
+    if conda_frontend is None:
+        # TODO(dfm): Log the result of this choice.
+        from ensureconda.api import ensureconda
+
+        if (
+            ensureconda(
+                mamba=True,
+                micromamba=False,
+                conda=False,
+                conda_exe=False,
+                no_install=True,
+            )
+            is not None
+        ):
+            conda_frontend = "mamba"
+        else:
+            conda_frontend = "conda"
 
     env = dict(os.environ)
     cmd = [
