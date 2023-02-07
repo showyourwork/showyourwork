@@ -95,6 +95,9 @@ class work(PathMeta):
     def plugin(self, name: str, *others: PathLike) -> Path:
         return self.subdir("plugins", name, *others)
 
+    def flag(self, name: str) -> Path:
+        return self.subdir("flags") / name
+
     @property
     def manuscript(self) -> Path:
         return self.root / self.config.get("manuscript", "ms.tex")

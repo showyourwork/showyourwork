@@ -1,15 +1,5 @@
 from showyourwork import paths
 
-rule syw__default_copy_manuscript:
-    input:
-        paths.repo(config).manuscript
-    output:
-        paths.work(config).manuscript
-    shell:
-        """
-        cp "{input}" "{output}"
-        """
-
 repo_path = paths.repo(config).root
 build_path = paths.work(config).build
 

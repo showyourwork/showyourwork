@@ -11,25 +11,30 @@ checkpoint syw__check_manuscript_dependencies:
     input:
         paths.work(config).dependencies
     output:
-        working_directory / "manuscript_dependencies.json"
-    run:
-        write_manuscript_dependencies(input[0], output[0])
+        touch(paths.work(config).flag("dependencies"))
 
 def _get_manuscript_dependencies(*_):
-    with checkpoints.syw__check_manuscript_dependencies.get().output[0].open() as f:
-        deps = json.load(f)
+    checkpoints.syw__check_manuscript_dependencies.get()
+    # with checkpoints.syw__check_manuscript_dependencies.get().output[0].open() as f:
+    #     dependencies = json.load(f)
+    with open(paths.work(config).dependencies, "r") as f:
+        dependencies = json.load(f)
+
+    files = list(dependencies.get("unlabled", [])) + list(dependencies.get("files", []))
+    for figure in dependencies.get("figures", {}).values():
+        files.extend(figure)
 
     # Save the manuscript dependencies to the "config" object for downstream
     # usage.
-    config["_manuscript_dependencies"] = deps
+    config["_manuscript_dependencies"] = files
 
-    return deps
+    return files
 
 rule syw__dag:
     input:
         _get_manuscript_dependencies
     output:
-        touch(working_directory / "dag.flag")
+        touch(paths.work(config).flag("dag"))
 
 def ensure_manuscript_dependencies(*_):
     # This checkpoint call serves two purposes: (1) it makes sure that we have
@@ -70,18 +75,12 @@ def ensure_manuscript_dependencies(*_):
 
     return []
 
-# rule dummy:
-#     input:
-#         _get_manuscript_dependencies
-#     output:
-#         touch(working_directory / "dummy.flag")
-
 rule syw__dump_dependencies:
     input:
-        working_directory / "dag.flag",
+        rules.syw__dag.output,
         ensure_manuscript_dependencies
     output:
-        working_directory / "_dependency_tree.json"
+        "dependency_tree.json"
     run:
         with open(output[0], "w") as f:
             json.dump(config["_dependency_tree"], f, indent=2)

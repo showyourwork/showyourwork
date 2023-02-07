@@ -15,7 +15,7 @@ def generate_dependencies(contents: str) -> Generator[Path, None, None]:
         open(p.manuscript, "w").write(contents)
         test_util.run_snakemake(
             str(paths.package_data(plugin_id, "workflow", "Snakefile")),
-            ["syw__plug_tex_dependencies", "--config", f"working_directory={d}"],
+            ["sywplug__tex_dependencies", "--config", f"working_directory={d}"],
             cwd=d,
         )
         assert (p.plugin(plugin_id, "xml") / "showyourwork.xml").is_file()
