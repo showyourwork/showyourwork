@@ -121,7 +121,6 @@ class Zenodo:
 
         # Parse input
         if str(doi_or_service).lower() in services.keys():
-
             # Create a new draft on the given service
             service = services[doi_or_service]
             self.doi_prefix = service["doi_prefix"]
@@ -135,7 +134,6 @@ class Zenodo:
             self.user_is_owner = True
 
         else:
-
             # Parse the DOI
             self.doi = doi_or_service
             try:
@@ -181,13 +179,11 @@ class Zenodo:
         cache_file = self.path() / f"{self.deposit_id}" / "id_type.txt"
 
         if cache_file.exists():
-
             # Restore from cache
             with open(cache_file, "r") as f:
                 id_type = f.readline().replace("\n", "")
 
         else:
-
             # Try to find a published record (no authentication needed)
             try:
                 r = requests.get(
@@ -199,13 +195,11 @@ class Zenodo:
                 data = {"status": "", "message": str(e)}
 
             if (r is None) or (r.status_code > 204):
-
                 # Either is private or doesn't exist.
                 # In any event, don't cache it, as this could change.
                 return "unknown"
 
             else:
-
                 # This is a public record
                 if int(self.deposit_id) == int(data["conceptrecid"]):
                     id_type = "concept"
@@ -294,7 +288,6 @@ class Zenodo:
             return False
 
         if self.access_token:
-
             logger.debug(f"Testing if user is authenticated for {self.doi}...")
 
             # Search for both concept and version DOIs
@@ -453,7 +446,6 @@ class Zenodo:
             f"Searching for file `{rule_name}` with hash `{file.name}`..."
         )
         for entry in data:
-
             logger.debug(
                 f"Inspecting candidate file `{entry['filename']}` with hash `{rule_hashes.get(rule_name, None)}`..."
             )
@@ -462,7 +454,6 @@ class Zenodo:
                 entry["filename"] == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
-
                 # Download it
                 logger.debug(f"File name and hash both match.")
                 if not dry_run:
@@ -497,7 +488,6 @@ class Zenodo:
                 return
 
             elif entry["filename"] == rule_name:
-
                 # We're done with this deposit
                 logger.debug(
                     f"File {rule_name} found, but it has the wrong hash. Skipping..."
@@ -505,7 +495,6 @@ class Zenodo:
                 break
 
             else:
-
                 # Keep looking in this deposit for a file with the right name
                 logger.debug(
                     f"Cache miss for file {entry['filename']}. Skipping..."
@@ -538,7 +527,6 @@ class Zenodo:
                 entry["key"] == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
-
                 # Download it
                 logger.debug(f"File name and hash both match.")
                 if not dry_run:
@@ -569,7 +557,6 @@ class Zenodo:
                 return
 
             elif entry["key"] == rule_name:
-
                 logger.debug(
                     f"File {rule_name} found, but it has the wrong hash. Skipping..."
                 )
@@ -861,7 +848,6 @@ class Zenodo:
         if not draft_url and not data["submitted"]:
             draft_url = data["links"]["self"]
         if draft_url:
-
             # Draft exists
             draft = parse_request(
                 requests.get(
@@ -871,7 +857,6 @@ class Zenodo:
             )
 
         else:
-
             # Create a new draft
             data = parse_request(
                 requests.post(
@@ -1096,7 +1081,6 @@ class Zenodo:
         # Upload files
         logger.info(f"Uploading files to {target_deposit.doi}...")
         for file in cache_folder.glob("*"):
-
             if file.name == ".metadata.json":
                 continue
 

@@ -240,7 +240,6 @@ def parse_config():
     # the main config file in the build stage, so all these
     # settings are available in both stages.
     if Path(snakemake.workflow.workflow.main_snakefile).name == "prep.smk":
-
         #
         # -- User settings --
         #

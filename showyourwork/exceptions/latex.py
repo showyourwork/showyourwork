@@ -27,7 +27,6 @@ class TectonicError(LaTeXException):
                 showyourwork_imported = False
 
             if showyourwork_imported:
-
                 # Scan the log for an error message
                 for i, line in enumerate(tectonic_log[::-1]):
                     if line.startswith("!"):
@@ -39,7 +38,6 @@ class TectonicError(LaTeXException):
                     )
                 message += f"\nFor more information, check out the log file:\n{logfile}."
             else:
-
                 # Admonish the user (:
                 message = (
                     r"Failed to compile manuscript. Perhaps you forgot to `\usepackage{showyourwork}`?"
@@ -47,7 +45,6 @@ class TectonicError(LaTeXException):
                 )
 
         else:
-
             # No log to scan, so we're stuck with an uninformative message...
             message = "An error occurred while compiling the manuscript."
 

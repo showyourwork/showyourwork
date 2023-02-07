@@ -24,7 +24,6 @@ def setup(slug, cache, overleaf_id, ssh, action_spec):
     # Parse the slug
     user, repo = slug.split("/")
     if Path(repo).exists():
-
         # Check if it's an empty git repository
         def callback(code, stdout, stderr):
             if code != 0:

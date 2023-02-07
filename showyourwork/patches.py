@@ -105,7 +105,6 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     output_file_cache = snakemake.workflow.workflow.output_file_cache
 
     if output_file_cache is not None:
-
         # Instantiate our interfaces
         if zenodo_doi is not None:
             zenodo = Zenodo(zenodo_doi)
@@ -235,7 +234,6 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
 
             # GitHub Actions runs should never update the cache
             if not snakemake.workflow.config.get("github_actions"):
-
                 # See note in `fetch()` about tarballs
                 if job.output[0].is_directory:
                     tarball = True
@@ -307,17 +305,14 @@ def patch_snakemake_logging():
     # Custom Snakemake file handler
     if not hasattr(snakemake_logger, "custom_file_handler"):
         try:
-
             LOGS = paths.user().logs
 
         except Exception:
-
             # Can't resolve path to logs; assume we're not
             # in a showyourwork/git repo and fail silently.
             pass
 
         else:
-
             snakemake_logger.custom_file_handler = logging.FileHandler(
                 paths.user().logs / "snakemake.log"
             )
@@ -510,10 +505,8 @@ def get_skippable_jobs(dag):
     # Loop until there are no changes to the graph
     new_nodes = True
     while new_nodes:
-
         new_nodes = set()
         for node in nodes:
-
             # Find all parents that are in `nodes`
             parents = set()
             for file in node.input:
@@ -553,7 +546,6 @@ def patch_snakemake_cache_optimization(dag):
     logger = get_logger()
 
     if snakemake.workflow.workflow.output_file_cache is not None:
-
         # Get list of jobs we can skip
         skippable_jobs = get_skippable_jobs(dag)
         logger.debug(
@@ -565,13 +557,11 @@ def patch_snakemake_cache_optimization(dag):
         scheduler = snakemake.workflow.workflow.scheduler
         for executor in scheduler._executor, scheduler._local_executor:
             if executor:
-
                 # Original method
                 _cached_or_run = executor.cached_or_run
 
                 # Intercept jobs we don't need to run
                 def wrapper(self, job, run_func, *args):
-
                     if job in skippable_jobs:
                         # Instead of running this job, we create empty temp
                         # outputs to trick Snakemake & keep going
