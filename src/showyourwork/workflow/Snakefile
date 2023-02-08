@@ -26,6 +26,8 @@ include: include_rules("dependencies.smk")
 include: include_rules("static.smk")
 include: include_rules("dynamic.smk")
 
+include: include_rules("render.smk")
+
 include: include_rules("plugins.smk")
 
 for snakefile in config.get("local_snakefiles", []):
