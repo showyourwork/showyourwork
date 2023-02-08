@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Generator
 
 from showyourwork import paths, test_util
+from showyourwork.dependencies import simplify_dependency_tree
 
 
 @contextmanager
@@ -58,3 +59,35 @@ def test_basic() -> None:
         deps = [f.strip() for f in txt[idx:].split("\n\n")[0].splitlines()[1:]]
         for d in ["a", "b", "c", "d", "e", "f", "g", "h"]:
             assert d in deps
+
+
+work_path = Path("work")
+repo_path = Path("repo")
+
+
+def work(*x: str) -> str:
+    return str(Path(work_path, *x))
+
+
+def repo(*x: str) -> str:
+    return str(Path(repo_path, *x))
+
+
+def test_simplify() -> None:
+    input_tree = {
+        repo("a"): [work("b"), repo("c")],
+        work("b"): [repo("c"), work("d")],
+        work("d"): [repo("d"), work("e")],
+        work("e"): [repo("c")],
+    }
+    output_tree = simplify_dependency_tree(input_tree, repo_path, work_path)
+    assert output_tree == {"a": ["c", "d"]}
+
+
+def test_simplify_with_directory() -> None:
+    input_tree = {
+        repo("a"): [work("b", "c"), repo("c")],
+        work("b"): [repo("d")],
+    }
+    output_tree = simplify_dependency_tree(input_tree, repo_path, work_path)
+    assert output_tree == {"a": ["c", "d"]}

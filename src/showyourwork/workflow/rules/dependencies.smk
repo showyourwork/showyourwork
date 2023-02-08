@@ -3,6 +3,7 @@ import json
 from collections import defaultdict
 
 from showyourwork import paths
+from showyourwork.dependencies import simplify_dependency_tree
 
 working_directory = paths.work(config).root
 
@@ -14,8 +15,6 @@ checkpoint syw__check_manuscript_dependencies:
 
 def _get_manuscript_dependencies(*_):
     checkpoints.syw__check_manuscript_dependencies.get()
-    # with checkpoints.syw__check_manuscript_dependencies.get().output[0].open() as f:
-    #     dependencies = json.load(f)
     with open(paths.work(config).dependencies, "r") as f:
         dependencies = json.load(f)
 
@@ -71,6 +70,9 @@ def ensure_manuscript_dependencies(*_):
     # bit of a hack, but this gives us a nice way to provide downstream rules
     # with access to the computed dependency tree.
     config["_dependency_tree"] = parents
+    config["_dependency_tree_simple"] = simplify_dependency_tree(
+        parents, paths.repo(config).root, working_directory
+    )
 
     return []
 

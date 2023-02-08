@@ -59,5 +59,17 @@ properties:
                 type: string
 
   scripts:
-    description: "Rules for running scripts of different types"
+    description: "Mapping of script file extensions to instructions for executing them"
     type: object
+    patternProperties:
+      "^.*$":
+        type: string
+
+  datasets:
+    description: "Externally-hosted datasets from Zenodo"
+    type: object
+    patternProperties:
+      "^.*$":
+        type: array
+        items:
+          type: string
