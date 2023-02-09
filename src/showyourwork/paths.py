@@ -41,11 +41,11 @@ def find_project_root(*input_paths: PathLike) -> Path:
     )
 
 
-def package_data(module: str, *file: str) -> Path:
+def package_data(module: str, *file: str, check: bool = True) -> Path:
     with as_file(files(module).joinpath(*file)) as f:
         path = Path(f)
     path = path.resolve()
-    if not path.exists():
+    if check and not path.exists():
         raise FileNotFoundError(
             f"No file exists at the path {'/'.join(file)} for module {module}. This "
             "might have something to do with how you installed showyourwork or a "
@@ -111,3 +111,7 @@ class work(PathMeta):
     @property
     def build(self) -> Path:
         return self.subdir("build")
+
+    @property
+    def output(self) -> Path:
+        return self.subdir("output")

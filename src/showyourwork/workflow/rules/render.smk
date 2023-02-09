@@ -15,7 +15,7 @@ rule syw__render_dag_config:
             json.dump(config, f)
 
 def generated_files(*_):
-    deps = _get_manuscript_dependencies()
+    deps = get_manuscript_dependencies()
     return [d for d in deps if Path(d).suffix in SUPPORTED_FIGURE_EXTENSIONS]
 
 rule syw__render_thumbnails:

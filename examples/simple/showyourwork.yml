@@ -6,4 +6,4 @@ conda: environment.yml
 
 dynamic:
   - script: generate_figure.py
-    output: figure.png
+    output: figure.pdf

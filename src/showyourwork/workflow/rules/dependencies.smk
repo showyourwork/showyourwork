@@ -13,7 +13,7 @@ checkpoint syw__check_manuscript_dependencies:
     output:
         touch(paths.work(config).flag("dependencies"))
 
-def _get_manuscript_dependencies(*_):
+def get_manuscript_dependencies(*_):
     checkpoints.syw__check_manuscript_dependencies.get()
     with open(paths.work(config).dependencies, "r") as f:
         dependencies = json.load(f)
@@ -30,7 +30,7 @@ def _get_manuscript_dependencies(*_):
 
 rule syw__dag:
     input:
-        _get_manuscript_dependencies
+        get_manuscript_dependencies
     output:
         touch(paths.work(config).flag("dag"))
 
