@@ -11,6 +11,18 @@ properties:
     type: integer
     description: "The version of the configuration specification"
 
+  github:
+    description: "Information about the GitHub repository"
+    type: object
+    required:
+      - owner
+      - repo
+    properties:
+      owner:
+        type: string
+      repo:
+        type: string
+
   plugins:
     description: "A list of plugins to load"
     type: array

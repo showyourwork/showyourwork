@@ -1,4 +1,5 @@
 import hashlib
+from functools import lru_cache
 from importlib.resources import as_file, files
 from pathlib import Path
 from typing import Any, Dict, Union
@@ -6,6 +7,7 @@ from typing import Any, Dict, Union
 PathLike = Union[str, Path]
 
 
+@lru_cache
 def find_project_root(*input_paths: PathLike) -> Path:
     """Find the root of the project, defined as the first parent directory that
     contains a .git directory or showyourwork.yml file. Based on the implementation from
