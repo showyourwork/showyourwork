@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: "v4.4.0"
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -11,10 +11,13 @@ repos:
     hooks:
       - id: black-jupyter
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.239"
+    rev: "v0.0.245"
     hooks:
       - id: ruff
-  - repo: https://github.com/kynan/nbstripout
-    rev: "0.6.0"
+        exclude: "docs/.*.py"
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.0.0"
     hooks:
-      - id: nbstripout
+      - id: mypy
+        exclude: "docs/.*.py"
+        additional_dependencies: ["types-PyYAML"]
