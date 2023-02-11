@@ -13,10 +13,8 @@ for static_file in config.get("static", []):
             directory(build_path / static_file) if (repo_path / static_file).is_dir() else build_path / static_file
         run:
             import shutil
-            output[0].parent.mkdir(parents=True, exist_ok=True)            
+            output[0].parent.mkdir(parents=True, exist_ok=True)
             if input[0].is_dir():
                 shutil.copytree(input[0], output[0])
             else:
                 shutil.copyfile(input[0], output[0])
-
-

@@ -47,7 +47,7 @@ def ensure_manuscript_dependencies(*_):
         dag = level.frame.f_locals.get("dag", None)
         if dag is not None:
             break
-    
+
     # If "dag" is still None, then we couldn't find it. We shouldn't ever hit
     # this (until snakemake renames the variable...), but we have a check just
     # to be sure.

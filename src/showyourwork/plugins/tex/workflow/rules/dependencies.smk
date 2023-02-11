@@ -21,7 +21,7 @@ rule sywplug__tex_xml_tree:
         classfile=dependencies_directory / manuscript_directory / "showyourwork.sty",
     output:
         dependencies_directory / manuscript_directory / "showyourwork.xml"
-    conda: 
+    conda:
         resource("envs", "tectonic.yml")
     shell:
         """
@@ -38,4 +38,4 @@ rule sywplug__tex_dependencies:
     output:
         paths.work(config).dependencies
     run:
-        parse_dependencies(input[0], output[0], paths.repo(config).manuscript.parent) 
+        parse_dependencies(input[0], output[0], paths.repo(config).manuscript.parent)

@@ -36,7 +36,7 @@ rule sywplug__tex_build:
     output:
         output_directory / Path(manuscript_name).with_suffix(".pdf").name,
         output_directory=directory(output_directory),
-    conda: 
+    conda:
         resource("envs", "tectonic.yml")
     shell:
         """
