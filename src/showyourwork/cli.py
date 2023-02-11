@@ -35,7 +35,7 @@ def main() -> None:
 @click.option(
     "-c",
     "--cores",
-    default="1",
+    default="all",
     help="Number of cores to use; passed to snakemake",
 )
 @click.option(

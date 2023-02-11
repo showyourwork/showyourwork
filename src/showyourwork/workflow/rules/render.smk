@@ -3,13 +3,14 @@ import json
 from showyourwork import paths
 
 SUPPORTED_FIGURE_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".eps", ".svg"]
+dag_directory = paths.work(config).subdir("dag")
 
 rule syw__render_dag_config:
     input:
         rules.syw__dag.output,
         ensure_manuscript_dependencies,
     output:
-        temp(paths.work(config).root / "_render_dag_config.json")
+        dag_directory / "_render_dag_config.json"
     run:
         with open(output[0], "w") as f:
             json.dump(config, f)
@@ -43,7 +44,7 @@ rule syw__render_dag:
         thumbnails=rules.syw__render_thumbnails.output[0],
         script=paths.package_data("showyourwork", "workflow", "scripts", "render_dag.py")
     output:
-        paths.work(config).subdir("dag") / "dag.pdf"
+        dag_directory / "dag.pdf"
     params:
         repo_path=paths.repo(config).root,
         work_path=paths.work(config).root

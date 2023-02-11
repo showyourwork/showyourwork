@@ -1,10 +1,30 @@
-from typing import TYPE_CHECKING
+import importlib
+from typing import TYPE_CHECKING, Any, Dict
 
 if TYPE_CHECKING:
     import snakemake
 
 
-def fix_rule_order(workflow: "snakemake.workflow.Workflow") -> None:
+def get_rule_priority(
+    config: Dict[str, Any], rule: "snakemake.ruleinfo.RuleInfo"
+) -> int:
+    for plugin in config.get("plugins", []):
+        mod = importlib.import_module(plugin)
+        if hasattr(mod, "get_rule_priority"):
+            priority = mod.get_rule_priority(config, rule)
+            if priority is not None:
+                return priority
+
+    if rule.name.startswith("syw__"):
+        return 0
+    elif rule.name.startswith("sywplug__"):
+        return 1
+    return 100
+
+
+def fix_rule_order(
+    config: Dict[str, Any], workflow: "snakemake.workflow.Workflow"
+) -> None:
     """Update the rule order for all rules defined by the workflow
 
     The logic here is that we want all user-defined rules to be higher priority
@@ -13,29 +33,12 @@ def fix_rule_order(workflow: "snakemake.workflow.Workflow") -> None:
     showyourwork or plugin rule is determined by the prefix of the rule name,
     ``syw__`` and ``sywplug__`` respectively.
     """
-    syw_rules = []
-    sywplug_rules = []
-    user_rules = []
-    for r in workflow.rules:
-        if r.name.startswith("syw__"):
-            syw_rules.append(r)
-        elif r.name.startswith("sywplug__"):
-            sywplug_rules.append(r)
-        else:
-            user_rules.append(r)
-
-    # All user-defined rules should be higher priority than any showyourwork or
-    # plugin rules.
-    for ur in user_rules:
-        for sr in syw_rules:
-            workflow.ruleorder(ur.name, sr.name)
-        for sr in sywplug_rules:
-            workflow.ruleorder(ur.name, sr.name)
-
-        if not ur.message:
-            ur.message = f"Running user rule {ur.name}..."
-
-    # All plugin rules should be higher priority than any showyourwork rules.
-    for pr in sywplug_rules:
-        for sr in syw_rules:
-            workflow.ruleorder(pr.name, sr.name)
+    rules = list(workflow.rules)
+    for n, r1 in enumerate(rules):
+        p1 = get_rule_priority(config, r1)
+        for r2 in rules[n + 1 :]:
+            p2 = get_rule_priority(config, r2)
+            if p1 > p2:
+                workflow.ruleorder(r1.name, r2.name)
+            elif p1 < p2:
+                workflow.ruleorder(r2.name, r1.name)

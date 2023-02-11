@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from tempfile import TemporaryDirectory
 from typing import Generator, Optional
 
-from showyourwork.paths import find_project_root
+from showyourwork.paths import PathLike, find_project_root
 
 conda_temporary_directory = TemporaryDirectory(prefix="showyourwork-conda-")
 
@@ -23,10 +23,10 @@ def temporary_project(config: str = "config-version: 2") -> Generator[str, None,
 
 
 def run_snakemake(
-    snakefile: str,
+    snakefile: PathLike,
     targets: list[str],
     conda_frontend: str = "conda",
-    cwd: Optional[str] = None,
+    cwd: Optional[PathLike] = None,
 ) -> subprocess.CompletedProcess[str]:
     result = subprocess.run(
         [
@@ -39,7 +39,7 @@ def run_snakemake(
             "--conda-prefix",
             conda_temporary_directory.name,
             "--snakefile",
-            snakefile,
+            str(snakefile),
             *targets,
         ],
         check=False,

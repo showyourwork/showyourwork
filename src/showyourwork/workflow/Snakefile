@@ -38,4 +38,4 @@ for snakefile in config.get("local_snakefiles", []):
 if (project_root / "Snakefile").is_file():
     include: "Snakefile"
 
-fix_rule_order(workflow)
+fix_rule_order(config, workflow)

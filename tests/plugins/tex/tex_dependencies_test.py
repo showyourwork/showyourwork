@@ -14,11 +14,11 @@ def generate_dependencies(contents: str) -> Generator[Path, None, None]:
         p = paths.work({"working_directory": d})
         open(p.manuscript, "w").write(contents)
         test_util.run_snakemake(
-            str(paths.package_data(plugin_id, "workflow", "Snakefile")),
+            str(paths.package_data("showyourwork", "workflow", "Snakefile")),
             ["sywplug__tex_dependencies", "--config", f"working_directory={d}"],
             cwd=d,
         )
-        assert (p.plugin(plugin_id, "xml") / "showyourwork.xml").is_file()
+        assert (p.root / "dependencies" / "showyourwork.xml").is_file()
         json_file = p.dependencies
         assert json_file.is_file()
         yield json_file

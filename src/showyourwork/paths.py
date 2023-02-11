@@ -1,5 +1,5 @@
 import hashlib
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from importlib.resources import as_file, files
 from pathlib import Path
 from typing import Any, Dict, Union
@@ -78,7 +78,7 @@ class repo(PathMeta):
         self.config = config
         self.root = find_project_root()
 
-    @property
+    @cached_property
     def manuscript(self) -> Path:
         return self.root / self.config.get("manuscript", "ms.tex")
 
@@ -100,18 +100,18 @@ class work(PathMeta):
     def flag(self, name: str) -> Path:
         return self.subdir("flags") / name
 
-    @property
+    @cached_property
     def manuscript(self) -> Path:
         return self.root / self.config.get("manuscript", "ms.tex")
 
-    @property
+    @cached_property
     def dependencies(self) -> Path:
         return self.root / "dependencies.json"
 
-    @property
+    @cached_property
     def build(self) -> Path:
         return self.subdir("build")
 
-    @property
+    @cached_property
     def output(self) -> Path:
         return self.subdir("output")
