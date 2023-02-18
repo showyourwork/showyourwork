@@ -38,7 +38,6 @@ def convert_to_png(file):
     On error, returns None.
     """
     try:
-
         result = subprocess.run(
             f'convert "{file}" -format "%[fx:w/h]" info:',
             shell=True,
@@ -88,7 +87,6 @@ def should_ignore(ignore, path):
 
 
 if __name__ == "__main__":
-
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
     params = snakemake.params  # type:ignore

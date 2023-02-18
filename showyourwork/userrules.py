@@ -43,7 +43,6 @@ def process_user_rules():
 
     # Process each user rule
     for ur in user_rules:
-
         # Set its order > all showyourwork rules
         for sr in syw_rules:
             snakemake.workflow.workflow.ruleorder(ur.name, sr.name)

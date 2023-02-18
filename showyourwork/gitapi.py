@@ -225,7 +225,6 @@ def get_workflow_run_status(name, org=None, q={}):
 
     # Return the first match
     for workflow_run in data["workflow_runs"]:
-
         # Flatten the response
         workflow_run = flatten_dict(workflow_run)
 

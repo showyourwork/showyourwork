@@ -88,7 +88,6 @@ def get_logger():
 
     # Add showyourwork stream & file handlers
     if not logger.handlers:
-
         # Root level
         logger.setLevel(logging.DEBUG)
 
@@ -98,17 +97,14 @@ def get_logger():
         logger.addHandler(stream_handler)
 
         try:
-
             LOGS = paths.user().logs
 
         except Exception:
-
             # Can't resolve path to logs; assume we're not
             # in a showyourwork/git repo and fail silently.
             pass
 
         else:
-
             # File: all showyourwork messages
             msg_file = LOGS / "showyourwork.log"
             file_handler = logging.FileHandler(msg_file)

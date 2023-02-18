@@ -127,11 +127,9 @@ def validate_slug(context, param, slug):
             click.echo()
 
     if "/" in slug and len(slug.split("/")) == 2:
-
         user, repo = slug.split("/")
 
         if not context.params.get("quiet"):
-
             # Greeting
             echo(
                 f"""
@@ -207,7 +205,6 @@ def validate_slug(context, param, slug):
         return slug
 
     else:
-
         raise click.BadParameter("Must have the form `user/repo`.")
 
 

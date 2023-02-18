@@ -258,7 +258,6 @@ def setup_remote(project_id, path=None):
 
     # Copy over all files in the `tex` directory
     for file in paths.user(path=path).tex.glob("*"):
-
         # Copy it to the local version of the repo
         file = Path(file).resolve()
         remote_file = paths.user(path=path).overleaf / file.relative_to(
@@ -350,7 +349,6 @@ def push_files(files, project_id, path=None):
     # Process each file
     skip = []
     for file in files:
-
         # Copy it to the local version of the repo
         if not Path(file).exists():
             skip.append(file)
@@ -601,5 +599,4 @@ def pull_files(
         )
 
         if push_changes:
-
             get_stdout(["git", "push"], cwd=paths.user(path=path).repo)
