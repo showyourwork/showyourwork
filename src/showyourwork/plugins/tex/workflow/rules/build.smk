@@ -1,4 +1,8 @@
 rule sywplug__tex_copy_files_to_build:
+    """
+    Copy files that are required to build the document from the project
+    directory to the build directory.
+    """
     input:
         "{file}"
     output:
@@ -60,6 +64,20 @@ for doc in SYW__DOCUMENTS:
                 build_dir / doc_dir / "showyourwork.sty"
             run:
                 utils.copy_file_or_directory(input[0], output[0])
+
+    rule:
+        """
+        Copy the document from the parent work directory to the build work
+        directory.
+        """
+        name:
+            f"sywplug__tex_build_doc_{name}"
+        input:
+            SYW__WORK_PATHS.root / doc
+        output:
+            build_dir / doc
+        run:
+            utils.copy_file_or_directory(input[0], output[0])
 
     rule:
         """
