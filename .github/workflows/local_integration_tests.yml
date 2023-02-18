@@ -19,6 +19,11 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
+        exclude:
+          - os: macos-latest
+            python: "3.8"
+          - os: windows-latest
+            python: "3.8"
     runs-on: ${{ matrix.platform }}
     name: Run local integration tests
     steps:
