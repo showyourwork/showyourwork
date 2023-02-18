@@ -35,9 +35,7 @@ for doc in SYW__DOCUMENTS:
             name:
                 f"sywplug__tex_deps_style_{name}"
             input:
-                SYWPLUG__TEX_RESOURCE(
-                    "resources", "dependencies.tex", check=False
-                )
+                SYWPLUG__TEX_RESOURCE("resources", "dependencies.tex")
             output:
                 deps_dir / doc_dir / "showyourwork.tex"
             run:

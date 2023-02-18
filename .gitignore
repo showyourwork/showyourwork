@@ -12,7 +12,7 @@ junit
 **/sitecustomize.py
 dist/*
 .vscode
-build
+/build
 .test
 *.json
 *.png

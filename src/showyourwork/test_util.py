@@ -10,8 +10,9 @@ from typing import Any, Generator, Iterable, List, Optional
 from showyourwork import cli
 from showyourwork.paths import PathLike, find_project_root
 
-# conda_temporary_directory = TemporaryDirectory(prefix="showyourwork-conda-").name
-conda_temporary_directory = str(Path().resolve() / ".test" / "conda")
+# We put all the conda environments in a single directory so that we can reuse
+# them between tests
+conda_prefix = str(Path().resolve() / ".test" / "conda")
 
 
 @contextmanager
@@ -45,10 +46,7 @@ def run_context(
 ) -> Generator[Path, None, None]:
     # Add the conda prefix to the snakemake arguments so that we can reuse the
     # generated environments
-    snakemake_args = list(snakemake_args) + [
-        "--conda-prefix",
-        conda_temporary_directory,
-    ]
+    snakemake_args = list(snakemake_args) + ["--conda-prefix", conda_prefix]
 
     # We need to copy the full project even if the path we've been handed is a
     # subdirectory
@@ -147,7 +145,7 @@ def run_snakemake(
             "--conda-frontend",
             conda_frontend,
             "--conda-prefix",
-            conda_temporary_directory,
+            conda_prefix,
             "--snakefile",
             str(snakefile),
             *targets,
