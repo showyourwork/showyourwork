@@ -32,7 +32,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: "3.9"
+          python-version: ${{ matrix.python }}
 
       - name: Install showyourwork
         shell: bash -l {0}
