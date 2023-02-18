@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         python:
-          - "3.8" # (almost) oldest Python supported by PSF
+          - "3.8" # almost oldest Python supported by PSF
           - "3.10" # newest Python that is stable
         platform:
           - ubuntu-latest
