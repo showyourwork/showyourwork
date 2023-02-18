@@ -11,6 +11,12 @@ properties:
     type: integer
     description: "The version of the configuration specification"
 
+  documents:
+    description: "A list of documents to build"
+    type: array
+    items:
+      type: string
+
   github:
     description: "Information about the GitHub repository"
     type: object

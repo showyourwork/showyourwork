@@ -1,7 +1,7 @@
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable, List
 from xml.etree import ElementTree
 
 from showyourwork import paths
@@ -73,9 +73,17 @@ def parse_dependencies(
         if file.text is not None
     ]
 
+    # Convert all the paths to be relative to the project root
+    def convert_paths(paths: Iterable[Path]) -> List[Path]:
+        return [f.relative_to(base_path) for f in paths]
+
+    figures = {k: convert_paths(v) for k, v in figures.items()}
+    unlabeled_graphics = convert_paths(unlabeled_graphics)
+    files = convert_paths(files)
+
     with open(depfile, "w") as f:
         json.dump(
-            {"figures": figures, "unlabled": unlabeled_graphics, "files": files},
+            {"figures": figures, "unlabeled": unlabeled_graphics, "files": files},
             f,
             sort_keys=True,
             indent=2,

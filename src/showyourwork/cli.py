@@ -52,6 +52,21 @@ def build(
     snakemake_args: Iterable[str],
 ) -> None:
     """Build an article in the current working directory."""
+    _build(
+        configfile=configfile,
+        cores=cores,
+        conda_frontend=conda_frontend,
+        snakemake_args=snakemake_args,
+    )
+
+
+def _build(
+    configfile: Optional[paths.PathLike],
+    cores: str,
+    conda_frontend: Optional[str],
+    snakemake_args: Iterable[str],
+) -> None:
+    """Build an article in the current working directory."""
     run_snakemake(
         paths.package_data("showyourwork", "workflow", "Snakefile"),
         config_file=configfile,

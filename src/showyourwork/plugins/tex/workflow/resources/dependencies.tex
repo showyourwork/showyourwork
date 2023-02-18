@@ -3,7 +3,7 @@
 \RequirePackage{etoolbox} % ifcsmacro
 
 \newwrite\syw@LogFile
-\immediate\openout\syw@LogFile=showyourwork.xml
+\immediate\openout\syw@LogFile=\jobname.dependencies.xml
 \newcommand\syw@LogMessage[1]{%
     \protected@write
     \syw@LogFile

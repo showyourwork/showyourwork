@@ -100,11 +100,14 @@ class work(PathMeta):
     def flag(self, name: str) -> Path:
         return self.subdir("flags") / name
 
-    @cached_property
+    @property
     def manuscript(self) -> Path:
         return self.root / self.config.get("manuscript", "ms.tex")
 
-    @cached_property
+    def dependencies_for(self, name: str) -> Path:
+        return self.root / f"{name}.dependencies.json"
+
+    @property
     def dependencies(self) -> Path:
         return self.root / "dependencies.json"
 
