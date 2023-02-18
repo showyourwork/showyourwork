@@ -65,6 +65,7 @@ for doc in SYW__DOCUMENTS:
             run:
                 utils.copy_file_or_directory(input[0], output[0])
 
+    # TODO(dfm): Also implemented in dependencies.
     rule:
         """
         Copy the document from the parent work directory to the build work
