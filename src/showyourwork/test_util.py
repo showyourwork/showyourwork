@@ -107,6 +107,7 @@ def run(
             )
 
         if check_exists or check_contents:
+            diffs = []
             for expected in (test_project_root / "expected").glob("**/*"):
                 # We don't check directories, only files. We can revisit this if
                 # necessary.
@@ -134,13 +135,18 @@ def run(
                 expected_contents = expected.read_text().strip()
                 observed_contents = observed.read_text().strip()
                 if expected_contents != observed_contents:
-                    diff = difflib.unified_diff(
-                        observed_contents.splitlines(keepends=True),
-                        expected_contents.splitlines(keepends=True),
-                        tofile=f"{expected.relative_to(test_project_root)}",
-                        fromfile=f"actual/{subpath}",
+                    diffs.append(
+                        "".join(
+                            difflib.unified_diff(
+                                observed_contents.splitlines(keepends=True),
+                                expected_contents.splitlines(keepends=True),
+                                tofile=f"{expected.relative_to(test_project_root)}",
+                                fromfile=f"actual/{subpath}",
+                            )
+                        )
                     )
-                    raise ValueError(
-                        f"{subpath} doesn't match expected output; diff:\n\n"
-                        + "".join(diff)
-                    )
+            if diffs:
+                raise ValueError(
+                    "Generated files differ from expected files:\n\n"
+                    + "\n\n".join(diffs)
+                )

@@ -1,0 +1,13 @@
+{
+  "figures": {
+    "fig:test2": [
+      "test2.png"
+    ]
+  },
+  "files": [
+    "input.txt"
+  ],
+  "unlabeled": [
+    "test1.png"
+  ]
+}
