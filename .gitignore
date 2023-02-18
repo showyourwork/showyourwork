@@ -13,6 +13,7 @@ junit
 dist/*
 .vscode
 build
+.test
 *.json
 *.png
 *.svg

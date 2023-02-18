@@ -1,18 +1,19 @@
-from showyourwork import paths, utils
+"""
+This Snakefile contains default rules for copying the documents from the project
+root to the work directory. These can be overloaded by users or plugins to
+generate a working copy of the documents differently.
+"""
 
-repo_path = paths.repo(config).root
-work_path = paths.work(config).root
-
-for doc in config.get("documents", ["ms.tex"]):
-    doc_dir = Path(doc).parent
-    name = Path(doc).name
-
+for doc in SYW__DOCUMENTS:
     rule:
+        """
+        Copy a document from the project root to the work directory.
+        """
         name:
-            f"syw__copy_doc_{doc}"
+            f"syw__copy_doc_{paths.path_to_rule_name(doc)}"
         input:
-            repo_path / doc
+            SYW__REPO_PATHS.root / doc
         output:
-            work_path / doc
+            SYW__WORK_PATHS.root / doc
         run:
             utils.copy_file_or_directory(input[0], output[0])

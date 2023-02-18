@@ -12,7 +12,7 @@ repo_path = Path(args.repo_path)
 output_directory = Path(args.output)
 
 for file in args.files:
-    output_filename = output_directory / Path(file).relative_to(repo_path)
+    output_filename = output_directory / file
     output_filename = output_filename.with_name(output_filename.name + ".png")
     output_filename.parent.mkdir(parents=True, exist_ok=True)
 

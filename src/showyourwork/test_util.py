@@ -5,59 +5,13 @@ import subprocess
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Generator, Iterable, List, Optional
+from typing import Any, Generator, Iterable, List, Optional
 
 from showyourwork import cli
 from showyourwork.paths import PathLike, find_project_root
 
-conda_temporary_directory = TemporaryDirectory(prefix="showyourwork-conda-")
-
-
-@contextmanager
-def temporary_project(config: str = "config-version: 2") -> Generator[str, None, None]:
-    old_cwd = os.getcwd()
-    try:
-        find_project_root.cache_clear()
-        with TemporaryDirectory() as d:
-            open(f"{d}/showyourwork.yml", "w").write(config)
-            os.chdir(d)
-            yield d
-    finally:
-        os.chdir(old_cwd)
-
-
-def run_snakemake(
-    snakefile: PathLike,
-    targets: list[str],
-    conda_frontend: str = "conda",
-    cwd: Optional[PathLike] = None,
-) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(
-        [
-            "snakemake",
-            "--cores",
-            "1",
-            "--use-conda",
-            "--conda-frontend",
-            conda_frontend,
-            "--conda-prefix",
-            conda_temporary_directory.name,
-            "--snakefile",
-            str(snakefile),
-            *targets,
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-        cwd=cwd,
-    )
-    if result.returncode:
-        raise RuntimeError(
-            "Snakemake failed with the following output:\n"
-            f"stdout: ===\n{result.stdout}\n===\n\n"
-            f"stderr:===\n{result.stderr}\n===\n\n"
-        )
-    return result
+# conda_temporary_directory = TemporaryDirectory(prefix="showyourwork-conda-").name
+conda_temporary_directory = str(Path().resolve() / ".test" / "conda")
 
 
 @contextmanager
@@ -72,13 +26,30 @@ def cwd(path: PathLike) -> Generator[None, None, None]:
 
 def run(
     path: PathLike,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
+    with run_context(path, *args, **kwargs):
+        pass
+
+
+@contextmanager
+def run_context(
+    path: PathLike,
     check_exists: bool = True,
     check_contents: bool = True,
     configfile: Optional[PathLike] = None,
     cores: str = "1",
     conda_frontend: Optional[str] = "mamba",
     snakemake_args: Iterable[str] = (),
-) -> None:
+) -> Generator[Path, None, None]:
+    # Add the conda prefix to the snakemake arguments so that we can reuse the
+    # generated environments
+    snakemake_args = list(snakemake_args) + [
+        "--conda-prefix",
+        conda_temporary_directory,
+    ]
+
     # We need to copy the full project even if the path we've been handed is a
     # subdirectory
     find_project_root.cache_clear()
@@ -106,9 +77,10 @@ def run(
                 snakemake_args=snakemake_args,
             )
 
-        if check_exists or check_contents:
+        expected_dir = test_project_root / "expected"
+        if (check_exists or check_contents) and expected_dir.is_dir():
             diffs = []
-            for expected in (test_project_root / "expected").glob("**/*"):
+            for expected in expected_dir.glob("**/*"):
                 # We don't check directories, only files. We can revisit this if
                 # necessary.
                 if expected.is_dir():
@@ -117,6 +89,13 @@ def run(
                 # Construct the path to the expected file in the temporary directory
                 subpath = expected.relative_to(test_project_root / "expected")
                 observed = Path(tmpdir) / subpath
+
+                # Files with the suffix ".exists" are just used to check that
+                # the file gets created
+                if expected.suffix == ".exists":
+                    if not observed.with_suffix("").is_file():
+                        raise ValueError(f"{subpath.with_suffix('')} doesn't exist")
+                    continue
 
                 if not observed.is_file():
                     if check_exists:
@@ -150,3 +129,38 @@ def run(
                     "Generated files differ from expected files:\n\n"
                     + "\n\n".join(diffs)
                 )
+        yield Path(tmpdir)
+
+
+def run_snakemake(
+    snakefile: PathLike,
+    targets: list[str],
+    conda_frontend: str = "conda",
+    cwd: Optional[PathLike] = None,
+) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        [
+            "snakemake",
+            "--cores",
+            "1",
+            "--use-conda",
+            "--conda-frontend",
+            conda_frontend,
+            "--conda-prefix",
+            conda_temporary_directory,
+            "--snakefile",
+            str(snakefile),
+            *targets,
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+    )
+    if result.returncode:
+        raise RuntimeError(
+            "Snakemake failed with the following output:\n"
+            f"stdout: ===\n{result.stdout}\n===\n\n"
+            f"stderr:===\n{result.stderr}\n===\n\n"
+        )
+    return result

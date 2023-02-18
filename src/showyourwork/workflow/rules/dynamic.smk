@@ -1,10 +1,6 @@
-from pathlib import Path
-
-from showyourwork import paths
-
-repo_path = paths.repo(config).root
-dynamic_path = paths.work(config).root
-build_path = paths.work(config).build
+repo_path = SYW__REPO_PATHS.root
+dynamic_path = SYW__WORK_PATHS.root
+build_path = SYW__WORK_PATHS.build
 
 # Default script rules
 scripts = {
@@ -19,9 +15,7 @@ for dynamic in config.get("dynamic", []):
     input = [repo_path / f for f in dynamic.get("input", [])],
     output = dynamic.get("output", [])
     if isinstance(output, str):
-        output = [repo_path / dynamic["output"]]
-    else:
-        output = [repo_path / f for f in dynamic.get("output", [])]
+        output = [output]
     conda = repo_path / dynamic.get("conda", config.get("conda", None))
 
     suffix = Path(script).suffix[1:]

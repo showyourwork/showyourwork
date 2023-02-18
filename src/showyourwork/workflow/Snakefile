@@ -1,15 +1,27 @@
+# NOTE: These imports will be available in *all* Snakefiles - be somewhat
+# careful about what you include here has a result.
 from functools import partial
+from pathlib import Path
+
+from showyourwork import paths, utils
+from showyourwork.paths import package_data
 from showyourwork.config import parse_config
-from showyourwork.paths import find_project_root, package_data
 from showyourwork.rule_order import fix_rule_order
 
-project_root = find_project_root()
+SYW__PROJECT_ROOT = paths.find_project_root()
 
-configfile: package_data("showyourwork.config", "config.defaults.yaml")
-workdir: project_root
+configfile: paths.package_data("showyourwork.config", "config.defaults.yaml")
+workdir: SYW__PROJECT_ROOT
 
+# Parse and validate the configuration
 config = parse_config(config, required_version=2)
 
+# Extract some commonly used config values
+SYW__DOCUMENTS = config.get("documents", ["ms.tex"])
+SYW__REPO_PATHS = paths.repo(config)
+SYW__WORK_PATHS = paths.work(config)
+
+# TODO(dfm): We should define a better default rule here!
 rule syw__dump_config:
     output:
         "config.json"
@@ -18,24 +30,23 @@ rule syw__dump_config:
         with open(output[0], "w") as f:
             json.dump(config, f, indent=2)
 
+# Include the rules from the main showyourwork workflow
 include_rules = partial(package_data, "showyourwork", "workflow", "rules")
-
 include: include_rules("main.smk")
 include: include_rules("dependencies.smk")
-
 include: include_rules("static.smk")
 include: include_rules("dynamic.smk")
-
 include: include_rules("render.smk")
-
 include: include_rules("plugins.smk")
 
+# Include the rules from any user-defined local Snakefiles
 for snakefile in config.get("local_snakefiles", []):
     include: snakefile
 
 # For backwards compatibility, we include the top-level project Snakefile if it
 # exists
-if (project_root / "Snakefile").is_file():
-    include: "Snakefile"
+if (SYW__PROJECT_ROOT / "Snakefile").is_file():
+    include: SYW__PROJECT_ROOT / "Snakefile"
 
+# Handle the rule order for ambiguous rules
 fix_rule_order(config, workflow)

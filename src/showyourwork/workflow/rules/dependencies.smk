@@ -1,44 +1,39 @@
 import inspect
-import json
-from collections import defaultdict
-
-from showyourwork import paths
 from showyourwork.dependencies import simplify_dependency_tree
 
-working_directory = paths.work(config).root
+def get_document_dependencies(doc):
+    def impl(*_):
+        getattr(
+            checkpoints,
+            f"syw__check_manuscript_dependencies_{paths.path_to_rule_name(doc)}"
+        ).get()
+        with open(SYW__WORK_PATHS.dependencies_for(doc), "r") as f:
+            dependencies = json.load(f)
 
-checkpoint syw__check_manuscript_dependencies:
-    input:
-        paths.work(config).dependencies
-    output:
-        touch(paths.work(config).flag("dependencies"))
+        files = list(dependencies.get("unlabeled", [])) + list(dependencies.get("files", []))
+        for figure in dependencies.get("figures", {}).values():
+            files.extend(figure)
 
-def get_manuscript_dependencies(*_):
-    checkpoints.syw__check_manuscript_dependencies.get()
-    with open(paths.work(config).dependencies, "r") as f:
-        dependencies = json.load(f)
+        # Save the manuscript dependencies to the "config" object for downstream
+        # usage.
+        if "_manuscript_dependencies" not in config:
+            config["_manuscript_dependencies"] = {}
+        config["_manuscript_dependencies"][doc] = files
 
-    files = list(dependencies.get("unlabled", [])) + list(dependencies.get("files", []))
-    for figure in dependencies.get("figures", {}).values():
-        files.extend(figure)
+        return files
+    return impl
 
-    # Save the manuscript dependencies to the "config" object for downstream
-    # usage.
-    config["_manuscript_dependencies"] = files
+def ensure_all_document_dependencies(*_):
+    from collections import defaultdict
 
-    return files
-
-rule syw__dag:
-    input:
-        get_manuscript_dependencies
-    output:
-        touch(paths.work(config).flag("dag"))
-
-def ensure_manuscript_dependencies(*_):
     # This checkpoint call serves two purposes: (1) it makes sure that we have
     # extracted the list of all dependencies from the manuscript, and (2) it
     # ensures that the DAG of jobs has been constructed.
-    checkpoints.syw__check_manuscript_dependencies.get()
+    for doc in SYW__DOCUMENTS:
+        getattr(
+            checkpoints,
+            f"syw__check_manuscript_dependencies_{paths.path_to_rule_name(doc)}"
+        ).get()
 
     # Walk up the call stack to find an object called "dag"... yeah, this is a
     # hack, but we haven't found a better approach yet!
@@ -71,17 +66,34 @@ def ensure_manuscript_dependencies(*_):
     # with access to the computed dependency tree.
     config["_dependency_tree"] = parents
     config["_dependency_tree_simple"] = simplify_dependency_tree(
-        parents, paths.repo(config).root, working_directory
+        parents, SYW__REPO_PATHS.root, SYW__WORK_PATHS.root
     )
 
     return []
 
+for doc in SYW__DOCUMENTS:
+    name = paths.path_to_rule_name(doc)
+    checkpoint:
+        name:
+            f"syw__check_manuscript_dependencies_{name}"
+        input:
+            SYW__WORK_PATHS.dependencies_for(doc)
+        output:
+            touch(SYW__WORK_PATHS.flag(f"dependencies_{name}"))
+
+rule syw__dag:
+    input:
+        [get_document_dependencies(doc) for doc in SYW__DOCUMENTS]
+    output:
+        touch(SYW__WORK_PATHS.flag("dag"))
+
 rule syw__dump_dependencies:
     input:
         rules.syw__dag.output,
-        ensure_manuscript_dependencies
+        ensure_all_document_dependencies
     output:
-        "dependency_tree.json"
+        SYW__WORK_PATHS.root / "dependency_tree.json"
     run:
+        import json
         with open(output[0], "w") as f:
             json.dump(config["_dependency_tree"], f, indent=2)
