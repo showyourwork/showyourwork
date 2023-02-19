@@ -17,11 +17,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform:
+          - ubuntu-latest
         python-version:
           - "3.9"
           - "3.10"
-        platform:
-          - ubuntu-latest
+          - "3.11"
         include:
           - platform: macos-latest
             python-version: "3.10"
@@ -37,14 +38,13 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up Python
+      - name: Set up Mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
-          # python-version: ${{ matrix.python-version }}
-          # mamba-version: "*"
-          # channels: conda-forge,defaults
-          # channel-priority: strict
-          environment-file: .github/resources/env-${{ matrix.python-version }}.yml
+          environment-file: .github/resources/env.yml
+
+      - name: Set up Python
+        run: mamba install python=${{ matrix.python-version }}
 
       - name: Cache test conda environments
         uses: actions/cache@v3
