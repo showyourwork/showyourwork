@@ -14,10 +14,10 @@ repos:
     rev: "v0.0.245"
     hooks:
       - id: ruff
-        exclude: "docs/.*.py"
+        exclude: "^docs/|^tests/projects/"
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v1.0.0"
     hooks:
       - id: mypy
-        exclude: "docs/.*.py"
+        exclude: "^docs/|^tests/projects/"
         additional_dependencies: ["types-PyYAML"]
