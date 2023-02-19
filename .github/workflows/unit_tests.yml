@@ -13,16 +13,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python:
+        python-version:
           - "3.9"
           - "3.10"
         platform:
           - ubuntu-latest
         include:
           - platform: macos-latest
-            python: "3.10"
+            python-version: "3.10"
           - platform: windows-latest
-            python: "3.10"
+            python-version: "3.10"
     runs-on: ${{ matrix.platform }}
     name: Run unit tests
     steps:
@@ -32,13 +32,21 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up python
+      - name: Set up Python
         uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python-version }}
           mamba-version: "*"
           channels: conda-forge,defaults
           channel-priority: true
+
+      - name: Cache test conda environments
+        uses: actions/cache@v3
+        with:
+          path: .test/conda
+          key: ${{ runner.os }}-${{ matrix.python-version }}-conda-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/envs/*.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python-version }}-conda-
 
       - name: Install showyourwork
         shell: bash -el {0}
