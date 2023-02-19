@@ -1,0 +1,5 @@
+{
+  "unlabeled": ["a", "b"],
+  "files": ["c", "d"],
+  "figures": {"x": ["e", "f"], "y": ["g", "h"]}
+}

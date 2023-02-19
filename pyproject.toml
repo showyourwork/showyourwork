@@ -1,23 +1,70 @@
+[project]
+name = "showyourwork"
+description = "A workflow for open-source scientific articles"
+authors = [
+    { name = "Rodrigo Luger", email = "rodluger@gmail.com" },
+    { name = "Dan Foreman-Mackey", email = "foreman.mackey@gmail.com" },
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT License" }
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+]
+dynamic = ["version"]
+dependencies = [
+    "pyyaml",
+    "jsonschema",
+    "snakemake",   # TODO(dfm): figure out what version we need
+    "click",
+    "ensureconda",
+    # "graphviz>=0.19.1",
+    # "jinja2>=3.0.3",
+    # "requests>=2.25.1",
+    # "click>=8.1.3",
+    # "cookiecutter>=2.1.1",
+    # "packaging>=21.3",
+    # "snakemake==7.15.2",
+]
+
+[project.scripts]
+showyourwork = "showyourwork.cli:main"
+
+[project.urls]
+"Homepage" = "https://show-your.work"
+"Source" = "https://github.com/showyourwork/showyourwork"
+"Bug Tracker" = "https://github.com/showyourwork/showyourwork/issues"
+
+[project.optional-dependencies]
+test = ["pytest"]
+docs = [
+    "requests",
+    "sphinx-book-theme>=0.1.3",
+    "jinja2>=2.11.3",
+    "sphinxcontrib-programoutput>=0.17",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=7.0.1"]
+requires = ["setuptools>=61.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "showyourwork/_showyourwork_version.py"
-write_to_template = '__version__ = "{version}"'
+write_to = "src/showyourwork/version.py"
 
 [tool.black]
-line-length = 79
+target-version = ["py38", "py39"]
+line-length = 88
 
-[tool.isort]
-skip_glob = []
-line_length = 79
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-known_first_party = ["showyourwork"]
-
-[tool.pytest.ini_options]
-addopts = "-v --asyncio-task-timeout=1800"
-norecursedirs = "tests/helpers"
+[tool.ruff]
+line-length = 88
+update-check = false
+target-version = "py38"
+select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW"]
+ignore = ["PLR0913"]
+exclude = []

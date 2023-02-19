@@ -144,9 +144,7 @@ else:
         projects[project]["commits"] = get_commit_count(project, API_KEY)
         projects[project]["date"] = get_date(project, API_KEY)
     fields = list(set([projects[project]["field"] for project in projects]))
-    repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[
-        ::-1
-    ]
+    repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[::-1]
     count = {field: 0 for field in fields}
     for project in projects:
         count[projects[project]["field"]] += 1
@@ -161,7 +159,9 @@ else:
 
 
 # Import the GitHub Action README
-url = "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
+url = (
+    "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
+)
 try:
     r = requests.get(url, allow_redirects=True)
     content = r.content.decode()
@@ -188,12 +188,9 @@ subprocess.run(
 
 # Snakefile docs: ingest docstrings from the `.smk` files
 rules = [
-    str(file.name)
-    for file in Path("../showyourwork/workflow/rules").glob("*.smk")
+    str(file.name) for file in Path("../showyourwork/workflow/rules").glob("*.smk")
 ]
-snakefiles = [
-    str(file.name) for file in Path("../showyourwork/workflow").glob("*.smk")
-]
+snakefiles = [str(file.name) for file in Path("../showyourwork/workflow").glob("*.smk")]
 for file in rules + snakefiles:
     if file in rules:
         with open(Path("../showyourwork/workflow/rules") / file, "r") as f:

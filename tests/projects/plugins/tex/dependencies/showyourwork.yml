@@ -1,0 +1,7 @@
+config-version: 2
+documents:
+  - all.tex
+  - basic.tex
+  - figure.tex
+  - file.tex
+  - labeled.tex

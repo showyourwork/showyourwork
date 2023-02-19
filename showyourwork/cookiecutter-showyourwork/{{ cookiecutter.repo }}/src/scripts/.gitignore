@@ -1,9 +1,0 @@
-# Don't track figure output
-*.pdf
-*.eps
-*.png
-*.jpeg
-*.jpg
-*.tiff
-*.gif
-*.svg

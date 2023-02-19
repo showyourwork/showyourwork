@@ -1,0 +1,4 @@
+for f in "abcdefgh":
+    rule:
+        output:
+            touch(f)

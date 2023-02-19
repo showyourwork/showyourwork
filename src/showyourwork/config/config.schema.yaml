@@ -1,0 +1,114 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "showyourwork configuration"
+description: "The schema for version 2 of the showyourwork configuration file"
+type: object
+
+required:
+  - config_version
+
+properties:
+  config_version:
+    type: integer
+    description: "The version of the configuration specification"
+
+  document_dependencies:
+    description: "A list of dependencies that will be included for all documents"
+    type: array
+    items:
+      type: string
+
+  documents:
+    description: "A list of documents to build"
+    type: array
+    items:
+      anyOf:
+        - type: string
+        - type: object
+          required:
+            - path
+          properties:
+            path:
+              type: string
+            dependencies:
+              type: array
+              items:
+                type: string
+
+  github:
+    description: "Information about the GitHub repository"
+    type: object
+    required:
+      - owner
+      - repo
+    properties:
+      owner:
+        type: string
+      repo:
+        type: string
+
+  plugins:
+    description: "A list of plugins to load"
+    type: array
+    items:
+      type: string
+
+  local_snakefiles:
+    description: "A list of local files with additional Snakemake rules"
+    type: array
+    items:
+      type: string
+
+  conda:
+    description: "The default conda environment YAML file"
+    type: string
+
+  static:
+    description: "A list of static files and directories"
+    type: array
+    items:
+      type: string
+
+  dynamic:
+    description: "Information about the scripts required to build the document"
+    type: array
+    items:
+      type: object
+      required:
+        - script
+      properties:
+        script:
+          type: string
+        command:
+          type: string
+        conda:
+          type: string
+        input:
+          type: array
+          items:
+            type: string
+        output:
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+
+  scripts:
+    description: "Mapping of script file extensions to instructions for executing them"
+    type: object
+    patternProperties:
+      "^.*$":
+        type: string
+
+  datasets:
+    description: "Externally-hosted datasets from Zenodo"
+    type: object
+    patternProperties:
+      "^.*$":
+        type: array
+        items:
+          type: string
+
+  working_directory:
+    description: "The directory where the build will be performed; this should really only be set from the command line"
+    type: string

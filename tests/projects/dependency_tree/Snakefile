@@ -1,0 +1,8 @@
+deps = []
+for f in "abcdefgh":
+    rule:
+        input:
+            deps
+        output:
+            touch(f)
+    deps.append(f)
