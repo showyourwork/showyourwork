@@ -21,14 +21,13 @@ for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
         Copy explicit dependencies to the working directory.
         """
         name:
-            f"sywplug__tex_copy_files_{slug}"
+            f"sywplug__tex_copy_{slug}"
         input:
             "{file}"
         output:
             base_path / "{file}"
         run:
             utils.copy_file_or_directory(input[0], output[0])
-
 
     style_paths = set()
     for doc in SYW__DOCUMENTS:
