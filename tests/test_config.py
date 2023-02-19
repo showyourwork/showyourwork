@@ -1,5 +1,6 @@
 from contextlib import contextmanager
-from tempfile import NamedTemporaryFile
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Generator
 
 import pytest
@@ -25,11 +26,12 @@ def test_normalize_keys() -> None:
 
 
 @contextmanager
-def temp_config_file(body: str) -> Generator[str, None, None]:
-    with NamedTemporaryFile() as f:
-        f.write(body.encode("utf-8"))
-        f.flush()
-        yield f.name
+def temp_config_file(body: str) -> Generator[Path, None, None]:
+    with TemporaryDirectory() as d:
+        name = Path(d) / "config.yml"
+        with open(name, "w") as f:
+            f.write(body)
+        yield name
 
 
 @pytest.mark.parametrize("sep", ["-", "_"])
