@@ -97,8 +97,11 @@ rule syw__dump_dependencies:
         rules.syw__dag.output,
         ensure_all_document_dependencies
     output:
-        SYW__WORK_PATHS.root / "dependency_tree.json"
+        SYW__WORK_PATHS.root / "dependency_tree.json",
+        SYW__WORK_PATHS.root / "dependency_tree_simple.json"
     run:
         import json
         with open(output[0], "w") as f:
             json.dump(config["_dependency_tree"], f, indent=2)
+        with open(output[1], "w") as f:
+            json.dump(config["_dependency_tree_simple"], f, indent=2)

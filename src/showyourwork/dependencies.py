@@ -5,11 +5,11 @@ from typing import Dict, List, Optional, Set
 def relative_or_skip(
     input_path: str, repo_path: Path, skip_path: Optional[Path] = None
 ) -> Optional[str]:
-    path = Path(input_path)
+    path = Path(input_path).resolve()
     if skip_path is not None and path.is_relative_to(skip_path):
         return None
     try:
-        return str(Path(path).relative_to(repo_path))
+        return str(path.relative_to(repo_path))
     except ValueError:
         return None
 

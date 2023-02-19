@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import List
 
 from showyourwork import test_util
 from showyourwork.dependencies import simplify_dependency_tree
@@ -11,16 +12,18 @@ def test_dependency_tree() -> None:
     ) as d:
         with open(d / ".showyourwork" / "dependency_tree.json", "r") as f:
             data = json.load(f)
+        deps: List[str] = []
         for c in "abcdefgh":
-            assert data[c] == []
+            assert data[c] == deps
+            deps.append(c)
 
 
 def test_explicit_dependencies() -> None:
     test_util.run("tests/projects/explicit_dependencies")
 
 
-work_path = Path("work")
-repo_path = Path("repo")
+work_path = Path("/work")
+repo_path = Path("/repo")
 
 
 def work(*x: str) -> str:
