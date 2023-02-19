@@ -31,6 +31,9 @@ def cwd(path: PathLike) -> Generator[None, None, None]:
 def temporary_directory(
     path: PathLike, args: Iterable[str] = ()
 ) -> Generator[Path, None, None]:
+    # Snakemake fails when creating conda environments on Windows when executed
+    # within a TemporaryDirectory so we wrap it here with a custom
+    # implementation on Windows.
     if platform.system() == "Windows":
         m = hashlib.sha1()
         m.update(str(path).encode())

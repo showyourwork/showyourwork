@@ -43,7 +43,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           mamba-version: "*"
           channels: conda-forge,defaults
-          channel-priority: true
+          channel-priority: strict
 
       - name: Cache test conda environments
         uses: actions/cache@v3

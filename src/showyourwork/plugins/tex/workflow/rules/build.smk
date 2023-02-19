@@ -29,15 +29,12 @@ for doc in SYW__DOCUMENTS:
         conda:
             SYWPLUG__TEX_RESOURCE("envs", "tectonic.yml")
         shell:
-            """
-            tectonic                                 \\
-                --chatter minimal                    \\
-                --keep-logs                          \\
-                --keep-intermediates                 \\
-                --synctex                            \\
-                --outdir {output.output_directory:q} \\
-                {input.document:q}
-            """
+            "tectonic "
+            "--chatter minimal "
+            "--synctex "
+            "--keep-logs --keep-intermediates "
+            "--outdir {output.output_directory:q} "
+            "{input.document:q} "
 
     rule:
         """

@@ -31,12 +31,10 @@ rule syw__render_thumbnails:
     conda:
         package_data("showyourwork", "workflow", "envs", "render_thumbnails.yml")
     shell:
-        """
-        python {input.script:q} \\
-            --repo-path {params.repo_path:q} \\
-            --output {output:q} \\
-            {input.files:q}
-        """
+        "python {input.script:q} "
+        "--repo-path {params.repo_path:q} "
+        "--output {output:q} "
+        "{input.files:q} "
 
 rule syw__render_dag:
     input:
@@ -51,11 +49,9 @@ rule syw__render_dag:
     conda:
         package_data("showyourwork", "workflow", "envs", "render_dag.yml")
     shell:
-        """
-        python {input.script:q} \\
-            --config {input.config:q} \\
-            --repo-path {params.repo_path:q} \\
-            --work-path {params.work_path:q} \\
-            --thumbnails-path {input.thumbnails:q} \\
-            --output {output:q}
-        """
+        "python {input.script:q} "
+        "--config {input.config:q} "
+        "--repo-path {params.repo_path:q} "
+        "--work-path {params.work_path:q} "
+        "--thumbnails-path {input.thumbnails:q} "
+        "--output {output:q} "

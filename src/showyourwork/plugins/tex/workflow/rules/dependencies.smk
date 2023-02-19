@@ -36,13 +36,10 @@ for doc, explicit_deps in SYW__DOCUMENTS.items():
         conda:
             SYWPLUG__TEX_RESOURCE("envs", "tectonic.yml")
         shell:
-            """
-            tectonic                 \\
-                --chatter minimal    \\
-                --keep-logs          \\
-                --keep-intermediates \\
-                {input.document:q}
-            """
+            "tectonic "
+            "--chatter minimal "
+            "--keep-logs --keep-intermediates "
+            "{input.document:q} "
 
     rule:
         """
