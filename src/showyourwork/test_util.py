@@ -1,5 +1,7 @@
 import difflib
+import hashlib
 import os
+import platform
 import shutil
 import subprocess
 from contextlib import contextmanager
@@ -23,6 +25,28 @@ def cwd(path: PathLike) -> Generator[None, None, None]:
         yield
     finally:
         os.chdir(old_dir)
+
+
+@contextmanager
+def temporary_directory(
+    path: PathLike, args: Iterable[str] = ()
+) -> Generator[Path, None, None]:
+    if platform.system() == "Windows":
+        m = hashlib.sha1()
+        m.update(str(path).encode())
+        for arg in args:
+            m.update(arg.encode())
+
+        tempdir = Path().resolve() / ".test" / "tmp" / m.hexdigest()
+        tempdir.mkdir(parents=True, exist_ok=True)
+        try:
+            yield tempdir
+        finally:
+            shutil.rmtree(tempdir)
+
+    else:
+        with TemporaryDirectory() as tmpdir:
+            yield Path(tmpdir)
 
 
 def run(
@@ -63,7 +87,7 @@ def run_context(
         return [name for name in names if Path(name).parts[0] == "expected"]
 
     # Copy the test project over to a temporary directory
-    with TemporaryDirectory() as tmpdir:
+    with temporary_directory(path, snakemake_args) as tmpdir:
         shutil.copytree(
             test_project_root, tmpdir, ignore=ignore_expected, dirs_exist_ok=True
         )
@@ -86,7 +110,7 @@ def run_context(
 
                 # Construct the path to the expected file in the temporary directory
                 subpath = expected.relative_to(test_project_root / "expected")
-                observed = Path(tmpdir) / subpath
+                observed = tmpdir / subpath
 
                 # Files with the suffix ".exists" are just used to check that
                 # the file gets created
@@ -127,7 +151,7 @@ def run_context(
                     "Generated files differ from expected files:\n\n"
                     + "\n\n".join(diffs)
                 )
-        yield Path(tmpdir)
+        yield tmpdir
 
 
 def run_snakemake(

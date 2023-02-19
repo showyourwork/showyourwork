@@ -10,6 +10,10 @@ on:
 
 jobs:
   tests:
+    defaults:
+      run:
+        shell: bash -l {0}
+
     strategy:
       fail-fast: false
       matrix:
@@ -50,12 +54,10 @@ jobs:
             ${{ runner.os }}-${{ matrix.python-version }}-conda-
 
       - name: Install showyourwork
-        shell: bash -el {0}
         run: |
           python -m pip install -U pip
           python -m pip install -e ".[test]"
 
       - name: Run tests
-        shell: bash -el {0}
         run: |
           python -m pytest -v tests
