@@ -17,11 +17,14 @@ workdir: SYW__PROJECT_ROOT
 config = parse_config(config, required_version=2)
 
 # Extract some commonly used config values
-SYW__DOCUMENTS = config.get("documents", ["ms.tex"])
+SYW__DOCUMENTS = config["documents"]
 SYW__REPO_PATHS = paths.repo(config)
 SYW__WORK_PATHS = paths.work(config)
 
-# TODO(dfm): We should define a better default rule here!
+rule all:
+    input:
+        [Path(doc).with_suffix(".pdf") for doc in SYW__DOCUMENTS]
+
 rule syw__dump_config:
     output:
         "config.json"

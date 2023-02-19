@@ -78,10 +78,6 @@ class repo(PathMeta):
         self.config = config
         self.root = find_project_root()
 
-    @cached_property
-    def manuscript(self) -> Path:
-        return self.root / self.config.get("manuscript", "ms.tex")
-
 
 class work(PathMeta):
     def __init__(self, config: Dict[str, Any]):
@@ -99,10 +95,6 @@ class work(PathMeta):
 
     def flag(self, name: str) -> Path:
         return self.subdir("flags") / name
-
-    @property
-    def manuscript(self) -> Path:
-        return self.root / self.config.get("manuscript", "ms.tex")
 
     def dependencies_for(self, name: str) -> Path:
         return self.root / f"{name}.dependencies.json"

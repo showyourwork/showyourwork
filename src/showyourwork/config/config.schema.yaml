@@ -11,11 +11,28 @@ properties:
     type: integer
     description: "The version of the configuration specification"
 
+  document_dependencies:
+    description: "A list of dependencies that will be included for all documents"
+    type: array
+    items:
+      type: string
+
   documents:
     description: "A list of documents to build"
     type: array
     items:
-      type: string
+      anyOf:
+        - type: string
+        - type: object
+          required:
+            - path
+          properties:
+            path:
+              type: string
+            dependencies:
+              type: array
+              items:
+                type: string
 
   github:
     description: "Information about the GitHub repository"
@@ -91,3 +108,7 @@ properties:
         type: array
         items:
           type: string
+
+  working_directory:
+    description: "The directory where the build will be performed; this should really only be set from the command line"
+    type: string

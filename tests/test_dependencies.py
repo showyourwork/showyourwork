@@ -7,12 +7,16 @@ from showyourwork.dependencies import simplify_dependency_tree
 
 def test_dependency_tree() -> None:
     with test_util.run_context(
-        "tests/projects/dependencies", snakemake_args=["syw__dump_dependencies"]
+        "tests/projects/dependency_tree", snakemake_args=["syw__dump_dependencies"]
     ) as d:
         with open(d / ".showyourwork" / "dependency_tree.json", "r") as f:
             data = json.load(f)
         for c in "abcdefgh":
             assert data[c] == []
+
+
+def test_explicit_dependencies() -> None:
+    test_util.run("tests/projects/explicit_dependencies")
 
 
 work_path = Path("work")

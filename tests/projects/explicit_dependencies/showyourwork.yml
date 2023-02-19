@@ -1,0 +1,9 @@
+config-version: 2
+document-dependencies:
+  - dep0.tex
+  - dep1.tex
+documents:
+  - path: ms.tex
+    dependencies:
+      - dep2.tex
+      - subdir/dep3.tex

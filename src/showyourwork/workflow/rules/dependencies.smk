@@ -5,20 +5,25 @@ def get_document_dependencies(doc):
     def impl(*_):
         getattr(
             checkpoints,
-            f"syw__check_manuscript_dependencies_{paths.path_to_rule_name(doc)}"
+            f"syw__check_document_dependencies_{paths.path_to_rule_name(doc)}"
         ).get()
+
+        # Include the dependencies extracted from the document.
         with open(SYW__WORK_PATHS.dependencies_for(doc), "r") as f:
             dependencies = json.load(f)
-
         files = list(dependencies.get("unlabeled", [])) + list(dependencies.get("files", []))
         for figure in dependencies.get("figures", {}).values():
             files.extend(figure)
 
-        # Save the manuscript dependencies to the "config" object for downstream
+        # And also any files that are explicitly listed in the document's
+        # dependencies in the cofing file.
+        files.extend(SYW__DOCUMENTS[doc])
+
+        # Save the document dependencies to the "config" object for downstream
         # usage.
-        if "_manuscript_dependencies" not in config:
-            config["_manuscript_dependencies"] = {}
-        config["_manuscript_dependencies"][doc] = files
+        if "_document_dependencies" not in config:
+            config["_document_dependencies"] = {}
+        config["_document_dependencies"][doc] = files
 
         return files
     return impl
@@ -27,12 +32,12 @@ def ensure_all_document_dependencies(*_):
     from collections import defaultdict
 
     # This checkpoint call serves two purposes: (1) it makes sure that we have
-    # extracted the list of all dependencies from the manuscript, and (2) it
+    # extracted the list of all dependencies from the document, and (2) it
     # ensures that the DAG of jobs has been constructed.
     for doc in SYW__DOCUMENTS:
         getattr(
             checkpoints,
-            f"syw__check_manuscript_dependencies_{paths.path_to_rule_name(doc)}"
+            f"syw__check_document_dependencies_{paths.path_to_rule_name(doc)}"
         ).get()
 
     # Walk up the call stack to find an object called "dag"... yeah, this is a
@@ -75,7 +80,7 @@ for doc in SYW__DOCUMENTS:
     name = paths.path_to_rule_name(doc)
     checkpoint:
         name:
-            f"syw__check_manuscript_dependencies_{name}"
+            f"syw__check_document_dependencies_{name}"
         input:
             SYW__WORK_PATHS.dependencies_for(doc)
         output:
