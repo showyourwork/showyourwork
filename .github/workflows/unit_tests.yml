@@ -40,10 +40,11 @@ jobs:
       - name: Set up Python
         uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
-          channels: conda-forge,defaults
-          channel-priority: strict
+          # python-version: ${{ matrix.python-version }}
+          # mamba-version: "*"
+          # channels: conda-forge,defaults
+          # channel-priority: strict
+          environment-file: .github/resources/env-${{ matrix.python-version }}.yml
 
       - name: Cache test conda environments
         uses: actions/cache@v3
