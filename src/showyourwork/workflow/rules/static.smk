@@ -1,12 +1,10 @@
-from showyourwork import paths, utils
-
-repo_path = paths.repo(config).root
-build_path = paths.work(config).build
+repo_path = SYW__REPO_PATHS.root
+build_path = SYW__WORK_PATHS.build
 
 for static_file in config.get("static", []):
     rule:
         name:
-            f"syw__static_{paths.path_to_rule_name(static_file)}"
+            utils.rule_name("static", document=static_file)
         input:
             repo_path / static_file
         output:

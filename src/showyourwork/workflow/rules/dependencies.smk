@@ -2,11 +2,12 @@ import inspect
 from showyourwork.dependencies import simplify_dependency_tree
 
 def get_document_dependencies(doc):
+    checkpoint_name = utils.rule_name(
+        "check", "dependencies", document=doc
+    )
+
     def impl(*_):
-        getattr(
-            checkpoints,
-            f"syw__check_document_dependencies_{paths.path_to_rule_name(doc)}"
-        ).get()
+        getattr(checkpoints, checkpoint_name).get()
 
         # Include the dependencies extracted from the document.
         with open(SYW__WORK_PATHS.dependencies_for(doc), "r") as f:
@@ -35,10 +36,10 @@ def ensure_all_document_dependencies(*_):
     # extracted the list of all dependencies from the document, and (2) it
     # ensures that the DAG of jobs has been constructed.
     for doc in SYW__DOCUMENTS:
-        getattr(
-            checkpoints,
-            f"syw__check_document_dependencies_{paths.path_to_rule_name(doc)}"
-        ).get()
+        checkpoint_name = utils.rule_name(
+            "check", "dependencies", document=doc
+        )
+        getattr(checkpoints, checkpoint_name).get()
 
     # Walk up the call stack to find an object called "dag"... yeah, this is a
     # hack, but we haven't found a better approach yet!
@@ -80,19 +81,25 @@ for doc in SYW__DOCUMENTS:
     name = paths.path_to_rule_name(doc)
     checkpoint:
         name:
-            f"syw__check_document_dependencies_{name}"
+            utils.rule_name("check", "dependencies", document=doc)
         input:
             SYW__WORK_PATHS.dependencies_for(doc)
         output:
             touch(SYW__WORK_PATHS.flag(f"dependencies_{name}"))
 
-rule syw__dag:
+rule:
+    name:
+        utils.rule_name("dag")
     input:
         [get_document_dependencies(doc) for doc in SYW__DOCUMENTS]
     output:
         touch(SYW__WORK_PATHS.flag("dag"))
 
-rule syw__dump_dependencies:
+rule:
+    name:
+        utils.rule_name("save", "dependencies")
+    message:
+        "Saving document dependency tree as JSON"
     input:
         rules.syw__dag.output,
         ensure_all_document_dependencies

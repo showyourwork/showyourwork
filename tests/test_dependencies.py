@@ -8,7 +8,7 @@ from showyourwork.dependencies import simplify_dependency_tree
 
 def test_dependency_tree() -> None:
     with test_util.run_context(
-        "tests/projects/dependency_tree", snakemake_args=["syw__dump_dependencies"]
+        "tests/projects/dependency_tree", snakemake_args=["syw__save_dependencies"]
     ) as d:
         with open(d / ".showyourwork" / "dependency_tree.json", "r") as f:
             data = json.load(f)

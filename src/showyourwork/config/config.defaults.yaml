@@ -1,4 +1,0 @@
-plugins:
-  - "showyourwork.plugins.tex"
-documents:
-  - ms.tex

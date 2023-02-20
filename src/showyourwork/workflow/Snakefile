@@ -7,13 +7,12 @@ from showyourwork import paths, utils
 from showyourwork.paths import package_data
 from showyourwork.config import parse_config
 from showyourwork.rule_order import fix_rule_order
+from showyourwork.logging import patch_snakemake_logging
 
 SYW__PROJECT_ROOT = paths.find_project_root()
-
-configfile: paths.package_data("showyourwork.config", "config.defaults.yaml")
 workdir: SYW__PROJECT_ROOT
 
-# Parse and validate the configuration
+# Parse and validate the configuration; apply defaults
 config = parse_config(config, required_version=2)
 
 # Extract some commonly used config values
@@ -25,7 +24,9 @@ rule all:
     input:
         [Path(doc).with_suffix(".pdf") for doc in SYW__DOCUMENTS]
 
-rule syw__dump_config:
+rule:
+    name:
+        utils.rule_name("save", "config")
     output:
         "config.json"
     run:
@@ -53,3 +54,6 @@ if (SYW__PROJECT_ROOT / "Snakefile").is_file():
 
 # Handle the rule order for ambiguous rules
 fix_rule_order(config, workflow)
+
+# Patch the snakemake logger for our purposes
+patch_snakemake_logging(config)

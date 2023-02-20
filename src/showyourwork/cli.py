@@ -28,6 +28,9 @@ def main() -> None:
     )
 )
 @click.option(
+    "-v", "--verbose", is_flag=True, help="Print verbose output to the console"
+)
+@click.option(
     "--configfile",
     type=click.Path(exists=True),
     help="A showyourwork configuration file",
@@ -46,6 +49,7 @@ def main() -> None:
 )
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def build(
+    verbose: bool,
     configfile: Optional[paths.PathLike],
     cores: str,
     conda_frontend: Optional[str],
@@ -53,6 +57,7 @@ def build(
 ) -> None:
     """Build an article in the current working directory."""
     _build(
+        verbose=verbose,
         configfile=configfile,
         cores=cores,
         conda_frontend=conda_frontend,
@@ -61,12 +66,16 @@ def build(
 
 
 def _build(
+    verbose: bool,
     configfile: Optional[paths.PathLike],
     cores: str,
     conda_frontend: Optional[str],
     snakemake_args: Iterable[str],
 ) -> None:
     """Build an article in the current working directory."""
+    if verbose:
+        snakemake_args = list(snakemake_args) + ["--config", "verbose=True"]
+
     run_snakemake(
         paths.package_data("showyourwork", "workflow", "Snakefile"),
         config_file=configfile,

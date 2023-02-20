@@ -96,6 +96,7 @@ def run_context(
         )
         with cwd(tmpdir):
             cli._build(
+                verbose=False,
                 configfile=configfile,
                 cores=cores,
                 conda_frontend=conda_frontend,

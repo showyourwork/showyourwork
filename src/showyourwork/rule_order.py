@@ -17,7 +17,7 @@ def get_rule_priority(
 
     if rule.name.startswith("syw__"):
         return 0
-    elif rule.name.startswith("sywplug__"):
+    elif rule.name.startswith("sywplug_"):
         return 1
     return 100
 

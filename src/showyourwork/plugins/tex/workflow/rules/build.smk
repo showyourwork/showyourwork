@@ -1,4 +1,4 @@
-build_dir = SYW__WORK_PATHS / "build"
+build_dir = SYW__WORK_PATHS.build
 
 def _build_dependendencies_for(doc):
     deps_func = get_document_dependencies(doc)
@@ -9,31 +9,30 @@ def _build_dependendencies_for(doc):
 
 for doc in SYW__DOCUMENTS:
     doc_dir = Path(doc).parent
-    name = paths.path_to_rule_name(doc)
-    pdf = SYW__WORK_PATHS.output / Path(doc).with_suffix(".pdf")
+    pdf = build_dir / Path(doc).with_suffix(".pdf")
 
     rule:
         """
         Compile the document using ``tectonic``.
         """
         name:
-            f"sywplug__tex_build_{name}"
+            sywplug_tex__rule_name("build", document=doc)
+        message:
+            f"Compiling document '{Path(doc).name}'"
         input:
             dependencies=_build_dependendencies_for(doc),
             document=build_dir / doc,
             style=build_dir / doc_dir / "showyourwork.tex",
             classfile=build_dir / doc_dir / "showyourwork.sty",
         output:
-            pdf,
-            output_directory=directory(SYW__WORK_PATHS.output),
+            pdf
         conda:
-            SYWPLUG__TEX_RESOURCE("envs", "tectonic.yml")
+            sywplug_tex__resource("envs", "tectonic.yml")
         shell:
             "tectonic "
             "--chatter minimal "
             "--synctex "
             "--keep-logs --keep-intermediates "
-            "--outdir {output.output_directory:q} "
             "{input.document:q} "
 
     rule:
@@ -42,7 +41,7 @@ for doc in SYW__DOCUMENTS:
         the source file.
         """
         name:
-            f"sywplug__tex_output_build_{name}"
+            sywplug_tex__rule_name("build", "output", document=doc)
         input:
             pdf
         output:
