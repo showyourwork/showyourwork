@@ -9,4 +9,4 @@ from showyourwork import test_util
     reason="imagemagick can't be installed on Windows using conda",
 )
 def test_render() -> None:
-    test_util.run("tests/projects/render", snakemake_args=["syw__render_dag"])
+    test_util.run("tests/projects/render", snakemake_args=["dag.pdf"])
