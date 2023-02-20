@@ -1,8 +1,11 @@
-SYWPLUG__TEX_RESOURCE = partial(
+sywplug_tex__rule_name = partial(
+    utils.rule_name, plugin="showyourwork.plugins.tex"
+)
+sywplug_tex__resource = partial(
     package_data, "showyourwork.plugins.tex", "workflow"
 )
 
-def sywplug__tex_local_or_provided_style(document):
+def sywplug_tex__local_or_provided_style(document):
     """Get the path to the showyourwork.sty file. We prefer to use the one
     provided by the user if it exists, but will provide our own if not.
     """
@@ -10,7 +13,7 @@ def sywplug__tex_local_or_provided_style(document):
     if path.is_file():
         return path
     else:
-        return SYWPLUG__TEX_RESOURCE("resources", "showyourwork.sty")
+        return sywplug_tex__resource("resources", "showyourwork.sty")
 
 
 for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
@@ -21,7 +24,7 @@ for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
         Copy explicit dependencies to the working directory.
         """
         name:
-            f"sywplug__tex_copy_{slug}"
+            sywplug_tex__rule_name("copy", slug)
         input:
             "{file}"
         output:
@@ -32,7 +35,6 @@ for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
     style_paths = set()
     for doc in SYW__DOCUMENTS:
         doc_dir = Path(doc).parent
-        name = paths.path_to_rule_name(doc)
 
         # If multiple documents live within the same directory, we only want to copy
         # the style files once.
@@ -45,9 +47,9 @@ for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
                 directory.
                 """
                 name:
-                    f"sywplug__tex_style_{slug}_{name}"
+                    sywplug_tex__rule_name("style", slug, document=doc)
                 input:
-                    SYWPLUG__TEX_RESOURCE("resources", f"{slug}.tex")
+                    sywplug_tex__resource("resources", f"{slug}.tex")
                 output:
                     base_path / doc_dir / "showyourwork.tex"
                 run:
@@ -62,9 +64,9 @@ for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
                 behavior.
                 """
                 name:
-                    f"sywplug__tex_class_{slug}_{name}"
+                    sywplug_tex__rule_name("class", slug, document=doc)
                 input:
-                    sywplug__tex_local_or_provided_style(doc)
+                    sywplug_tex__local_or_provided_style(doc)
                 output:
                     base_path / doc_dir / "showyourwork.sty"
                 run:
@@ -76,7 +78,7 @@ for base_path in [SYW__WORK_PATHS / "dependencies", SYW__WORK_PATHS / "build"]:
             work directory.
             """
             name:
-                f"sywplug__tex_doc_{slug}_{name}"
+                sywplug_tex__rule_name("doc", slug, document=doc)
             input:
                 SYW__WORK_PATHS.root / doc
             output:

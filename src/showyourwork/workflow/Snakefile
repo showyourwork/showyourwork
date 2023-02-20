@@ -24,7 +24,9 @@ rule all:
     input:
         [Path(doc).with_suffix(".pdf") for doc in SYW__DOCUMENTS]
 
-rule syw__dump_config:
+rule:
+    name:
+        utils.rule_name("save", "config")
     output:
         "config.json"
     run:

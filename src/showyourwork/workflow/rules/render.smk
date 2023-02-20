@@ -2,8 +2,11 @@ import json
 
 SUPPORTED_FIGURE_EXTENSIONS = [".pdf", ".png", ".jpg", ".jpeg", ".eps", ".svg"]
 dag_directory = SYW__WORK_PATHS / "dag"
+dag_filename = config.get("dag", {}).get("render_to", "dag.pdf")
 
-rule syw__render_dag_config:
+rule:
+    name:
+        utils.rule_name("render", "dag", "config")
     input:
         rules.syw__dag.output,
         ensure_all_document_dependencies,
@@ -19,7 +22,11 @@ def generated_files(*_):
         deps.extend(get_document_dependencies(doc)())
     return [d for d in set(deps) if Path(d).suffix in SUPPORTED_FIGURE_EXTENSIONS]
 
-rule syw__render_thumbnails:
+rule:
+    name:
+        utils.rule_name("render", "dag", "thumbnails")
+    message:
+        "Rendering thumbnails for generated figures"
     input:
         rules.syw__dag.output,
         files=generated_files,
@@ -36,13 +43,17 @@ rule syw__render_thumbnails:
         "--output {output:q} "
         "{input.files:q} "
 
-rule syw__render_dag:
+rule:
+    name:
+        utils.rule_name("render", "dag")
+    message:
+        f"Rendering DAG to '{dag_filename}'"
     input:
-        config=rules.syw__render_dag_config.output[0],
-        thumbnails=rules.syw__render_thumbnails.output[0],
+        config=dag_directory / "_render_dag_config.json",
+        thumbnails=SYW__WORK_PATHS.root / "thumbnails",
         script=package_data("showyourwork", "workflow", "scripts", "render_dag.py")
     output:
-        config.get("dag", {}).get("render_to", "dag.pdf")
+        dag_directory / dag_filename
     params:
         repo_path=SYW__REPO_PATHS.root,
         work_path=SYW__WORK_PATHS.root
@@ -55,3 +66,14 @@ rule syw__render_dag:
         "--work-path {params.work_path:q} "
         "--thumbnails-path {input.thumbnails:q} "
         "--output {output:q} "
+
+
+rule:
+    name:
+        utils.rule_name("copy", "dag")
+    input:
+        dag_directory / dag_filename
+    output:
+        dag_filename
+    run:
+        utils.copy_file_or_directory(input[0], output[0])

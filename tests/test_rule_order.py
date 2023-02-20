@@ -5,7 +5,7 @@ import pytest
 from showyourwork.test_util import run_snakemake
 
 
-@pytest.mark.parametrize("prefix", ["", "syw__", "sywplug__"])
+@pytest.mark.parametrize("prefix", ["", "syw__", "sywplug_"])
 def test_rule_order(prefix: str) -> None:
     with TemporaryDirectory() as d:
         root = Path(d)

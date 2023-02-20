@@ -10,7 +10,7 @@ for doc in SYW__DOCUMENTS:
         Copy a document from the project root to the work directory.
         """
         name:
-            f"syw__copy_doc_{paths.path_to_rule_name(doc)}"
+            utils.rule_name("copy", "doc", document=doc)
         input:
             SYW__REPO_PATHS.root / doc
         output:
