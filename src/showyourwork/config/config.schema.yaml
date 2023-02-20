@@ -8,8 +8,12 @@ required:
 
 properties:
   config_version:
-    type: integer
     description: "The version of the configuration specification"
+    type: integer
+
+  verbose:
+    description: "If true, print all the Snakemake chatter to the console"
+    type: boolean
 
   document_dependencies:
     description: "A list of dependencies that will be included for all documents"

@@ -12,6 +12,7 @@ scripts = dict(scripts, **config.get("scripts", {}))
 for dynamic in config.get("dynamic", []):
     script = repo_path / dynamic["script"]
     name = f"syw__dynamic_{paths.path_to_rule_name(dynamic['script'])}"
+    message = f"Running script '{dynamic['script']}'"
     input = [repo_path / f for f in dynamic.get("input", [])],
     output = dynamic.get("output", [])
     if isinstance(output, str):
@@ -25,6 +26,8 @@ for dynamic in config.get("dynamic", []):
         rule:
             name:
                 name
+            message:
+                message
             input:
                 input, script=script
             output:
@@ -36,6 +39,8 @@ for dynamic in config.get("dynamic", []):
         rule:
             name:
                 name
+            message:
+                message
             input:
                 input, script=script
             output:

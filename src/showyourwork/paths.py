@@ -99,6 +99,10 @@ class work(PathMeta):
     def dependencies_for(self, name: str) -> Path:
         return self.root / f"{name}.dependencies.json"
 
+    @cached_property
+    def logs(self) -> Path:
+        return self.subdir("logs")
+
     @property
     def dependencies(self) -> Path:
         return self.root / "dependencies.json"
@@ -106,7 +110,3 @@ class work(PathMeta):
     @cached_property
     def build(self) -> Path:
         return self.subdir("build")
-
-    @cached_property
-    def output(self) -> Path:
-        return self.subdir("output")

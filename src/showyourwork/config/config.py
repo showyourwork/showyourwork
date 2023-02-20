@@ -69,12 +69,15 @@ def parse_config(config: Dict[str, Any], required_version: int = 2) -> Dict[str,
             f"following error:\n\n{e}"
         ) from e
 
+    # Default to using the tex plugin
+    config["plugins"] = config.get("plugins", ["showyourwork.plugins.tex"])
+
     # Extract the list of documents and their dependencies and fill it out. The
     # resulting 'documents' config item is keyed by document path and has a list
     # of dependencies, including the global dependencies defined in
     # 'document_dependencies' and the per-document dependencies.
     document_dependencies = list(config.get("document_dependencies", []))
-    input_documents = config.get("documents", [])
+    input_documents = config.get("documents", ["ms.tex"])
     documents: Dict[str, List[str]] = {}
     for doc in input_documents:
         if isinstance(doc, str):

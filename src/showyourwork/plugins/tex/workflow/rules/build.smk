@@ -10,7 +10,7 @@ def _build_dependendencies_for(doc):
 for doc in SYW__DOCUMENTS:
     doc_dir = Path(doc).parent
     name = paths.path_to_rule_name(doc)
-    pdf = SYW__WORK_PATHS.output / Path(doc).with_suffix(".pdf")
+    pdf = build_dir / Path(doc).with_suffix(".pdf")
 
     rule:
         """
@@ -18,14 +18,15 @@ for doc in SYW__DOCUMENTS:
         """
         name:
             f"sywplug__tex_build_{name}"
+        message:
+            f"Compiling document '{Path(doc).name}'"
         input:
             dependencies=_build_dependendencies_for(doc),
             document=build_dir / doc,
             style=build_dir / doc_dir / "showyourwork.tex",
             classfile=build_dir / doc_dir / "showyourwork.sty",
         output:
-            pdf,
-            output_directory=directory(SYW__WORK_PATHS.output),
+            pdf
         conda:
             SYWPLUG__TEX_RESOURCE("envs", "tectonic.yml")
         shell:
@@ -33,7 +34,6 @@ for doc in SYW__DOCUMENTS:
             "--chatter minimal "
             "--synctex "
             "--keep-logs --keep-intermediates "
-            "--outdir {output.output_directory:q} "
             "{input.document:q} "
 
     rule:

@@ -26,6 +26,8 @@ for doc, explicit_deps in SYW__DOCUMENTS.items():
         """
         name:
             f"sywplug__tex_xml_{name}"
+        message:
+            f"Determining dependencies of '{Path(doc).name}'"
         input:
             document=deps_dir / doc,
             dependencies=[deps_dir / d for d in explicit_deps],
@@ -48,6 +50,8 @@ for doc, explicit_deps in SYW__DOCUMENTS.items():
         """
         name:
             f"sywplug__tex_dependencies_{name}"
+        message:
+            f"Parsing dependencies of '{Path(doc).name}'"
         input:
             xml
         output:
