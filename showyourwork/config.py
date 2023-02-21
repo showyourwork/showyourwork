@@ -338,6 +338,18 @@ def parse_config():
             "maxlen", 40
         )
 
+        #: Showyourwork margin_icon settings
+        config["margin_icons"] = as_dict(config.get("margin_icons", {}))
+        config["margin_icons"]["colors"] = as_dict(config["margin_icons"].get("colors", {}))
+        config["margin_icons"]["monochrome"] = config["margin_icons"].get("monochrome", False)
+        config["margin_icons"]["colors"]["github"] = config["margin_icons"]["colors"].get("github", "0.12,0.47,0.71")
+        config["margin_icons"]["colors"]["sandbox"] = config["margin_icons"]["colors"].get("sandbox", "0.80,0.14,0.19")
+        config["margin_icons"]["colors"]["cache"] = config["margin_icons"]["colors"].get("cache", "0.12,0.47,0.71")
+        config["margin_icons"]["colors"]["dataset"] = config["margin_icons"]["colors"].get("dataset", "0.12,0.47,0.71")
+        print(config["margin_icons"]["colors"])
+
+
+
         #
         # -- Internal settings --
         #

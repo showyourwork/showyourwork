@@ -19,7 +19,6 @@ if __name__ == "__main__":
 
     # Copy over the source files
     shutil.copytree(paths.user().tex, compile_dir, dirs_exist_ok=True)
-
     if snakemake.params.metadata:
         # Metadata file jinja template
         TEMPLATE = r"""
@@ -44,6 +43,17 @@ if __name__ == "__main__":
         \newcommand{\syw@stampAngle}{((- stamp.angle -))}
         \newcommand{\syw@stampText}{((- stamp.text -))}
         \newcommand{\syw@stampVersion}{((- stamp.version -))}
+
+        ((* if margin_icons.monochrome *))
+        \definecolor{github-icon}{rgb}{0.0,0.0,0.0}
+        \definecolor{sandbox-icon}{rgb}{0.0,0.0,0.0}
+        \definecolor{cache-icon}{rgb}{0.0,0.0,0.0}
+        \definecolor{dataset-icon}{rgb}{0.0,0.0,0.0}
+        ((* else *))
+        ((* for key, value in margin_icons.colors.items() *))
+        \definecolor{((- key -))-icon}{rgb}{((- value -))}
+        ((* endfor *))
+        ((* endif *))
 
         ((* for key, value in labels.items() *))
         \addvalue{((- key -))}{((- value -))}
