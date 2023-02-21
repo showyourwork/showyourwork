@@ -19,6 +19,7 @@ if __name__ == "__main__":
 
     # Copy over the source files
     shutil.copytree(paths.user().tex, compile_dir, dirs_exist_ok=True)
+
     if snakemake.params.metadata:
         # Metadata file jinja template
         TEMPLATE = r"""

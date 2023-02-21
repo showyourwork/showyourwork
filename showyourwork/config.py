@@ -346,8 +346,6 @@ def parse_config():
         config["margin_icons"]["colors"]["sandbox"] = config["margin_icons"]["colors"].get("sandbox", "0.80,0.14,0.19")
         config["margin_icons"]["colors"]["cache"] = config["margin_icons"]["colors"].get("cache", "0.12,0.47,0.71")
         config["margin_icons"]["colors"]["dataset"] = config["margin_icons"]["colors"].get("dataset", "0.12,0.47,0.71")
-        print(config["margin_icons"]["colors"])
-
 
 
         #
