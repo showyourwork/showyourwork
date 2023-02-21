@@ -199,3 +199,15 @@ all user rules). This means that if there are two rules that can generate the
 same output, Snakemake will always favor the user-defined rule.
 You can take advantage of this to provide custom rules to build individual
 figures or even the article PDF itself.
+
+Using existing (data) files in a workflow by ignoring timestamps
+----------------------------------------------------------------
+
+When starting up a project or when in a rapid development phase, it can be useful to
+tell Snakemake to ignore changes to a file or timestamp when running the build. For
+example, you may have a slow rule to generate a data file from querying an external data
+archive and you just want to use a temporary subset of the data or existing copy of the
+data. Snakemake supports this with the ``ancient()`` command. See the `Snakemake
+documentation
+<https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#ignoring-timestamps>`_
+for more information about how to use this in a rule.

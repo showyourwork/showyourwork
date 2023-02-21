@@ -535,14 +535,3 @@ in which case the ``git clone`` silently fails and no ``master`` branch is creat
 If you run into this error, delete or comment out the ``overleaf:`` section of the ``environment.yml``
 workflow config and re-run the workflow, or simply upgrade |showyourwork|.
 
-
-Using existing (data) files by ignoring timestamps
---------------------------------------------------
-
-When starting up a project or when in a rapid development phase, it can be useful to
-tell ``Snakemake`` to ignore changes to a file or timestamp when running the build. For
-example, you may have a slow rule to generate a data file from querying an external data
-archive and you just want to use a temporary subset of the data or existing copy of the
-data. ``Snakemake`` supports this with the ``ancient()`` command. See the `Snakemake
-documentation
-<https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#ignoring-timestamps>`_ for more information about how to use this in a rule.
