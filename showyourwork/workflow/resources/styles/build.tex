@@ -55,14 +55,9 @@
   \smash{\raisebox{-1.4ex}{\includegraphics[width=7.3em]{showyourwork-logo.pdf}}}\xspace%
 }
 
-% Define custom colors
-\definecolor{sywRed}{rgb}{0.80,0.14,0.19}
+% Define custom stamp colors
 \definecolor{sywStampRed}{rgb}{0.80,0.45,0.45}
 \definecolor{sywStampLightRed}{rgb}{0.90,0.74,0.74}
-\definecolor{sywOrange}{rgb}{1.0,0.65,0.0}
-\definecolor{sywYellow}{rgb}{1.0,0.88,0.30}
-\definecolor{sywBlue}{rgb}{0.12,0.47,0.71}
-\definecolor{sywGreen}{rgb}{0.13,0.53,0.23}
 
 % Generate the stamp on the first page
 \ifAddStamp
@@ -132,7 +127,7 @@
 \newcommand\syw@Script[1]{%
   \raisebox{0pt}[6pt][0pt]{%
     \href{\syw@url/blob/\syw@sha/\usevalue{#1}}{%
-      \color{sywBlue}\faGithub%
+      \color{github-icon}\faGithub%
     }%
   }%
 }
@@ -141,7 +136,7 @@
 \newcommand\syw@DatasetOne[1]{%
   \raisebox{0pt}[6pt][6pt]{%
     \href{\usevalue{#1}}{%
-      \color{sywBlue}\faDatabase%
+      \color{dataset-icon}\faDatabase%
     }%
   }%
 }
@@ -150,7 +145,7 @@
 \newcommand\syw@DatasetTwo[1]{%
   \raisebox{0pt}[6pt][6pt]{%
     \href{\usevalue{#1}}{%
-      \color{sywBlue}\faDatabase%
+      \color{dataset-icon}\faDatabase%
     }%
   }%
 }
@@ -159,7 +154,7 @@
 \newcommand\syw@DatasetThree[1]{%
   \raisebox{0pt}[6pt][6pt]{%
     \href{\usevalue{#1}}{%
-      \color{sywBlue}\faDatabase%
+      \color{dataset-icon}\faDatabase%
     }%
   }%
 }
@@ -169,11 +164,11 @@
   \raisebox{0pt}[6pt][6pt]{%
     \IfSubStr*{\usevalue{#1}}{sandbox}{%
       \href{\usevalue{#1}}{%
-        \color{sywRed}\faRecycle%
+        \color{sandbox-icon}\faRecycle%
       }%
     }{%
       \href{\usevalue{#1}}{%
-        \color{sywBlue}\faRecycle%
+        \color{cache-icon}\faRecycle%
       }%
     }%
   }%
@@ -183,7 +178,7 @@
 \newcommand\syw@Variable[1]{%
   \raisebox{0pt}[6pt][0pt]{%
     \href{\syw@url/blob/\syw@sha/\usevalue{#1}}{%
-      \color{sywBlue}\faGithub%
+      \color{github-icon}\faGithub%
     }%
   }%
 }
