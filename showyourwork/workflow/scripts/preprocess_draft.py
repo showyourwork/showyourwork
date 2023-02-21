@@ -499,12 +499,20 @@ if __name__ == "__main__":
         # config["dependencies"][config["ms_tex"]].extend(
         #     [Path(graphic).as_posix() for graphic in graphics]
         # )
-        if os.path.exists(paths.figures / config["tree"]["figures"][figure_name]):
-            os.system("cp "+paths.figures / config["tree"]["figures"][figure_name]+" "+paths.static)
+        if os.path.exists(
+            paths.figures / config["tree"]["figures"][figure_name]
+        ):
+            os.system(
+                "cp "
+                + paths.figures / config["tree"]["figures"][figure_name]
+                + " "
+                + paths.static
+            )
         else:
-            os.system("touch "+paths.static / config["tree"]["figures"][figure_name])
-
-
+            os.system(
+                "touch "
+                + paths.static / config["tree"]["figures"][figure_name]
+            )
 
     # Make files specified as \variable dependencies of the article
     config["dependencies"][config["ms_tex"]].extend(
