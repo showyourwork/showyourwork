@@ -33,6 +33,7 @@
 
 % Log figure script commands
 \newcommand\script[1]{%
+  % in draft mode no script should be executed, ever.
   % \syw@LogMessage{<SCRIPT>#1</SCRIPT>}%
 }
 
@@ -88,15 +89,9 @@
   }
 }
 
-% Log graphics
-\renewcommand{\includegraphics}[2][]{%
-  \syw@LogMessage{<GRAPHICS>#2</GRAPHICS>}%
-}
-
 % Log graphicspath
-\renewcommand{\graphicspath}[1]{%
-  \syw@LogMessage{<GRAPHICSPATH>#1</GRAPHICSPATH>}%
-}
+% in draft mode graphicpath should point to static
+\graphicspath{{./}{../static/}}
 
 % Disable user-facing commands
 \newcommand\GitHubURL{}
