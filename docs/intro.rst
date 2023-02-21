@@ -3,10 +3,20 @@ Introduction
 
 The |showyourwork| workflow is intended to help authors publish open source,
 replicable, and reproducible scientific articles. It ensures that the article
-PDF is always in sync with all of the scripts, code, and data used to generate it. It does this
-automatically—and seamlessly—with the help of the `Snakemake workflow management system <https://snakemake.readthedocs.io>`_,
-the `tectonic typesetting engine <https://tectonic-typesetting.github.io>`_, and
-`Github Actions CI <https://github.com/features/actions>`_.
+PDF is always in sync with all of the scripts, code, and data used to generate
+it.
+
+To achieve this, |showyourwork| represents all steps required to go from raw
+data to publication figures (and possibly even tables and macros) in a workflow
+file that can be used to reproduce all or part of the elements in a
+paper, potentially including any content that can be programmatically generated
+(e.g., numerical simulations, data reduction, fetching data from third-party
+releases, and plotting). It does this automatically—and seamlessly—with the
+help of the `Snakemake workflow management system
+<https://snakemake.readthedocs.io>`_, the `tectonic typesetting engine
+<https://tectonic-typesetting.github.io>`_, and `Github Actions CI
+<https://github.com/features/actions>`_.  Since |showyourwork| is built upon
+Snakemake, it can encompass arbitrarily complex workflows.
 
 .. raw:: html
 
@@ -45,6 +55,8 @@ To get started with |showyourwork|, check out the :doc:`quickstart tutorial <qui
 You should also read about
 the :doc:`showyourwork GitHub action <action>`, :doc:`LaTeX instructions <latex>`, and
 how to :doc:`build your article locally <cli>`.
+
+To take full advantage of |showyourwork|, it is worth learning about Snakemake and how to structure projects in a modular way to facilitate different levels of reproducibility. Some examples of this are provided in the :doc:`Snakefile <snakefile>` section.
 
 You should also spend some time browsing through the :doc:`FAQs page <faqs>`. Since |showyourwork|
 is itself a work in progress, new features are still being added frequently. If you spot a bug,
