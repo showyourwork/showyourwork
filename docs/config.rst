@@ -522,7 +522,7 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``bool``
 
-**Description:** Makes all margin_icons black, this will override and custom colors.
+**Description:** Makes all margin_icons black, this will override any custom colors.
 
 **Required:** no
 
