@@ -102,7 +102,7 @@ def main():
 @click.option(
     "--draft",
     default=False,
-    help="Use draft mode, which by-pass generating figures and downloading data."
+    help="Use draft mode, which by-pass generating figures and downloading data.",
 )
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def build(cores, conda_frontend, draft, snakemake_args):
@@ -115,9 +115,10 @@ def build(cores, conda_frontend, draft, snakemake_args):
     )
     if draft:
         commands.draft(
-        snakemake_args=snakemake_args,
-        cores=cores,
-        conda_frontend=conda_frontend,)
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
     else:
         commands.build(
             snakemake_args=snakemake_args,
