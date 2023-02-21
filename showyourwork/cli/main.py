@@ -114,7 +114,10 @@ def build(cores, conda_frontend, draft, snakemake_args):
         conda_frontend=conda_frontend,
     )
     if draft:
-        commands.draft()
+        commands.draft(
+        snakemake_args=snakemake_args,
+        cores=cores,
+        conda_frontend=conda_frontend,)
     else:
         commands.build(
             snakemake_args=snakemake_args,
