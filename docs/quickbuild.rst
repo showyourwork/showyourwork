@@ -29,7 +29,7 @@
 
       .. code-block:: bash
 
-         showyourwork
+         showyourwork build
 
       .. raw:: html
 
