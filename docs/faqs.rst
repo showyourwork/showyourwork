@@ -541,11 +541,11 @@ Debugging in |showyourwork|'s conda environment
 
 Sometimes when debugging it can be helpful to bipass the ``showyourwork build`` command and
 run your code manually in the same environment |showyourwork| is using. To do that, you
-need to access the `conda environment <https://docs.conda.io/en/latest/>`_ that Snakemake 
+need to access the `conda environment <https://docs.conda.io/en/latest/>`_ that Snakemake
 creates.
 
-If conda is not your default package manager you may need to activate it using 
-``conda activate``. Once activated, you can view the environments that exist on your 
+If conda is not your default package manager you may need to activate it using
+``conda activate``. Once activated, you can view the environments that exist on your
 computer using ``conda env list``. The output will look something like this:
 
 .. code-block:: text
@@ -553,13 +553,13 @@ computer using ``conda env list``. The output will look something like this:
   base     /Users/rwegener/miniconda3
            /Users/rwegener/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
 
-The environment for the |showyourwork| project is not given a name, but the path 
+The environment for the |showyourwork| project is not given a name, but the path
 to the environment should be listed. The environment path will be something of the form:
-`the path to your article``` + ``.snakemake/conda`` + `a long 
+`the path to your article``` + ``.snakemake/conda`` + `a long
 hexadecimal string (called a hash)`. In this example the environment path is
 ``/Users/rwegener/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_``.
 
-To activate the environment, copy and paste that full path and run ``conda activate MY_ENV_PATH``. 
+To activate the environment, copy and paste that full path and run ``conda activate MY_ENV_PATH``.
 For example:
 
 .. code-block:: text
@@ -567,5 +567,5 @@ For example:
   conda activate /Users/rwegener/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
 
 From this point anything you run using the ``python`` command should use the same conda
-environment |showyourwork| is using behind the scenes. You can confirm this by running 
+environment |showyourwork| is using behind the scenes. You can confirm this by running
 ``which python`` and verifying that the path includes ``.snakemake/conda/``.
