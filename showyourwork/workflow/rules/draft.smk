@@ -85,4 +85,18 @@ rule:
     output:
         config["config_json"],
     script:
-        "../scripts/preprocess.py"
+        "../scripts/preprocess_draft.py"
+
+rule:
+    name:
+        "syw__compile_copy_pdf"
+    message:
+        "Copying the article PDF..."
+    input:
+        (paths.user().preprocess / "showyourwork.xml").as_posix()
+    output:
+        config["ms_pdf"]
+    shell:
+        """
+        cp "{input}" "{output}"
+        """
