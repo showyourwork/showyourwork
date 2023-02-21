@@ -534,4 +534,3 @@ isn't an issue unless users don't have the correct credentials to access an Over
 in which case the ``git clone`` silently fails and no ``master`` branch is created.
 If you run into this error, delete or comment out the ``overleaf:`` section of the ``environment.yml``
 workflow config and re-run the workflow, or simply upgrade |showyourwork|.
-
