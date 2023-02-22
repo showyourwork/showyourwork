@@ -11,11 +11,12 @@ main article build step.
 """
 import json
 import os
-from fpdf import FPDF # for dummy pdf creation
 import re
 from collections.abc import MutableMapping
 from pathlib import Path
 from xml.etree.ElementTree import parse as ParseXMLTree
+
+from fpdf import FPDF  # for dummy pdf creation
 
 from showyourwork import exceptions, paths, zenodo
 from showyourwork.config import get_upstream_dependencies
@@ -499,15 +500,22 @@ if __name__ == "__main__":
     for figure_name in config["tree"]["figures"]:
         if os.path.exists(paths.user().figures / figure_name):
             # figure exists, copy it to static/
-            os.system("cp "+(paths.user().figures / figure_name).as_posix()+" "+(paths.user().static / figure_name).as_posix())
+            os.system(
+                "cp "
+                + (paths.user().figures / figure_name).as_posix()
+                + " "
+                + (paths.user().static / figure_name).as_posix()
+            )
         else:
             # figure does not exist, create dummy one
             pdf = FPDF()
             pdf.add_page()
             pdf.set_xy(0, 0)
-            pdf.set_font('arial', 'B', 13.0)
-            pdf.cell(ln=0, h=5.0, align='L', w=0, txt="Missing figure", border=0)
-            pdf.output((paths.user().static / figure_name).as_posix(), 'F')
+            pdf.set_font("arial", "B", 13.0)
+            pdf.cell(
+                ln=0, h=5.0, align="L", w=0, txt="Missing figure", border=0
+            )
+            pdf.output((paths.user().static / figure_name).as_posix(), "F")
             # os.system("cp "+(paths.user().root / ".showyourwork/preprocess/showyourwork-logo.pdf").as_posix()+(paths.user().static / figure_name).as_posix())
 
     # Make files specified as \variable dependencies of the article
