@@ -561,7 +561,7 @@ to the environment should be listed. The environment path will be something of t
 hexadecimal string (called a hash)`. In this example the environment path is
 ``/path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_``.
 
-To activate the environment, copy and paste that full path and run ``conda activate MY_ENV_PATH``.
+To activate the environment, copy and paste that full path and run ``conda activate <full path>``.
 For example:
 
 .. code-block:: text
