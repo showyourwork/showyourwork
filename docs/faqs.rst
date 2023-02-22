@@ -546,7 +546,7 @@ creates.
 
 If conda is not your default package manager you may need to activate it using
 ``conda activate``. Once activated, you can view the environments that exist on your
-computer using ``conda env list``. The output will look something like this:
+computer using ``conda env list``. On a Unix machine, the output will look something like this:
 
 .. code-block:: text
 
