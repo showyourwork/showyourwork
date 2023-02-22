@@ -559,7 +559,7 @@ The environment for the |showyourwork| project is not given a name, but the path
 to the environment should be listed. The environment path will be something of the form:
 `the path to your article``` + ``.snakemake/conda`` + `a long
 hexadecimal string (called a hash)`. In this example the environment path is
-``/Users/rwegener/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_``.
+``/path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_``.
 
 To activate the environment, copy and paste that full path and run ``conda activate MY_ENV_PATH``.
 For example:
