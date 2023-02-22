@@ -539,7 +539,7 @@ workflow config and re-run the workflow, or simply upgrade |showyourwork|.
 Debugging in |showyourwork|'s conda environment
 --------------------
 
-Sometimes when debugging it can be helpful to bipass the ``showyourwork build`` command and
+Sometimes when debugging it can be helpful to bypass the ``showyourwork build`` command and
 run your code manually in the same environment |showyourwork| is using. To do that, you
 need to access the `conda environment <https://docs.conda.io/en/latest/>`_ that Snakemake
 creates.
