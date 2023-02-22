@@ -183,7 +183,7 @@ please check out :doc:`reproducibility`.
 
 
 Issues with ``datrie``
----------------------
+----------------------
 
 The ``datrie`` package, a dependency  of ``snakemake``, does not currently (as of
 the writing of these docs) have

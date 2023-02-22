@@ -441,6 +441,96 @@ Finally, dependencies of the manuscript file are also allowed:
     src/tex/ms.tex:
         - src/tex/stylesheet.tex
 
+.. _config.margin_icons:
+
+``margin_icons``
+^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Define the color of the margin icons.
+
+**Required:** no
+
+**Example:**
+
+.. code-block:: yaml
+
+    margin_icons:
+        custom:
+            dataset: "0.5,0.2,0.6"
+
+.. _config.margin_icons.colors:
+
+``margin_icons.colors``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``mapping``
+
+**Description:** Allows custom colors to be set for the margin icons.
+
+**Required:** no
+
+.. _config.margin_icons.colors.cache:
+
+``margin_icons.colors.cache``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A string describing the desired rgb values for colour the Zenodo cache margin icon.
+
+**Required:** no
+
+.. _config.margin_icons.colors.dataset:
+
+``margin_icons.colors.dataset``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A string describing the desired rgb values for colour the Zenodo dataset margin icon.
+
+**Required:** no
+
+.. _config.margin_icons.colors.github:
+
+``margin_icons.colors.github``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A string describing the desired rgb values for colour the github margin icon.
+
+**Required:** no
+
+.. _config.margin_icons.colors.sandbox:
+
+``margin_icons.colors.sandbox``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A string describing the desired rgb values for colour the Zenodo Sandbox cache margin icon.
+
+**Required:** no
+
+.. _config.margin_icons.monochrome:
+
+``margin_icons.monochrome``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``bool``
+
+**Description:** Makes all margin_icons black, this will override any custom colors.
+
+**Required:** no
+
+.. code-block:: yaml
+
+    margin_icons:
+        monochrome: false
+
 
 .. _config.ms:
 
