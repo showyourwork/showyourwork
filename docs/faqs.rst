@@ -552,7 +552,7 @@ computer using ``conda env list``. On a Unix machine, the output will look somet
 
   base     /path/to/miniconda3
            /path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
-           
+
 where "`/path/to/`" is often your home directory or wherever you installed Anaconda and cloned your article's repository.
 
 The environment for the |showyourwork| project is not given a name, but the path
