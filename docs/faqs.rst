@@ -566,7 +566,7 @@ For example:
 
 .. code-block:: text
 
-  conda activate /Users/rwegener/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
+  conda activate /path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
 
 From this point anything you run using the ``python`` command should use the same conda
 environment |showyourwork| is using behind the scenes. You can confirm this by running
