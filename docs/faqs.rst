@@ -557,7 +557,7 @@ where "`/path/to/`" is often your home directory or wherever you installed Anaco
 
 The environment for the |showyourwork| project is not given a name, but the path
 to the environment should be listed. The environment path will be something of the form:
-`the path to your article``` + ``.snakemake/conda`` + `a long
+`the path to your article` + ``.snakemake/conda`` + `a long
 hexadecimal string (called a hash)`. In this example the environment path is
 ``/path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_``.
 
@@ -567,6 +567,9 @@ For example:
 .. code-block:: text
 
   conda activate /path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
+
+Ideally there is only one environment per article that fits this format. If this isn't the
+case, we recommend selecting the most recent environment (lowest on the list).
 
 From this point, anything you run using the ``python`` command should use the same conda
 environment |showyourwork| is using behind the scenes. You can confirm this by running
