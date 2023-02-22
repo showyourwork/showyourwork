@@ -27,14 +27,14 @@ want to run the docs locally. Here are the steps for getting setup.
 Initial setup
 ^^^^^^^^^^^^^
 
-1. `Fork <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_ the 
-   |showyourwork| github repo and 
-   `clone <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>`_ 
+1. `Fork <https://docs.github.com/en/get-started/quickstart/fork-a-repo>`_ the
+   |showyourwork| github repo and
+   `clone <https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository>`_
    your forked repo locally
 2. Create a conda environment for the docs
 
 Building the docs includes a few extra libraries that aren't required for |showyourwork|
-users, so its helpful to create a seperate environment for those. You should only ever 
+users, so its helpful to create a seperate environment for those. You should only ever
 have to do this step once.
 
 .. code-block:: bash
@@ -47,7 +47,7 @@ During development
 ^^^^^^^^^^^^^^^^^^
 The remaining steps will be run every time you work on the documentation.
 
-1. Activate the docs enviroment 
+1. Activate the docs enviroment
 
 .. code-block:: text
 
@@ -77,5 +77,5 @@ files and want to view them. Because of this it can be nice to run them together
 
     make html && python3 -m http.server -d _build/html
 
-That's the setup! Open documentation issues can be perused 
+That's the setup! Open documentation issues can be perused
 `here <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aopen+label%3A%22%3Amemo%3A+documentation%22>`_ .
