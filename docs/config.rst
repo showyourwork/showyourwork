@@ -511,7 +511,7 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``str``
 
-**Description:** A string describing the desired rgb values for colour the Zenodo Sandbox cache margin icon. 
+**Description:** A string describing the desired rgb values for colour the Zenodo Sandbox cache margin icon.
 
 **Required:** no
 
@@ -522,11 +522,11 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``int``
 
-**Description:** This defines the horizontal offset to be used for all of the margin icons (this helps with positioning in two-column documnets). Negative values will move the icons left and positive values move right. 
+**Description:** This defines the horizontal offset to be used for all of the margin icons (this helps with positioning in two-column documnets). Negative values will move the icons left and positive values move right.
 
 **Required:** no
 
-.. _config.margin_icons.monochrome: 
+.. _config.margin_icons.monochrome:
 
 ``margin_icons.monochrome``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
