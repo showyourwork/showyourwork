@@ -240,7 +240,6 @@ def parse_config():
     # the main config file in the build stage, so all these
     # settings are available in both stages.
     if Path(snakemake.workflow.workflow.main_snakefile).name == "prep.smk":
-
         #
         # -- User settings --
         #
@@ -340,18 +339,29 @@ def parse_config():
 
         #: Showyourwork margin_icon settings
         config["margin_icons"] = as_dict(config.get("margin_icons", {}))
-        config["margin_icons"]["colors"] = as_dict(config["margin_icons"].get("colors", {}))
-        config["margin_icons"]["monochrome"] = config["margin_icons"].get("monochrome", False)
-        config["margin_icons"]["colors"]["github"] = config["margin_icons"]["colors"].get("github", "0.12,0.47,0.71")
-        config["margin_icons"]["colors"]["sandbox"] = config["margin_icons"]["colors"].get("sandbox", "0.80,0.14,0.19")
-        config["margin_icons"]["colors"]["cache"] = config["margin_icons"]["colors"].get("cache", "0.12,0.47,0.71")
-        config["margin_icons"]["colors"]["dataset"] = config["margin_icons"]["colors"].get("dataset", "0.12,0.47,0.71")
+        config["margin_icons"]["colors"] = as_dict(
+            config["margin_icons"].get("colors", {})
+        )
+        config["margin_icons"]["monochrome"] = config["margin_icons"].get(
+            "monochrome", False
+        )
+        config["margin_icons"]["colors"]["github"] = config["margin_icons"][
+            "colors"
+        ].get("github", "0.12,0.47,0.71")
+        config["margin_icons"]["colors"]["sandbox"] = config["margin_icons"][
+            "colors"
+        ].get("sandbox", "0.80,0.14,0.19")
+        config["margin_icons"]["colors"]["cache"] = config["margin_icons"][
+            "colors"
+        ].get("cache", "0.12,0.47,0.71")
+        config["margin_icons"]["colors"]["dataset"] = config["margin_icons"][
+            "colors"
+        ].get("dataset", "0.12,0.47,0.71")
         offset = int(config["margin_icons"].get("horizontal_offset", 0))
         if offset < 0:
             config["margin_icons"]["horizontal_offset"] = r"\!" * abs(offset)
         else:
             config["margin_icons"]["horizontal_offset"] = "\," * offset
-        print(config["margin_icons"]["horizontal_offset"])
 
         #
         # -- Internal settings --

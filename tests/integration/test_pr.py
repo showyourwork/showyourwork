@@ -110,11 +110,14 @@ class TestPullRequests(TemporaryShowyourworkRepository):
         await asyncio.sleep(self.action_wait)
         status = "unknown"
         for n in range(self.action_max_tries):
-
             # Note that we're querying `workflow_run` actions, specifically
             # to catch the `process-pull-request` action and check that the bot
             # has posted a comment to the PR with the link to the PDF and the diff.
-            (status, conclusion, url,) = gitapi.get_workflow_run_status(
+            (
+                status,
+                conclusion,
+                url,
+            ) = gitapi.get_workflow_run_status(
                 self.repo,
                 org="showyourwork",
                 q={

@@ -9,7 +9,6 @@ from showyourwork.logging import get_logger
 from showyourwork.zenodo import Zenodo
 
 if __name__ == "__main__":
-
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
 

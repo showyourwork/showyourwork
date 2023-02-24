@@ -80,7 +80,6 @@ def parse_datasets():
     """
 
     for doi, entry in config["datasets"].items():
-
         # Parse the DOI to get the Zenodo ID
         deposit = Zenodo(doi)
 
@@ -113,7 +112,6 @@ def parse_datasets():
         entry["zip_files"] = {}
         tmp_path = deposit.path().relative_to(paths.user().repo)
         for source in list(contents.keys()):
-
             # Ensure the target is not a list
             target = contents[source]
             if type(target) is list:
@@ -172,7 +170,6 @@ def check_figure_format(figure):
     # The label must always come after the figure caption
     # Any marginicons must always come before the label
     if len(captions):
-
         # Index of last caption
         for caption_idx, element in enumerate(elements[::-1]):
             if element.tag == "CAPTION":
@@ -180,7 +177,6 @@ def check_figure_format(figure):
         caption_idx = len(elements) - 1 - caption_idx
 
         if len(labels):
-
             # Index of first label
             for label_idx, element in enumerate(elements):
                 if element.tag == "LABEL":
@@ -274,7 +270,6 @@ def get_json_tree(xmlfile):
     figures = {}
     unlabeled_graphics = []
     for figure in xml_tree.findall("FIGURE"):
-
         # Ensure the figure environment conforms to the standard
         check_figure_format(figure)
 
@@ -301,12 +296,10 @@ def get_json_tree(xmlfile):
         # Get the figure \label, if it exists
         labels = figure.findall("LABEL")
         if len(labels):
-
             # We already checked that there's only one label above
             label = labels[0].text
 
         else:
-
             # Treat these as free-floating graphics
             unlabeled_graphics.extend(graphics)
             continue
@@ -315,7 +308,6 @@ def get_json_tree(xmlfile):
         scripts = figure.findall("SCRIPT")
         extra_dependencies = []
         if len(scripts) and scripts[0].text is not None:
-
             # The user provided an argument to \script{}, which we assume
             # is the name of the script relative to the figure scripts
             # directory
@@ -345,7 +337,6 @@ def get_json_tree(xmlfile):
                 )
 
         else:
-
             # No script provided
             script = None
 
@@ -365,7 +356,6 @@ def get_json_tree(xmlfile):
                 command = f"cp {' '.join(srcs)} {dest}"
 
             else:
-
                 # We don't know how to generate this figure at this time.
                 # Hopefully the user specified a custom Snakemake rule!
                 command = None
@@ -491,7 +481,6 @@ def get_json_tree(xmlfile):
 
 
 if __name__ == "__main__":
-
     # Snakemake config (available automagically)
     config = snakemake.config  # type:ignore
 

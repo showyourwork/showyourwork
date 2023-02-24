@@ -215,7 +215,11 @@ class TemporaryShowyourworkRepository:
         await asyncio.sleep(self.action_wait)
         status = "unknown"
         for n in range(self.action_max_tries):
-            (status, conclusion, url,) = gitapi.get_workflow_run_status(
+            (
+                status,
+                conclusion,
+                url,
+            ) = gitapi.get_workflow_run_status(
                 self.repo,
                 org="showyourwork",
                 q={"event": "push", "head_sha": head_sha},
@@ -281,7 +285,6 @@ class TemporaryShowyourworkRepository:
 
         """
         try:
-
             # Disable screen logging info from showyourwork
             self.disable_logging()
 
@@ -307,7 +310,6 @@ class TemporaryShowyourworkRepository:
             self.delete_local()
 
         finally:
-
             # Always delete the Zenodo deposit (if created)
             self.delete_zenodo()
 
@@ -327,7 +329,6 @@ class TemporaryShowyourworkRepository:
             return
 
         try:
-
             # Disable screen logging info from showyourwork
             self.disable_logging()
 
@@ -365,7 +366,6 @@ class TemporaryShowyourworkRepository:
             self.delete_local()
 
         finally:
-
             # Always delete the Zenodo deposit (if created)
             self.delete_zenodo()
 

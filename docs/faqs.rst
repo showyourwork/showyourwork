@@ -183,7 +183,7 @@ please check out :doc:`reproducibility`.
 
 
 Issues with ``datrie``
----------------------
+----------------------
 
 The ``datrie`` package, a dependency  of ``snakemake``, does not currently (as of
 the writing of these docs) have
@@ -534,3 +534,43 @@ isn't an issue unless users don't have the correct credentials to access an Over
 in which case the ``git clone`` silently fails and no ``master`` branch is created.
 If you run into this error, delete or comment out the ``overleaf:`` section of the ``environment.yml``
 workflow config and re-run the workflow, or simply upgrade |showyourwork|.
+
+
+Debugging in |showyourwork|'s conda environment
+-----------------------------------------------
+
+Sometimes when debugging it can be helpful to bypass the ``showyourwork build`` command and
+run your code manually in the same environment |showyourwork| is using. To do that, you
+need to access the `conda environment <https://docs.conda.io/en/latest/>`_ that Snakemake
+creates.
+
+If conda is not your default package manager you may need to activate it using
+``conda activate``. Once activated, you can view the environments that exist on your
+computer using ``conda env list``. On a Unix machine, the output will look something like this:
+
+.. code-block:: text
+
+  base     /path/to/miniconda3
+           /path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
+
+where "`/path/to/`" is often your home directory or wherever you installed Anaconda and cloned your article's repository.
+
+The environment for the |showyourwork| project is not given a name, but the path
+to the environment should be listed. The environment path will be something of the form:
+`the path to your article` + ``.snakemake/conda`` + `a long
+hexadecimal string (called a hash)`. In this example the environment path is
+``/path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_``.
+
+To activate the environment, copy and paste that full path and run ``conda activate <full path>``.
+For example:
+
+.. code-block:: text
+
+  conda activate /path/to/my-article/.snakemake/conda/28e8667c7a3a18371030aff088ceb5c5_
+
+Ideally there is only one environment per article that fits this format. If this isn't the
+case, we recommend selecting the most recent environment (lowest on the list).
+
+From this point, anything you run using the ``python`` command should use the same conda
+environment |showyourwork| is using behind the scenes. You can confirm this by running
+``which python`` and verifying that the path includes ``.snakemake/conda/``.

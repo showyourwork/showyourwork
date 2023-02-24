@@ -448,15 +448,15 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``mapping``
 
-**Description:** Define the color of the margin icons. 
+**Description:** Define the color of the margin icons.
 
 **Required:** no
 
-**Example:** 
+**Example:**
 
 .. code-block:: yaml
 
-    margin_icons: 
+    margin_icons:
         custom:
             dataset: "0.5,0.2,0.6"
 
@@ -467,44 +467,44 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``mapping``
 
-**Description:** Allows custom colors to be set for the margin icons. 
+**Description:** Allows custom colors to be set for the margin icons.
 
 **Required:** no
 
-.. _config.margin_icons.colors.cache: 
+.. _config.margin_icons.colors.cache:
 
 ``margin_icons.colors.cache``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``str``
 
-**Description:** A string describing the desired rgb values for colour the Zenodo cache margin icon. 
+**Description:** A string describing the desired rgb values for colour the Zenodo cache margin icon.
 
 **Required:** no
 
-.. _config.margin_icons.colors.dataset: 
+.. _config.margin_icons.colors.dataset:
 
 ``margin_icons.colors.dataset``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``str``
 
-**Description:** A string describing the desired rgb values for colour the Zenodo dataset margin icon. 
+**Description:** A string describing the desired rgb values for colour the Zenodo dataset margin icon.
 
 **Required:** no
 
-.. _config.margin_icons.colors.github: 
+.. _config.margin_icons.colors.github:
 
 ``margin_icons.colors.github``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``str``
 
-**Description:** A string describing the desired rgb values for colour the github margin icon. 
+**Description:** A string describing the desired rgb values for colour the github margin icon.
 
 **Required:** no
 
-.. _config.margin_icons.colors.sandbox: 
+.. _config.margin_icons.colors.sandbox:
 
 ``margin_icons.colors.sandbox``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -533,13 +533,13 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``bool``
 
-**Description:** Makes all margin_icons black, this will override and custom colors. 
+**Description:** Makes all margin_icons black, this will override any custom colors.
 
 **Required:** no
 
 .. code-block:: yaml
 
-    margin_icons: 
+    margin_icons:
         monochrome: false
 
 
