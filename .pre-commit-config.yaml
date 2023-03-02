@@ -20,4 +20,4 @@ repos:
     hooks:
       - id: mypy
         exclude: "^docs/|^tests/projects/"
-        additional_dependencies: ["types-PyYAML"]
+        additional_dependencies: ["types-PyYAML", "types-requests"]

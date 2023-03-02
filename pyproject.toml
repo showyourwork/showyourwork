@@ -16,6 +16,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
+    "requests",
     "pyyaml",
     "jsonschema",
     "snakemake",   # TODO(dfm): figure out what version we need
@@ -34,7 +35,6 @@ showyourwork = "showyourwork.cli:main"
 [project.optional-dependencies]
 test = ["pytest"]
 docs = [
-    "requests",
     "sphinx-book-theme>=0.1.3",
     "jinja2>=2.11.3",
     "sphinxcontrib-programoutput>=0.17",

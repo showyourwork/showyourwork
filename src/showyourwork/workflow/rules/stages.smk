@@ -1,4 +1,11 @@
 from showyourwork import stages
+from showyourwork.zenodo import Zenodo
+
+zenodo_config = config.get("zenodo", {})
+zenodo = Zenodo(
+    token=zenodo_config.get("token", None),
+    sandbox=zenodo_config.get("sandbox", False),
+)
 
 _restore = stages.get_stages_to_restore(config)
 for stage, files in stages.STAGES.items():
