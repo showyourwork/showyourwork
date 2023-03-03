@@ -11,7 +11,7 @@ from .subproc import get_stdout
 OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
     [
         r"\\documentclass{article}",
-        r"\\usepackage\[utf8\]{inputenc}",
+        r"(\\usepackage{graphicx} % Required for inserting images)|(\\usepackage\[utf8\]{inputenc})",
         r"\\title{[^\n{}]+?}",
         r"\\author{[^\n{}]+?}",
         r"\\date{[^\n{}]+?}",
