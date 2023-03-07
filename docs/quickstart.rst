@@ -130,7 +130,7 @@ could take one or two minutes.
 
     At times this can prove to be very slow, depending on how many and which channels
     are used (especially the very big `conda-forge`).
-    
+
     In order to make the environment creation faster, it is recommended to use the
     `mamba <https://mamba.readthedocs.io/en/latest/index.html>`_ executable via
     the associated option of the build command,
@@ -138,7 +138,7 @@ could take one or two minutes.
     .. code-block:: bash
 
         showyourwork build --conda-frontend=mamba
-    
+
     This feature is only available for `showyourwork >= v0.4.2`.
 
 The workflow will then build your article PDF,
