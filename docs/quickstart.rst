@@ -120,7 +120,28 @@ or, as a shorthand, just
 
 in the top level of your repository. The first time you run this, |showyourwork|
 will set up a new ``conda`` environment and install a bunch of packages, so it
-could take one or two minutes. The workflow will then build your article PDF,
+could take one or two minutes.
+
+
+.. note::
+
+    Be default, *showyourwork* will use the `conda` executable to create the
+    virtual environment.
+
+    At times this can prove to be very slow, depending on how many and which channels
+    are used (especially the very big `conda-forge`).
+    
+    In order to make the environment creation faster, it is recommended to use the
+    `mamba <https://mamba.readthedocs.io/en/latest/index.html>`_ executable via
+    the associated option of the build command,
+
+    .. code-block:: bash
+
+        showyourwork build --conda-frontend=mamba
+    
+    This feature is only available for `showyourwork >= v0.4.2`.
+
+The workflow will then build your article PDF,
 which by default is saved as ``ms.pdf`` in the top level of your repository:
 
 
