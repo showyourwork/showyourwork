@@ -3,3 +3,4 @@ channels:
   - defaults
 dependencies:
   - conda-forge::tectonic=0.12.0
+  - conda-forge::icu=70.1
