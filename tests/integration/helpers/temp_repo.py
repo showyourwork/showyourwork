@@ -60,8 +60,8 @@ class TemporaryShowyourworkRepository:
         """Subclass me to run things at startup."""
         pass
 
-    def teardown(self):
-        """Subclass me to run things at teardown."""
+    def finish(self):
+        """Subclass me to run things after finishing."""
         pass
 
     def customize(self):
@@ -314,7 +314,7 @@ class TemporaryShowyourworkRepository:
             self.delete_zenodo()
 
             # Always run this last
-            self.teardown()
+            self.finish()
 
     @pytest.mark.remote
     @pytest.mark.asyncio_cooperative
@@ -370,7 +370,7 @@ class TemporaryShowyourworkRepository:
             self.delete_zenodo()
 
             # Always run this last
-            self.teardown()
+            self.finish()
 
 
 class ShowyourworkRepositoryActions:
