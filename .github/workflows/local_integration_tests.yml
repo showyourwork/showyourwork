@@ -34,6 +34,10 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Install icu on macos
+        if: matrix.platform == 'macos-latest'
+        run: brew install icu4c
+
       - name: Set up python
         uses: conda-incubator/setup-miniconda@v2
         with:
