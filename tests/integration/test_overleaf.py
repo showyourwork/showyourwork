@@ -21,7 +21,7 @@ class TestOverleaf(
 
     # No need to test this on CI
     local_build_only = True
-    overleaf_id = "6262c032aae5421d6d945acf"
+    overleaf_id = "6409f16f438b5fb7c4dfa837"
 
     # Overleaf rate limit error re-try settings
     auth_retries = 1
