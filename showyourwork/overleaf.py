@@ -23,11 +23,11 @@ OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
 )
 
 OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
-\usepackage[utf8]{inputenc}
+\usepackage{graphicx} % Required for inserting images
 
 \title{blank project}
-\author{Rodrigo Luger}
-\date{April 2022}
+\author{Dan Foreman-Mackey}
+\date{March 2023}
 
 \begin{document}
 
@@ -35,7 +35,8 @@ OVERLEAF_BLANK_PROJECT = r"""\documentclass{article}
 
 \section{Introduction}
 
-\end{document}"""
+\end{document}
+"""
 
 
 def check_for_rate_limit(code, stdout, stderr):
@@ -146,7 +147,7 @@ def clone(project_id, path=None):
     )
 
 
-def wipe_remote(project_id):
+def wipe_remote(project_id, tex=None):
     """
     Remove all files from the Overleaf project and start fresh as if it were a
     blank project.
@@ -155,6 +156,9 @@ def wipe_remote(project_id):
         project_id (str): The Overleaf project ID.
 
     """
+    if tex is None:
+        tex = OVERLEAF_BLANK_PROJECT
+
     with TemporaryDirectory() as cwd:
         get_stdout(["git", "init"], cwd=cwd)
         get_stdout(["git", "checkout", "-b", "master"], cwd=cwd)
@@ -173,7 +177,7 @@ def wipe_remote(project_id):
         )
         get_stdout(["git", "rm", "-r", "*"], cwd=cwd)
         with open(Path(cwd) / "main.tex", "w") as f:
-            print(OVERLEAF_BLANK_PROJECT, file=f)
+            print(tex, file=f)
         get_stdout(["git", "add", "main.tex"], cwd=cwd)
 
         def callback(code, stdout, stderr):
@@ -260,6 +264,7 @@ def setup_remote(project_id, path=None):
     for file in paths.user(path=path).tex.glob("*"):
         # Copy it to the local version of the repo
         file = Path(file).resolve()
+        logger.info(file)
         remote_file = paths.user(path=path).overleaf / file.relative_to(
             paths.user(path=path).tex
         )
@@ -278,6 +283,7 @@ def setup_remote(project_id, path=None):
                 remote_file.relative_to(paths.user(path=path).overleaf),
             ],
             cwd=str(paths.user(path=path).overleaf),
+            callback=lambda *_: None,
         )
 
     # Commit callback
@@ -578,7 +584,7 @@ def pull_files(
                     or "nothing added to commit" in stdout + stderr
                 ):
                     logger.warning(
-                        f"No Overleaf changes to commit to the repo."
+                        "No Overleaf changes to commit to the repo."
                     )
                 else:
                     raise exceptions.CalledProcessError(stdout + "\n" + stderr)

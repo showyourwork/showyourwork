@@ -21,9 +21,9 @@ class TestOverleaf(
 
     # No need to test this on CI
     local_build_only = True
-    overleaf_id = "6262c032aae5421d6d945acf"
+    overleaf_id = "6409f16f438b5fb7c4dfa837"
 
-    # Overeleaf rate limit error re-try settings
+    # Overleaf rate limit error re-try settings
     auth_retries = 1
     auth_sleep = 60
 
@@ -34,7 +34,8 @@ class TestOverleaf(
                 overleaf.wipe_remote(self.overleaf_id)
             except exceptions.OverleafRateLimitExceeded:
                 get_logger().warn(
-                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                    "Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
                 )
                 time.sleep(self.auth_sleep)
             else:
@@ -63,7 +64,8 @@ class TestOverleaf(
                 )
             except exceptions.OverleafRateLimitExceeded:
                 get_logger().warn(
-                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                    "Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
                 )
                 time.sleep(self.auth_sleep)
             else:
@@ -105,7 +107,8 @@ class TestOverleaf(
                 )
             except exceptions.OverleafRateLimitExceeded:
                 get_logger().warn(
-                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                    "Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
                 )
                 time.sleep(self.auth_sleep)
             else:
@@ -128,10 +131,11 @@ class TestOverleaf(
                 )
             except exceptions.OverleafRateLimitExceeded:
                 get_logger().warn(
-                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                    f"Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
                 )
                 time.sleep(self.auth_sleep)
-            except exceptions.OverleafError as e:
+            except exceptions.OverleafError:
                 break
             else:
                 raise Exception("Failed to raise exception!")
@@ -152,10 +156,11 @@ class TestOverleaf(
                 )
             except exceptions.OverleafRateLimitExceeded:
                 get_logger().warn(
-                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                    "Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
                 )
                 time.sleep(self.auth_sleep)
-            except exceptions.OverleafError as e:
+            except exceptions.OverleafError:
                 break
             else:
                 raise Exception("Failed to raise exception!")
@@ -163,7 +168,7 @@ class TestOverleaf(
         # Amend the commit message with the magical `[showyourwork]` label
         # and check that the merge works
         get_stdout(
-            f"git commit --amend -m '[showyourwork] changing ms.tex locally'",
+            "git commit --amend -m '[showyourwork] changing ms.tex locally'",
             cwd=self.cwd,
             shell=True,
         )
@@ -177,7 +182,8 @@ class TestOverleaf(
                 )
             except exceptions.OverleafRateLimitExceeded:
                 get_logger().warn(
-                    f"Overleaf authentication failed. Re-trying in {self.auth_sleep} seconds..."
+                    "Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
                 )
                 time.sleep(self.auth_sleep)
             else:
