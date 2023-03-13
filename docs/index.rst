@@ -55,6 +55,7 @@ Contents
    migrating
    reproducibility
    faqs
+   contributorguide
    api/showyourwork
    changelog
    attribution
