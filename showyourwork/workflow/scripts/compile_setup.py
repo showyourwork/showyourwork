@@ -63,6 +63,21 @@ if __name__ == "__main__":
         ((* for key, value in variables.items() *))
         \addvalue{((- key -))}{((- value -))}
         ((* endfor *))
+
+        \renewcommand\showkeyslabelformat[1]{%
+        \normalfont%
+        \setstackgap{S}{0pt}((- margin_icons.horizontal_offset -))
+        \Shortstack[c]{
+            \IfEq*{\usevalue{#1_cache}}{KEYNOTFOUND}{}{\syw@Cache{#1_cache}}
+            \IfEq*{\usevalue{#1_datasetThree}}{KEYNOTFOUND}{}{\syw@DatasetThree{#1_datasetThree}}
+            \IfEq*{\usevalue{#1_datasetTwo}}{KEYNOTFOUND}{}{\syw@DatasetTwo{#1_datasetTwo}}
+            \IfEq*{\usevalue{#1_datasetOne}}{KEYNOTFOUND}{}{\syw@DatasetOne{#1_datasetOne}}
+            \IfEq*{\usevalue{#1_script}}{KEYNOTFOUND}{}{\syw@Script{#1_script}}
+        }
+        % Link to the line in the Snakefile that generates a given variable
+        % in the texfile
+        \IfEq*{\usevalue{#1_rule}}{KEYNOTFOUND}{}{\syw@Variable{#1_rule}}
+        }
         """
 
         # Custom jinja environment for LaTeX
