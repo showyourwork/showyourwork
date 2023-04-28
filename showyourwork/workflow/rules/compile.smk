@@ -7,6 +7,11 @@ Runs the script :doc:`pdf` to generate the article ``ms.pdf``.
 from pathlib import Path
 from showyourwork import paths
 
+# Allow user to define their own tectonic.yml file in their repo:
+tectonic_yml = paths.user().repo / "tectonic.yml"
+if not tectonic_yml.exists():
+    tectonic_yml = paths.showyourwork().envs / "tectonic.yml"
+
 rule:
     """
     Setup the temporary files for compilation.
@@ -54,7 +59,7 @@ rule:
         (paths.user().compile / f'{config["ms_name"]}.pdf').as_posix(),
         (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix(),
     conda:
-        (paths.showyourwork().envs / "tectonic.yml").as_posix()
+        tectonic_yml.as_posix()
     shell:
         """
         cd "{input.compile_dir}"
