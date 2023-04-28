@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from contextlib import contextmanager
 from textwrap import TextWrapper
 
 import click
@@ -28,6 +29,15 @@ def ensure_top_level():
             "`showyourwork` by itself runs a document build. "
             "Did you mean to run `showyourwork setup`?"
         )
+
+
+@contextmanager
+def cwd_as(path):
+    """Temporarily change the current working directory to `path`."""
+    old_dir = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(old_dir)
 
 
 def echo(text="", **kwargs):
@@ -108,20 +118,18 @@ def main():
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def build(cores, conda_frontend, project, snakemake_args):
     """Build an article in the current working directory."""
-    old_dir = os.getcwd()
-    os.chdir(project)
-    ensure_top_level()
-    commands.preprocess(
-        snakemake_args=snakemake_args,
-        cores=cores,
-        conda_frontend=conda_frontend,
-    )
-    commands.build(
-        snakemake_args=snakemake_args,
-        cores=cores,
-        conda_frontend=conda_frontend,
-    )
-    os.chdir(old_dir)
+    with cwd_as(project):
+        ensure_top_level()
+        commands.preprocess(
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
+        commands.build(
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
 
 
 def validate_slug(context, param, slug):
@@ -312,17 +320,15 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def clean(cores, conda_frontend, project, force, deep, snakemake_args):
     """Clean the article build in the current working directory."""
-    old_dir = os.getcwd()
-    os.chdir(project)
-    ensure_top_level()
-    commands.clean(
-        force,
-        deep,
-        snakemake_args=snakemake_args,
-        cores=cores,
-        conda_frontend=conda_frontend,
-    )
-    os.chdir(old_dir)
+    with cwd_as(project):
+        ensure_top_level()
+        commands.clean(
+            force,
+            deep,
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
 
 
 @main.command(
@@ -350,20 +356,18 @@ def clean(cores, conda_frontend, project, force, deep, snakemake_args):
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def tarball(cores, conda_frontend, project, snakemake_args):
     """Generate a tarball of the build in the current working directory."""
-    old_dir = os.getcwd()
-    os.chdir(project)
-    ensure_top_level()
-    commands.preprocess(
-        snakemake_args=snakemake_args,
-        cores=cores,
-        conda_frontend=conda_frontend,
-    )
-    commands.tarball(
-        snakemake_args=snakemake_args,
-        cores=cores,
-        conda_frontend=conda_frontend,
-    )
-    os.chdir(old_dir)
+    with cwd_as(project):
+        ensure_top_level()
+        commands.preprocess(
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
+        commands.tarball(
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
 
 
 @main.group()
