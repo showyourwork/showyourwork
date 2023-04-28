@@ -72,7 +72,7 @@ rule:
             --keep-intermediates      \\
             {params.maybe_synctex}    \\
             {params.user_args}        \\
-            "{input[0]}" 
+            "{input[0]}"
         """
 
 # TODO: Add config options for verbosity?
