@@ -59,7 +59,7 @@ rule:
             --keep-logs               \\
             --keep-intermediates      \\
             -r 0                      \\
-            {params.user_args} \\
+            {params.user_args}        \\
             "{input[0]}"
         """
 
