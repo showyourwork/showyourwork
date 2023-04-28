@@ -239,7 +239,11 @@ def parse_config():
     # These get recorded in a JSON file which is loaded as
     # the main config file in the build stage, so all these
     # settings are available in both stages.
-    if Path(snakemake.workflow.workflow.main_snakefile).name == "prep.smk":
+    if (
+        Path(snakemake.workflow.workflow.main_snakefile).name == "prep.smk"
+    ) or (
+        Path(snakemake.workflow.workflow.main_snakefile).name == "draft.smk"
+    ):
         #
         # -- User settings --
         #
