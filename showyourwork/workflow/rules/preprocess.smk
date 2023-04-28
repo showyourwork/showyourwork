@@ -48,19 +48,23 @@ rule:
         "Preprocess: Generating XML tree..."
     input:
         temporary_tex_files(root=paths.user().preprocess),
+        "showyourwork.yml",
         compile_dir=paths.user().preprocess.as_posix()
     output:
         (paths.user().preprocess / "showyourwork.xml").as_posix()
     conda:
         tectonic_yml.as_posix()
+    params:
+        user_args=" ".join(config["user_args"])
     shell:
         """
         cd "{input.compile_dir}"
-        tectonic                  \\
-            --chatter minimal     \\
-            --keep-logs           \\
-            --keep-intermediates  \\
-            -r 0                  \\
+        tectonic                      \\
+            --chatter minimal         \\
+            --keep-logs               \\
+            --keep-intermediates      \\
+            -r 0                      \\
+            {params.user_args}        \\
             "{input[0]}"
         """
 
