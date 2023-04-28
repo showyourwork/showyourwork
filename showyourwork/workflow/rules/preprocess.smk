@@ -8,7 +8,6 @@ file containing metadata about the build and the workflow graph.
 """
 from showyourwork import paths
 
-joined_user_args = " ".join(config["user_args"] )
 
 rule:
     """
@@ -50,15 +49,18 @@ rule:
         (paths.user().preprocess / "showyourwork.xml").as_posix()
     conda:
         (paths.showyourwork().envs / "tectonic.yml").as_posix()
+    params:
+        user_args=" ".join(config["user_args"] )
     shell:
         """
         cd "{input.compile_dir}"
-        tectonic                  \\
-            --chatter minimal     \\
-            --keep-logs           \\
-            --keep-intermediates  \\
-            -r 0                  \\
-            "{input[0]}" {joined_user_args}
+        tectonic                      \\
+            --chatter minimal         \\
+            --keep-logs               \\
+            --keep-intermediates      \\
+            -r 0                      \\
+            {params.user_args} \\
+            "{input[0]}"
         """
 
 rule:

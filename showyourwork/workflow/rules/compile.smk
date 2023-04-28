@@ -7,8 +7,6 @@ Runs the script :doc:`pdf` to generate the article ``ms.pdf``.
 from pathlib import Path
 from showyourwork import paths
 
-maybe_synctex = "--synctex" if config["synctex"] else ""
-joined_user_args = " ".join(config["user_args"])
 
 rule:
     """
@@ -58,15 +56,19 @@ rule:
         (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix(),
     conda:
         (paths.showyourwork().envs / "tectonic.yml").as_posix()
+    params:
+        maybe_synctex="--synctex" if config["synctex"] else "",
+        user_args=" ".join(config["user_args"])
     shell:
         """
         cd "{input.compile_dir}"
-        tectonic                  \\
-            --chatter minimal     \\
-            --keep-logs           \\
-            --keep-intermediates  \\
-            {maybe_synctex}       \\
-            "{input[0]}" {joined_user_args}
+        tectonic                      \\
+            --chatter minimal         \\
+            --keep-logs               \\
+            --keep-intermediates      \\
+            {params.maybe_synctex}    \\
+            {params.user_args}        \\
+            "{input[0]}" 
         """
 
 # TODO: Add config options for verbosity?
