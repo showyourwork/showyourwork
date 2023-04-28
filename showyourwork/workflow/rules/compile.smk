@@ -64,17 +64,23 @@ rule:
         (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix(),
     conda:
         tectonic_yml.as_posix()
+    params:
+        maybe_synctex="--synctex" if config["synctex"] else "",
+        user_args=" ".join(config["user_args"])
     shell:
         """
         cd "{input.compile_dir}"
-        tectonic                  \\
-            --chatter minimal     \\
-            --keep-logs           \\
-            --keep-intermediates  \\
-            --synctex             \\
+        tectonic                      \\
+            --chatter minimal         \\
+            --keep-logs               \\
+            --keep-intermediates      \\
+            {params.maybe_synctex}    \\
+            {params.user_args}        \\
             "{input[0]}"
         """
 
+# TODO: Add config options for verbosity?
+# See config.py and old tex.py for missing configs.
 
 rule:
     name:
