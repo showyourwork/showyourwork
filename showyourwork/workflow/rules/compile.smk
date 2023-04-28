@@ -7,7 +7,6 @@ Runs the script :doc:`pdf` to generate the article ``ms.pdf``.
 from pathlib import Path
 from showyourwork import paths
 
-
 rule:
     """
     Setup the temporary files for compilation.
