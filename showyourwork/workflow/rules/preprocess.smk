@@ -8,6 +8,7 @@ file containing metadata about the build and the workflow graph.
 """
 from showyourwork import paths
 
+joined_user_args = " ".join(config["user_args"] )
 
 rule:
     """
@@ -43,6 +44,7 @@ rule:
         "Preprocess: Generating XML tree..."
     input:
         temporary_tex_files(root=paths.user().preprocess),
+        "showyourwork.yml",
         compile_dir=paths.user().preprocess.as_posix()
     output:
         (paths.user().preprocess / "showyourwork.xml").as_posix()
@@ -56,7 +58,7 @@ rule:
             --keep-logs           \\
             --keep-intermediates  \\
             -r 0                  \\
-            "{input[0]}"
+            "{input[0]}" {joined_user_args}
         """
 
 rule:

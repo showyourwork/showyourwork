@@ -7,6 +7,9 @@ Runs the script :doc:`pdf` to generate the article ``ms.pdf``.
 from pathlib import Path
 from showyourwork import paths
 
+maybe_synctex = "--synctex" if config["synctex"] else ""
+joined_user_args = " ".join(config["user_args"])
+
 rule:
     """
     Setup the temporary files for compilation.
@@ -62,9 +65,12 @@ rule:
             --chatter minimal     \\
             --keep-logs           \\
             --keep-intermediates  \\
-            --synctex             \\
-            "{input[0]}"
+            {maybe_synctex}       \\
+            "{input[0]}" {joined_user_args}
         """
+
+# TODO: Add config options for verbosity?
+# See config.py and old tex.py for missing configs.
 
 rule:
     name:
