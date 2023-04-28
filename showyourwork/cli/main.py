@@ -99,9 +99,17 @@ def main():
     default="conda",
     help="The conda frontend to use; passed to snakemake.",
 )
+@click.option(
+    "-p",
+    "--project",
+    default=".",
+    help="The root folder of the showyourwork project.",
+)
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
-def build(cores, conda_frontend, snakemake_args):
+def build(cores, conda_frontend, project, snakemake_args):
     """Build an article in the current working directory."""
+    old_dir = os.getcwd()
+    os.chdir(project)
     ensure_top_level()
     commands.preprocess(
         snakemake_args=snakemake_args,
@@ -113,6 +121,7 @@ def build(cores, conda_frontend, snakemake_args):
         cores=cores,
         conda_frontend=conda_frontend,
     )
+    os.chdir(old_dir)
 
 
 def validate_slug(context, param, slug):
@@ -283,6 +292,12 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     help="The conda frontend to use; passed to snakemake.",
 )
 @click.option(
+    "-p",
+    "--project",
+    default=".",
+    help="The root folder of the showyourwork project.",
+)
+@click.option(
     "-f",
     "--force",
     is_flag=True,
@@ -295,8 +310,10 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     help="Forcefully remove the `.snakemake` and `~/.showyourwork` directories.",
 )
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
-def clean(cores, conda_frontend, force, deep, snakemake_args):
+def clean(cores, conda_frontend, project, force, deep, snakemake_args):
     """Clean the article build in the current working directory."""
+    old_dir = os.getcwd()
+    os.chdir(project)
     ensure_top_level()
     commands.clean(
         force,
@@ -305,6 +322,7 @@ def clean(cores, conda_frontend, force, deep, snakemake_args):
         cores=cores,
         conda_frontend=conda_frontend,
     )
+    os.chdir(old_dir)
 
 
 @main.command(
@@ -323,9 +341,17 @@ def clean(cores, conda_frontend, force, deep, snakemake_args):
     default="conda",
     help="The conda frontend to use; passed to snakemake.",
 )
+@click.option(
+    "-p",
+    "--project",
+    default=".",
+    help="The root folder of the showyourwork project.",
+)
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
-def tarball(cores, conda_frontend, snakemake_args):
+def tarball(cores, conda_frontend, project, snakemake_args):
     """Generate a tarball of the build in the current working directory."""
+    old_dir = os.getcwd()
+    os.chdir(project)
     ensure_top_level()
     commands.preprocess(
         snakemake_args=snakemake_args,
@@ -337,6 +363,7 @@ def tarball(cores, conda_frontend, snakemake_args):
         cores=cores,
         conda_frontend=conda_frontend,
     )
+    os.chdir(old_dir)
 
 
 @main.group()
