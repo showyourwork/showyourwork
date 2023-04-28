@@ -59,7 +59,7 @@ rule:
     conda:
         tectonic_yml.as_posix()
     params:
-        user_args=" ".join(config["user_args"])
+        user_args=" ".join(config["user_args"]),
     shell:
         """
         cd "{input.compile_dir}"

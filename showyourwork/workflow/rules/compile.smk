@@ -26,10 +26,10 @@ rule:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
         config["tex_files_in"],
-        "dag.pdf" if config["dag"]["render"] else [],  # TODO(dfm): remove this?
+        ("dag.pdf" if config["dag"]["render"] else []),  # TODO(dfm): remove this?
         WORKFLOW_GRAPH,
         "showyourwork.yml",
-        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
+        ("zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else []),
         stylesheet=(
             paths.showyourwork().resources / "styles" / "build.tex"
         ).as_posix(),
@@ -54,10 +54,10 @@ rule:
     input:
         temporary_tex_files(),
         # TODO(dfm): Can probably remove the following once stylesheet is rm'd
-        "dag.pdf" if config["dag"]["render"] else [],
+        ("dag.pdf" if config["dag"]["render"] else []),
         WORKFLOW_GRAPH,
         "showyourwork.yml",
-        "zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else [],
+        ("zenodo.yml" if (paths.user().repo / "zenodo.yml").exists() else []),
         compile_dir=paths.user().compile.as_posix(),
     output:
         (paths.user().compile / f'{config["ms_name"]}.pdf').as_posix(),
@@ -65,8 +65,8 @@ rule:
     conda:
         tectonic_yml.as_posix()
     params:
-        maybe_synctex="--synctex" if config["synctex"] else "",
-        user_args=" ".join(config["user_args"])
+        maybe_synctex=("--synctex" if config["synctex"] else ""),
+        user_args=" ".join(config["user_args"]),
     shell:
         """
         cd "{input.compile_dir}"
@@ -79,8 +79,10 @@ rule:
             "{input[0]}"
         """
 
+
 # TODO: Add config options for verbosity?
 # See config.py and old tex.py for missing configs.
+
 
 rule:
     name:
