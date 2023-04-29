@@ -65,7 +65,7 @@ things you'll want to do when migrating over.
 
 10. Read about changes to the way |showyourwork| parses LaTeX at :doc:`latex`. The two big changes
     are that you must now explicitly import the ``showyourwork`` style file (see above) using
-    ``\usepackage{showyourwork}`` and that relationships beteween figure scripts and figure files
+    ``\usepackage{showyourwork}`` and that relationships between figure scripts and figure files
     are no longer inferred from the figure ``\label``. Instead, users should explicitly provide
     the path to the script (relative to ``src/scripts``) that generates figures inside a
     ``figure`` environment via the ``\script`` command. Edit your figure environments in your
