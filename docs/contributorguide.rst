@@ -17,7 +17,7 @@ Initial setup
 2. Create a conda environment for the docs
 
 Building the docs includes a few extra libraries that aren't required for |showyourwork|
-users, so its helpful to create a seperate environment for those. You should only ever
+users, so its helpful to create a separate environment for those. You should only ever
 have to do this step once.
 
 .. code-block:: bash
@@ -29,7 +29,7 @@ During development
 ^^^^^^^^^^^^^^^^^^
 The remaining steps will be run every time you work on the documentation.
 
-1. Activate the docs enviroment
+1. Activate the docs environment
 
 .. code-block:: text
 
