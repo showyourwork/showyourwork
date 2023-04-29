@@ -37,7 +37,7 @@ input figure scripts, manuscript files, datasets, and
 `conda environment file <https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_,
 following the instructions specified in the `Snakefile <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html>`_:
 
-.. image:: _static/overview.png
+.. image:: https://raw.githubusercontent.com/showyourwork/showyourwork-artifacts/803c83534965a85b16976c08b496a535ee362594/overview_figure/overview_v2.png
    :width: 100%
    :align: center
 
