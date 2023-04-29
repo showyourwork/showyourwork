@@ -39,7 +39,7 @@ computations on Zenodo or Zenodo Sandbox alongside a record of all the
 inputs that went into generating the cached output. If, on subsequent runs
 of the workflow, the inputs remain unchanged, |showyourwork| will simply
 download the cached results from Zenodo or Zenodo Sandbox, *maintaining the guarantee that
-the output you get follows determinstically from the given inputs*.
+the output you get follows deterministically from the given inputs*.
 
 Before we get into how this works and how to take advantage of it, let's
 discuss how to set up the integration by generating Zenodo and Zenodo Sandbox API tokens.
