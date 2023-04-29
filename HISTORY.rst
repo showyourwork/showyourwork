@@ -41,7 +41,7 @@
   `this PR <https://github.com/showyourwork/showyourwork/pull/221>`__.
 - ``showyourwork`` no longer has explicit non-python dependencies; packages
   like ``tectonic`` are specified within ``conda`` environments to specific rules,
-  so non-python dependency management is relagated to ``snakemake``.
+  so non-python dependency management is relegated to ``snakemake``.
 - Now enforcing strict channel provenance in ``environment.yml`` files.
 - Upgraded the pinned version of ``Snakemake`` to ``7.15.2``, which fixes
   several bugs and adds new features
