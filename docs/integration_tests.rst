@@ -103,7 +103,7 @@ of the PDF when running on the remote.
 Each of these tests creates a temporary repository in the
 `github.com/showyourwork` organization with the same name as the test
 (but in ``snake_case`` instead of ``camelCase``); if a repository already exists,
-the test will force-push new commits to it, mimicing the behavior of a newly
+the test will force-push new commits to it, mimicking the behavior of a newly
 created repository.
 
 Remote tests are spawned from the `remote_integration_tests.yml`
@@ -112,7 +112,7 @@ on ``push`` events. These do not get run on forks, since they do not have
 write access to the ``showyourwork`` organization. This means pull request
 tests can only check unit tests and local integration tests. In order to run
 remote tests on pull requests, maintainers may label them with the ``safe to test``
-label, in which case the `remote_integration_tests.yml` worfklow is executed with the
+label, in which case the `remote_integration_tests.yml` workflow is executed with the
 ``pull_request_target`` trigger. Maintainers should carefully review the proposed
 changes to check for malicious code before marking PRs as ``safe to test``, since
 the workflow will have full write privileges to the organization!
