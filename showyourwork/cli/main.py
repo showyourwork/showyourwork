@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from collections import namedtuple
 from contextlib import contextmanager
 from textwrap import TextWrapper
 
@@ -14,56 +15,40 @@ OPTIONS = ["-v", "--version", "--help"]
 
 
 # Common options:
-def takes_cores(f):
-    return click.option(
-        "-c",
-        "--cores",
+option_spec = namedtuple("option_spec", ["args", "kwargs"])
+cores_option = option_spec(
+    args=["-c", "--cores"],
+    kwargs=dict(
         default="1",
         help="Number of cores to use; passed to snakemake.",
-    )(f)
-
-
-def takes_conda_frontend(f):
-    return click.option(
-        "--conda-frontend",
+    ),
+)
+conda_frontend_option = option_spec(
+    args=["--conda-frontend"],
+    kwargs=dict(
         default="conda",
         help="The conda frontend to use; passed to snakemake.",
-    )(f)
-
-
-def takes_project(f):
-    return click.option(
-        "-p",
-        "--project",
+    ),
+)
+project_option = option_spec(
+    args=["-p", "--project"],
+    kwargs=dict(
         default=".",
         help="The root folder of the showyourwork project.",
-    )(f)
-
-
-def takes_snakemake_args(f):
-    f = click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)(f)
-    return f
-
-
-def takes_branch(f):
-    return click.option(
-        "-b",
-        "--branch",
+    ),
+)
+branch_option = option_spec(
+    args=["-b", "--branch"],
+    kwargs=dict(
         required=False,
         default=None,
         help="Branch whose deposit is to be deleted. Default is current branch.",
-    )(f)
+    ),
+)
 
 
-def main_command(ignore_unknown_options):
-    def to_command(f):
-        return main.command(
-            context_settings=dict(
-                ignore_unknown_options=ignore_unknown_options,
-            )
-        )(f)
-
-    return to_command
+def main_command(f):
+    return main.command(context_settings=dict(ignore_unknown_options=True))(f)
 
 
 def ensure_top_level():
@@ -146,11 +131,11 @@ def main():
     pass
 
 
-@main_command(ignore_unknown_options=True)
-@takes_cores
-@takes_conda_frontend
-@takes_project
-@takes_snakemake_args
+@main_command
+@click.option(*cores_option.args, **cores_option.kwargs)
+@click.option(*conda_frontend_option.args, **conda_frontend_option.kwargs)
+@click.option(*project_option.args, **project_option.kwargs)
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def build(cores, conda_frontend, project, snakemake_args):
     """Build an article in the current working directory."""
     with cwd_as(project):
@@ -318,10 +303,10 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     commands.setup(slug, cache, overleaf, ssh, action_spec)
 
 
-@main_command(ignore_unknown_options=True)
-@takes_cores
-@takes_conda_frontend
-@takes_project
+@main_command
+@click.option(*cores_option.args, **cores_option.kwargs)
+@click.option(*conda_frontend_option.args, **conda_frontend_option.kwargs)
+@click.option(*project_option.args, **project_option.kwargs)
 @click.option(
     "-f",
     "--force",
@@ -334,7 +319,7 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     is_flag=True,
     help="Forcefully remove the `.snakemake` and `~/.showyourwork` directories.",
 )
-@takes_snakemake_args
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def clean(cores, conda_frontend, project, force, deep, snakemake_args):
     """Clean the article build in the current working directory."""
     with cwd_as(project):
@@ -348,11 +333,11 @@ def clean(cores, conda_frontend, project, force, deep, snakemake_args):
         )
 
 
-@main_command(ignore_unknown_options=True)
-@takes_cores
-@takes_conda_frontend
-@takes_project
-@takes_snakemake_args
+@main_command
+@click.option(*cores_option.args, **cores_option.kwargs)
+@click.option(*conda_frontend_option.args, **conda_frontend_option.kwargs)
+@click.option(*project_option.args, **project_option.kwargs)
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
 def tarball(cores, conda_frontend, project, snakemake_args):
     """Generate a tarball of the build in the current working directory."""
     with cwd_as(project):
@@ -378,7 +363,7 @@ def cache(ctx):
 
 @cache.command()
 @click.pass_context
-@takes_branch
+@click.option(*branch_option.args, **branch_option.kwargs)
 def create(ctx, branch):
     """
     Create a Zenodo Sandbox deposit draft for the given branch.
@@ -392,7 +377,7 @@ def create(ctx, branch):
 
 @cache.command()
 @click.pass_context
-@takes_branch
+@click.option(*branch_option.args, **branch_option.kwargs)
 def delete(ctx, branch):
     """
     Delete the latest draft of a Zenodo Sandbox deposit.
@@ -406,7 +391,7 @@ def delete(ctx, branch):
 
 @cache.command()
 @click.pass_context
-@takes_branch
+@click.option(*branch_option.args, **branch_option.kwargs)
 def freeze(ctx, branch):
     """
     Publishes the current Zenodo Sandbox deposit draft for the given branch
@@ -426,7 +411,7 @@ def freeze(ctx, branch):
 
 @cache.command()
 @click.pass_context
-@takes_branch
+@click.option(*branch_option.args, **branch_option.kwargs)
 def publish(ctx, branch):
     """
     Publishes the current Zenodo Sandbox deposit draft for the given branch
