@@ -2,7 +2,7 @@ Developer API
 =============
 
 Welcome to the guts of |showyourwork|. The backend is fairly complicated given
-that ``showyourwork`` is not just a Python package: it is simultanteously a
+that ``showyourwork`` is not just a Python package: it is simultaneously a
 wrapper around Snakemake *and* a child process of Snakemake, as well as a command-line
 tool, a cookiecutter template, a GitHub Action, and a conda environment manager.
 The code is wrapped up into a pip-installable Python package, but users should
