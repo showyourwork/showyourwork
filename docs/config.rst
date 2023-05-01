@@ -522,7 +522,7 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Type:** ``int``
 
-**Description:** This defines the horizontal offset to be used for all of the margin icons (this helps with positioning in two-column documnets). Negative values will move the icons left and positive values move right.
+**Description:** This defines the horizontal offset to be used for all of the margin icons (this helps with positioning in two-column documents). Negative values will move the icons left and positive values move right.
 
 **Required:** no
 
@@ -653,7 +653,7 @@ in this case, the id is ``6262c032aae5421d6d945acf``.
 
 .. warning::
 
-    Please read the :doc:`Overlaf <overleaf>` integration docs before
+    Please read the :doc:`Overleaf <overleaf>` integration docs before
     manually adding/changing this value, as you could risk losing
     changes to your local document or to your Overleaf document the
     next time you build!

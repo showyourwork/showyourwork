@@ -51,7 +51,7 @@ this:
 When you execute your workflow, |showyourwork| dynamically embellishes the
 ``showyourwork.sty`` file with all of the metadata needed to annotate the PDF
 with the custom margin icons linking to the repository and the scripts that
-generated the invididual figures.
+generated the individual figures.
 
 While most users don't have to worry about how any of this works, it's important to
 keep in mind that this dynamically-generated style sheet redefines certain LaTeX commands under
