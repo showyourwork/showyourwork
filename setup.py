@@ -39,9 +39,6 @@ setup(
             "showyourwork=showyourwork.cli:entry_point",
         ]
     },
-    setup_requires=[
-        "setuptools_scm>=7.0.1",
-    ],
     include_package_data=True,
     zip_safe=False,
 )
