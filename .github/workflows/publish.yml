@@ -3,7 +3,8 @@ name: publish
 on:
   push:
     branches:
-      - release-fix
+      - main
+    pull_request:
     tags:
       - "*"
 
