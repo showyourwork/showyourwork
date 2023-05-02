@@ -5,6 +5,7 @@ Implements all the subcommands of the ``showyourwork`` command line tool.
 from .build import build
 from .cache import cache_restore, cache_update
 from .clean import clean
+from .html import html
 from .preprocess import preprocess
 from .setup import setup
 from .tarball import tarball
