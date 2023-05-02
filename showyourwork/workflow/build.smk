@@ -56,6 +56,14 @@ if (paths.user().temp / "config.json").exists():
         input:
             "arxiv.tar.gz"
 
+    rule syw__ar5ivist_entrypoint:
+        input:
+            paths.user().html / "index.html"
+        output:
+            "html/index.html"
+        shell:
+            "cp {input} {output}"
+
 
     # Include all other rules
     include: "rules/common.smk"
@@ -64,10 +72,12 @@ if (paths.user().temp / "config.json").exists():
     include: "rules/compile.smk"
     include: "rules/zenodo.smk"
     include: "rules/figure.smk"
+    include: "rules/ar5ivist.smk"
     include: "rules/render_dag.smk"
 
     # Resolve ambiguities in rule order
     ruleorder: syw__compile > syw__arxiv
+    ruleorder: syw__compile > syw__ar5ivist
 
 
     # Include custom rules defined by the user

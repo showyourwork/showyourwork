@@ -61,6 +61,8 @@ class user:
         self.preprocess.mkdir(exist_ok=True)
         self.compile = self.temp / "compile"
         self.compile.mkdir(exist_ok=True)
+        self.html = self.temp / "html"
+        self.html.mkdir(exist_ok=True)
         self.logs = self.temp / "logs"
         self.logs.mkdir(exist_ok=True)
         self.zenodo = self.temp / "zenodo"
