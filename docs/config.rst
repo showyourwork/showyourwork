@@ -1057,12 +1057,14 @@ in the compiled PDF.
 
 .. code-block:: yaml
 
-  tectonic_args: ["-Z", "shell-escape"]
+  tectonic_args: ["-Z", "shell-escape", "-Z", "shell-escape-cwd=."]
 
 to enable TeX shell escape functionality (allows the script to run
 arbitrary commands within TeX; be careful as this could be a security hazard).
 This is required to use the ``minted`` package for syntax highlighting of code
-snippets.
+snippets. The `shell-escape-cwd=.` option lets `showyourwork` save outputs
+of shell calls, whereas without this option they would be deleted (for example,
+the `minted` cache).
 
 .. _config.verbose:
 
