@@ -31,9 +31,7 @@ if __name__ == "__main__":
 
     with TemporaryDirectory() as tmpdir:
         # First, copy to a temporary directory, excluding files
-        for file in paths.user().compile.rglob("*"):
-            if file.name not in exclude:
-                shutil.copy(file, tmpdir)
+        shutil.copytree(paths.user().compile, tmpdir, dirs_exist_ok=True)
 
         if config["preprocess_arxiv"]["enabled"]:
             # Run the preprocessing script, if provided:
@@ -48,4 +46,5 @@ if __name__ == "__main__":
         # Tar up everything in the src/tex directory
         with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:
             for file in tmpdir.rglob("*"):
-                tarball.add(file, arcname=file.name)
+                if file.name not in exclude:
+                    tarball.add(file, arcname=file.name)
