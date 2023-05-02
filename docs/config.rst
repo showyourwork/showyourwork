@@ -1064,6 +1064,28 @@ arbitrary commands within TeX; be careful as this could be a security hazard).
 This is required to use the ``minted`` package for syntax highlighting of code
 snippets.
 
+.. _config.preprocess_arxiv:
+
+  ``preprocess_arxiv``
+  ^^^^^^^^^^^^^^^^^^^^
+
+  **Type:** ``mapping``
+
+  **Description:** Options controlling the preprocessing of the manuscript
+  for submission to the arXiv. This is a dictionary with the following keys:
+
+  - ``enabled``: Whether or not to enable preprocessing. If ``false``, no
+    preprocessing will be performed. If ``true``, preprocessing will be
+    performed.
+
+  - ``script``: The path to a custom preprocessing script to use.
+    The script should be an executable script that accepts a single
+    argument; this argument will be the path to the contents of the arXiv
+    tarball. This script can modify the contents of the tarball in place,
+    before the contents are put into a `.tar.gz` archive for submission.
+
+  **Required:** no
+
 .. _config.verbose:
 
 ``verbose``
