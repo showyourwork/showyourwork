@@ -7,6 +7,7 @@ tars everything in the ``src/tex`` directory into the tarball
 import shutil
 import subprocess
 import tarfile
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from showyourwork import paths
@@ -45,6 +46,6 @@ if __name__ == "__main__":
 
         # Tar up everything in the src/tex directory
         with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:
-            for file in tmpdir.rglob("*"):
+            for file in Path(tmpdir).rglob("*"):
                 if file.name not in exclude:
                     tarball.add(file, arcname=file.name)
