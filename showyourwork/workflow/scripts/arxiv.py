@@ -4,7 +4,10 @@ tars everything in the ``src/tex`` directory into the tarball
 ``arxiv.tar.gz`` for easy arXiv submission.
 
 """
+import shutil
+import subprocess
 import tarfile
+from tempfile import TemporaryDirectory
 
 from showyourwork import paths
 
@@ -26,8 +29,23 @@ if __name__ == "__main__":
         f"{ms_name}.fdb_latexmk",
     ]
 
-    # Tar up everything in the src/tex directory
-    with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:
+    with TemporaryDirectory() as tmpdir:
+        # First, copy to a temporary directory, excluding files
         for file in paths.user().compile.rglob("*"):
             if file.name not in exclude:
+                shutil.copy(file, tmpdir)
+
+        if config["preprocess_arxiv"]["enabled"]:
+            # Run the preprocessing script, if provided:
+            script = config["preprocess_arxiv"]["script"]
+            if not script:
+                raise ValueError(
+                    "Preprocessing script not provided in config "
+                    "(`preprocess_arxiv: script: '...'`)."
+                )
+            subprocess.run([script, tmpdir], check=True)
+
+        # Tar up everything in the src/tex directory
+        with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:
+            for file in tmpdir.rglob("*"):
                 tarball.add(file, arcname=file.name)
