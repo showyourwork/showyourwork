@@ -58,11 +58,14 @@ if (paths.user().temp / "config.json").exists():
 
     rule syw__ar5ivist_entrypoint:
         input:
-            paths.user().html / "index.html"
+            (paths.user().compile_html / "index.html").as_posix()
         output:
-            "html/index.html"
+            (paths.user().html / "index.html").as_posix()
+        params:
+            compile_dir=paths.user().compile_html.as_posix(),
+            output_dir=paths.user().html.as_posix()
         shell:
-            "cp {input} {output}"
+            "cp -r {params.compile_dir} {params.output_dir}"
 
 
     # Include all other rules
