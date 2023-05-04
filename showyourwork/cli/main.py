@@ -74,8 +74,10 @@ def cwd_as(path):
     """Temporarily change the current working directory to `path`."""
     old_dir = os.getcwd()
     os.chdir(path)
-    yield
-    os.chdir(old_dir)
+    try:
+        yield
+    finally:
+        os.chdir(old_dir)
 
 
 def echo(text="", **kwargs):
