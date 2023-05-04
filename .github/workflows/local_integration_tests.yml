@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          
+
       - name: Install tectonic with homebrew on mac
         if: ${{ runner.os == 'macOS' }}
         run: brew install tectonic
