@@ -361,7 +361,7 @@ def parse_config():
         if offset < 0:
             config["margin_icons"]["horizontal_offset"] = r"\!" * abs(offset)
         else:
-            config["margin_icons"]["horizontal_offset"] = "\," * offset
+            config["margin_icons"]["horizontal_offset"] = r"\," * offset
 
         #
         # -- Internal settings --
