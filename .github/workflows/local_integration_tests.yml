@@ -37,7 +37,7 @@ jobs:
       - name: Clean up homebrew on mac
         if: ${{ runner.os == 'macOS' }}
         run: |
-          brew uninstall icu4c
+          brew reinstall icu4c
           brew cleanup
 
       - name: Set up python
