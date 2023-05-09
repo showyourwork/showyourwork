@@ -65,14 +65,14 @@ rule:
         user_args=" ".join(config["user_args"])
     shell:
         """
-        cd "{input.compile_dir}"
+        cd {input.compile_dir:q}
         tectonic                      \\
             --chatter minimal         \\
             --keep-logs               \\
             --keep-intermediates      \\
             {params.maybe_synctex}    \\
             {params.user_args}        \\
-            "{input[0]}"
+            {input[0]:q}
         """
 
 # TODO: Add config options for verbosity?
@@ -101,10 +101,32 @@ rule:
         (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix()
     output:
         config["ms_name"] + ".synctex.gz"
-    shell:
-        """
-        cp "{input}" "{output}"
-        """
+    run:
+        import gzip
+
+        # Read the generated SyncTeX
+        with gzip.open(input[0], "rb") as f:
+            data = f.read()
+
+        # Rewrite the input paths to be relative to the user's tex directory if
+        # that file exists
+        with gzip.open(output[0], "wb") as f:
+            for line in data.split(b"\n"):
+                if line.decode().startswith("Input:"):
+                    parts = line.decode().split(":")
+                    path = parts[-1].strip()
+                    if len(path):
+                        path = Path(path)
+                        try:
+                            path = path.relative_to(paths.user().compile)
+                        except ValueError:
+                            pass
+                        else:
+                            path = paths.user().tex / path
+                            if path.exists():
+                                line = ":".join(parts[:-1] + [path.as_posix()]).encode()
+                line += b"\n"
+                f.write(line)
 
 rule:
     """

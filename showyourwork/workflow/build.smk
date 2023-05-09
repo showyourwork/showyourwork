@@ -47,8 +47,8 @@ if (paths.user().temp / "config.json").exists():
     # Hack to make the pdf generation the default rule
     rule syw__main:
         input:
-            config["ms_pdf"]
-
+            config["ms_pdf"],
+            (config["ms_name"] + ".synctex.gz" if config["synctex"] else [])
 
     # Wrap other top-level rules to ensure tempfiles are properly
     # deleted; these are the rules we actually call from the Makefile

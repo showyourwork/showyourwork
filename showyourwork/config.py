@@ -318,6 +318,7 @@ def parse_config():
                 "Setting `tectonic_args` must be a list of strings."
             )
         config["synctex"] = config.get("synctex", True)
+        print(config["synctex"])
 
         #: Optimize the DAG by removing jobs upstream of cache hits
         config["optimize_caching"] = config.get("optimize_caching", False)
