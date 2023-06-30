@@ -1,0 +1,17 @@
+import snakemake_staging
+from snakemake_staging.stages import NoOpStage
+
+snakemake_staging.configure(config)
+stage = NoOpStage("stage", False)
+
+rule a:
+    output:
+        stage("output/a.txt")
+    shell:
+        """
+        mkdir -p output
+        echo "test" > {output}
+        """
+
+include:
+    snakemake_staging.snakefile()

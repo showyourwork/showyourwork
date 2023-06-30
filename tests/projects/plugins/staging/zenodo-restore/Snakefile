@@ -1,0 +1,13 @@
+import snakemake_staging
+from snakemake_staging.zenodo import ZenodoStage
+
+stage = ZenodoStage("stage", config.get("restore", False), "stage.json")
+
+rule a:
+    output:
+        stage("output/a.txt")
+    run:
+        raise ValueError("this should not be executed")
+
+include:
+    snakemake_staging.snakefile()

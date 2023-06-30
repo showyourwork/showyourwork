@@ -5,11 +5,13 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
         exclude_types: [json, binary]
+        exclude: "^tests/projects/"
       - id: check-yaml
   - repo: https://github.com/psf/black
     rev: "23.1.0"
     hooks:
       - id: black-jupyter
+        exclude: "^tests/projects/"
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: "v0.0.245"
     hooks:
@@ -20,4 +22,4 @@ repos:
     hooks:
       - id: mypy
         exclude: "^docs/|^tests/projects/"
-        additional_dependencies: ["types-PyYAML"]
+        additional_dependencies: ["types-PyYAML", "types-requests"]

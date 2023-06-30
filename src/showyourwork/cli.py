@@ -101,8 +101,9 @@ def run_snakemake(
             config_file = cwd / "showyourwork.yaml"
         if not config_file.is_file():
             raise RuntimeError(
-                "No config file found in project root. Please specify a configuration "
-                "file using the '--configfile' command line argument."
+                f"No config file found in project root ({cwd}). "
+                "Please specify a configuration file using the '--configfile' command "
+                "line argument."
             )
 
     # If the user didn't specify a conda frontend, then we'll try to use mamba

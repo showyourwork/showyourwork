@@ -1,0 +1,3 @@
+from snakemake_staging.utils import package_data
+
+include: package_data("workflow", "rules", "stages.smk")

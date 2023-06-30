@@ -54,9 +54,13 @@ def package_data(module: str, *file: str, check: bool = True) -> Path:
     return path
 
 
-def path_to_rule_name(path: PathLike) -> str:
+def path_to_identifier(path: PathLike) -> str:
     path_hash = hashlib.md5(str(path).encode()).hexdigest()
-    return f"{Path(path).name.replace('.', '_')}_{path_hash}"
+    return f"{path_hash}_{Path(path).name}"
+
+
+def path_to_rule_name(path: PathLike) -> str:
+    return path_to_identifier(path).replace(".", "_")
 
 
 class PathMeta:

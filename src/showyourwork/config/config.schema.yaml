@@ -56,6 +56,10 @@ properties:
     items:
       type: string
 
+  notex:
+    description: "Disable automatic loading of the built-in TeX plugin"
+    type: boolean
+
   local_snakefiles:
     description: "A list of local files with additional Snakemake rules"
     type: array

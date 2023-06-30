@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 from typing import List
 
-from showyourwork import test_util
 from showyourwork.dependencies import simplify_dependency_tree
+from showyourwork.testing import run_showyourwork
 
 
 def test_dependency_tree() -> None:
-    with test_util.run_context(
-        "tests/projects/dependency_tree", snakemake_args=["syw__save_dependencies"]
+    with run_showyourwork(
+        "tests/projects/dependency_tree", "syw__save_dependencies", show_diff=True
     ) as d:
         with open(d / ".showyourwork" / "dependency_tree.json", "r") as f:
             data = json.load(f)
@@ -19,7 +19,7 @@ def test_dependency_tree() -> None:
 
 
 def test_explicit_dependencies() -> None:
-    test_util.run("tests/projects/explicit_dependencies")
+    run_showyourwork("tests/projects/explicit_dependencies")
 
 
 work_path = Path("/work")

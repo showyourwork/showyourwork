@@ -1,0 +1,60 @@
+{
+  "conceptdoi": "10.5281/zenodo.7897666",
+  "conceptrecid": "7897666",
+  "created": "2023-05-04T22:19:34.549514+00:00",
+  "doi": "10.5281/zenodo.7897667",
+  "doi_url": "https://doi.org/10.5281/zenodo.7897667",
+  "files": [
+    {
+      "checksum": "d8e8fca2dc0f896fd7cb4cb0031ba249",
+      "filename": "7dbc40099fc925b32c7b5ffa24841f44_a.txt",
+      "filesize": 5,
+      "id": "e558f16a-9f18-4358-a204-9f6d15a3dedf",
+      "links": {
+        "download": "https://zenodo.org/api/files/daf9cec8-1d94-4fe3-b673-7ab6f0b57623/7dbc40099fc925b32c7b5ffa24841f44_a.txt",
+        "self": "https://zenodo.org/api/deposit/depositions/7897667/files/e558f16a-9f18-4358-a204-9f6d15a3dedf"
+      }
+    }
+  ],
+  "id": 7897667,
+  "links": {
+    "badge": "https://zenodo.org/badge/doi/10.5281/zenodo.7897667.svg",
+    "bucket": "https://zenodo.org/api/files/daf9cec8-1d94-4fe3-b673-7ab6f0b57623",
+    "conceptbadge": "https://zenodo.org/badge/doi/10.5281/zenodo.7897666.svg",
+    "conceptdoi": "https://doi.org/10.5281/zenodo.7897666",
+    "doi": "https://doi.org/10.5281/zenodo.7897667",
+    "latest": "https://zenodo.org/api/records/7897667",
+    "latest_html": "https://zenodo.org/record/7897667",
+    "record": "https://zenodo.org/api/records/7897667",
+    "record_html": "https://zenodo.org/record/7897667"
+  },
+  "metadata": {
+    "access_right": "open",
+    "communities": [
+      {
+        "identifier": "zenodo"
+      }
+    ],
+    "creators": [
+      {
+        "name": "snakemake-staging/v0.0.0"
+      }
+    ],
+    "description": "This is a a snapshot of the outputs of a Snakemake workflow",
+    "doi": "10.5281/zenodo.7897667",
+    "license": "CC0-1.0",
+    "prereserve_doi": {
+      "doi": "10.5281/zenodo.7897667",
+      "recid": 7897667
+    },
+    "publication_date": "2023-05-04",
+    "title": "Staged Snakemake Workflow: stage",
+    "upload_type": "dataset"
+  },
+  "modified": "2023-05-04T22:19:37.095118+00:00",
+  "owner": 4729,
+  "record_id": 7897667,
+  "state": "done",
+  "submitted": true,
+  "title": "Staged Snakemake Workflow: stage"
+}

@@ -1,9 +1,5 @@
 config_version: 2
-plugins:
-  - "showyourwork.plugins.tex"
-
 conda: environment.yml
-
 dynamic:
   - script: generate_figure.py
     output: figure.pdf

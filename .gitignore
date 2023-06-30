@@ -18,3 +18,4 @@ dist/*
 *.png
 *.svg
 *.pdf
+.*_cache

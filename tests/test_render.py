@@ -1,7 +1,7 @@
 import platform
 
 import pytest
-from showyourwork import test_util
+from showyourwork.testing import run_showyourwork
 
 
 @pytest.mark.skipif(
@@ -9,4 +9,4 @@ from showyourwork import test_util
     reason="imagemagick can't be installed on Windows using conda",
 )
 def test_render() -> None:
-    test_util.run("tests/projects/render", snakemake_args=["dag.pdf"])
+    run_showyourwork("tests/projects/render", "dag.pdf")

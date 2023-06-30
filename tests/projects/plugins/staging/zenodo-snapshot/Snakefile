@@ -1,0 +1,21 @@
+import snakemake_staging
+from snakemake_staging.zenodo import ZenodoStage
+
+stage = ZenodoStage(
+    "stage",
+    config.get("restore", False),
+    "stage.json",
+    url=config["zenodo_mock_url"],
+)
+
+rule a:
+    output:
+        stage("output/a.txt")
+    shell:
+        """
+        mkdir -p output
+        echo "test" > {output}
+        """
+
+include:
+    snakemake_staging.snakefile()

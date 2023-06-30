@@ -70,7 +70,10 @@ def parse_config(config: Dict[str, Any], required_version: int = 2) -> Dict[str,
         ) from e
 
     # Default to using the tex plugin
-    config["plugins"] = config.get("plugins", ["showyourwork.plugins.tex"])
+    plugins = config.get("plugins", ["showyourwork.plugins.tex"])
+    if "showyourwork.plugins.tex" not in plugins and not config.get("notex", False):
+        plugins = ["showyourwork.plugins.tex"] + list(plugins)
+    config["plugins"] = plugins
 
     # Extract the list of documents and their dependencies and fill it out. The
     # resulting 'documents' config item is keyed by document path and has a list

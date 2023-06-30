@@ -1,8 +1,9 @@
-from showyourwork import test_util
+from showyourwork.testing import run_showyourwork
 
 
 def test_tex_dependencies() -> None:
-    test_util.run(
+    run_showyourwork(
         "tests/projects/plugins/tex/dependencies",
-        snakemake_args=["sywplug_tex__dependencies"],
+        "sywplug_tex__dependencies",
+        show_diff=True,
     )

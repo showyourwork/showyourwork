@@ -2,7 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import pytest
-from showyourwork.test_util import run_snakemake
+from showyourwork.testing import run_snakemake
 
 
 @pytest.mark.parametrize("prefix", ["", "syw__", "sywplug_"])
@@ -30,7 +30,7 @@ fix_rule_order(config, workflow)
             # If no prefix is used then snakemake should fail since the rule
             # order is ambiguous.
             with pytest.raises(RuntimeError):
-                run_snakemake(root / "Snakefile", ["a.txt"], cwd=root)
+                run_snakemake(root, "a.txt")
         else:
-            run_snakemake(root / "Snakefile", ["a.txt"], cwd=root)
-            assert (root / "a.txt").read_text().strip() == "a"
+            with run_snakemake(root, "a.txt") as result:
+                assert (result / "a.txt").read_text().strip() == "a"

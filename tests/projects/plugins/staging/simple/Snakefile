@@ -1,0 +1,13 @@
+rule all:
+    input:
+        "output1.txt",
+        "output2.txt",
+
+
+rule output:
+    output:
+        "output{number}.txt"
+    shell:
+        """
+        echo "{wildcards.number}" > {output}
+        """
