@@ -15,16 +15,12 @@ jobs:
       matrix:
         python:
           - "3.8"
-          - "3.11"
+          - "3.10"
         platform:
           - ubuntu-latest
-          # - macos-latest
-          # - windows-latest
         include:
           - platform: macos-latest
             python: "3.9"
-          # - platform: windows-latest
-          #   python: "3.8"
     runs-on: ${{ matrix.platform }}
     name: Run unit tests
     steps:
