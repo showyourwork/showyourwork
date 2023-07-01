@@ -1,4 +1,4 @@
 channels:
   - conda-forge
 dependencies:
-  - tectonic=0.12.0
+  - tectonic=0.14.1
