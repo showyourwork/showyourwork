@@ -22,7 +22,7 @@ jobs:
           # - windows-latest
         exclude:
           - platform: macos-latest
-            python: "3.9"
+            python: "3.8"
           # - platform: windows-latest
           #   python: "3.8"
     runs-on: ${{ matrix.platform }}
