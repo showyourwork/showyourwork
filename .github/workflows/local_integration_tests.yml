@@ -38,6 +38,7 @@ jobs:
           create-args: >-
             python=${{ matrix.python }}
             mamba
+            tectonic=0.12.0
 
       - name: Install showyourwork
         shell: bash -l {0}
