@@ -65,14 +65,14 @@ rule:
         user_args=" ".join(config["user_args"])
     shell:
         """
-        cd {input.compile_dir:q}
+        cd "{input.compile_dir}"
         tectonic                      \\
             --chatter minimal         \\
             --keep-logs               \\
             --keep-intermediates      \\
             {params.maybe_synctex}    \\
             {params.user_args}        \\
-            {input[0]:q}
+            "{input[0]}"
         """
 
 # TODO: Add config options for verbosity?
