@@ -41,7 +41,7 @@ jobs:
 
       - name: Set channel priority
         shell: bash -l {0}
-        run: mamba config --set channel_priority strict
+        run: conda config --set channel_priority strict
 
       - name: Install showyourwork
         shell: bash -l {0}
