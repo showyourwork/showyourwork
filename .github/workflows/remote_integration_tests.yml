@@ -34,11 +34,13 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up python
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python and mamba
+        uses: mamba-org/setup-micromamba@v1
         with:
-          auto-update-conda: true
-          python-version: "3.9"
+          environment-name: test-env
+          create-args: >-
+            python=3.9
+            mamba
 
       - name: Install showyourwork
         shell: bash -l {0}
