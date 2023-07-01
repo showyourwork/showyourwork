@@ -37,6 +37,7 @@ jobs:
       - name: Set up Python and mamba
         uses: mamba-org/setup-micromamba@v1
         with:
+          environment-name: test-env
           create-args: >-
             python=${{ matrix.python }}
             mamba
