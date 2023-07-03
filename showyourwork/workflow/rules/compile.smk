@@ -57,7 +57,7 @@ rule:
         compile_dir=paths.user().compile.as_posix()
     output:
         (paths.user().compile / f'{config["ms_name"]}.pdf').as_posix(),
-        (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix(),
+        (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix() if config["synctex"] else [],
     conda:
         tectonic_yml.as_posix()
     params:
@@ -101,10 +101,8 @@ rule:
         (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix()
     output:
         config["ms_name"] + ".synctex.gz"
-    shell:
-        """
-        cp "{input}" "{output}"
-        """
+    script:
+        "../scripts/copy_and_fix_synctex.py"
 
 rule:
     """
