@@ -48,7 +48,7 @@ rule:
         tectonic_yml.as_posix()
     shell:
         """
-        conda install -c conda-forge -y tectonic --force-reinstall
+        conda install -c conda-forge -y tectonic icu --force-reinstall
         """
 
 rule:
