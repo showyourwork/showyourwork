@@ -38,7 +38,13 @@ jobs:
           create-args: >-
             python=${{ matrix.python }}
             mamba
-            tectonic=0.12.0
+
+      - name: Reinstall ICU on Mac
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          brew cleanup
+          brew install icu4c
+          brew link icu4c --force
 
       - name: Install showyourwork
         shell: bash -l {0}

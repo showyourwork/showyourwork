@@ -38,20 +38,6 @@ rule:
         "../scripts/compile_setup.py"
 
 rule:
-    name:
-        "syw__conda_env_created"
-    message:
-        "Preprocess: Ensuring the tectonic conda environment is created..."
-    output:
-        touch(paths.user().flags / "SYW__CONDA_ENV_CREATED")
-    conda:
-        tectonic_yml.as_posix()
-    shell:
-        """
-        conda install -c conda-forge -y tectonic icu --force-reinstall
-        """
-
-rule:
     """
     Compile the manuscript into the article PDF.
 
@@ -63,7 +49,6 @@ rule:
     input:
         temporary_tex_files(root=paths.user().preprocess),
         "showyourwork.yml",
-        paths.user().flags / "SYW__CONDA_ENV_CREATED",
         compile_dir=paths.user().preprocess.as_posix()
     output:
         (paths.user().preprocess / "showyourwork.xml").as_posix()
