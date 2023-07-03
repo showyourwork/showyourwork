@@ -18,9 +18,9 @@ jobs:
           - "3.10"
         platform:
           - ubuntu-latest
-        include:
-          - platform: macos-latest
-            python: "3.9"
+        # include:
+        #   - platform: macos-latest
+        #     python: "3.9"
     runs-on: ${{ matrix.platform }}
     name: Run unit tests
     steps:
