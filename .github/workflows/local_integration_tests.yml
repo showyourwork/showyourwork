@@ -43,7 +43,7 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         run: |
           brew cleanup
-          brew install icu4c
+          brew install icu4c@72.1
           brew link icu4c --force
 
       - name: Install showyourwork
