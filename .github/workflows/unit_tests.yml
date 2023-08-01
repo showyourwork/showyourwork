@@ -14,17 +14,13 @@ jobs:
       fail-fast: false
       matrix:
         python:
-          - "3.8" # (almost) oldest Python supported by PSF
-          - "3.10" # newest Python that is stable
+          - "3.8"
+          - "3.10"
         platform:
           - ubuntu-latest
-          - macos-latest
-          # - windows-latest
-        exclude:
-          - platform: macos-latest
-            python: "3.8"
-          # - platform: windows-latest
-          #   python: "3.8"
+        # include:
+        #   - platform: macos-latest
+        #     python: "3.9"
     runs-on: ${{ matrix.platform }}
     name: Run unit tests
     steps:
@@ -34,11 +30,13 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up python
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python and mamba
+        uses: mamba-org/setup-micromamba@v1
         with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python }}
+          environment-name: test-env
+          create-args: >-
+            python=${{ matrix.python }}
+            mamba
 
       - name: Install showyourwork
         shell: bash -l {0}

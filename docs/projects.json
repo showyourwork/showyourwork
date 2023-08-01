@@ -126,5 +126,25 @@
     "doi": "10.3847/2041-8213/aca4d3",
     "url": "https://ui.adsabs.harvard.edu/abs/2023ApJ...942L..32R/abstract",
     "field": "Astronomy"
+      },
+    "arm61/linearization-issues": {
+    "title": "Is there still a place for linearization in the chemistry curriculum?",
+    "authors": [
+      "Andrew R. McCluskey"
+    ],
+    "doi": "10.26434/chemrxiv-2023-44b29",
+    "url": "https://doi.org/10.26434/chemrxiv-2023-44b29",
+    "field": "Chemistry"
+  },
+  "arm61/msd-errors": {
+    "title": "Accurate Estimation of Diffusion Coefficients and their Uncertainties from Computer Simulation",
+    "authors": [
+      "Andrew R. McCluskey",
+      "Samuel W. Coles",
+      "Benjamin J. Morgan"
+    ],
+    "doi": "arXiv:2305.18244",
+    "url": "https://arxiv.org/abs/arXiv:2305.18244",
+    "field": "Materials Science"
   }
 }

@@ -39,5 +39,3 @@ def clean(force, deep, snakemake_args=[], cores=1, conda_frontend="conda"):
     if deep:
         if (paths.user().repo / ".snakemake").exists():
             shutil.rmtree(paths.user().repo / ".snakemake")
-        if paths.user().home_temp.exists():
-            shutil.rmtree(paths.user().home_temp)
