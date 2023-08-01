@@ -367,9 +367,6 @@ def parse_config():
         config["preprocess_arxiv"] = as_dict(
             config.get("preprocess_arxiv", {})
         )
-        config["preprocess_arxiv"]["enabled"] = config["preprocess_arxiv"].get(
-            "enabled", False
-        )
         config["preprocess_arxiv"]["script"] = config["preprocess_arxiv"].get(
             "script", None
         )
