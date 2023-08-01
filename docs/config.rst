@@ -1066,6 +1066,40 @@ snippets. The `shell-escape-cwd=.` option lets `showyourwork` save outputs
 of shell calls, whereas without this option they would be deleted (for example,
 the `minted` cache).
 
+.. _config.preprocess_arxiv_script:
+
+``preprocess_arxiv_script``
+^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A script controlling the preprocessing of the manuscript
+for submission to the arXiv. This is the path to a custom preprocessing script to use.
+The script should be executable and accept a single
+argument; this argument will be the path to the contents of the arXiv
+tarball. This script can modify the contents of the tarball in place,
+before the contents are put into a `.tar.gz` archive for submission.
+
+**Required:** no
+
+**Example:**
+
+The following example script preprocesses the manuscript to set up
+`minted` in a way that is compatible with the arXiv,
+by freezing the `minted` cache after the build is complete.
+It also switches `xcolor` to require the `table` option for
+compatibility with the LaTeX used on arXiv.
+
+.. code-block:: bash
+
+  #!/bin/bash
+  pushd $1
+  sed -i ms.tex -e 's/finalizecache/frozencache/g'
+  sed -i ms.tex -e '/PassOptionsToPackage/d'
+  sed -i showyourwork.tex -e 's/RequirePackage{xcolor}/RequirePackage[table]{xcolor}/g'
+  popd
+
+
 .. _config.verbose:
 
 ``verbose``

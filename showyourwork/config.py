@@ -363,6 +363,11 @@ def parse_config():
         else:
             config["margin_icons"]["horizontal_offset"] = r"\," * offset
 
+        # Preprocessing arXiv tarball settings:
+        config["preprocess_arxiv_script"] = config.get(
+            "preprocess_arxiv_script", None
+        )
+
         #
         # -- Internal settings --
         #
