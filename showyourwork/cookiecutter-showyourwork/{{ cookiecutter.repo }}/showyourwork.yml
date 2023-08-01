@@ -94,10 +94,9 @@ tectonic_args: []
 
 # Preprocessing script for arXiv tarball
 # (such as to switch `minted` from `finalizecache` to `frozencache`)
-preprocess_arxiv:
-  # The script will be passed a directory containing the manuscript source
-  # as input, and should modify the contents of that directory in-place.
-  # script: my_preprocess_script.sh
+# preprocess_arxiv_script: my_preprocess_script.sh
+# The script will be passed a directory containing the manuscript source
+# as input, and should modify the contents of that directory in-place.
 
 # Enable verbose output?
 verbose: false

@@ -364,11 +364,8 @@ def parse_config():
             config["margin_icons"]["horizontal_offset"] = r"\," * offset
 
         # Preprocessing arXiv tarball settings:
-        config["preprocess_arxiv"] = as_dict(
-            config.get("preprocess_arxiv", {})
-        )
-        config["preprocess_arxiv"]["script"] = config["preprocess_arxiv"].get(
-            "script", None
+        config["preprocess_arxiv_script"] = config.get(
+            "preprocess_arxiv_script", None
         )
 
         #

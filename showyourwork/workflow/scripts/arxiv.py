@@ -32,13 +32,13 @@ if __name__ == "__main__":
 
     with TemporaryDirectory() as tmpdir:
         using_preprocessing_script = (
-            config["preprocess_arxiv"]["script"] is not None
+            config["preprocess_arxiv_script"] is not None
         )
         if using_preprocessing_script:
             # First, copy to a temporary directory, excluding files
             shutil.copytree(paths.user().compile, tmpdir, dirs_exist_ok=True)
             # Run the preprocessing script, if provided:
-            script = config["preprocess_arxiv"]["script"]
+            script = config["preprocess_arxiv_script"]
             subprocess.run([script, tmpdir], check=True)
 
         src_dir = (
