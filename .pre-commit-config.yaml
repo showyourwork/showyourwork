@@ -15,6 +15,6 @@ repos:
     hooks:
       - id: black-jupyter
   - repo: https://github.com/hadialqattan/pycln
-    rev: "v2.1.5"
+    rev: "v2.2.1"
     hooks:
       - id: pycln
