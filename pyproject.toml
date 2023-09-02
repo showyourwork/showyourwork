@@ -35,7 +35,6 @@ showyourwork = "showyourwork.cli:main"
 [project.optional-dependencies]
 test = ["pytest", "flask"]
 docs = [
-    "requests",
     "sphinx-book-theme>=0.1.3",
     "jinja2>=2.11.3",
     "sphinxcontrib-programoutput>=0.17",

@@ -117,6 +117,29 @@ properties:
         items:
           type: string
 
+  stages:
+    description: ""
+    type: array
+    items:
+      anyOf:
+        - type: string
+        - type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            target:
+              type: string
+
   working_directory:
     description: "The directory where the build will be performed; this should really only be set from the command line"
     type: string
+
+  restore:
+    description: "An array of stage names to restore from the cache"
+    anyOf:
+      - type: string
+      - type: array
+        items:
+          type: string

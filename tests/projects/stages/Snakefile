@@ -1,0 +1,7 @@
+from showyourwork import stages
+
+rule a:
+    output:
+        stages.staged("a.txt", stage="a")
+    shell:
+        "touch {output[0]}"
