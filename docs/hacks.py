@@ -125,7 +125,7 @@ See below for information on how we test all the different moving parts in
 
 # Add our module to the path
 ROOT = Path(__file__).absolute().parents[1]
-sys.path.insert(0, str(ROOT) / "src")
+sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(1, str(ROOT / "src" / "showyourwork" / "workflow" / "scripts"))
 
 
