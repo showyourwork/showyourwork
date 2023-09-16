@@ -125,8 +125,8 @@ See below for information on how we test all the different moving parts in
 
 # Add our module to the path
 ROOT = Path(__file__).absolute().parents[1]
-sys.path.insert(0, str(ROOT))
-sys.path.insert(1, str(ROOT / "showyourwork" / "workflow" / "scripts"))
+sys.path.insert(0, str(ROOT) / "src")
+sys.path.insert(1, str(ROOT / "src" / "showyourwork" / "workflow" / "scripts"))
 
 
 # Generate the `projects.rst` page
@@ -134,7 +134,7 @@ API_KEY = os.getenv("GH_API_KEY", None)
 if API_KEY is None:
     print("ERROR: Can't authenticate git. Unable to generate `projects.rst`.")
 else:
-    with open("projects.json", "r") as f:
+    with open("projects.json") as f:
         projects = json.load(f)
     for project in projects:
         projects[project]["date"] = projects[project].get("date", "")
@@ -144,9 +144,7 @@ else:
         projects[project]["commits"] = get_commit_count(project, API_KEY)
         projects[project]["date"] = get_date(project, API_KEY)
     fields = list(set([projects[project]["field"] for project in projects]))
-    repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[
-        ::-1
-    ]
+    repos = sorted(projects.keys(), key=lambda item: projects[item]["date"])[::-1]
     count = {field: 0 for field in fields}
     for project in projects:
         count[projects[project]["field"]] += 1
@@ -161,7 +159,9 @@ else:
 
 
 # Import the GitHub Action README
-url = "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
+url = (
+    "https://raw.githubusercontent.com/showyourwork/showyourwork-action/main/README.rst"
+)
 try:
     r = requests.get(url, allow_redirects=True)
     content = r.content.decode()
@@ -179,27 +179,29 @@ with open("action.rst", "w") as f:
 # Create our API autodoc pages
 for file in Path("api").rglob("*.rst"):
     file.unlink()
-subprocess.run("sphinx-apidoc -feMT -d 5 -o api ../showyourwork", shell=True)
 subprocess.run(
-    "sphinx-apidoc -feM -d 5 -o api ../showyourwork/workflow/scripts",
+    "sphinx-apidoc -feMT -d 5 -o api ../src/showyourwork", shell=True, check=True
+)
+subprocess.run(
+    "sphinx-apidoc -feM -d 5 -o api ../src/showyourwork/workflow/scripts",
     shell=True,
+    check=True,
 )
 
 
 # Snakefile docs: ingest docstrings from the `.smk` files
 rules = [
-    str(file.name)
-    for file in Path("../showyourwork/workflow/rules").glob("*.smk")
+    str(file.name) for file in Path("../src/showyourwork/workflow/rules").glob("*.smk")
 ]
 snakefiles = [
-    str(file.name) for file in Path("../showyourwork/workflow").glob("*.smk")
+    str(file.name) for file in Path("../src/showyourwork/workflow").glob("*.smk")
 ]
 for file in rules + snakefiles:
     if file in rules:
-        with open(Path("../showyourwork/workflow/rules") / file, "r") as f:
+        with open(Path("../src/showyourwork/workflow/rules") / file) as f:
             contents = f.read()
     else:
-        with open(Path("../showyourwork/workflow") / file, "r") as f:
+        with open(Path("../src/showyourwork/workflow") / file) as f:
             contents = f.read()
     docstring = re.match('"""((?s).*?)"""', contents)
     if docstring:
@@ -214,7 +216,7 @@ integration_tests = ["../integration_tests.rst"]
 
 
 # Customize the API table of contents
-with open("api/showyourwork.rst", "r") as f:
+with open("api/showyourwork.rst") as f:
     lines = f.readlines()
 lines = (
     [".. include:: ../api.rst\n"]
@@ -228,7 +230,7 @@ lines = (
     ]
     + lines[2:]
 )
-with open("api/modules.rst", "r") as f:
+with open("api/modules.rst") as f:
     new_lines = f.readlines()
 Path("api/modules.rst").unlink()
 lines += [
@@ -293,7 +295,7 @@ with open("api/showyourwork.rst", "w") as f:
 
 # Format each API rst file to get rid of unnecessary headings, etc.
 for file in Path("api").rglob("*.rst"):
-    with open(file, "r") as f:
+    with open(file) as f:
         lines = f.readlines()
     lines[0] = (
         lines[0]
@@ -304,7 +306,7 @@ for file in Path("api").rglob("*.rst"):
     while 1:
         try:
             subpackages = False
-            for l, line in enumerate(lines):
+            for l, line in enumerate(lines):  # noqa
                 if line.startswith("Subpackages"):
                     subpackages = True
                     raise RemoveContentsHeading
