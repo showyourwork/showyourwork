@@ -50,6 +50,8 @@ class user:
         self.static = self.src / "static"
         self.figures = self.tex / "figures"
         self.output = self.tex / "output"
+        self.html = self.repo / "html"
+        self.html.mkdir(exist_ok=True)
 
         # Temporary paths
         self.temp = self.repo / ".showyourwork"
@@ -61,6 +63,8 @@ class user:
         self.preprocess.mkdir(exist_ok=True)
         self.compile = self.temp / "compile"
         self.compile.mkdir(exist_ok=True)
+        self.compile_html = self.temp / "html"
+        self.compile_html.mkdir(exist_ok=True)
         self.logs = self.temp / "logs"
         self.logs.mkdir(exist_ok=True)
         self.zenodo = self.temp / "zenodo"

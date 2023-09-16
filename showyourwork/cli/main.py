@@ -10,7 +10,7 @@ import click
 from .. import __version__, exceptions, git
 from . import commands
 
-SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
+SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball", "html"]
 OPTIONS = ["-v", "--version", "--help"]
 
 
@@ -350,6 +350,27 @@ def tarball(cores, conda_frontend, project, snakemake_args):
             conda_frontend=conda_frontend,
         )
         commands.tarball(
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
+
+
+@main_command
+@click.option(*cores_option.args, **cores_option.kwargs)
+@click.option(*conda_frontend_option.args, **conda_frontend_option.kwargs)
+@click.option(*project_option.args, **project_option.kwargs)
+@click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
+def html(cores, conda_frontend, project, snakemake_args):
+    """Generate a HTML version of the build in the current working directory."""
+    with cwd_as(project):
+        ensure_top_level()
+        commands.preprocess(
+            snakemake_args=snakemake_args,
+            cores=cores,
+            conda_frontend=conda_frontend,
+        )
+        commands.html(
             snakemake_args=snakemake_args,
             cores=cores,
             conda_frontend=conda_frontend,
