@@ -5,3 +5,5 @@ definitions for the custom exceptions raised by the workflow
 Snakemake.
 
 """
+
+from ._showyourwork_version import __version__ as __version__
