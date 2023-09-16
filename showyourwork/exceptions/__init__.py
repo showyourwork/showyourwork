@@ -17,6 +17,7 @@ from .latex import (
     UnableToInferClassName as UnableToInferClassName,
 )
 from .other import (
+    CalledProcessError as CalledProcessError,
     CondaNotFoundError as CondaNotFoundError,
     CondaVersionError as CondaVersionError,
     ConfigError as ConfigError,
