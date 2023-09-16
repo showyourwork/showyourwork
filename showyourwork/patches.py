@@ -530,10 +530,10 @@ def patch_snakemake_cache_optimization(dag):
         for executor in scheduler._executor, scheduler._local_executor:
             if executor:
                 # Original method
-                executor._cached_or_run = executor.cached_or_run
+                _cached_or_run = executor.cached_or_run
 
                 # Intercept jobs we don't need to run
-                def wrapper(self, job, run_func, *args):
+                def wrapper(self, job, run_func, *args, _cached_or_run):
                     if job in skippable_jobs:
                         # Instead of running this job, we create empty temp
                         # outputs to trick Snakemake & keep going
@@ -548,7 +548,9 @@ def patch_snakemake_cache_optimization(dag):
                         return
                     else:
                         # We need to run this rule
-                        self._cached_or_run(job, run_func, *args)
+                        _cached_or_run(job, run_func, *args)
 
                 # Patch the method
-                executor.cached_or_run = types.MethodType(wrapper, executor)
+                executor.cached_or_run = types.MethodType(
+                    partial(wrapper, _cached_or_run=_cached_or_run), executor
+                )
