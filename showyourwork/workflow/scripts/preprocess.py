@@ -29,15 +29,16 @@ def flatten_dataset_contents(d, parent_key="", default_path=None):
     Args:
         d (dict): The dataset ``contents`` dictionary.
         parent_key (str): The parent key of the current dictionary.
-        default_path (str, optional): The default path to use if the target is not specified.
+        default_path (str, optional): The default path to use if the target is not
+            specified.
 
     """
     if not default_path:
         default_path = paths.user().data.relative_to(paths.user().repo)
     items = []
-    if type(d) is str:
+    if isinstance(d, str):
         d = {d: None}
-    elif type(d) is list:
+    elif isinstance(d, list):
         raise exceptions.ConfigError(
             "Error parsing the config. "
             "Something is not formatted correctly in the `datasets` field."
@@ -47,9 +48,7 @@ def flatten_dataset_contents(d, parent_key="", default_path=None):
         new_key = (Path(parent_key) / k).as_posix() if parent_key else k
         if isinstance(v, MutableMapping):
             items.extend(
-                flatten_dataset_contents(
-                    v, new_key, default_path=default_path
-                ).items()
+                flatten_dataset_contents(v, new_key, default_path=default_path).items()
             )
         else:
             if v is None:
@@ -58,16 +57,14 @@ def flatten_dataset_contents(d, parent_key="", default_path=None):
                 # from the target path
                 zip_file = Path(new_key).parts[0]
                 for ext in zenodo.zip_exts:
-                    if len(Path(new_key).parts) > 1 and zip_file.endswith(
-                        f".{ext}"
-                    ):
-                        mod_key = Path(new_key).parts[0][
-                            : -len(f".{ext}")
-                        ] / Path(*Path(new_key).parts[1:])
-                        v = (Path(default_path) / mod_key).as_posix()
+                    if len(Path(new_key).parts) > 1 and zip_file.endswith(f".{ext}"):
+                        mod_key = Path(new_key).parts[0][: -len(f".{ext}")] / Path(
+                            *Path(new_key).parts[1:]
+                        )
+                        v = (Path(default_path) / mod_key).as_posix()  # noqa
                         break
                 else:
-                    v = (Path(default_path) / new_key).as_posix()
+                    v = (Path(default_path) / new_key).as_posix()  # noqa
             items.append((new_key, v))
     return dict(items)
 
@@ -95,8 +92,7 @@ def parse_datasets():
                 )
             else:
                 raise exceptions.InvalidZenodoIdType(
-                    "Error parsing the config. "
-                    f"{doi} is not a valid version DOI."
+                    "Error parsing the config. " f"{doi} is not a valid version DOI."
                 )
 
         # Deposit contents
@@ -171,34 +167,36 @@ def check_figure_format(figure):
     # Any marginicons must always come before the label
     if len(captions):
         # Index of last caption
-        for caption_idx, element in enumerate(elements[::-1]):
+        caption_idx = 0
+        for i, element in enumerate(elements[::-1]):
+            caption_idx = i
             if element.tag == "CAPTION":
                 break
         caption_idx = len(elements) - 1 - caption_idx
 
         if len(labels):
             # Index of first label
-            for label_idx, element in enumerate(elements):
+            label_idx = 0
+            for i, element in enumerate(elements):
+                label_idx = i
                 if element.tag == "LABEL":
                     break
 
             if label_idx < caption_idx:
                 raise exceptions.FigureFormatError(
-                    "Figure label `{}` must come after the caption.".format(
-                        (labels)[0].text
-                    )
+                    f"Figure label `{labels[0].text}` must come after the caption."
                 )
 
             # Index of last marginicon
-            for marginicon_idx, element in enumerate(elements):
+            marginicon_idx = 0
+            for i, element in enumerate(elements):
+                marginicon_idx = i
                 if element.tag == "MARGINICON":
                     break
-            else:
-                marginicon_idx = 0
 
             if marginicon_idx > label_idx:
                 raise exceptions.FigureFormatError(
-                    "Command \marginicon must always come before the figure label."
+                    r"Command \marginicon must always come before the figure label."
                 )
 
     # Check that there is at most one script
@@ -229,7 +227,7 @@ def get_xml_tree(xmlfile):
 
     # Add <HTML></HTML> tags to the XML file
     if xmlfile.exists():
-        with open(xmlfile, "r") as f:
+        with open(xmlfile) as f:
             contents = f.read()
     else:
         raise exceptions.MissingXMLFile(
@@ -261,7 +259,7 @@ def get_json_tree(xmlfile):
         if len(graphicspath) == 0:
             graphicspath = Path(".")
         else:
-            graphicspath = re.findall("\{(.*?)\}", graphicspath[-1].text)[0]
+            graphicspath = re.findall(r"\{(.*?)\}", graphicspath[-1].text)[0]
             graphicspath = Path(graphicspath)
     except Exception:
         raise exceptions.GraphicsPathError()
@@ -286,8 +284,7 @@ def get_json_tree(xmlfile):
         # Are these static figures?
         static = all(
             [
-                (paths.user().repo / graphic).parents[0]
-                == paths.user().figures
+                (paths.user().repo / graphic).parents[0] == paths.user().figures
                 and (paths.user().static / Path(graphic).name).exists()
                 for graphic in graphics
             ]
@@ -312,9 +309,7 @@ def get_json_tree(xmlfile):
             # is the name of the script relative to the figure scripts
             # directory
             script = str(
-                (paths.user().scripts / scripts[0].text).relative_to(
-                    paths.user().repo
-                )
+                (paths.user().scripts / scripts[0].text).relative_to(paths.user().repo)
             )
 
             # Infer the command we'll use to execute the script based on its
@@ -416,8 +411,7 @@ def get_json_tree(xmlfile):
             [
                 graphic
                 for graphic in free_floating_graphics
-                if (paths.user().repo / graphic).parents[0]
-                == paths.user().figures
+                if (paths.user().repo / graphic).parents[0] == paths.user().figures
                 and (paths.user().static / Path(graphic).name).exists()
             ]
         )
@@ -446,11 +440,7 @@ def get_json_tree(xmlfile):
     # Add entries to the tree: static figures
     # (copy them over from the static folder)
     srcs = [
-        str(
-            (paths.user().static / Path(graphic).name).relative_to(
-                paths.user().repo
-            )
-        )
+        str((paths.user().static / Path(graphic).name).relative_to(paths.user().repo))
         for graphic in free_floating_static
     ]
     dest = paths.user().figures.relative_to(paths.user().repo)
@@ -466,11 +456,7 @@ def get_json_tree(xmlfile):
     # Parse files included using the \input statement;
     # these will be made explicit dependencies of the build
     files = [
-        str(
-            (paths.user().tex / file.text)
-            .resolve()
-            .relative_to(paths.user().repo)
-        )
+        str((paths.user().tex / file.text).resolve().relative_to(paths.user().repo))
         for file in xml_tree.findall("INPUT")
     ]
 

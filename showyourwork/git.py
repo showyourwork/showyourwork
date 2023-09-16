@@ -24,9 +24,7 @@ def get_repo_root():
     Return the path to the repository root.
 
     """
-    return get_stdout(
-        ["git", "rev-parse", "--show-toplevel"], callback=callback
-    )
+    return get_stdout(["git", "rev-parse", "--show-toplevel"], callback=callback)
 
 
 def get_commit_message():
@@ -42,9 +40,7 @@ def get_repo_url():
     Return the full repository URL.
 
     """
-    url = get_stdout(
-        ["git", "config", "--get", "remote.origin.url"], callback=callback
-    )
+    url = get_stdout(["git", "config", "--get", "remote.origin.url"], callback=callback)
     if url.endswith(".git"):
         url = url[:-4]
     # Fix for SSH authentication
@@ -57,9 +53,7 @@ def get_repo_branch():
     Return the current repository branch name.
 
     """
-    return get_stdout(
-        ["git", "rev-parse", "--abbrev-ref", "HEAD"], callback=callback
-    )
+    return get_stdout(["git", "rev-parse", "--abbrev-ref", "HEAD"], callback=callback)
 
 
 def get_repo_slug():

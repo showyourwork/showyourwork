@@ -31,9 +31,7 @@ if __name__ == "__main__":
     ]
 
     with TemporaryDirectory() as tmpdir:
-        using_preprocessing_script = (
-            config["preprocess_arxiv_script"] is not None
-        )
+        using_preprocessing_script = config["preprocess_arxiv_script"] is not None
         if using_preprocessing_script:
             # First, copy to a temporary directory, excluding files
             shutil.copytree(paths.user().compile, tmpdir, dirs_exist_ok=True)
@@ -41,11 +39,7 @@ if __name__ == "__main__":
             script = config["preprocess_arxiv_script"]
             subprocess.run([script, tmpdir], check=True)
 
-        src_dir = (
-            Path(tmpdir)
-            if using_preprocessing_script
-            else paths.user().compile
-        )
+        src_dir = Path(tmpdir) if using_preprocessing_script else paths.user().compile
         # Tar up everything in the src/tex directory
         with tarfile.open("arxiv.tar.gz", "w:gz") as tarball:
             for file in src_dir.rglob("*"):

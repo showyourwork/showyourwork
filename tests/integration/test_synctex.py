@@ -21,4 +21,4 @@ class TestSynctex(TemporaryShowyourworkRepository):
             if path.name == "ms.tex":
                 assert path.as_posix() == "src/tex/ms.tex"
                 return
-        assert False, "ms.tex not found in synctex"
+        raise AssertionError("ms.tex not found in synctex")

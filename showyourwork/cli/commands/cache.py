@@ -19,9 +19,7 @@ def get_modified_files(commit="HEAD^"):
     return [
         Path(file).resolve()
         for file in (
-            get_stdout(["git", "diff", "HEAD", commit, "--name-only"]).split(
-                "\n"
-            )
+            get_stdout(["git", "diff", "HEAD", commit, "--name-only"]).split("\n")
         )
         if len(file)
     ]
@@ -54,7 +52,7 @@ def cache_restore():
 
     # Get the commit when the files were cached
     try:
-        with open(paths.user().figures / "last_commit_sha.txt", "r") as f:
+        with open(paths.user().figures / "last_commit_sha.txt") as f:
             commit = f.readlines()[0].replace("\n", "")
     except FileNotFoundError:
         print("Cache info not found.")

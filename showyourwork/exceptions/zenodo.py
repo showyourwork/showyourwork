@@ -6,9 +6,7 @@ class ZenodoException(ShowyourworkException):
 
 
 class ZenodoError(ZenodoException):
-    def __init__(
-        self, status="", message="An error occurred while accessing Zenodo."
-    ):
+    def __init__(self, status="", message="An error occurred while accessing Zenodo."):
         super().__init__(
             f"Zenodo error{' ' * bool(len(str(status)))}{status}: {message}"
         )
@@ -16,9 +14,7 @@ class ZenodoError(ZenodoException):
 
 class ZenodoDownloadError(ZenodoException):
     def __init__(self):
-        super().__init__(
-            "An error occurred while downloading the dataset from Zenodo."
-        )
+        super().__init__("An error occurred while downloading the dataset from Zenodo.")
 
 
 class MissingZenodoAccessToken(ZenodoException):
@@ -43,17 +39,14 @@ class ZenodoRecordNotFound(ZenodoException):
 class InvalidZenodoDOI(ZenodoException):
     def __init__(self, doi):
         message = (
-            f"The provided `doi` {doi} does "
-            f"not seem to be a valid Zenodo DOI."
+            f"The provided `doi` {doi} does " f"not seem to be a valid Zenodo DOI."
         )
         super().__init__(message)
 
 
 class ZenodoUploadError(ZenodoException):
     def __init__(self):
-        super().__init__(
-            "An error occurred while uploading the dataset from Zenodo."
-        )
+        super().__init__("An error occurred while uploading the dataset from Zenodo.")
 
 
 class ZenodoContentsError(ZenodoException):
@@ -67,7 +60,8 @@ class InvalidZenodoIdType(ZenodoException):
 class InvalidZenodoNotesField(ZenodoException):
     def __init__(self):
         super().__init__(
-            "The `Additional Notes` field in the current Zenodo record is not valid JSON."
+            "The `Additional Notes` field in the current Zenodo record is not valid "
+            "JSON."
         )
 
 

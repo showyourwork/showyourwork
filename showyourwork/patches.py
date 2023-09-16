@@ -11,6 +11,7 @@ import logging
 import os
 import time
 import types
+from functools import partial
 
 from . import exceptions, paths
 from .logging import ColorizingStreamHandler, get_logger
@@ -52,10 +53,8 @@ def patch_snakemake_missing_input_leniency():
     _dag_debug = snakemake.dag.logger.dag_debug
 
     def dag_debug(msg):
-        if type(msg) is dict:
-            if "No producers found, but file is present on disk" in msg.get(
-                "msg", ""
-            ):
+        if isinstance(msg, dict):
+            if "No producers found, but file is present on disk" in msg.get("msg", ""):
                 file = msg["file"]
                 msg = str(msg["exception"])
                 raise exceptions.MissingDependencyError(
@@ -129,32 +128,24 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                 tarball = True
             else:
                 tarball = False
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
-                job
-            ):
+            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
                 file_exists = cachefile.exists()
                 if not file_exists:
                     # Attempt to download from Zenodo and then Zenodo Sandbox
                     try:
-                        logger.info(
-                            f"Searching remote file cache: {outputfile}..."
-                        )
+                        logger.info(f"Searching remote file cache: {outputfile}...")
                         try:
-                            logger.debug(f"Searching Zenodo cache...")
+                            logger.debug("Searching Zenodo cache...")
                             if zenodo is None:
-                                logger.debug(
-                                    f"Zenodo DOI not provided in `zenodo.yml`."
-                                )
+                                logger.debug("Zenodo DOI not provided in `zenodo.yml`.")
                                 raise exceptions.FileNotFoundOnZenodo(None)
                             zenodo.download_file(
                                 cachefile, job.rule.name, tarball=tarball
                             )
                             file_exists = True
-                            logger.info(
-                                f"Restoring from Zenodo cache: {outputfile}..."
-                            )
+                            logger.info(f"Restoring from Zenodo cache: {outputfile}...")
                         except exceptions.FileNotFoundOnZenodo:
-                            logger.debug(f"Searching Zenodo Sandbox cache...")
+                            logger.debug("Searching Zenodo Sandbox cache...")
                             sandbox.download_file(
                                 cachefile, job.rule.name, tarball=tarball
                             )
@@ -166,7 +157,8 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         # Cache miss; not fatal
                         exceptions.restore_trace()
                         logger.warning(
-                            f"Required version of file not found in cache: {outputfile}."
+                            "Required version of file not found in cache: "
+                            f"{outputfile}."
                         )
                         if config.get("github_actions") and not config.get(
                             "run_cache_rules_on_ci"
@@ -176,7 +168,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                                 "`run_cache_rules_on_ci` is set to `False`."
                             )
                         else:
-                            logger.warning(f"Running rule from scratch...")
+                            logger.warning("Running rule from scratch...")
                     except Exception as e:
                         # NOTE: we treat all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
@@ -193,7 +185,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                                 "`run_cache_rules_on_ci` is set to `False`."
                             )
                         else:
-                            logger.warning(f"Running rule from scratch...")
+                            logger.warning("Running rule from scratch...")
                 else:
                     # We're good
                     logger.info(f"Restoring from local cache: {outputfile}...")
@@ -204,9 +196,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                 # we check the hash before uploading, so if it's already up to
                 # date, this is a no-op. Note that GitHub Actions runs should
                 # never update the cache
-                if file_exists and not snakemake.workflow.config.get(
-                    "github_actions"
-                ):
+                if file_exists and not snakemake.workflow.config.get("github_actions"):
                     logger.info(
                         f"Syncing file with Zenodo Sandbox cache: {outputfile}..."
                     )
@@ -220,7 +210,8 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
                         logger.warning(
-                            f"Failed to sync {outputfile} with Zenodo Sandbox cache. See logs for details."
+                            f"Failed to sync {outputfile} with Zenodo Sandbox cache. "
+                            "See logs for details."
                         )
                         if len(str(e)):
                             logger.debug(str(e))
@@ -244,18 +235,15 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                     outputfile,
                     cachefile,
                 ) in self.get_outputfiles_and_cachefiles(job):
-                    logger.info(
-                        f"Caching output file on remote: {outputfile}..."
-                    )
+                    logger.info(f"Caching output file on remote: {outputfile}...")
                     try:
-                        sandbox.upload_file(
-                            cachefile, job.rule.name, tarball=tarball
-                        )
+                        sandbox.upload_file(cachefile, job.rule.name, tarball=tarball)
                     except Exception as e:
                         # NOTE: we treate all Zenodo caching errors as non-fatal
                         exceptions.restore_trace()
                         logger.warning(
-                            f"Failed to upload {outputfile} to Zenodo Sandbox cache. See logs for details."
+                            f"Failed to upload {outputfile} to Zenodo Sandbox cache. "
+                            "See logs for details."
                         )
                         if len(str(e)):
                             logger.debug(str(e))
@@ -287,25 +275,20 @@ def patch_snakemake_logging():
     for handler in snakemake_logger.logger.handlers:
         if isinstance(handler, logging.FileHandler):
             handler.setLevel(logging.DEBUG)
-        else:
-            if not snakemake.workflow.config.get("verbose", False):
-                handler.setLevel(logging.CRITICAL)
+        elif not snakemake.workflow.config.get("verbose", False):
+            handler.setLevel(logging.CRITICAL)
 
     # Custom Snakemake stdout handler
     if not hasattr(snakemake_logger, "custom_stream_handler"):
         snakemake_logger.custom_stream_handler = ColorizingStreamHandler()
         snakemake_logger.custom_stream_handler.setLevel(logging.ERROR)
-        snakemake_logger.custom_stream_handler.setFormatter(
-            SnakemakeFormatter()
-        )
-        snakemake_logger.logger.addHandler(
-            snakemake_logger.custom_stream_handler
-        )
+        snakemake_logger.custom_stream_handler.setFormatter(SnakemakeFormatter())
+        snakemake_logger.logger.addHandler(snakemake_logger.custom_stream_handler)
 
     # Custom Snakemake file handler
     if not hasattr(snakemake_logger, "custom_file_handler"):
         try:
-            LOGS = paths.user().logs
+            log_path = paths.user().logs
 
         except Exception:
             # Can't resolve path to logs; assume we're not
@@ -314,12 +297,10 @@ def patch_snakemake_logging():
 
         else:
             snakemake_logger.custom_file_handler = logging.FileHandler(
-                paths.user().logs / "snakemake.log"
+                log_path / "snakemake.log"
             )
             snakemake_logger.custom_file_handler.setLevel(logging.DEBUG)
-            snakemake_logger.logger.addHandler(
-                snakemake_logger.custom_file_handler
-            )
+            snakemake_logger.logger.addHandler(snakemake_logger.custom_file_handler)
 
     # Suppress Snakemake exceptions if we caught them on the
     # showyourwork side
@@ -337,9 +318,7 @@ def patch_snakemake_logging():
             else:
                 self.handler(msg)
 
-    snakemake_logger.job_error = lambda **msg: job_error(
-        snakemake_logger, **msg
-    )
+    snakemake_logger.job_error = lambda **msg: job_error(snakemake_logger, **msg)
 
     # Allow job info messages to come through
     def job_info(self, **msg):
@@ -402,9 +381,7 @@ def patch_snakemake_wait_for_files():
         missing = get_missing()
         if missing:
             get_logger().info(
-                "Waiting at most {} seconds for missing files.".format(
-                    latency_wait
-                )
+                f"Waiting at most {latency_wait} seconds for missing files."
             )
             for _ in range(latency_wait):
                 missing = get_missing()
@@ -457,23 +434,22 @@ def job_is_cached(job):
         return False
 
     # Loop over cache files for the job (should really only be one)
-    for outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job):
+    for _outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job):
 
-        def file_exists(doi):
+        def _file_exists(cachefile, doi):
             """
             Return True if the file exists in the deposit with given doi.
 
             """
             if doi:
                 try:
-                    Zenodo(doi).download_file(
-                        cachefile, job.rule.name, dry_run=True
-                    )
+                    Zenodo(doi).download_file(cachefile, job.rule.name, dry_run=True)
                     return True
                 except exceptions.FileNotFoundOnZenodo:
                     pass
             return False
 
+        file_exists = partial(_file_exists, cachefile)
         if file_exists(zenodo_doi) or file_exists(sandbox_doi):
             continue
         else:
@@ -520,9 +496,7 @@ def get_skippable_jobs(dag):
             for parent in parents:
                 children = set()
                 for file in parent.output:
-                    children |= set(
-                        [job for job in dag.jobs if file in job.input]
-                    )
+                    children |= set([job for job in dag.jobs if file in job.input])
                 if all([child in nodes for child in children]):
                     new_nodes.add(parent)
 
@@ -548,9 +522,7 @@ def patch_snakemake_cache_optimization(dag):
     if snakemake.workflow.workflow.output_file_cache is not None:
         # Get list of jobs we can skip
         skippable_jobs = get_skippable_jobs(dag)
-        logger.debug(
-            "Skipping the following jobs because of downstream cache hits:"
-        )
+        logger.debug("Skipping the following jobs because of downstream cache hits:")
         logger.debug("    " + " ".join([job.name for job in skippable_jobs]))
 
         # Patch the Snakemake method that executes jobs
@@ -558,7 +530,7 @@ def patch_snakemake_cache_optimization(dag):
         for executor in scheduler._executor, scheduler._local_executor:
             if executor:
                 # Original method
-                _cached_or_run = executor.cached_or_run
+                executor._cached_or_run = executor.cached_or_run
 
                 # Intercept jobs we don't need to run
                 def wrapper(self, job, run_func, *args):
@@ -576,7 +548,7 @@ def patch_snakemake_cache_optimization(dag):
                         return
                     else:
                         # We need to run this rule
-                        _cached_or_run(job, run_func, *args)
+                        self._cached_or_run(job, run_func, *args)
 
                 # Patch the method
                 executor.cached_or_run = types.MethodType(wrapper, executor)

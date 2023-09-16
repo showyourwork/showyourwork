@@ -2,7 +2,7 @@ from ... import paths
 from .run_snakemake import run_snakemake
 
 
-def tarball(snakemake_args=[], cores=1, conda_frontend="conda"):
+def tarball(snakemake_args=(), cores=1, conda_frontend="conda"):
     """Build the article tarball.
 
     Args:

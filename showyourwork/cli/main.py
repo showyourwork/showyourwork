@@ -103,10 +103,9 @@ def echo(text="", **kwargs):
     )
     text = text.replace("\n", " ")
     text = re.sub(r"``(.*?)``\s*", r"<SPLIT><BR><TAB>`\1`<BR><SPLIT>", text)
-    lines = [
-        line.strip() for line in text.split("<SPLIT>") if line.strip() != ""
-    ]
-    for n, text in enumerate(lines):
+    lines = [line.strip() for line in text.split("<SPLIT>") if line.strip() != ""]
+    for n, original_text in enumerate(lines):
+        text = original_text
         while "  " in text:
             text = text.replace("  ", " ")
         text = wrapper.fill(text)
@@ -290,7 +289,8 @@ def validate_slug(context, param, slug):
 @click.option(
     "-a",
     "--action-spec",
-    help="Version spec of showyourwork to use in the GitHub action. Default is the latest version on PyPI.",
+    help="Version spec of showyourwork to use in the GitHub action. Default is the "
+    "latest version on PyPI.",
     default=None,
     type=type("SPEC", (str,), {}),
 )
@@ -313,7 +313,8 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     "-f",
     "--force",
     is_flag=True,
-    help="Forcefully remove everything in the `src/tex/figures` and `src/data` directories.",
+    help="Forcefully remove everything in the `src/tex/figures` and `src/data` "
+    "directories.",
 )
 @click.option(
     "-d",

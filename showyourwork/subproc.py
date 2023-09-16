@@ -20,9 +20,7 @@ def process_run_result(code, stdout, stderr):
     return stdout
 
 
-def get_stdout(
-    args, shell=False, cwd=None, secrets=[], callback=process_run_result
-):
+def get_stdout(args, shell=False, cwd=None, secrets=(), callback=process_run_result):
     """
     A thin wrapper around ``subprocess.run`` that hides secrets and decodes
     ``stdout`` and ``stderr`` output into ``utf-8``.
@@ -38,11 +36,7 @@ def get_stdout(
     """
     # Run the command and capture all output
     result = subprocess.run(
-        args,
-        shell=shell,
-        cwd=cwd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        args, shell=shell, cwd=cwd, capture_output=True, check=False
     )
 
     # Parse the output
@@ -84,8 +78,6 @@ def parse_request(r):
         data["status"] = data.get("status", "")
         for error in data.get("errors", []):
             data["message"] += " " + error.get("message", "")
-        raise exceptions.RequestError(
-            status=data["status"], message=data["message"]
-        )
+        raise exceptions.RequestError(status=data["status"], message=data["message"])
     else:
         return data

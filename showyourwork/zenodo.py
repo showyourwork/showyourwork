@@ -72,7 +72,7 @@ def get_dataset_dois(files, datasets):
     """
     result = []
     for doi in datasets:
-        deposit = Zenodo(doi)
+        Zenodo(doi)
         for file in files:
             if file in datasets[doi]["contents"].values():
                 result.append(doi)
@@ -149,7 +149,7 @@ class Zenodo:
                         break
                 else:
                     raise Exception
-            except Exception as e:
+            except Exception:
                 raise exceptions.InvalidZenodoDOI(self.doi)
 
             # Check if the user is an owner
@@ -180,15 +180,13 @@ class Zenodo:
 
         if cache_file.exists():
             # Restore from cache
-            with open(cache_file, "r") as f:
+            with open(cache_file) as f:
                 id_type = f.readline().replace("\n", "")
 
         else:
             # Try to find a published record (no authentication needed)
             try:
-                r = requests.get(
-                    f"https://{self.url}/api/records/{self.deposit_id}"
-                )
+                r = requests.get(f"https://{self.url}/api/records/{self.deposit_id}")
                 data = r.json()
             except Exception as e:
                 r = None
@@ -199,14 +197,12 @@ class Zenodo:
                 # In any event, don't cache it, as this could change.
                 return "unknown"
 
+            elif int(self.deposit_id) == int(data["conceptrecid"]):
+                id_type = "concept"
+            elif int(self.deposit_id) == int(data["id"]):
+                id_type = "version"
             else:
-                # This is a public record
-                if int(self.deposit_id) == int(data["conceptrecid"]):
-                    id_type = "concept"
-                elif int(self.deposit_id) == int(data["id"]):
-                    id_type = "version"
-                else:
-                    id_type = "unknown"
+                id_type = "unknown"
 
             # Cache it
             cache_file.parents[0].mkdir(exist_ok=True)
@@ -279,9 +275,7 @@ class Zenodo:
         # token **in this session**. These flags get automatically
         # deleted during the preprocessing step of every build.
         cache_file_true = paths.user().flags / f"{self.deposit_id}_AUTH_VALID"
-        cache_file_false = (
-            paths.user().flags / f"{self.deposit_id}_AUTH_INVALID"
-        )
+        cache_file_false = paths.user().flags / f"{self.deposit_id}_AUTH_INVALID"
         if cache_file_true.exists():
             return True
         if cache_file_false.exists():
@@ -304,19 +298,13 @@ class Zenodo:
             if r.status_code <= 204:
                 if type(r.json()) is list and len(r.json()):
                     if get_run_type() == "build":
-                        logger.info(
-                            f"User authentication for {self.doi} is valid."
-                        )
+                        logger.info(f"User authentication for {self.doi} is valid.")
                     else:
-                        logger.debug(
-                            f"User authentication for {self.doi} is valid."
-                        )
+                        logger.debug(f"User authentication for {self.doi} is valid.")
                     cache_file_true.touch()
                     return True
                 else:
-                    logger.debug(
-                        "Error establishing whether user is authenticated."
-                    )
+                    logger.debug("Error establishing whether user is authenticated.")
                     logger.debug("HTTP response:")
                     logger.debug(r.text)
 
@@ -381,7 +369,7 @@ class Zenodo:
             else []
         )
         try:
-            res = subprocess.run(
+            subprocess.run(
                 [
                     "curl",
                     "-f",
@@ -393,7 +381,8 @@ class Zenodo:
                     "--request",
                     "PUT",
                     f"{bucket_url}/{rule_name}?access_token={self.access_token}",
-                ]
+                ],
+                check=True,
             )
         except Exception:
             raise exceptions.ZenodoUploadError()
@@ -442,12 +431,11 @@ class Zenodo:
         )
 
         # Look for a match
-        logger.debug(
-            f"Searching for file `{rule_name}` with hash `{file.name}`..."
-        )
+        logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
         for entry in data:
             logger.debug(
-                f"Inspecting candidate file `{entry['filename']}` with hash `{rule_hashes.get(rule_name, None)}`..."
+                f"Inspecting candidate file `{entry['filename']}` with hash "
+                f"`{rule_hashes.get(rule_name, None)}`..."
             )
 
             if (
@@ -455,7 +443,7 @@ class Zenodo:
                 and rule_hashes.get(rule_name, None) == file.name
             ):
                 # Download it
-                logger.debug(f"File name and hash both match.")
+                logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
                     url = entry["links"]["download"]
@@ -465,7 +453,7 @@ class Zenodo:
                         else []
                     )
                     try:
-                        res = subprocess.run(
+                        subprocess.run(
                             [
                                 "curl",
                                 "-f",
@@ -473,7 +461,8 @@ class Zenodo:
                                 *progress_bar,
                                 "--output",
                                 str(file),
-                            ]
+                            ],
+                            check=True,
                         )
                     except Exception:
                         raise exceptions.ZenodoDownloadError()
@@ -496,9 +485,7 @@ class Zenodo:
 
             else:
                 # Keep looking in this deposit for a file with the right name
-                logger.debug(
-                    f"Cache miss for file {entry['filename']}. Skipping..."
-                )
+                logger.debug(f"Cache miss for file {entry['filename']}. Skipping...")
 
         # This is caught in the enclosing scope and treated as a cache miss
         raise exceptions.FileNotFoundOnZenodo(rule_name)
@@ -528,7 +515,7 @@ class Zenodo:
                 and rule_hashes.get(rule_name, None) == file.name
             ):
                 # Download it
-                logger.debug(f"File name and hash both match.")
+                logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
                     url = entry["links"]["self"]
@@ -544,7 +531,8 @@ class Zenodo:
                             *progress_bar,
                             "--output",
                             str(file),
-                        ]
+                        ],
+                        check=True,
                     )
 
                     # If it's a directory tarball, extract it
@@ -575,9 +563,7 @@ class Zenodo:
         logger = get_logger()
 
         # Grab the version id
-        logger.info(
-            f"Deleting {self.service} deposit with concept DOI {self.doi}..."
-        )
+        logger.info(f"Deleting {self.service} deposit with concept DOI {self.doi}...")
         r = requests.get(
             f"https://{self.url}/api/deposit/depositions",
             params={
@@ -615,9 +601,7 @@ class Zenodo:
         logger = get_logger()
 
         # Grab the version id
-        logger.info(
-            f"Publishing {self.service} deposit with concept DOI {self.doi}..."
-        )
+        logger.info(f"Publishing {self.service} deposit with concept DOI {self.doi}...")
         r = requests.get(
             f"https://{self.url}/api/deposit/depositions",
             params={
@@ -698,14 +682,13 @@ class Zenodo:
                         except exceptions.FileNotFoundOnZenodo:
                             exceptions.restore_trace()
                             logger.debug(
-                                f"File {rule_name} not found in deposit with DOI {self.doi}."
+                                f"File {rule_name} not found in deposit with DOI "
+                                f"{self.doi}."
                             )
                         else:
                             return
                     else:
-                        logger.debug(
-                            f"Something went wrong accessing {draft_url}."
-                        )
+                        logger.debug(f"Something went wrong accessing {draft_url}.")
                         try:
                             data = r.json()
                         except Exception:
@@ -823,7 +806,8 @@ class Zenodo:
         )
         if r.status_code > 204:
             logger.warning(
-                f"{self.service} authentication failed. Unable to upload cache for rule {rule_name}."
+                f"{self.service} authentication failed. Unable to upload cache for "
+                f"rule {rule_name}."
             )
             try:
                 data = r.json()
@@ -841,7 +825,8 @@ class Zenodo:
             data = data[0]
         else:
             logger.warning(
-                f"{self.service} authentication failed. Unable to upload cache for rule {rule_name}."
+                f"{self.service} authentication failed. Unable to upload cache for "
+                f"rule {rule_name}."
             )
             return
         draft_url = data.get("links", {}).get("latest_draft", None)
@@ -962,7 +947,7 @@ class Zenodo:
         for entry in data:
             url = entry["links"]["download"]
             try:
-                res = subprocess.run(
+                subprocess.run(
                     [
                         "curl",
                         "-f",
@@ -972,6 +957,7 @@ class Zenodo:
                         entry["filename"],
                     ],
                     cwd=cache_folder,
+                    check=True,
                 )
             except Exception:
                 raise exceptions.ZenodoDownloadError()
@@ -1010,7 +996,8 @@ class Zenodo:
                 data = r.json()
             except Exception:
                 raise exceptions.ZenodoError(
-                    message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                    message="Error accessing latest draft for DOI "
+                    f"{target_deposit.doi}."
                 )
 
             # Look for a draft
@@ -1030,7 +1017,8 @@ class Zenodo:
                         data = r.json()
                     except Exception:
                         raise exceptions.ZenodoError(
-                            message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                            message="Error accessing latest draft for DOI "
+                            f"{target_deposit.doi}."
                         )
                     draft_url = data["links"]["latest_draft"]
 
@@ -1043,11 +1031,13 @@ class Zenodo:
                     draft = r.json()
                 else:
                     raise exceptions.ZenodoError(
-                        message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                        message="Error accessing latest draft for DOI "
+                        f"{target_deposit.doi}."
                     )
             else:
                 raise exceptions.ZenodoError(
-                    message=f"Error accessing latest draft for DOI {target_deposit.doi}."
+                    message="Error accessing latest draft for DOI "
+                    f"{target_deposit.doi}."
                 )
         else:
             raise exceptions.ZenodoError(
@@ -1058,7 +1048,7 @@ class Zenodo:
         bucket_url = draft["links"]["bucket"]
 
         # Upload metadata
-        with open(cache_folder / ".metadata.json", "r") as f:
+        with open(cache_folder / ".metadata.json") as f:
             metadata = json.load(f)
         metadata = {
             "metadata": {
@@ -1085,7 +1075,7 @@ class Zenodo:
                 continue
 
             try:
-                res = subprocess.run(
+                subprocess.run(
                     [
                         "curl",
                         "-f",
@@ -1099,6 +1089,7 @@ class Zenodo:
                         f"{bucket_url}/{file.name}?access_token={target_deposit.access_token}",
                     ],
                     cwd=cache_folder,
+                    check=True,
                 )
             except Exception:
                 raise exceptions.ZenodoUploadError()

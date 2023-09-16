@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from functools import partial
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import quote
@@ -11,7 +12,8 @@ from .subproc import get_stdout
 OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE = r"[\n\r\s]+".join(
     [
         r"\\documentclass{article}",
-        r"(\\usepackage{graphicx} % Required for inserting images)|(\\usepackage\[utf8\]{inputenc})",
+        r"(\\usepackage{graphicx} % Required for inserting images)|"
+        r"(\\usepackage\[utf8\]{inputenc})",
         r"\\title{[^\n{}]+?}",
         r"\\author{[^\n{}]+?}",
         r"\\date{[^\n{}]+?}",
@@ -241,7 +243,7 @@ def setup_remote(project_id, path=None):
         elif len(files) == 1:
             # There's one file; ensure it's the default manuscript
             # by comparing it to the blank project regex template
-            with open(files[0], "r") as f:
+            with open(files[0]) as f:
                 contents = f.read()
             if re.match(OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE, contents):
                 pass
@@ -249,8 +251,7 @@ def setup_remote(project_id, path=None):
                 raise Exception()
     except Exception:
         raise exceptions.OverleafError(
-            "Overleaf repository not empty! "
-            "Refusing to rewrite files on remote."
+            "Overleaf repository not empty! " "Refusing to rewrite files on remote."
         )
     else:
         # Delete the file
@@ -261,9 +262,9 @@ def setup_remote(project_id, path=None):
         )
 
     # Copy over all files in the `tex` directory
-    for file in paths.user(path=path).tex.glob("*"):
+    for file_path in paths.user(path=path).tex.glob("*"):
         # Copy it to the local version of the repo
-        file = Path(file).resolve()
+        file = Path(file_path).resolve()
         logger.info(file)
         remote_file = paths.user(path=path).overleaf / file.relative_to(
             paths.user(path=path).tex
@@ -354,12 +355,12 @@ def push_files(files, project_id, path=None):
 
     # Process each file
     skip = []
-    for file in files:
+    for file_path in files:
         # Copy it to the local version of the repo
-        if not Path(file).exists():
-            skip.append(file)
+        if not Path(file_path).exists():
+            skip.append(file_path)
             continue
-        file = Path(file).resolve()
+        file = Path(file_path).resolve()
         remote_file = paths.user(path=path).overleaf / file.relative_to(
             paths.user(path=path).tex
         )
@@ -398,9 +399,7 @@ def push_files(files, project_id, path=None):
                 or "nothing to commit" in stdout + stderr
                 or "nothing added to commit" in stdout + stderr
             ):
-                logger.warning(
-                    f"No changes to commit to Overleaf: {file_list}"
-                )
+                logger.warning(f"No changes to commit to Overleaf: {file_list}")
             else:
                 raise exceptions.CalledProcessError(stdout + "\n" + stderr)
         else:
@@ -484,11 +483,10 @@ def pull_files(
     # Copy over the files
     file_list = " ".join([str(file) for file in files])
     logger.info(f"Pulling changes from Overleaf: {file_list}")
-    for file in files:
-        file = Path(file).absolute()
+    for file_path in files:
+        file = Path(file_path).absolute()
         remote_file = (
-            paths.user(path=path).overleaf
-            / file.relative_to(paths.user(path=path).tex)
+            paths.user(path=path).overleaf / file.relative_to(paths.user(path=path).tex)
         ).resolve()
         if not remote_file.exists():
             msg = (
@@ -524,9 +522,7 @@ def pull_files(
         # based on inspection of the commit message
         # (must contain `[showyourwork]` or must not be tracked by git)
         def callback(code, stdout, stderr):
-            assert (
-                len(stdout.lower()) == 0 or "[showyourwork]" in stdout.lower()
-            )
+            assert len(stdout.lower()) == 0 or "[showyourwork]" in stdout.lower()
 
         try:
             get_stdout(
@@ -555,7 +551,7 @@ def pull_files(
             shutil.copytree(remote_file, file)
         else:
             # Only copy if the files actually differ
-            def callback(code, stdout, stderr):
+            def callback(code, stdout, stderr, remote_file, file):
                 if code != 0:
                     shutil.copy(remote_file, file)
                     get_stdout(
@@ -568,7 +564,10 @@ def pull_files(
                         cwd=paths.user(path=path).repo,
                     )
 
-            get_stdout(["diff", remote_file, file], callback=callback)
+            get_stdout(
+                ["diff", remote_file, file],
+                callback=partial(callback, remote_file=remote_file, file=file),
+            )
 
     if commit_changes:
 
@@ -577,17 +576,14 @@ def pull_files(
                 logger.info(
                     "Overleaf changes committed to the repo. Don't forget to push!"
                 )
+            elif (
+                "Your branch is up to date" in stdout + stderr
+                or "nothing to commit" in stdout + stderr
+                or "nothing added to commit" in stdout + stderr
+            ):
+                logger.warning("No Overleaf changes to commit to the repo.")
             else:
-                if (
-                    "Your branch is up to date" in stdout + stderr
-                    or "nothing to commit" in stdout + stderr
-                    or "nothing added to commit" in stdout + stderr
-                ):
-                    logger.warning(
-                        "No Overleaf changes to commit to the repo."
-                    )
-                else:
-                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
 
         get_stdout(
             [

@@ -14,9 +14,7 @@ from showyourwork.subproc import get_stdout
 pytestmark = pytest.mark.remote
 
 
-class TestOverleaf(
-    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
-):
+class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """Test a repo that integrates with an Overleaf project."""
 
     # No need to test this on CI
@@ -29,7 +27,7 @@ class TestOverleaf(
 
     def startup(self):
         """Wipe the Overleaf remote to start fresh."""
-        for n in range(self.auth_retries):
+        for _n in range(self.auth_retries):
             try:
                 overleaf.wipe_remote(self.overleaf_id)
             except exceptions.OverleafRateLimitExceeded:
@@ -55,7 +53,7 @@ class TestOverleaf(
         # manuscript (adding a figure environment),
         # pushing it to Overleaf, and restoring the original local version
         self.add_figure_environment()
-        for n in range(self.auth_retries):
+        for _n in range(self.auth_retries):
             try:
                 overleaf.push_files(
                     [self.cwd / "src" / "tex" / "ms.tex"],
@@ -97,7 +95,7 @@ class TestOverleaf(
         assert figure.exists()
 
         # Check that the figure is present on the remote
-        for n in range(self.auth_retries):
+        for _n in range(self.auth_retries):
             try:
                 overleaf.pull_files(
                     [figure],
@@ -117,11 +115,11 @@ class TestOverleaf(
         # Check that an exception is raised if we try to overwrite a file
         # with uncommitted changes
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r") as f:
+        with open(ms) as f:
             ms_orig = f.read()
         with open(ms, "w") as f:
             f.write(r"% dummy comment\n" + ms_orig)
-        for n in range(self.auth_retries):
+        for _n in range(self.auth_retries):
             try:
                 overleaf.pull_files(
                     [ms],
@@ -146,7 +144,7 @@ class TestOverleaf(
             cwd=self.cwd,
             shell=True,
         )
-        for n in range(self.auth_retries):
+        for _n in range(self.auth_retries):
             try:
                 overleaf.pull_files(
                     [ms],
@@ -172,7 +170,7 @@ class TestOverleaf(
             cwd=self.cwd,
             shell=True,
         )
-        for n in range(self.auth_retries):
+        for _n in range(self.auth_retries):
             try:
                 overleaf.pull_files(
                     [ms],

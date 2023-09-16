@@ -73,9 +73,7 @@ def zenodo_freeze(branch):
             f"Zenodo Sandbox deposit not found for branch {branch}."
         )
     Zenodo(doi).publish()
-    logging.get_logger().info(
-        f"Zenodo Sandbox deposit draft with DOI {doi} published."
-    )
+    logging.get_logger().info(f"Zenodo Sandbox deposit draft with DOI {doi} published.")
 
 
 def zenodo_create(branch):

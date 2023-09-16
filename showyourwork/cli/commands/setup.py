@@ -18,7 +18,8 @@ def setup(slug, cache, overleaf_id, ssh, action_spec):
         cache (bool): If True, enable caching on Zenodo Sandbox.
         overleaf_id (str or NoneType): Overleaf ID of the article.
         ssh (bool): If True, use SSH to clone the repository. Otherwise, use HTTPS.
-        action_spec (str or None): Showyourwork version passed to showyourwork-action in `.github/workflows/*.yml`
+        action_spec (str or None): Showyourwork version passed to showyourwork-action in
+            `.github/workflows/*.yml`
 
     """
     # Parse the slug
@@ -39,14 +40,10 @@ def setup(slug, cache, overleaf_id, ssh, action_spec):
         # Require nothing but a `.git` folder and no commit history
         contents = set(list(Path(repo).glob("*"))) - set([Path(repo) / ".git"])
         if len(contents) == 0:
-            get_stdout(
-                "git log 2> /dev/null", shell=True, cwd=repo, callback=callback
-            )
+            get_stdout("git log 2> /dev/null", shell=True, cwd=repo, callback=callback)
         else:
             # Refuse to continue
-            raise exceptions.ShowyourworkException(
-                f"Directory already exists: {repo}."
-            )
+            raise exceptions.ShowyourworkException(f"Directory already exists: {repo}.")
 
     name = f"@{user}".replace("_", "")
 

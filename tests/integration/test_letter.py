@@ -9,7 +9,9 @@ from helpers import TemporaryShowyourworkRepository
     reason="letter class not supported for showyourwork <= 0.3.1",
 )
 class TestLetter(TemporaryShowyourworkRepository):
-    """Test setting up and building an article that uses the basic `letter` documentclass."""
+    """
+    Test setting up and building an article that uses the basic `letter` documentclass.
+    """
 
     # No need to test this on CI
     local_build_only = True

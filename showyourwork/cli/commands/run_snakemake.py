@@ -10,7 +10,7 @@ def run_snakemake(
     run_type=None,
     cores=1,
     conda_frontend="conda",
-    extra_args=[],
+    extra_args=(),
     check=True,
 ):
     env = dict(os.environ)

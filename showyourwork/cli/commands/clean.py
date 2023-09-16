@@ -4,12 +4,13 @@ from ... import paths
 from .run_snakemake import run_snakemake
 
 
-def clean(force, deep, snakemake_args=[], cores=1, conda_frontend="conda"):
+def clean(force, deep, snakemake_args=(), cores=1, conda_frontend="conda"):
     """Clean the article build.
 
     Args:
         force (bool): If True, forcefully delete files in output directories.
-        deep (bool): If True, delete all temporary Snakemake and showyourwork directories.
+        deep (bool): If True, delete all temporary Snakemake and showyourwork
+            directories.
         options (str, optional): Additional options to pass to Snakemake.
 
     """

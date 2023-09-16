@@ -42,6 +42,7 @@ def convert_to_png(file):
             f'convert "{file}" -format "%[fx:w/h]" info:',
             shell=True,
             stdout=subprocess.PIPE,
+            check=False,
         )
         assert result.returncode == 0
         aspect = float(result.stdout.decode())
@@ -50,6 +51,7 @@ def convert_to_png(file):
             f"convert -resize {width}x500 -background white -alpha remove "
             f'-bordercolor black -border 15 "{file}" "{file}.png"',
             shell=True,
+            check=False,
         )
         assert result.returncode == 0
 
@@ -80,7 +82,7 @@ def get_dataset_dois(files, datasets):
 def should_ignore(ignore, path):
     path = Path(path).resolve()
     for pattern in ignore:
-        pattern = Path(pattern).resolve()
+        pattern = Path(pattern).resolve()  # noqa
         if path == pattern or is_relative_to(path, pattern):
             return True
     return False
@@ -219,10 +221,7 @@ if __name__ == "__main__":
             )
         # Cache
         branch = config["git_branch"]
-        cache = (
-            config["cache"][branch]["zenodo"]
-            or config["cache"][branch]["sandbox"]
-        )
+        cache = config["cache"][branch]["zenodo"] or config["cache"][branch]["sandbox"]
         if cache:
             c.node(
                 cache,
@@ -249,7 +248,7 @@ if __name__ == "__main__":
                 style="filled",
                 fillcolor="white",
             )
-            for url in get_dataset_dois([file], config["datasets"]):
+            for _url in get_dataset_dois([file], config["datasets"]):
                 c.edge(doi, file)
 
     # Script nodes
@@ -327,9 +326,7 @@ if __name__ == "__main__":
 
     # Other nodes
     with dot.subgraph(name=f"{subgraph_prefix}others") as c:
-        c.attr(
-            color="black", fillcolor=colors["other"], style="filled", label="/"
-        )
+        c.attr(color="black", fillcolor=colors["other"], style="filled", label="/")
         for file in others:
             c.node(
                 file,
@@ -369,13 +366,9 @@ if __name__ == "__main__":
 
                 # Cache
                 if dependency in config["cached_deps"]:
-                    dot.edge(
-                        cache, dependency, color=colors["edge"], style="dashed"
-                    )
+                    dot.edge(cache, dependency, color=colors["edge"], style="dashed")
                 if file in config["cached_deps"]:
-                    dot.edge(
-                        dependency, cache, color=colors["edge"], style="dashed"
-                    )
+                    dot.edge(dependency, cache, color=colors["edge"], style="dashed")
 
     # Save the graph
     dot.save(directory=params.repo)

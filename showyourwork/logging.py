@@ -63,16 +63,14 @@ class ColorizingStreamHandler(logging.StreamHandler):
                 raise e
             except (KeyboardInterrupt, SystemExit):
                 pass
-            except Exception as e:
+            except Exception:
                 self.handleError(record)
 
     def decorate(self, record):
         message = record.message
         message = [message]
         if not self.nocolor and record.levelname in self.colors:
-            message.insert(
-                0, self.COLOR_SEQ % (30 + self.colors[record.levelname])
-            )
+            message.insert(0, self.COLOR_SEQ % (30 + self.colors[record.levelname]))
             message.append(self.RESET_SEQ)
         return "".join(message)
 

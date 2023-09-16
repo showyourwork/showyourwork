@@ -1,5 +1,3 @@
-import requests
-
 from . import exceptions
 from .config import get_run_type
 from .git import get_repo_branch
@@ -37,9 +35,7 @@ def process_user_rules():
 
     # Remind the user to publish the deposit
     if cache_sandbox_doi and get_run_type == "build":
-        get_logger().warn(
-            f"Zenodo cache not yet published for this repository."
-        )
+        get_logger().warn("Zenodo cache not yet published for this repository.")
 
     # Process each user rule
     for ur in user_rules:

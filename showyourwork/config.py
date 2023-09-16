@@ -1,5 +1,4 @@
 import os
-import urllib.request
 from collections import ChainMap, OrderedDict
 from contextlib import contextmanager
 from pathlib import Path
@@ -11,8 +10,7 @@ from packaging import version
 from . import __version__, exceptions, git, paths
 
 try:
-    from yaml import CDumper as Dumper
-    from yaml import CLoader as Loader
+    from yaml import CDumper as Dumper, CLoader as Loader
 except ImportError:
     # If LibYAML not installed
     from yaml import Dumper, Loader
@@ -31,7 +29,7 @@ def edit_yaml(file):
         file (str): The full path to the YAML file.
     """
     if Path(file).exists():
-        with open(file, "r") as f:
+        with open(file) as f:
             contents = yaml.load(f, Loader=Loader)
     else:
         contents = {}
@@ -67,7 +65,7 @@ def render_config(cwd="."):
     if config.get("cache_on_zenodo", True):
         file = Path(cwd) / "zenodo.yml"
         if file.exists():
-            with open(file, "r") as f:
+            with open(file) as f:
                 config.update(yaml.safe_load(f.read()))
 
     # Save to a temporary YAML file
@@ -177,16 +175,14 @@ def parse_overleaf():
         config["overleaf"]["push"] = []
     elif type(config["overleaf"]["push"]) is not list:
         raise exceptions.ConfigError(
-            "Error parsing the config. "
-            "The `overleaf.push` field must be a list."
+            "Error parsing the config. " "The `overleaf.push` field must be a list."
         )
     config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
     if config["overleaf"]["pull"] is None:
         config["overleaf"]["pull"] = []
     elif type(config["overleaf"]["pull"]) is not list:
         raise exceptions.ConfigError(
-            "Error parsing the config. "
-            "The `overleaf.pull` field must be a list."
+            "Error parsing the config. " "The `overleaf.pull` field must be a list."
         )
 
     # Ensure all files in `push` and `pull` are in the `src/tex` directory
@@ -280,16 +276,12 @@ def parse_config():
         config["require_inputs"] = config.get("require_inputs", True)
 
         #: Allow cached rules to run on CI if there's a cache miss?
-        config["run_cache_rules_on_ci"] = config.get(
-            "run_cache_rules_on_ci", False
-        )
+        config["run_cache_rules_on_ci"] = config.get("run_cache_rules_on_ci", False)
 
         #: Render the article DAG on build
         config["dag"] = as_dict(config.get("dag", {}))
         config["dag"]["render"] = config["dag"].get("render", False)
-        config["dag"]["group_by_type"] = config["dag"].get(
-            "group_by_type", False
-        )
+        config["dag"]["group_by_type"] = config["dag"].get("group_by_type", False)
         config["dag"]["engine"] = config["dag"].get("engine", "sfdp")
         defaults = {
             "shape": "box",
@@ -330,12 +322,8 @@ def parse_config():
         config["stamp"]["ypos"] = config["stamp"].get("ypos", 1.0)
         config["stamp"]["angle"] = config["stamp"].get("angle", -20)
         config["stamp"]["url"] = as_dict(config["stamp"].get("url", {}))
-        config["stamp"]["url"]["enabled"] = config["stamp"]["url"].get(
-            "enabled", False
-        )
-        config["stamp"]["url"]["maxlen"] = config["stamp"]["url"].get(
-            "maxlen", 40
-        )
+        config["stamp"]["url"]["enabled"] = config["stamp"]["url"].get("enabled", False)
+        config["stamp"]["url"]["maxlen"] = config["stamp"]["url"].get("maxlen", 40)
 
         #: Showyourwork margin_icon settings
         config["margin_icons"] = as_dict(config.get("margin_icons", {}))
@@ -364,9 +352,7 @@ def parse_config():
             config["margin_icons"]["horizontal_offset"] = r"\," * offset
 
         # Preprocessing arXiv tarball settings:
-        config["preprocess_arxiv_script"] = config.get(
-            "preprocess_arxiv_script", None
-        )
+        config["preprocess_arxiv_script"] = config.get("preprocess_arxiv_script", None)
 
         #
         # -- Internal settings --
@@ -447,9 +433,7 @@ def parse_config():
 
     # Showyourwork stamp metadata
     if config["stamp"]["url"]["enabled"]:
-        stamp_text = (
-            config["git_url"].replace("https://", "").replace("http://", "")
-        )
+        stamp_text = config["git_url"].replace("https://", "").replace("http://", "")
         if (
             trim := len(stamp_text.replace("github.com", "X"))
             - config["stamp"]["url"]["maxlen"]

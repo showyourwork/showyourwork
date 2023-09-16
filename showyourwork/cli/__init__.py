@@ -10,4 +10,3 @@ setting. This allows users running any version of ``showyourwork`` to build any
 article.
 
 """
-from .main import main as entry_point

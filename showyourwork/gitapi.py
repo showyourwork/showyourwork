@@ -168,7 +168,7 @@ def clear_cache(name, org=None):
         )
 
 
-def get_workflow_run_status(name, org=None, q={}):
+def get_workflow_run_status(name, org=None, q=None):
     """
     Checks the status of the latest GH Actions workflow run for a repository,
     optionally matching certain search criteria.
@@ -183,7 +183,7 @@ def get_workflow_run_status(name, org=None, q={}):
 
     Returns:
         tuple:
-            A tuple containing ``(status, conclusion, url)``.
+            A tuple containing ``(status, conclusion, url)``.
 
     The ``status`` is one of
 
@@ -206,6 +206,7 @@ def get_workflow_run_status(name, org=None, q={}):
 
     The url is that of the workflow on GitHub actions.
     """
+    q = {} if q is None else q
     if org:
         url = f"https://api.github.com/repos/{org}/{name}/actions/runs"
     else:
@@ -224,9 +225,9 @@ def get_workflow_run_status(name, org=None, q={}):
     q = flatten_dict(q)
 
     # Return the first match
-    for workflow_run in data["workflow_runs"]:
+    for run in data["workflow_runs"]:
         # Flatten the response
-        workflow_run = flatten_dict(workflow_run)
+        workflow_run = flatten_dict(run)
 
         # Check for matches
         for key, value in q.items():

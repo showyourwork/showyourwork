@@ -7,15 +7,13 @@ class LaTeXException(ShowyourworkException):
 
 class UnableToInferClassName(LaTeXException):
     def __init__(self, ms_name="ms"):
-        super().__init__(
-            f"Unable to determine document class in `{ms_name}.tex`."
-        )
+        super().__init__(f"Unable to determine document class in `{ms_name}.tex`.")
 
 
 class TectonicError(LaTeXException):
     def __init__(self, logfile=None):
         if logfile:
-            with open(logfile, "r") as f:
+            with open(logfile) as f:
                 tectonic_log = f.readlines()
 
             # Ensure the user imported showyourwork
@@ -33,14 +31,15 @@ class TectonicError(LaTeXException):
                         message = "".join(tectonic_log[-i - 1 :])
                         break
                 else:
-                    message = (
-                        "An error occurred while compiling the manuscript."
-                    )
-                message += f"\nFor more information, check out the log file:\n{logfile}."
+                    message = "An error occurred while compiling the manuscript."
+                message += (
+                    f"\nFor more information, check out the log file:\n{logfile}."
+                )
             else:
                 # Admonish the user (:
                 message = (
-                    r"Failed to compile manuscript. Perhaps you forgot to `\usepackage{showyourwork}`?"
+                    r"Failed to compile manuscript. Perhaps you forgot to "
+                    r"`\usepackage{showyourwork}`?"
                     f"\nFor more information, check out the log file:\n{logfile}"
                 )
 

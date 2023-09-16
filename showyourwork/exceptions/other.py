@@ -13,7 +13,8 @@ class RequestError(ShowyourworkException):
 class CondaNotFoundError(ShowyourworkException):
     def __init__(self):
         super().__init__(
-            f"Conda package manager not found. Is it installed and available in the system PATH?"
+            "Conda package manager not found. Is it installed and available in the "
+            "system PATH?"
         )
 
 
@@ -45,10 +46,6 @@ class MissingDependencyError(ShowyourworkException):
 
 
 class FigureGenerationError(ShowyourworkException):
-    pass
-
-
-class ConfigError(ShowyourworkException):
     pass
 
 

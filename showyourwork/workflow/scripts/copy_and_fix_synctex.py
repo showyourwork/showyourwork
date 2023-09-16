@@ -24,8 +24,8 @@ if __name__ == "__main__":
                     else:
                         path = paths.user().tex / path
                         if path.exists():
-                            line = ":".join(
+                            line = ":".join(  # noqa
                                 parts[:-1] + [path.as_posix()]
                             ).encode()
-            line += b"\n"
+            line += b"\n"  # noqa
             f.write(line)

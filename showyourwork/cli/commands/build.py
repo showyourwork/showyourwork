@@ -2,7 +2,7 @@ from ... import paths
 from .run_snakemake import run_snakemake
 
 
-def build(snakemake_args=[], cores=1, conda_frontend="conda"):
+def build(snakemake_args=(), cores=1, conda_frontend="conda"):
     """Build the article.
 
     This function builds the article PDF by running ``Snakemake`` in an isolated
