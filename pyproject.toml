@@ -45,7 +45,7 @@ build-backend = "hatchling.build"
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "showyourwork/_showyourwork_version.py"
+version-file = "src/showyourwork/_showyourwork_version.py"
 
 [tool.black]
 target-version = ["py38", "py39"]
