@@ -296,7 +296,7 @@ class Zenodo:
 
             # See if we find the deposit
             if r.status_code <= 204:
-                if type(r.json()) is list and len(r.json()):
+                if isinstance(r.json(), list) and len(r.json()):
                     if get_run_type() == "build":
                         logger.info(f"User authentication for {self.doi} is valid.")
                     else:
