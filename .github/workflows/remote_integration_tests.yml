@@ -46,7 +46,7 @@ jobs:
         shell: bash -l {0}
         run: |
           python -m pip install -U pip
-          python -m pip install -e 'showyourwork[tests] @ ${{ matrix.showyourwork-spec }}'
+          python -m pip install 'showyourwork[tests] @ ${{ matrix.showyourwork-spec }}'
 
       - name: Run remote integration tests
         shell: bash -l {0}
