@@ -44,10 +44,8 @@ class TestMatplotlibLatex(
     def customize(self):
         """Add a figure that requires LaTeX to build."""
         # Edit the workflow
-        with open(self.cwd / ".github" / "workflows" / "build.yml", "r") as f:
-            workflow = f.read().replace(
-                workflow_replace, workflow_replace_with
-            )
+        with open(self.cwd / ".github" / "workflows" / "build.yml") as f:
+            workflow = f.read().replace(workflow_replace, workflow_replace_with)
         with open(self.cwd / ".github" / "workflows" / "build.yml", "w") as f:
             print(workflow, file=f)
 

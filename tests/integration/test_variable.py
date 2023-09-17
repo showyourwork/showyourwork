@@ -1,8 +1,6 @@
 import pytest
 from helpers import TemporaryShowyourworkRepository
 
-from showyourwork.config import edit_yaml
-
 # A script that computes the age of the universe
 variable_script = r"""
 import paths
@@ -26,14 +24,12 @@ class TestLatexVariable(TemporaryShowyourworkRepository):
     def customize(self):
         """Create and edit all the necessary files for the workflow."""
         # Create the script
-        with open(
-            self.cwd / "src" / "scripts" / "age_of_universe.py", "w"
-        ) as f:
+        with open(self.cwd / "src" / "scripts" / "age_of_universe.py", "w") as f:
             print(variable_script, file=f)
 
         # Import the variable into the tex file
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r") as f:
+        with open(ms) as f:
             ms_orig = f.read()
         with open(ms, "w") as f:
             ms_new = ms_orig.replace(
@@ -47,7 +43,7 @@ class TestLatexVariable(TemporaryShowyourworkRepository):
             print(ms_new, file=f)
 
         # Add a Snakemake rule to run the script
-        with open(self.cwd / "Snakefile", "r") as f:
+        with open(self.cwd / "Snakefile") as f:
             contents = f.read()
         with open(self.cwd / "Snakefile", "w") as f:
             print(contents, file=f)

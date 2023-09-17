@@ -35,18 +35,16 @@ class TestPullRequests(TemporaryShowyourworkRepository):
         # Avoid pushing two commits simultaneously, since this was causing
         # the Actions to occasionally not run on the PR.
         await asyncio.sleep(30)
-        head_sha = get_stdout(
-            "git rev-parse HEAD", shell=True, cwd=self.cwd
-        ).replace("\n", "")
+        head_sha = get_stdout("git rev-parse HEAD", shell=True, cwd=self.cwd).replace(
+            "\n", ""
+        )
 
         # Create a new branch
-        print(
-            f"[{self.repo}] Creating branch `small-change` with some changes..."
-        )
+        print(f"[{self.repo}] Creating branch `small-change` with some changes...")
         get_stdout("git checkout -b small-change", shell=True, cwd=self.cwd)
 
         # Make a few small changes, deletions, and insertions.
-        with open(self.cwd / "src" / "tex" / "ms.tex", "r") as f:
+        with open(self.cwd / "src" / "tex" / "ms.tex") as f:
             contents = f.read()
         contents = contents.replace(
             "An open source scientific article",
@@ -61,9 +59,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
             f.write(contents)
 
         # Add, commit, and push to the new branch
-        print(
-            f"[{self.repo}] Pushing to `showyourwork/{self.repo}@small-change`..."
-        )
+        print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}@small-change`...")
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             "git -c user.name='gh-actions' -c user.email='gh-actions' "
@@ -93,7 +89,8 @@ class TestPullRequests(TemporaryShowyourworkRepository):
                 data=json.dumps(
                     {
                         "title": "Pull request test",
-                        "body": "A test of the diff feature of showyourwork pull requests.",
+                        "body": "A test of the diff feature of showyourwork pull "
+                        "requests.",
                         "head": "small-change",
                         "base": "main",
                     }
@@ -160,15 +157,13 @@ class TestPullRequests(TemporaryShowyourworkRepository):
         )
         for comment in data:
             if comment["user"]["login"] == "github-actions[bot]":
-                comment = comment["body"]
+                comment = comment["body"]  # noqa
                 try:
                     diff_url = re.search(
                         r"\[PDF with highlighted changes\]\((.*?)\)", comment
                     ).groups()[0]
                 except Exception:
-                    raise Exception(
-                        "Bot did not post the link to the PDF diff."
-                    )
+                    raise Exception("Bot did not post the link to the PDF diff.")
                 else:
                     break
         else:

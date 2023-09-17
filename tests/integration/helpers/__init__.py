@@ -1,4 +1,4 @@
 from .temp_repo import (
-    ShowyourworkRepositoryActions,
-    TemporaryShowyourworkRepository,
+    ShowyourworkRepositoryActions as ShowyourworkRepositoryActions,
+    TemporaryShowyourworkRepository as TemporaryShowyourworkRepository,
 )

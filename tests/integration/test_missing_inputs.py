@@ -4,10 +4,10 @@ from helpers import (
 )
 
 
-class TestMissingScript(
-    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
-):
-    """Test the behavior of the workflow when the user forgets to add a figure script."""
+class TestMissingScript(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
+    """
+    Test the behavior of the workflow when the user forgets to add a figure script.
+    """
 
     # No need to test this on CI
     local_build_only = True
@@ -26,18 +26,14 @@ class TestMissingScript(
             if "src/scripts/test_figure.py" not in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
-            raise Exception(
-                "Expected failure, but article build step succeeded."
-            )
+            raise Exception("Expected failure, but article build step succeeded.")
 
         # Now add the script. The build should succeed
         self.add_figure_script()
         super().build_local()
 
 
-class TestDeletedScript(
-    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
-):
+class TestDeletedScript(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """Test the behavior of the workflow when the user deletes a figure script."""
 
     # No need to test this on CI
@@ -61,6 +57,4 @@ class TestDeletedScript(
             if "src/scripts/test_figure.py" not in str(e):
                 raise Exception(f"Incorrect exception message: {str(e)}")
         else:
-            raise Exception(
-                "Expected failure, but article build step succeeded."
-            )
+            raise Exception("Expected failure, but article build step succeeded.")

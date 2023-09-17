@@ -12,9 +12,7 @@ from showyourwork.subproc import get_stdout
 pytestmark = pytest.mark.remote
 
 
-class TestCache(
-    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
-):
+class TestCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """
     Test the Zenodo Sandbox caching feature for a rule with a single output.
 
@@ -45,9 +43,7 @@ class TestCache(
         self.add_figure_environment()
 
 
-class TestDirCache(
-    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
-):
+class TestDirCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """
     Test the Zenodo Sandbox caching feature for a rule that outputs an
     entire directory.

@@ -7,9 +7,7 @@ from showyourwork.overleaf import (
 
 
 def test_current_template():
-    assert re.match(
-        OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE, OVERLEAF_BLANK_PROJECT
-    )
+    assert re.match(OVERLEAF_BLANK_PROJECT_REGEX_TEMPLATE, OVERLEAF_BLANK_PROJECT)
 
 
 def test_old_template():

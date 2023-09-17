@@ -104,9 +104,7 @@ class TemporaryShowyourworkRepository:
             )
 
         # Create a new one
-        print(
-            f"[{self.repo}] Creating local repo `tests/sandbox/{self.repo}`..."
-        )
+        print(f"[{self.repo}] Creating local repo `tests/sandbox/{self.repo}`...")
         get_stdout(
             f"{command} {options} showyourwork/{self.repo}",
             cwd=self.root_path,
@@ -115,16 +113,11 @@ class TemporaryShowyourworkRepository:
 
         # Get the Zenodo Sandbox cache concept doi for the main branch (if any)
         self._sandbox_concept_doi = (
-            render_config(cwd=self.cwd)
-            .get("cache", {})
-            .get("main", {})
-            .get("sandbox")
+            render_config(cwd=self.cwd).get("cache", {}).get("main", {}).get("sandbox")
         )
 
         # Tweak the README
-        message = "\n".join(
-            [line.strip() for line in self.__doc__.split("\n")]
-        )
+        message = "\n".join([line.strip() for line in self.__doc__.split("\n")])
         file = Path(inspect.getfile(self.__class__)).name
         readme = (
             "*This is an automatically generated test for "
@@ -133,7 +126,7 @@ class TemporaryShowyourworkRepository:
             f"[{file}](https://github.com/showyourwork/showyourwork/blob/main/tests/integration/{file}).*"
             "\n\n" + message
         )
-        with open(self.cwd / "README.md", "r") as f:
+        with open(self.cwd / "README.md") as f:
             contents = f.read()
         contents = contents.replace(
             "An open source scientific article created using the "
@@ -205,9 +198,9 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
         )
-        head_sha = get_stdout(
-            "git rev-parse HEAD", shell=True, cwd=self.cwd
-        ).replace("\n", "")
+        head_sha = get_stdout("git rev-parse HEAD", shell=True, cwd=self.cwd).replace(
+            "\n", ""
+        )
         print(
             f"[{self.repo}] Waiting {self.action_wait} seconds for workflow "
             f"to finish (1/{self.action_max_tries})..."
@@ -240,11 +233,10 @@ class TemporaryShowyourworkRepository:
                     f"workflow to finish ({n+2}/{self.action_max_tries})..."
                 )
                 await asyncio.sleep(self.action_interval)
-        else:
-            raise Exception(
-                f"[{self.repo}] GitHub Actions workflow timed out.\n"
-                f"For details, see {url}"
-            )
+        raise Exception(
+            f"[{self.repo}] GitHub Actions workflow timed out.\n"
+            f"For details, see {url}"
+        )
 
     def delete_zenodo(self):
         """Delete the Zenodo deposit associated with the temp repo."""
@@ -257,18 +249,13 @@ class TemporaryShowyourworkRepository:
 
     def delete_remote(self):
         """Delete the remote repo."""
-        print(
-            f"[{self.repo}] Deleting GitHub repo "
-            f"`showyourwork/{self.repo}`..."
-        )
+        print(f"[{self.repo}] Deleting GitHub repo " f"`showyourwork/{self.repo}`...")
         gitapi.delete_repo(self.repo, org="showyourwork")
 
     def delete_local(self):
         """Delete the local repo."""
         if (self.cwd).exists():
-            print(
-                f"[{self.repo}] Deleting local repo `tests/sandbox/{self.repo}`..."
-            )
+            print(f"[{self.repo}] Deleting local repo `tests/sandbox/{self.repo}`...")
             shutil.rmtree(self.cwd)
 
     def disable_logging(self):
@@ -377,7 +364,7 @@ class ShowyourworkRepositoryActions:
     def add_figure_environment(self, add_script=True, label="fig:test_figure"):
         """Adds a figure environment to the TeX file that includes `test_figure.pdf`."""
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r") as f:
+        with open(ms) as f:
             ms_orig = f.read()
         with open(ms, "w") as f:
             ms_new = ms_orig.replace(
@@ -403,7 +390,8 @@ class ShowyourworkRepositoryActions:
         """Creates a figure script `test_figure.py` that generates `test_figure.pdf`."""
         if load_data:
             if batch:
-                get_data = "data = np.array([np.load(paths.data / 'test_data' / f'test_data{n:02d}.npz')['data'] for n in range(50)])"
+                get_data = "data = np.array([np.load(paths.data / 'test_data' / "
+                "f'test_data{n:02d}.npz')['data'] for n in range(50)])"
             else:
                 get_data = "data = np.load(paths.data / 'test_data.npz')"
         else:
@@ -419,7 +407,8 @@ class ShowyourworkRepositoryActions:
                         get_data,
                         "fig = plt.figure(figsize=(7, 6))",
                         "plt.plot(data)",
-                        "fig.savefig(paths.figures / 'test_figure.pdf', bbox_inches='tight', dpi=300)",
+                        "fig.savefig(paths.figures / 'test_figure.pdf', "
+                        "bbox_inches='tight', dpi=300)",
                     ]
                 ),
                 file=f,
@@ -434,7 +423,8 @@ class ShowyourworkRepositoryActions:
                     "for n in range(50):",
                     "    np.random.seed(n)",
                     "    data = np.random.randn(100)",
-                    "    np.savez(paths.data / 'test_data' / f'test_data{n:02d}.npz', data=data)",
+                    "    np.savez(paths.data / 'test_data' / f'test_data{n:02d}.npz', "
+                    "data=data)",
                 ]
             )
         else:
@@ -451,8 +441,10 @@ class ShowyourworkRepositoryActions:
                         "import numpy as np",
                         "import paths",
                         "import os",
-                        "if os.getenv('CI', 'false') == 'true' or os.getenv('SYW_NO_RUN', 'false') == 'true':",
-                        "    raise Exception('Output should have been downloaded from Zenodo.')",
+                        "if os.getenv('CI', 'false') == 'true' or "
+                        "os.getenv('SYW_NO_RUN', 'false') == 'true':",
+                        "    raise Exception('Output should have been downloaded from "
+                        "Zenodo.')",
                         f"np.random.seed({seed})",
                         gen_data,
                     ]
@@ -462,7 +454,7 @@ class ShowyourworkRepositoryActions:
 
     def add_pipeline_rule(self, batch=False):
         """Adds a Snakemake rule to generate test data from `test_data.py`."""
-        with open(self.cwd / "Snakefile", "r") as f:
+        with open(self.cwd / "Snakefile") as f:
             contents = f.read()
         with open(self.cwd / "Snakefile", "w") as f:
             print(contents, file=f)

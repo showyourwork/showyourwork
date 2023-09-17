@@ -74,9 +74,7 @@ fig.savefig(paths.figures / "test_figure.pdf", bbox_inches="tight", dpi=300)
 """
 
 
-class TestZenodo(
-    TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
-):
+class TestZenodo(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """Test a repo that downloads data from Zenodo."""
 
     def customize(self):

@@ -29,9 +29,7 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "remote: a test that requires remote access"
-    )
+    config.addinivalue_line("markers", "remote: a test that requires remote access")
     os.environ["ACTION_SPEC"] = str(config.getoption("--action-spec"))
 
 
