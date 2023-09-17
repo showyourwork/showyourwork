@@ -390,8 +390,7 @@ class ShowyourworkRepositoryActions:
         """Creates a figure script `test_figure.py` that generates `test_figure.pdf`."""
         if load_data:
             if batch:
-                get_data = "data = np.array([np.load(paths.data / 'test_data' / "
-                "f'test_data{n:02d}.npz')['data'] for n in range(50)])"
+                get_data = "data = np.array([np.load(paths.data / 'test_data' / f'test_data{n:02d}.npz')['data'] for n in range(50)])"  # noqa
             else:
                 get_data = "data = np.load(paths.data / 'test_data.npz')"
         else:
