@@ -3,7 +3,10 @@ Defines custom exceptions for the ``showyourwork`` package.
 
 """
 
-from .base import ShowyourworkException as ShowyourworkException
+from .base import (
+    ShowyourworkException as ShowyourworkException,
+    restore_trace as restore_trace,
+)
 from .github import (
     GitHubException as GitHubException,
     MissingGitHubAPIKey as MissingGitHubAPIKey,
