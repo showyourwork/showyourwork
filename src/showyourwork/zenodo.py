@@ -382,7 +382,7 @@ class Zenodo:
                     "PUT",
                     f"{bucket_url}/{rule_name}?access_token={self.access_token}",
                 ],
-                check=True,
+                check=False,
             )
         except Exception:
             raise exceptions.ZenodoUploadError()
@@ -462,7 +462,7 @@ class Zenodo:
                                 "--output",
                                 str(file),
                             ],
-                            check=True,
+                            check=False,
                         )
                     except Exception:
                         raise exceptions.ZenodoDownloadError()
@@ -532,7 +532,7 @@ class Zenodo:
                             "--output",
                             str(file),
                         ],
-                        check=True,
+                        check=False,
                     )
 
                     # If it's a directory tarball, extract it
@@ -957,7 +957,7 @@ class Zenodo:
                         entry["filename"],
                     ],
                     cwd=cache_folder,
-                    check=True,
+                    check=False,
                 )
             except Exception:
                 raise exceptions.ZenodoDownloadError()
@@ -1089,7 +1089,7 @@ class Zenodo:
                         f"{bucket_url}/{file.name}?access_token={target_deposit.access_token}",
                     ],
                     cwd=cache_folder,
-                    check=True,
+                    check=False,
                 )
             except Exception:
                 raise exceptions.ZenodoUploadError()
