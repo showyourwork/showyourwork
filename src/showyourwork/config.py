@@ -113,9 +113,9 @@ def as_dict(x, depth=0, maxdepth=30):
     elif depth > maxdepth:
         raise exceptions.ConfigError()
 
-    if type(x) is list:
-        y = dict(ChainMap(*[dict(xi) for xi in x if type(xi) is OrderedDict]))
-        z = [xi for xi in x if type(xi) is not OrderedDict]
+    if isinstance(x, list):
+        y = dict(ChainMap(*[dict(xi) for xi in x if isinstance(xi, OrderedDict)]))
+        z = [xi for xi in x if not isinstance(xi, OrderedDict)]
         if len(z):
             if y:
                 x = [y]
@@ -124,10 +124,10 @@ def as_dict(x, depth=0, maxdepth=30):
             x.extend(z)
         else:
             x = y
-    elif type(x) is OrderedDict:
+    elif isinstance(x, OrderedDict):
         x = dict(x)
 
-    if type(x) is dict:
+    if isinstance(x, dict):
         for key, value in x.items():
             x[key] = as_dict(value, depth + 1)
 
@@ -173,14 +173,14 @@ def parse_overleaf():
     config["overleaf"]["push"] = config["overleaf"].get("push", [])
     if config["overleaf"]["push"] is None:
         config["overleaf"]["push"] = []
-    elif type(config["overleaf"]["push"]) is not list:
+    elif not isinstance(config["overleaf"]["push"], list):
         raise exceptions.ConfigError(
             "Error parsing the config. " "The `overleaf.push` field must be a list."
         )
     config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
     if config["overleaf"]["pull"] is None:
         config["overleaf"]["pull"] = []
-    elif type(config["overleaf"]["pull"]) is not list:
+    elif not isinstance(config["overleaf"]["pull"]), list):
         raise exceptions.ConfigError(
             "Error parsing the config. " "The `overleaf.pull` field must be a list."
         )
@@ -296,7 +296,7 @@ def parse_config():
         config["dag"]["ignore_files"] = config["dag"].get("ignore_files", [])
         if config["dag"]["ignore_files"] is None:
             config["dag"]["ignore_files"] = []
-        elif type(config["dag"]["ignore_files"]) is str:
+        elif isinstance(config["dag"]["ignore_files"], str):
             config["dag"]["ignore_files"] = [config["dag"]["ignore_files"]]
 
         #: Tectonic settings
