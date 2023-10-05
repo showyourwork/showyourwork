@@ -33,7 +33,8 @@ if __name__ == "__main__":
             *progress_bar,
             "--output",
             output,
-        ]
+        ],
+        check=False,
     )
     if result.returncode != 0:
         raise exceptions.ZenodoDownloadError()
