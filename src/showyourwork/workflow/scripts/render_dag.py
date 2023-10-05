@@ -378,6 +378,7 @@ if __name__ == "__main__":
         "dot -Tpdf dag.gv > dag.pdf",
         shell=True,
         cwd=params.repo,
+        check=False,
     )
     assert result.returncode == 0
 

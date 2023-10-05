@@ -110,7 +110,7 @@ def parse_datasets():
         for source in list(contents.keys()):
             # Ensure the target is not a list
             target = contents[source]
-            if type(target) is list:
+            if isinstance(target, list):
                 raise exceptions.ZenodoContentsError(
                     "Error parsing the config. "
                     "The `contents` field of a Zenodo deposit must be "
