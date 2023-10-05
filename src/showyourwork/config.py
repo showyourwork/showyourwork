@@ -180,7 +180,7 @@ def parse_overleaf():
     config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
     if config["overleaf"]["pull"] is None:
         config["overleaf"]["pull"] = []
-    elif not isinstance(config["overleaf"]["pull"]), list):
+    elif not isinstance(config["overleaf"]["pull"], list):
         raise exceptions.ConfigError(
             "Error parsing the config. " "The `overleaf.pull` field must be a list."
         )
