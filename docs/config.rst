@@ -1069,7 +1069,7 @@ the `minted` cache).
 .. _config.preprocess_arxiv_script:
 
 ``preprocess_arxiv_script``
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Type:** ``str``
 
