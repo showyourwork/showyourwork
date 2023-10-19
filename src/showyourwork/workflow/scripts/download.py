@@ -29,7 +29,7 @@ if __name__ == "__main__":
         [
             "curl",
             "-f",
-            f"https://{deposit.url}/record/{deposit.deposit_id}/files/{remote_file}",
+            f"https://{deposit.url}/records/{deposit.deposit_id}/files/{remote_file}",
             *progress_bar,
             "--output",
             output,
