@@ -342,7 +342,7 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            for entry in data:
+            for entry in data['entries']:
                 if entry["key"] == rule_name:
                     file_id = entry["id"]
                     parse_request(
