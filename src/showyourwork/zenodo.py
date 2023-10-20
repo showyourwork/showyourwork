@@ -342,7 +342,7 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            for entry in data['entries']:
+            for entry in data["entries"]:
                 if entry["key"] == rule_name:
                     file_id = entry["id"]
                     parse_request(
@@ -432,7 +432,7 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        for entry in data['entries']:
+        for entry in data["entries"]:
             logger.debug(
                 f"Inspecting candidate file `{entry['key']}` with hash "
                 f"`{rule_hashes.get(rule_name, None)}`..."
@@ -944,7 +944,7 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        for entry in data['entries']:
+        for entry in data["entries"]:
             url = entry["links"]["content"]
             try:
                 subprocess.run(
