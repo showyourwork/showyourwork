@@ -52,7 +52,7 @@ def get_dataset_urls(files, datasets):
     result = []
     for doi in datasets:
         deposit = Zenodo(doi)
-        url = f"https://{deposit.url}/record/{deposit.deposit_id}"
+        url = f"https://{deposit.url}/records/{deposit.deposit_id}"
         for file in files:
             if file in datasets[doi]["contents"].values():
                 result.append(url)
