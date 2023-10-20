@@ -944,7 +944,7 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        for entry in data:
+        for entry in data['entries']:
             url = entry["links"]["content"]
             try:
                 subprocess.run(
