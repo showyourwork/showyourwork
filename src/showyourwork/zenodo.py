@@ -52,7 +52,7 @@ def get_dataset_urls(files, datasets):
     result = []
     for doi in datasets:
         deposit = Zenodo(doi)
-        url = f"https://{deposit.url}/record/{deposit.deposit_id}"
+        url = f"https://{deposit.url}/records/{deposit.deposit_id}"
         for file in files:
             if file in datasets[doi]["contents"].values():
                 result.append(url)
@@ -342,8 +342,8 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            for entry in data:
-                if entry["filename"] == rule_name:
+            for entry in data["entries"]:
+                if entry["key"] == rule_name:
                     file_id = entry["id"]
                     parse_request(
                         requests.delete(
@@ -434,21 +434,21 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        for entry in data:
+        for entry in data["entries"]:
             logger.debug(
-                f"Inspecting candidate file `{entry['filename']}` with hash "
+                f"Inspecting candidate file `{entry['key']}` with hash "
                 f"`{rule_hashes.get(rule_name, None)}`..."
             )
 
             if (
-                entry["filename"] == rule_name
+                entry["key"] == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
                 # Download it
                 logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
-                    url = entry["links"]["download"]
+                    url = entry["links"]["content"]
                     progress_bar = (
                         ["--progress-bar"]
                         if not snakemake.workflow.config["github_actions"]
@@ -480,7 +480,7 @@ class Zenodo:
 
                 return
 
-            elif entry["filename"] == rule_name:
+            elif entry["key"] == rule_name:
                 # We're done with this deposit
                 logger.debug(
                     f"File {rule_name} found, but it has the wrong hash. Skipping..."
@@ -489,7 +489,7 @@ class Zenodo:
 
             else:
                 # Keep looking in this deposit for a file with the right name
-                logger.debug(f"Cache miss for file {entry['filename']}. Skipping...")
+                logger.debug(f"Cache miss for file {entry['key']}. Skipping...")
 
         # This is caught in the enclosing scope and treated as a cache miss
         raise exceptions.FileNotFoundOnZenodo(rule_name)
@@ -950,8 +950,8 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        for entry in data:
-            url = entry["links"]["download"]
+        for entry in data["entries"]:
+            url = entry["links"]["content"]
             try:
                 subprocess.run(
                     [
@@ -962,7 +962,7 @@ class Zenodo:
                         f"{url}?access_token={self.access_token}",
                         "--progress-bar",
                         "--output",
-                        entry["filename"],
+                        entry["key"],
                     ],
                     cwd=cache_folder,
                     check=False,
