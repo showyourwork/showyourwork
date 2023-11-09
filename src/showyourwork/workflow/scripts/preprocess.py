@@ -187,7 +187,7 @@ def check_figure_format(figure):
                 raise exceptions.FigureFormatError(
                     f"Figure label `{labels[0].text}` must come after the caption."
                 )
-            
+
             if len(marginicons):
                 # Index of last marginicon
                 marginicon_idx = 0
