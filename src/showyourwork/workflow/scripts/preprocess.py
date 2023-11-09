@@ -152,6 +152,7 @@ def check_figure_format(figure):
     captions = figure.findall("CAPTION")
     labels = figure.findall("LABEL")
     scripts = figure.findall("SCRIPT")
+    marginicons = figure.findall("MARGINICON")
 
     # Check that figure labels aren't nested inside captions
     for caption in captions:
@@ -187,17 +188,18 @@ def check_figure_format(figure):
                     f"Figure label `{labels[0].text}` must come after the caption."
                 )
 
-            # Index of last marginicon
-            marginicon_idx = 0
-            for i, element in enumerate(elements):
-                marginicon_idx = i
-                if element.tag == "MARGINICON":
-                    break
+            if len(marginicons):
+                # Index of last marginicon
+                marginicon_idx = 0
+                for i, element in enumerate(elements):
+                    marginicon_idx = i
+                    if element.tag == "MARGINICON":
+                        break
 
-            if marginicon_idx > label_idx:
-                raise exceptions.FigureFormatError(
-                    r"Command \marginicon must always come before the figure label."
-                )
+                if marginicon_idx > label_idx:
+                    raise exceptions.FigureFormatError(
+                        r"Command \marginicon must always come before the figure label."
+                    )
 
     # Check that there is at most one script
     if len(scripts) >= 2:
