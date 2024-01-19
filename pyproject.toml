@@ -24,6 +24,7 @@ dependencies = [
     "cookiecutter>=2.1.1",
     "packaging>=21.3",
     "snakemake==7.15.2",
+    "pulp<=2.7",
 ]
 
 [project.scripts]
