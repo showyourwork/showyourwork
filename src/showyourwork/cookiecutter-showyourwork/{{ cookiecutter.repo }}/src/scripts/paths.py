@@ -2,6 +2,7 @@
 Exposes common paths useful for manipulating datasets and generating figures.
 
 """
+
 from pathlib import Path
 
 # Absolute path to the top level of the repository

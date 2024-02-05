@@ -6,6 +6,7 @@ so if we change the Snakemake version (currently pinned at 16.5.5), we may have
 to update the code in this file.
 
 """
+
 import inspect
 import logging
 import os
@@ -366,15 +367,17 @@ def patch_snakemake_wait_for_files():
                         and f.is_remote
                         and (force_stay_on_remote or f.should_stay_on_remote)
                     )
-                    else os.path.exists(f)
-                    if not (
-                        (
-                            snakemake.io.is_flagged(f, "pipe")
-                            or snakemake.io.is_flagged(f, "service")
+                    else (
+                        os.path.exists(f)
+                        if not (
+                            (
+                                snakemake.io.is_flagged(f, "pipe")
+                                or snakemake.io.is_flagged(f, "service")
+                            )
+                            and ignore_pipe_or_service
                         )
-                        and ignore_pipe_or_service
+                        else True
                     )
-                    else True
                 )
             ]
 

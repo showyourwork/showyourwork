@@ -9,6 +9,7 @@ files. This information is then used to build the workflow graph for the
 main article build step.
 
 """
+
 import json
 import re
 from collections.abc import MutableMapping
