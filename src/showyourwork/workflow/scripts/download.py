@@ -2,6 +2,7 @@
 Downloads a publically available file from a Zenodo or Zenodo Sandbox record.
 
 """
+
 import subprocess
 
 from showyourwork import exceptions
