@@ -160,9 +160,8 @@ def check_figure_format(figure):
         caption_labels = caption.findall("LABEL")
         if len(caption_labels):
             raise exceptions.FigureFormatError(
-                "Label `{}` should not be nested within the figure caption".format(
-                    caption_labels[0].text
-                )
+                f"Label `{caption_labels[0].text}` should not be nested"
+                " within the figure caption."
             )
 
     # The label must always come after the figure caption

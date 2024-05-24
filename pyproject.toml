@@ -55,6 +55,9 @@ line-length = 88
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+exclude = []
+
+[tool.ruff.lint]
 select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW", "UP"]
 ignore = [
     "B904",    # Don't require explicit raise ... from in expections for now
@@ -64,9 +67,8 @@ ignore = [
     "PLR0915", # Allow more statements
     "PLR2004", # Allow magic numbers in comparisons
 ]
-exclude = []
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["showyourwork"]
 combine-as-imports = true
 
