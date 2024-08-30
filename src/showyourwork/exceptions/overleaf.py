@@ -23,10 +23,9 @@ class OverleafRateLimitExceeded(OverleafException):
 class MissingOverleafCredentials(OverleafException):
     def __init__(self, **kwargs):
         message = (
-            "Overleaf credentials `OVERLEAF_EMAIL` and/or "
-            "`OVERLEAF_PASSWORD` not found. "
-            "These should be set as both environment variables "
-            "and GitHub repository secrets."
+            "Overleaf credential `OVERLEAF_TOKEN` not found. "
+            "This should be set as both environment variable "
+            "and GitHub repository secret."
         )
         super().__init__(
             message,
