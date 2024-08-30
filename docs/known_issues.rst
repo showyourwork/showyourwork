@@ -31,4 +31,3 @@ and modify the ``Build the article PDF`` step like this,
       with:
         showyourwork-spec: git+https://github.com/showyourwork/showyourwork
       uses: showyourwork/showyourwork-action@v1
-    
