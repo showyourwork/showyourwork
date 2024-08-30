@@ -159,10 +159,7 @@ def wipe_remote(project_id, tex=None):
         get_stdout(["git", "init"], cwd=cwd)
         get_stdout(["git", "checkout", "-b", "master"], cwd=cwd)
         overleaf_token = get_overleaf_credentials()
-        url = (
-            f"https://git:{overleaf_token}"
-            f"@git.overleaf.com/{project_id}"
-        )
+        url = f"https://git:{overleaf_token}" f"@git.overleaf.com/{project_id}"
         get_stdout(
             ["git", "pull", url],
             cwd=cwd,
