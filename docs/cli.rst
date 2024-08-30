@@ -218,7 +218,7 @@ you'll get the following message:
     </pre>
 
 To allow |showyourwork| to push to/pull from your Overleaf project, create
-the environment variable ``$OVERLEAF_TOKEN`` and populate them with your 
+the environment variable ``$OVERLEAF_TOKEN`` and populate them with your
 Overleaf token; then re-run the setup command. You can create a new Overleaf
 token by visiting your `account settings <https://www.overleaf.com/user/settings>`_.
 Again, take care to never actually commit this information to your repository!
