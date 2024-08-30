@@ -230,12 +230,12 @@ def validate_slug(context, param, slug):
                     f"""
                     You provided an Overleaf project id, so I'm going to set up
                     Overleaf integration for this repository. Please make sure
-                    at this time that you have defined the `OVERLEAF_EMAIL` and
-                    `OVERLEAF_PASSWORD` environment variables. In order for
+                    at this time that you have defined the `OVERLEAF_TOKEN`
+                    environment variable. In order for
                     this to work on GitHub Actions, please go to
                     ``https://github.com/{slug}/settings/secrets/actions/new``
-                    at this time and create `OVERLEAF_EMAIL` and
-                    `OVERLEAF_PASSWORD` secrets with your Overleaf credentials.
+                    at this time and create `OVERLEAF_TOKEN` secret with
+                    your Overleaf token.
                     """
                 )
             pause()
@@ -276,7 +276,7 @@ def validate_slug(context, param, slug):
     "--overleaf",
     help="Overleaf project id to sync with (optional). Requires Overleaf "
     "credentials, provided as the environment variables and GitHub repository "
-    "secrets `OVERLEAF_EMAIL` and `OVERLEAF_PASSWORD`.",
+    "secrets `OVERLEAF_TOKEN`.",
     default=None,
     type=type("PROJECT_ID", (str,), {}),
 )
