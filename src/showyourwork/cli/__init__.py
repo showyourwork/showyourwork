@@ -10,6 +10,7 @@ setting. This allows users running any version of ``showyourwork`` to build any
 article.
 
 """
+
 __all__ = ["entry_point"]
 
 from .main import main as entry_point

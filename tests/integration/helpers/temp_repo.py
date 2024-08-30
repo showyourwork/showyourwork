@@ -463,9 +463,11 @@ class ShowyourworkRepositoryActions:
                     [
                         "rule generate_data:",
                         "    output:",
-                        "        directory('src/data/test_data')"
-                        if batch
-                        else "        'src/data/test_data.npz'",
+                        (
+                            "        directory('src/data/test_data')"
+                            if batch
+                            else "        'src/data/test_data.npz'"
+                        ),
                         "    cache:",
                         "        True",
                         "    script:",

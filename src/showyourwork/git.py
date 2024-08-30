@@ -2,6 +2,7 @@
 Miscellaneous functions for interfacing with ``git``.
 
 """
+
 from .subproc import get_stdout
 
 

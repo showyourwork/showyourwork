@@ -4,6 +4,7 @@ tars everything in the ``src/tex`` directory into the tarball
 ``arxiv.tar.gz`` for easy arXiv submission.
 
 """
+
 import shutil
 import subprocess
 import tarfile
