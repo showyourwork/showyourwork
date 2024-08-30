@@ -67,9 +67,9 @@ a moment. On your project page, you should see a single file called ``main.tex``
 containing some minimal TeX stuff. Don't edit anything in it, as it will get
 overwritten momentarily by |showyourwork|.
 
-Next, on your machine, define the environment variable ``$OVERLEAF_TOKEN`` 
+Next, on your machine, define the environment variable ``$OVERLEAF_TOKEN``
 with your Overleaf token. To generate a new token from Overleaf,
-go to your `account settings <https://www.overleaf.com/user/settings>`__ and 
+go to your `account settings <https://www.overleaf.com/user/settings>`__ and
 add a new token under the ``Git Integration`` section. As with the other
 credentials required by |showyourwork|, you'll also need to create corresponding
 GitHub Actions secrets at the following URL
