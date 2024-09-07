@@ -55,6 +55,8 @@ line-length = 88
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+
+[tool.ruff.lint]
 select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW", "UP"]
 ignore = [
     "B904",    # Don't require explicit raise ... from in expections for now
@@ -66,7 +68,7 @@ ignore = [
 ]
 exclude = []
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["showyourwork"]
 combine-as-imports = true
 
