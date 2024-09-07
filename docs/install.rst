@@ -23,3 +23,6 @@ You can also install the latest development version from GitHub:
     Check out the latest release on
     `PyPI <https://pypi.python.org/pypi/showyourwork>`__ and read the release
     notes at :doc:`changelog`.
+
+    See :ref:`known_issues` for a list of issues known by the developers,
+    but which have not yet been fixed in a stable release.
