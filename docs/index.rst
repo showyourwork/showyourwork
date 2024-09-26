@@ -54,6 +54,7 @@ Contents
    logging
    migrating
    reproducibility
+   known_issues
    faqs
    contributorguide
    api/showyourwork
