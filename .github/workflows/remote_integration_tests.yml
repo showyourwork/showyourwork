@@ -35,7 +35,7 @@ jobs:
           submodules: recursive
 
       - name: Set up Python and mamba
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-name: test-env
           create-args: >-
