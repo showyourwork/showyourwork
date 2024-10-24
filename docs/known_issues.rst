@@ -31,3 +31,14 @@ and modify the ``Build the article PDF`` step like this,
       with:
         showyourwork-spec: git+https://github.com/showyourwork/showyourwork
       uses: showyourwork/showyourwork-action@v1
+
+`'\variable' command does not work inside '\caption{...}' (#419) <https://github.com/showyourwork/showyourwork/issues/419>`_
+----------------------------------------------------------------------------------------------------------------------------
+
+When putting the ``\variable{}`` command inside (e.g. a figure's) ``\caption{}``, then the
+corresponding ``Snakefile`` rule will not be triggered.
+
+A workaround is to explicitly define in the ``showyourwork.yml`` that the main
+manuscript depends on the output of this ``Snakefile`` rule, ensuring it will always be
+executed. Then, ``\variable{}`` will simply work like ``\include{}`` (which may also be
+used in this case).
