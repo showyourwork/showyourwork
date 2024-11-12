@@ -53,6 +53,5 @@ jobs:
         run: python -m pytest --remote -m "remote" tests/integration --action-spec "${{ matrix.showyourwork-spec }}#egg=showyourwork"
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
-          OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
-          OVERLEAF_PASSWORD: ${{ secrets.OVERLEAF_PASSWORD }}
+          OVERLEAF_TOKEN: ${{ secrets.OVERLEAF_TOKEN }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
