@@ -57,37 +57,31 @@ def check_for_rate_limit(code, stdout, stderr):
 
 
 def get_overleaf_credentials(
-    overleaf_email="OVERLEAF_EMAIL",
-    overleaf_password="OVERLEAF_PASSWORD",
+    overleaf_token="OVERLEAF_TOKEN",
     error_if_missing=False,
 ):
     """
-    Return the user's Overleaf email and password, stored in env vars.
+    Return the user's Overleaf token, stored in env vars.
 
     Args:
-        overleaf_email (str, optional): Environment variable containing the
-            Overleaf account email address. Default ``OVERLEAF_EMAIL``.
-        overleaf_password (str, optional): Environment variable containing the
-            Overleaf account password. Default ``OVERLEAF_PASSWORD``.
+        overleaf_token (str, optional): Environment variable containing the
+            Overleaf account password. Default ``OVERLEAF_TOKEN``.
         error_if_missing (bool, optional): Default ``False``.
 
     """
-    creds = []
-    for key in [overleaf_email, overleaf_password]:
-        val = os.getenv(key, None)
-        if val is None or not len(val):
-            if error_if_missing:
-                level = "error"
-            else:
-                # This exception is caught in the enclosing scope
-                level = "warn"
-            raise exceptions.MissingOverleafCredentials(level=level)
+    val = os.getenv(overleaf_token, None)
+    if val is None or not len(val):
+        if error_if_missing:
+            level = "error"
         else:
-            # Replace special characters in the credentials
-            val = quote(val, safe="")
-            creds.append(val)
+            # This exception is caught in the enclosing scope
+            level = "warn"
+        raise exceptions.MissingOverleafCredentials(level=level)
+    else:
+        # Replace special characters in the credentials
+        val = quote(val, safe="")
 
-    return creds
+    return val
 
 
 def clone(project_id, path=None):
@@ -115,8 +109,8 @@ def clone(project_id, path=None):
     paths.user(path=path).overleaf.mkdir(exist_ok=True)
 
     # Get the credentials & repo url
-    overleaf_email, overleaf_password = get_overleaf_credentials()
-    url = f"https://{overleaf_email}:{overleaf_password}@git.overleaf.com/{project_id}"
+    overleaf_token = get_overleaf_credentials()
+    url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
 
     # Set up a local version of the repo. We don't actually _clone_ it to avoid
     # storing the url containing the password in .git/config
@@ -144,7 +138,7 @@ def clone(project_id, path=None):
     get_stdout(
         ["git", "pull", url],
         cwd=str(paths.user(path=path).overleaf),
-        secrets=[overleaf_email, overleaf_password],
+        secrets=[overleaf_token],
         callback=callback,
     )
 
@@ -164,18 +158,12 @@ def wipe_remote(project_id, tex=None):
     with TemporaryDirectory() as cwd:
         get_stdout(["git", "init"], cwd=cwd)
         get_stdout(["git", "checkout", "-b", "master"], cwd=cwd)
-        (
-            overleaf_email,
-            overleaf_password,
-        ) = get_overleaf_credentials()
-        url = (
-            f"https://{overleaf_email}:{overleaf_password}"
-            f"@git.overleaf.com/{project_id}"
-        )
+        overleaf_token = get_overleaf_credentials()
+        url = f"https://git:{overleaf_token}" f"@git.overleaf.com/{project_id}"
         get_stdout(
             ["git", "pull", url],
             cwd=cwd,
-            secrets=[overleaf_email, overleaf_password],
+            secrets=[overleaf_token],
         )
         get_stdout(["git", "rm", "-r", "*"], cwd=cwd)
         with open(Path(cwd) / "main.tex", "w") as f:
@@ -196,7 +184,7 @@ def wipe_remote(project_id, tex=None):
                 get_stdout(
                     ["git", "push", url, "master"],
                     cwd=cwd,
-                    secrets=[overleaf_email, overleaf_password],
+                    secrets=[overleaf_token],
                     callback=check_for_rate_limit,
                 )
 
@@ -312,12 +300,12 @@ def setup_remote(project_id, path=None):
     )
 
     # Push (again being careful about secrets)
-    overleaf_email, overleaf_password = get_overleaf_credentials()
-    url = f"https://{overleaf_email}:{overleaf_password}@git.overleaf.com/{project_id}"
+    overleaf_token = get_overleaf_credentials()
+    url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
     get_stdout(
         ["git", "push", url, "master"],
         cwd=str(paths.user(path=path).overleaf),
-        secrets=[overleaf_email, overleaf_password],
+        secrets=[overleaf_token],
         callback=check_for_rate_limit,
     )
 
@@ -422,12 +410,12 @@ def push_files(files, project_id, path=None):
     )
 
     # Push (again being careful about secrets)
-    overleaf_email, overleaf_password = get_overleaf_credentials()
-    url = f"https://{overleaf_email}:{overleaf_password}@git.overleaf.com/{project_id}"
+    overleaf_token = get_overleaf_credentials()
+    url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
     get_stdout(
         ["git", "push", url, "master"],
         cwd=str(paths.user(path=path).overleaf),
-        secrets=[overleaf_email, overleaf_password],
+        secrets=[overleaf_token],
         callback=check_for_rate_limit,
     )
 
