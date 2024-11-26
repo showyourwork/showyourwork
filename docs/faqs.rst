@@ -11,6 +11,10 @@ Finally, always make sure you are using the latest version of |showyourwork|, as
 your error could be due to a bug we have since fixed! You can always upgrade to
 the latest version by running ``pip install -U showyourwork``.
 
+As a last resort before opening an issue on the GitHub repository,
+please take a look to the :ref:`known_issues` for a list of issues known by the developers,
+but which have not yet been fixed in a stable release.
+
 
 Debugging local builds
 ----------------------

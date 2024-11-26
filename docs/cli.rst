@@ -208,19 +208,19 @@ you'll get the following message:
     <pre>
     You provided an Overleaf project id, so I'm going to set up Overleaf integration
     for this repository. Please make sure at this time that you have defined the
-    <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> environment variables. In order for this to
+    <span class="text-highlight">OVERLEAF_TOKEN</span> environment variable. In order for this to
     work on GitHub Actions, please go to
 
         <span class="text-highlight">https://github.com/tmp/tmp/settings/secrets/actions/new</span>
 
-    at this time and create <span class="text-highlight">OVERLEAF_EMAIL</span> and <span class="text-highlight">OVERLEAF_PASSWORD</span> secrets with your
-    Overleaf credentials.
+    at this time and create <span class="text-highlight">OVERLEAF_TOKEN</span> secret with your
+    Overleaf token.
     </pre>
 
 To allow |showyourwork| to push to/pull from your Overleaf project, create
-the environment variables ``$OVERLEAF_EMAIL`` and ``$OVERLEAF_PASSWORD`` and
-populate them with your Overleaf email address and password, respectively;
-then re-run the setup command.
+the environment variable ``$OVERLEAF_TOKEN`` and populate them with your
+Overleaf token; then re-run the setup command. You can create a new Overleaf
+token by visiting your `account settings <https://www.overleaf.com/user/settings>`_.
 Again, take care to never actually commit this information to your repository!
 
 

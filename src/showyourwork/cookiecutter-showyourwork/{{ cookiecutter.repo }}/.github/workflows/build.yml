@@ -22,5 +22,4 @@ jobs:
           showyourwork-spec: {{ cookiecutter.action_spec }}{% endif %}
         env:
           SANDBOX_TOKEN: ${{ "{{" }} secrets.SANDBOX_TOKEN {{ "}}" }}
-          OVERLEAF_EMAIL: ${{ "{{" }} secrets.OVERLEAF_EMAIL {{ "}}" }}
-          OVERLEAF_PASSWORD: ${{ "{{" }} secrets.OVERLEAF_PASSWORD {{ "}}" }}
+          OVERLEAF_TOKEN: ${{ "{{" }} secrets.OVERLEAF_TOKEN {{ "}}" }}
