@@ -257,6 +257,12 @@ so let's sync our changes with the remote next.
 Build on the remote
 -------------------
 
+.. important::
+
+    A known issue requires to use the latest version of the GitHub action,
+    so before pushing, please mofidy the github workflow files for ``build`` and ``build-pull-request``
+    to use ``showyourwork-action@main``, instead of ``showyourwork-action@v1``.
+
 Whenever you make a change to your article (add text, add a figure, edit
 a script), make sure to ``git add`` any new/modified files,
 commit your changes, and then push to the GitHub remote:
