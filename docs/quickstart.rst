@@ -1,6 +1,11 @@
 Quickstart
 ==========
 
+.. important::
+
+    A known issue until the next release requires to use the latest version of showyourwork
+    so the use of the latest version is recommended both locally and on the remote.
+    For the latter, please run the setup command with the option ``-a git+https://github.com/showyourwork/showyourwork```.
 
 Install
 -------
@@ -28,7 +33,6 @@ run
 .. code-block:: bash
 
     showyourwork setup rodluger/article
-
 
 This will bring up the following prompt:
 
