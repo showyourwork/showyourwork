@@ -5,7 +5,7 @@ Quickstart
 
     A known issue until the next release requires to use the latest version of showyourwork
     so the use of the latest version is recommended both locally and on the remote.
-    For the latter, please run the setup command with the option ``-a git+https://github.com/showyourwork/showyourwork```.
+    For the latter, please run the setup command with the option ``-a git+https://github.com/showyourwork/showyourwork``.
 
 Install
 -------
