@@ -42,3 +42,22 @@ A workaround is to explicitly define in the ``showyourwork.yml`` that the main
 manuscript depends on the output of this ``Snakefile`` rule, ensuring it will always be
 executed. Then, ``\variable{}`` will simply work like ``\include{}`` (which may also be
 used in this case).
+
+`Package 'showyourwork' requires a different Python' (#505) <https://github.com/showyourwork/showyourwork/issues/505>`_
+-----------------------------------------------------------------------------------------------------------------------
+
+This is an error that arises from a change in the conda installation on the remote.
+
+The solution is to add update the version of the Github Action used by the ``build.yml`` and ``build-pull-request.yml`` workflows
+to use the latest unreleased version of the action:
+
+.. code-block:: yaml
+
+      - name: Build the article PDF
+        id: build
+        with:
+          showyourwork-spec: git+https://github.com/showyourwork/showyourwork
+        uses: showyourwork/showyourwork-action@main
+        env:
+          SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
+          OVERLEAF_TOKEN: ${{ secrets.OVERLEAF_TOKEN }}
