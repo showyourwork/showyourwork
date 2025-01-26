@@ -67,6 +67,7 @@ class TestCleanForce(TemporaryShowyourworkRepository):
         # Check that the new directory was removed
         assert not (self.cwd / "src" / "data" / "newdir").exists()
 
+
 class TestCleanDeep(TemporaryShowyourworkRepository):
     """Test that when calling clean with the -d option a subdirectory is removed."""
 
