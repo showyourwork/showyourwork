@@ -1,6 +1,5 @@
-from yaml import safe_load, safe_dump
-
 from helpers import TemporaryShowyourworkRepository
+from yaml import safe_dump, safe_load
 
 from showyourwork.subproc import get_stdout
 
