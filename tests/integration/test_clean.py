@@ -66,3 +66,16 @@ class TestCleanForce(TemporaryShowyourworkRepository):
 
         # Check that the new directory was removed
         assert not (self.cwd / "src" / "data" / "newdir").exists()
+
+class TestCleanDeep(TemporaryShowyourworkRepository):
+    """Test that when calling clean with the -d option a subdirectory is removed."""
+
+    local_build_only = True
+
+    def check_build(self):
+        # Run the clean command with the -f option
+        get_stdout("showyourwork clean -d", shell=True, cwd=self.cwd)
+
+        # Check that the new directory was removed
+        assert not (self.cwd / ".snakemake").exists()
+        assert not (self.cwd / ".showyourwork").exists()
