@@ -1,6 +1,11 @@
 Quickstart
 ==========
 
+.. important::
+
+    A known issue until the next release requires to use the latest version of showyourwork
+    so the use of the latest version is recommended both locally and on the remote.
+    For the latter, please run the setup command with the option ``-a git+https://github.com/showyourwork/showyourwork``.
 
 Install
 -------
@@ -28,7 +33,6 @@ run
 .. code-block:: bash
 
     showyourwork setup rodluger/article
-
 
 This will bring up the following prompt:
 
@@ -252,6 +256,12 @@ so let's sync our changes with the remote next.
 
 Build on the remote
 -------------------
+
+.. important::
+
+    A known issue requires to use the latest version of the GitHub action,
+    so before pushing, please mofidy the github workflow files for ``build`` and ``build-pull-request``
+    to use ``showyourwork-action@main``, instead of ``showyourwork-action@v1``.
 
 Whenever you make a change to your article (add text, add a figure, edit
 a script), make sure to ``git add`` any new/modified files,
