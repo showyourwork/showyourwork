@@ -66,7 +66,7 @@ to use the latest unreleased version of the action:
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 This error should arise only if you are using showyourwork v0.4.3
-or if you updated your project ot that specific version.
+or if you updated your project to that specific version.
 
 If this is your case and you do not want to update showyourwork
 to the latest development version, please comment line 405 in
