@@ -132,8 +132,8 @@
     "authors": [
       "Andrew R. McCluskey"
     ],
-    "doi": "10.26434/chemrxiv-2023-44b29",
-    "url": "https://doi.org/10.26434/chemrxiv-2023-44b29",
+    "doi": "10.1021/acs.jchemed.3c00466",
+    "url": "https://doi.org/10.1021/acs.jchemed.3c00466",
     "field": "Chemistry"
   },
   "arm61/msd-errors": {
@@ -143,8 +143,8 @@
       "Samuel W. Coles",
       "Benjamin J. Morgan"
     ],
-    "doi": "arXiv:2305.18244",
-    "url": "https://arxiv.org/abs/arXiv:2305.18244",
+    "doi": "10.1021/acs.jctc.4c01249",
+    "url": "https://doi.org/10.1021/acs.jctc.4c01249",
     "field": "Materials Science"
   },
   "matiscke/hz-inner-edge-discontinuity": {
@@ -212,5 +212,16 @@
     "doi": "10.1093/mnras/stad2127",
     "url": "https://ui.adsabs.harvard.edu/abs/2023MNRAS.524.5477V/abstract",
     "field": "Astronomy"
+  },
+    "scams-research/centre-of-mass": {
+    "title": "On the Estimation of Centre of Mass in Periodic Systems",
+    "authors": [
+      "Harry Richardson",
+      "Josh Dunn",
+      "Andrew R. McCluskey"
+    ],
+    "doi": "10.1063/5.0260928",
+    "url": "https://doi.org/10.1063/5.0260928",
+    "field": "Chemical Physics"
   }
 }
