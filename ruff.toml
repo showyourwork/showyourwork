@@ -1,0 +1,51 @@
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as black
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.9
+target-version = "py39"
+
+[lint]
+select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW", "UP"]
+ignore = [
+    "B904",    # Don't require explicit raise ... from in expections for now
+    "F821",    # Allow undefined names (for now!) to handle MAGIC snakemake
+    "PLR0912", # Allow more branches
+    "PLR0913", # Allow more function arguments
+    "PLR0915", # Allow more statements
+    "PLR2004", # Allow magic numbers in comparisons
+]
+
+[lint.isort]
+known-first-party = ["showyourwork"]
+combine-as-imports = true
