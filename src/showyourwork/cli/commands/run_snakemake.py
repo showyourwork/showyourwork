@@ -24,7 +24,6 @@ def run_snakemake(
         "--use-conda",
         "--conda-frontend",
         conda_frontend,
-        "--reason",
         "--cache",
         "-s",
         snakefile,
