@@ -273,7 +273,7 @@ def patch_snakemake_logging():
 
     # Suppress *all* Snakemake output to the terminal (unless verbose);
     # save it all for the logs!
-    for handler in snakemake_logger.logger.handlers:
+    for handler in snakemake_logger.handlers:
         if isinstance(handler, logging.FileHandler):
             handler.setLevel(logging.DEBUG)
         elif not snakemake.workflow.config.get("verbose", False):
@@ -284,7 +284,7 @@ def patch_snakemake_logging():
         snakemake_logger.custom_stream_handler = ColorizingStreamHandler()
         snakemake_logger.custom_stream_handler.setLevel(logging.ERROR)
         snakemake_logger.custom_stream_handler.setFormatter(SnakemakeFormatter())
-        snakemake_logger.logger.addHandler(snakemake_logger.custom_stream_handler)
+        snakemake_logger.addHandler(snakemake_logger.custom_stream_handler)
 
     # Custom Snakemake file handler
     if not hasattr(snakemake_logger, "custom_file_handler"):
@@ -301,7 +301,7 @@ def patch_snakemake_logging():
                 log_path / "snakemake.log"
             )
             snakemake_logger.custom_file_handler.setLevel(logging.DEBUG)
-            snakemake_logger.logger.addHandler(snakemake_logger.custom_file_handler)
+            snakemake_logger.addHandler(snakemake_logger.custom_file_handler)
 
     # Suppress Snakemake exceptions if we caught them on the
     # showyourwork side
