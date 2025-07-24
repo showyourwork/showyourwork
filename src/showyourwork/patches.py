@@ -49,22 +49,34 @@ def patch_snakemake_missing_input_leniency():
     """
     Patches snakemake to raise an error if there are no producers for
     any of the output files in the DAG.
-
     """
-    _dag_debug = snakemake.dag.logger.dag_debug
+    from snakemake.logging import logger
 
-    def dag_debug(msg):
-        if isinstance(msg, dict):
-            if "No producers found, but file is present on disk" in msg.get("msg", ""):
-                file = msg["file"]
-                msg = str(msg["exception"])
+    # Store the original debug method
+    _original_debug = logger.debug
+
+    def patched_debug(msg, *args, **kwargs):
+        # Check if this is the specific message we want to intercept
+        if (
+            isinstance(msg, str)
+            and "No producers found, but file" in msg
+            and "is present on disk" in msg
+        ):
+            # Extract the file information from the extra dict if available
+            extra = kwargs.get("extra", {})
+            if "file" in extra and "exception" in extra:
+                file = extra["file"]
+                exception_msg = str(extra["exception"])
                 raise exceptions.MissingDependencyError(
                     f"File {file} is present on disk, but there "
-                    f"is no valid rule to generate it.\n{msg}"
+                    f"is no valid rule to generate it.\n{exception_msg}"
                 )
-        _dag_debug(msg)
 
-    snakemake.dag.logger.dag_debug = dag_debug
+        # Call the original debug method
+        return _original_debug(msg, *args, **kwargs)
+
+    # Apply the patch
+    logger.debug = patched_debug
 
 
 def get_snakemake_variable(name, default=None):
