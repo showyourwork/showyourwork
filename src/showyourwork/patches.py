@@ -359,60 +359,85 @@ def patch_snakemake_wait_for_files():
 
     """
 
-    def wait_for_files(
+    from snakemake.io import _IOFile, is_flagged
+    from snakemake.logging import logger
+
+    _CONSIDER_LOCAL_DEFAULT = frozenset()
+
+    async def wait_for_files(
         files,
         latency_wait=3,
-        force_stay_on_remote=False,
+        wait_for_local=False,
         ignore_pipe_or_service=False,
+        consider_local: set[_IOFile] = _CONSIDER_LOCAL_DEFAULT,
     ):
         """Wait for given files to be present in the filesystem."""
+
+        from snakemake.io.fmt import fmt_iofile
+
         files = list(files)
 
-        def get_missing():
-            return [
-                f
-                for f in files
-                if not (
-                    f.exists_remote
-                    if (
-                        isinstance(f, snakemake.io._IOFile)
-                        and f.is_remote
-                        and (force_stay_on_remote or f.should_stay_on_remote)
-                    )
-                    else (
-                        os.path.exists(f)
-                        if not (
-                            (
-                                snakemake.io.is_flagged(f, "pipe")
-                                or snakemake.io.is_flagged(f, "service")
-                            )
-                            and ignore_pipe_or_service
+        async def get_missing(list_parent=False):
+            async def eval_file(f):
+                if (
+                    is_flagged(f, "pipe") or is_flagged(f, "service")
+                ) and ignore_pipe_or_service:
+                    return None
+                if (
+                    isinstance(f, _IOFile)
+                    and f not in consider_local
+                    and f.is_storage
+                    and (not wait_for_local or f.should_not_be_retrieved_from_storage)
+                ):
+                    if not await f.exists_in_storage():
+                        return f"{f.storage_object.print_query} (missing in storage)"
+                elif not os.path.exists(f):
+                    parent_dir = os.path.dirname(f)
+                    if list_parent:
+                        parent_msg = (
+                            f" contents: {', '.join(os.listdir(parent_dir))}"
+                            if os.path.exists(parent_dir)
+                            else " not present"
                         )
-                        else True
-                    )
-                )
-            ]
+                        return (
+                            f"{fmt_iofile(f)} (missing locally, parent dir{parent_msg})"
+                        )
+                    else:
+                        return f"{fmt_iofile(f)} (missing locally)"
+                return None
 
-        missing = get_missing()
+            return list(filter(None, [await eval_file(f) for f in files]))
+
+        missing = await get_missing()
         if missing:
-            get_logger().info(
-                f"Waiting at most {latency_wait} seconds for missing files."
+            fmt_missing = "\n".join
+
+            sleep = max(latency_wait / 10, 1)
+            before_time = time.time()
+            logger.info(
+                f"Waiting at most {latency_wait} seconds for missing files:\n"
+                f"{fmt_missing(missing)}"
             )
-            for _ in range(latency_wait):
-                missing = get_missing()
+            while time.time() - before_time < latency_wait:
+                missing = await get_missing()
+                logger.debug("still missing files, waiting...")
                 if not missing:
                     return
-                time.sleep(1)
-            missing = "\n".join(get_missing())
+                time.sleep(sleep)
+            missing = fmt_missing(await get_missing(list_parent=True))
             raise exceptions.MissingFigureOutputError(
-                f"Missing files after {latency_wait} seconds:\n" f"{missing}"
+                f"Missing files after {latency_wait} seconds. "
+                "The more likely scenario is "
+                "that you (the user) simply did not code up the rule "
+                "properly, or the output file was saved with the wrong path. "
+                "This also might be due to "
+                "filesystem latency. If that is the case, consider to increase the "
+                "wait time with --latency-wait:\n"
+                f"{missing}"
             )
 
     # Apply the patch
-    snakemake.wait_for_files = wait_for_files
     snakemake.io.wait_for_files = wait_for_files
-    snakemake.dag.wait_for_files = wait_for_files
-    snakemake.jobs.wait_for_files = wait_for_files
 
 
 def job_is_cached(job):
