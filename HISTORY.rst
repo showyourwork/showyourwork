@@ -3,7 +3,7 @@
 Development version (2025-07-25)
 ++++++++++++++++++++++++++++++++
 
-These are the most relevant changes for users since the last release: 
+These are the most relevant changes for users since the last release:
 
 - Update snakemake dependency (Python >=3.11) (`#556 <https://github.com/showyourwork/showyourwork/pull/556>`_) `@HealthyPear <https://github.com/HealthyPear>`_
 - Update instructions for VSCode integration (`#528 <https://github.com/showyourwork/showyourwork/pull/528>`_) `@HealthyPear <https://github.com/HealthyPear>`_
