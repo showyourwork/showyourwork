@@ -422,7 +422,7 @@ def patch_snakemake_wait_for_files():
 
         missing = await get_missing()
         if missing:
-            fmt_missing = "\n".join
+            fmt_missing = "\n".join(missing)
 
             sleep = max(latency_wait / 10, 1)
             before_time = time.time()
