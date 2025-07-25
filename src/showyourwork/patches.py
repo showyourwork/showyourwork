@@ -2,11 +2,12 @@
 Implements functions that modify the behavior of Snakemake.
 
 This functionality is pretty hacky and is almost certainly not future-proof,
-so if we change the Snakemake version (currently pinned at 16.5.5), we may have
-to update the code in this file.
+so if we change the Snakemake version, we may have to update the code in this file.
 
+Updated for compatibility with Snakemake v9.8.1's async architecture.
 """
 
+import asyncio
 import inspect
 import logging
 import os
@@ -440,6 +441,39 @@ def patch_snakemake_wait_for_files():
     snakemake.io.wait_for_files = wait_for_files
 
 
+def _run_async_safely(coro):
+    """
+    Run an async coroutine safely, handling event loop context.
+    """
+    import concurrent.futures
+
+    try:
+        # Try to get current event loop
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # We're in an async context, need to create a task and await it
+            # Since we can't await here, we need to use the running loop
+
+            # Create a new event loop in a thread
+            def run_in_new_loop():
+                new_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(new_loop)
+                try:
+                    return new_loop.run_until_complete(coro)
+                finally:
+                    new_loop.close()
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(run_in_new_loop)
+                return future.result()
+        else:
+            # No running loop, safe to use asyncio.run
+            return asyncio.run(coro)
+    except RuntimeError:
+        # No event loop, safe to use asyncio.run
+        return asyncio.run(coro)
+
+
 def job_is_cached(job):
     """
     Return True if a job's outputs will be restored from cache.
@@ -449,17 +483,22 @@ def job_is_cached(job):
     cache = snakemake.workflow.workflow.output_file_cache
 
     # Check if user requested caching for job
-    if not snakemake.workflow.workflow.is_cached_rule(job.rule):
+    cache_mode = snakemake.workflow.workflow.get_cache_mode(job.rule)
+    if cache_mode is None:
         logger.debug(f"Job {job.name} is not cacheable.")
         return False
 
     # Check for a local cache hit
     try:
-        if cache.exists(job):
+        # In Snakemake v9.8.1, cache.exists() is now async
+        async def check_cache_exists():
+            return await cache.exists(job, cache_mode)
+
+        cache_exists = _run_async_safely(check_cache_exists())
+
+        if cache_exists:
             logger.debug(f"Local cache exists for job {job.name}.")
             return True
-        else:
-            pass
     except Exception:
         # Job is not cacheable (no output files or multiple output files)
         logger.debug(f"Job {job.name} is not cacheable.")
@@ -527,9 +566,17 @@ def get_skippable_jobs(dag):
             parents = set()
             for file in node.input:
                 try:
-                    parents |= set(dag.file2jobs(file)).difference(nodes)
+                    # In Snakemake v9.8.1, dag.file2jobs() is now async
+                    async def get_file_jobs(f=file):
+                        return await dag.file2jobs(f)
+
+                    file_jobs = _run_async_safely(get_file_jobs())
+                    parents |= set(file_jobs).difference(nodes)
                 except snakemake.exceptions.MissingRuleException:
                     # Not all files have producers
+                    pass
+                except Exception as e:
+                    logger.debug(f"Error getting jobs for file {file}: {e}")
                     pass
 
             # Find parents whose children are all in `nodes`
@@ -556,41 +603,57 @@ def patch_snakemake_cache_optimization(dag):
     See the full discussion about this feature
     `here <https://github.com/showyourwork/showyourwork/issues/124>`__.
 
+    Note: Updated for Snakemake v9.8.1's async architecture.
     """
     logger = get_logger()
 
     if snakemake.workflow.workflow.output_file_cache is not None:
-        # Get list of jobs we can skip
-        skippable_jobs = get_skippable_jobs(dag)
-        logger.debug("Skipping the following jobs because of downstream cache hits:")
-        logger.debug("    " + " ".join([job.name for job in skippable_jobs]))
+        try:
+            # Get list of jobs we can skip
+            skippable_jobs = get_skippable_jobs(dag)
+            logger.debug(
+                "Skipping the following jobs because of downstream cache hits:"
+            )
+            logger.debug("    " + " ".join([job.name for job in skippable_jobs]))
 
-        # Patch the Snakemake method that executes jobs
-        scheduler = snakemake.workflow.workflow.scheduler
-        for executor in scheduler._executor, scheduler._local_executor:
-            if executor:
-                # Original method
-                _cached_or_run = executor.cached_or_run
+            # Patch the Snakemake method that executes jobs
+            scheduler = snakemake.workflow.workflow.scheduler
 
-                # Intercept jobs we don't need to run
-                def wrapper(self, job, run_func, *args, _cached_or_run):
-                    if job in skippable_jobs:
-                        # Instead of running this job, we create empty temp
-                        # outputs to trick Snakemake & keep going
-                        for output in job.output:
-                            if not output.exists:
-                                logger.warning(
-                                    f"Skipping job {job.name} because "
-                                    "of a downstream cache hit."
-                                )
-                                output.set_flags({"temp": True})
-                                output.touch_or_create()
-                        return
-                    else:
-                        # We need to run this rule
-                        _cached_or_run(job, run_func, *args)
+            for executor_name in ["_executor", "_local_executor"]:
+                executor = getattr(scheduler, executor_name, None)
+                if executor and hasattr(executor, "cached_or_run"):
+                    # Original method
+                    _cached_or_run = executor.cached_or_run
 
-                # Patch the method
-                executor.cached_or_run = types.MethodType(
-                    partial(wrapper, _cached_or_run=_cached_or_run), executor
-                )
+                    # Intercept jobs we don't need to run
+                    def wrapper(
+                        self, job, run_func, *args, _cached_or_run=_cached_or_run
+                    ):
+                        if job in skippable_jobs:
+                            # Instead of running this job, we create empty temp
+                            # outputs to trick Snakemake & keep going
+                            for output in job.output:
+                                # Check if output exists using async-safe method
+                                async def check_output_exists(out=output):
+                                    return await out.exists()
+
+                                output_exists = _run_async_safely(check_output_exists())
+                                if not output_exists:
+                                    logger.warning(
+                                        f"Skipping job {job.name} because "
+                                        "of a downstream cache hit."
+                                    )
+                                    output.set_flags({"temp": True})
+                                    output.touch_or_create()
+                            return
+                        else:
+                            # We need to run this rule - call original method
+                            return _cached_or_run(job, run_func, *args)
+
+                    # Patch the method
+                    executor.cached_or_run = types.MethodType(wrapper, executor)
+
+        except Exception as e:
+            logger.warning(f"Cache optimization failed: {e}")
+    else:
+        logger.warning("Output file cache is None, skipping cache optimization")
