@@ -1,5 +1,27 @@
 .. :changelog:
 
+Development version (2025-07-25)
+++++++++++++++++++++++++++++++++
+
+These are the most relevant changes for users since the last release: 
+
+- Update snakemake dependency (Python >=3.11) (`#556 <https://github.com/showyourwork/showyourwork/pull/556>`_) `@HealthyPear <https://github.com/HealthyPear>`_
+- Update instructions for VSCode integration (`#528 <https://github.com/showyourwork/showyourwork/pull/528>`_) `@HealthyPear <https://github.com/HealthyPear>`_
+- Fix issue for which use of an ORCID ID caused a crash (`#527 <https://github.com/showyourwork/showyourwork/pull/527>`_) `@HealthyPear <https://github.com/HealthyPear>`_
+
+Full list of changes: `<https://github.com/showyourwork/showyourwork/compare/v0.4.3...HEAD>`_
+
+v0.4.3 (2023-08-03)
++++++++++++++++++++
+
+Full changelog for `v0.4.2...v0.4.3 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.3>`_.
+
+
+v0.4.2 (2023-01-31)
++++++++++++++++++++
+
+Full changelog for `v0.4.1...v0.4.2 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.2>`_.
+
 0.4.1 (2022-10-26)
 ++++++++++++++++++
 
@@ -10,7 +32,7 @@
 - Added support for SyncTeX.
 - Added option to ignore certain files when rendering the article DAG.
 - Added entries to the FAQs and cleaned up the docs a bit.
-- Changelog: `v0.2.3...v0.3.0 <https://github.com/showyourwork/showyourwork/compare/v0.4.0...v0.4.1>`_
+- Changelog: `v0.4.0...v0.4.1 <https://github.com/showyourwork/showyourwork/compare/v0.4.0...v0.4.1>`_
 
 0.4.0 (2022-10-21)
 ++++++++++++++++++
@@ -87,7 +109,7 @@
 - Fixed issue with broken GitHub links in the PDF when using SSH to authenticate
   with GitHub.
 - Implemented better testing for showyourwork features; test repositories now
-  persist on GitHub (showyourwork/test-**).
+  persist on GitHub (showyourwork/test-xxx).
 - Implemented major fix for issue `#124 <https://github.com/showyourwork/showyourwork/issues/124>`__,
   which allows us to optimize the DAG by eliminating unnecessary jobs upstream
   of jobs with cache hits.
