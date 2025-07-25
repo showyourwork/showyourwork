@@ -203,7 +203,7 @@ for file in rules + snakefiles:
     else:
         with open(Path("../src/showyourwork/workflow") / file) as f:
             contents = f.read()
-    docstring = re.match('"""((?s).*?)"""', contents)
+    docstring = re.match('"""(.*?)"""', contents, re.DOTALL)
     if docstring:
         docstring = docstring.groups()[0]
     else:
