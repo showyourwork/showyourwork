@@ -1,7 +1,7 @@
 """
 Defines the rule ``syw__compile`` to build the article PDF.
 
-Runs the script :doc:`pdf` to generate the article ``ms.pdf``.
+Runs the script :doc:`preprocess` to generate the article ``ms.pdf``.
 
 """
 from pathlib import Path
