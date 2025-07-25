@@ -286,11 +286,22 @@ def patch_snakemake_logging():
 
     # Suppress *all* Snakemake output to the terminal (unless verbose);
     # save it all for the logs!
-    for handler in snakemake_logger.handlers:
-        if isinstance(handler, logging.FileHandler):
-            handler.setLevel(logging.DEBUG)
-        elif not snakemake.workflow.config.get("verbose", False):
-            handler.setLevel(logging.CRITICAL)
+    if hasattr(snakemake_logger, "handlers"):
+        for handler in snakemake_logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.setLevel(logging.DEBUG)
+            elif not snakemake.workflow.config.get("verbose", False):
+                handler.setLevel(logging.CRITICAL)
+    elif hasattr(snakemake_logger, "logger") and hasattr(
+        snakemake_logger.logger, "handlers"
+    ):
+        # In newer versions, logger might not have handlers attribute
+        # Try to access via logger property if it exists
+        for handler in snakemake_logger.logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.setLevel(logging.DEBUG)
+            elif not snakemake.workflow.config.get("verbose", False):
+                handler.setLevel(logging.CRITICAL)
 
     # Custom Snakemake stdout handler
     if not hasattr(snakemake_logger, "custom_stream_handler"):
