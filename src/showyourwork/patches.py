@@ -54,7 +54,7 @@ def patch_snakemake_missing_input_leniency():
     from snakemake.logging import logger
 
     # Store the original debug method
-    _original_debug = logger.debug
+    original_debug = logger.debug
 
     def patched_debug(msg, *args, **kwargs):
         # Check if this is the specific message we want to intercept
@@ -74,7 +74,7 @@ def patch_snakemake_missing_input_leniency():
                 )
 
         # Call the original debug method
-        return _original_debug(msg, *args, **kwargs)
+        return original_debug(msg, *args, **kwargs)
 
     # Apply the patch
     logger.debug = patched_debug
