@@ -428,7 +428,7 @@ def patch_snakemake_wait_for_files():
             before_time = time.time()
             logger.info(
                 f"Waiting at most {latency_wait} seconds for missing files:\n"
-                f"{fmt_missing(missing)}"
+                f"{fmt_missing}"
             )
             while time.time() - before_time < latency_wait:
                 missing = await get_missing()
@@ -436,7 +436,7 @@ def patch_snakemake_wait_for_files():
                 if not missing:
                     return
                 time.sleep(sleep)
-            missing = fmt_missing(await get_missing(list_parent=True))
+            missing = "\n".join(await get_missing(list_parent=True))
             raise exceptions.MissingFigureOutputError(
                 f"Missing files after {latency_wait} seconds. "
                 "The more likely scenario is "
