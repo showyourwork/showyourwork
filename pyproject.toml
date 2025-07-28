@@ -39,8 +39,14 @@ showyourwork = "showyourwork.cli:entry_point"
 "Bug Tracker" = "https://github.com/showyourwork/showyourwork/issues"
 
 [project.optional-dependencies]
-tests = ["pytest", "pytest-asyncio-cooperative"]
-docs = ["datrie", "sphinx-book-theme", "sphinxcontrib-programoutput"]
+tests = ["pytest>=7.0.0", "pytest-asyncio-cooperative>=0.28.0"]
+docs = [
+    "datrie",
+    "sphinx-book-theme",
+    "sphinxcontrib-programoutput",
+    "sphinx-changelog",
+    "towncrier",
+]
 dev = ["showyourwork[tests]", "showyourwork[docs]", "ruff", "pre-commit"]
 
 [build-system]
