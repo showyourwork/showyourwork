@@ -121,4 +121,3 @@ You can then prepare a new PR with the title "Prepare release X.Y.Z" which shoul
 before proceeding the release.
 
 TODO: Review instructions to actually make a new release.
-
