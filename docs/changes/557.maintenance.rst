@@ -1,0 +1,3 @@
+Implemented a semi-automatic changelog based on `towncrier <https://towncrier.readthedocs.io/en/stable/>`_.
+From now on, each PR author needs to add a news grament into the ``docs/changes`` directory.
+See the contributor guide for more details.
