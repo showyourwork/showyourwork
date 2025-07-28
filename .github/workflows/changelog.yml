@@ -1,0 +1,26 @@
+name: Changelog
+
+on:
+  pull_request:
+    # should also be re-run when changing labels
+    types: [opened, reopened, labeled, unlabeled, synchronize]
+    branches:
+      - 'main'
+
+env:
+  FRAGMENT_NAME_PREFIX: "docs/changes/${{ github.event.number }}"
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for at least one changelog fragment
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-changelog-needed') }}
+        run: |
+          find docs/changes -type f | \
+          grep -P "${FRAGMENT_NAME_PREFIX}\.(feature|bugfix|api|optimization|maintenance)\.rst"
