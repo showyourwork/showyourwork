@@ -1,4 +1,13 @@
-.. :changelog:
+v0.4.3 (2023-08-03)
+===================
+
+Full changelog for `v0.4.2...v0.4.3 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.3>`_.
+
+
+v0.4.2 (2023-01-31)
+===================
+
+Full changelog for `v0.4.1...v0.4.2 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.2>`_.
 
 Development version (2025-07-25)
 ++++++++++++++++++++++++++++++++
