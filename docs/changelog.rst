@@ -1,12 +1,15 @@
+=========
 Changelog
 =========
 
-.. raw:: html
+All notable changes to this project will be documented here.
+You can see changes between published releases as well changes merged into the main branch
+of the development version.
 
-    <style>
-        li p {
-            margin-bottom: 0;
-        }
-    </style>
+.. changelog::
+   :towncrier: ../
+   :towncrier-skip-if-empty:
+   :changelog_file: ../CHANGES.rst
+   
 
 .. include:: ../HISTORY.rst
