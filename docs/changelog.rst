@@ -10,6 +10,6 @@ of the development version.
    :towncrier: ../
    :towncrier-skip-if-empty:
    :changelog_file: ../CHANGES.rst
-   
+
 
 .. include:: ../HISTORY.rst
