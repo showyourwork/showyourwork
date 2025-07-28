@@ -37,6 +37,8 @@ showyourwork = "showyourwork.cli:entry_point"
 
 [project.optional-dependencies]
 tests = ["pytest>=7.0.0", "pytest-asyncio-cooperative>=0.28.0"]
+docs = ["datrie", "sphinx-book-theme", "sphinxcontrib-programoutput", "sphinx-changelog", "towncrier"]
+dev = ["showyourwork[tests]", "showyourwork[docs]", "ruff", "pre-commit"]
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
