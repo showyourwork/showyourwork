@@ -20,9 +20,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinxcontrib.programoutput",
     "sphinx.ext.napoleon",
+    "sphinx_changelog",
 ]
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "changes"]
 master_doc = "index"
 rst_epilog = """
 .. |showyourwork| raw:: html
@@ -47,7 +48,7 @@ html_theme_options = {
     "use_issues_button": True,
     "use_repository_button": True,
     "use_download_button": True,
-    "logo_only": True,
+    # "logo_only": True,
     "use_fullscreen_button": False,
     "path_to_docs": "docs/",
 }
