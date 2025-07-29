@@ -9,28 +9,6 @@ v0.4.2 (2023-01-31)
 
 Full changelog for `v0.4.1...v0.4.2 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.2>`_.
 
-Development version (2025-07-25)
-++++++++++++++++++++++++++++++++
-
-These are the most relevant changes for users since the last release:
-
-- Update snakemake dependency (Python >=3.11) (`#556 <https://github.com/showyourwork/showyourwork/pull/556>`_) `@HealthyPear <https://github.com/HealthyPear>`_
-- Update instructions for VSCode integration (`#528 <https://github.com/showyourwork/showyourwork/pull/528>`_) `@HealthyPear <https://github.com/HealthyPear>`_
-- Fix issue for which use of an ORCID ID caused a crash (`#527 <https://github.com/showyourwork/showyourwork/pull/527>`_) `@HealthyPear <https://github.com/HealthyPear>`_
-
-Full list of changes: `<https://github.com/showyourwork/showyourwork/compare/v0.4.3...HEAD>`_
-
-v0.4.3 (2023-08-03)
-+++++++++++++++++++
-
-Full changelog for `v0.4.2...v0.4.3 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.3>`_.
-
-
-v0.4.2 (2023-01-31)
-+++++++++++++++++++
-
-Full changelog for `v0.4.1...v0.4.2 <https://github.com/showyourwork/showyourwork/releases/tag/v0.4.2>`_.
-
 0.4.1 (2022-10-26)
 ==================
 
