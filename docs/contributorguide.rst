@@ -102,7 +102,7 @@ Contributing code
    - ``feature``: for new features
    - ``maintenance``: for maintenance tasks, like updating dependencies or documentation
    - ``api``: for changes to the public API
-   - ``optmization``: for changes that improve performance or refactor code , but do not change user experience
+   - ``optimization``: for changes that improve performance or refactor code , but do not change user experience
 
 Making a new release
 --------------------

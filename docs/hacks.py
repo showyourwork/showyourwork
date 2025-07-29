@@ -133,6 +133,21 @@ sys.path.insert(1, str(ROOT / "src" / "showyourwork" / "workflow" / "scripts"))
 API_KEY = os.getenv("GH_API_KEY", None)
 if API_KEY is None:
     print("ERROR: Can't authenticate git. Unable to generate `projects.rst`.")
+    # Create a fallback projects.rst file to avoid Sphinx warnings
+    fallback_content = """Projects that use showyourwork
+==============================
+
+.. note::
+
+   This page requires a GitHub API key to generate the full list of projects.
+   Please visit the `GitHub repository <https://github.com/showyourwork/showyourwork/blob/main/docs/projects.json>`_
+   for a selected list of projects using showyourwork.
+
+For a complete list of projects linked to other GitHub repositories that make use of showyourwork,
+see `here <https://github.com/showyourwork/showyourwork-action/network/dependents>`__.
+"""
+    with open("projects.rst", "w") as f:
+        f.write(fallback_content)
 else:
     with open("projects.json") as f:
         projects = json.load(f)
@@ -203,7 +218,7 @@ for file in rules + snakefiles:
     else:
         with open(Path("../src/showyourwork/workflow") / file) as f:
             contents = f.read()
-    docstring = re.match('"""((?s).*?)"""', contents)
+    docstring = re.match('"""(.*?)"""', contents, re.DOTALL)
     if docstring:
         docstring = docstring.groups()[0]
     else:

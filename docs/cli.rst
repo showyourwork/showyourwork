@@ -255,7 +255,7 @@ By default, ``showyourwork`` passes the following arguments to ``snakemake``:
 
 .. code-block:: bash
 
-    -c1 --use-conda --reason --cache
+    -c1 --use-conda --cache
 
 Some of these, like the number of cores, can be overridden. For example, you
 may run

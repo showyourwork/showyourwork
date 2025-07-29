@@ -39,7 +39,7 @@ jobs:
         with:
           environment-name: test-env
           create-args: >-
-            python=3.9
+            python=3.11
             mamba
 
       - name: Install showyourwork

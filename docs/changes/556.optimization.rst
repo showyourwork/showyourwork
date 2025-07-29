@@ -1,0 +1,2 @@
+Upgraded dependency on `snakemake` from v7.15.2 to at least v9.8.1.
+Minimum Python version required has been bumped up to 3.11.

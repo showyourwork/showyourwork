@@ -2,11 +2,12 @@
 Implements functions that modify the behavior of Snakemake.
 
 This functionality is pretty hacky and is almost certainly not future-proof,
-so if we change the Snakemake version (currently pinned at 16.5.5), we may have
-to update the code in this file.
+so if we change the Snakemake version, we may have to update the code in this file.
 
+Updated for compatibility with Snakemake v9.8.1's async architecture.
 """
 
+import asyncio
 import inspect
 import logging
 import os
@@ -49,22 +50,34 @@ def patch_snakemake_missing_input_leniency():
     """
     Patches snakemake to raise an error if there are no producers for
     any of the output files in the DAG.
-
     """
-    _dag_debug = snakemake.dag.logger.dag_debug
+    from snakemake.logging import logger
 
-    def dag_debug(msg):
-        if isinstance(msg, dict):
-            if "No producers found, but file is present on disk" in msg.get("msg", ""):
-                file = msg["file"]
-                msg = str(msg["exception"])
+    # Store the original debug method
+    original_debug = logger.debug
+
+    def patched_debug(msg, *args, **kwargs):
+        # Check if this is the specific message we want to intercept
+        if (
+            isinstance(msg, str)
+            and "No producers found, but file" in msg
+            and "is present on disk" in msg
+        ):
+            # Extract the file information from the extra dict if available
+            extra = kwargs.get("extra", {})
+            if "file" in extra and "exception" in extra:
+                file = extra["file"]
+                exception_msg = str(extra["exception"])
                 raise exceptions.MissingDependencyError(
                     f"File {file} is present on disk, but there "
-                    f"is no valid rule to generate it.\n{msg}"
+                    f"is no valid rule to generate it.\n{exception_msg}"
                 )
-        _dag_debug(msg)
 
-    snakemake.dag.logger.dag_debug = dag_debug
+        # Call the original debug method
+        return original_debug(msg, *args, **kwargs)
+
+    # Apply the patch
+    logger.debug = patched_debug
 
 
 def get_snakemake_variable(name, default=None):
@@ -273,18 +286,29 @@ def patch_snakemake_logging():
 
     # Suppress *all* Snakemake output to the terminal (unless verbose);
     # save it all for the logs!
-    for handler in snakemake_logger.logger.handlers:
-        if isinstance(handler, logging.FileHandler):
-            handler.setLevel(logging.DEBUG)
-        elif not snakemake.workflow.config.get("verbose", False):
-            handler.setLevel(logging.CRITICAL)
+    if hasattr(snakemake_logger, "handlers"):
+        for handler in snakemake_logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.setLevel(logging.DEBUG)
+            elif not snakemake.workflow.config.get("verbose", False):
+                handler.setLevel(logging.CRITICAL)
+    elif hasattr(snakemake_logger, "logger") and hasattr(
+        snakemake_logger.logger, "handlers"
+    ):
+        # In newer versions, logger might not have handlers attribute
+        # Try to access via logger property if it exists
+        for handler in snakemake_logger.logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.setLevel(logging.DEBUG)
+            elif not snakemake.workflow.config.get("verbose", False):
+                handler.setLevel(logging.CRITICAL)
 
     # Custom Snakemake stdout handler
     if not hasattr(snakemake_logger, "custom_stream_handler"):
         snakemake_logger.custom_stream_handler = ColorizingStreamHandler()
         snakemake_logger.custom_stream_handler.setLevel(logging.ERROR)
         snakemake_logger.custom_stream_handler.setFormatter(SnakemakeFormatter())
-        snakemake_logger.logger.addHandler(snakemake_logger.custom_stream_handler)
+        snakemake_logger.addHandler(snakemake_logger.custom_stream_handler)
 
     # Custom Snakemake file handler
     if not hasattr(snakemake_logger, "custom_file_handler"):
@@ -301,7 +325,7 @@ def patch_snakemake_logging():
                 log_path / "snakemake.log"
             )
             snakemake_logger.custom_file_handler.setLevel(logging.DEBUG)
-            snakemake_logger.logger.addHandler(snakemake_logger.custom_file_handler)
+            snakemake_logger.addHandler(snakemake_logger.custom_file_handler)
 
     # Suppress Snakemake exceptions if we caught them on the
     # showyourwork side
@@ -347,60 +371,118 @@ def patch_snakemake_wait_for_files():
 
     """
 
-    def wait_for_files(
+    from snakemake.io import _IOFile, is_flagged
+    from snakemake.logging import logger
+
+    _CONSIDER_LOCAL_DEFAULT = frozenset()
+
+    async def wait_for_files(
         files,
         latency_wait=3,
-        force_stay_on_remote=False,
+        wait_for_local=False,
         ignore_pipe_or_service=False,
+        consider_local: set[_IOFile] = _CONSIDER_LOCAL_DEFAULT,
     ):
         """Wait for given files to be present in the filesystem."""
+
+        from snakemake.io.fmt import fmt_iofile
+
         files = list(files)
 
-        def get_missing():
-            return [
-                f
-                for f in files
-                if not (
-                    f.exists_remote
-                    if (
-                        isinstance(f, snakemake.io._IOFile)
-                        and f.is_remote
-                        and (force_stay_on_remote or f.should_stay_on_remote)
-                    )
-                    else (
-                        os.path.exists(f)
-                        if not (
-                            (
-                                snakemake.io.is_flagged(f, "pipe")
-                                or snakemake.io.is_flagged(f, "service")
-                            )
-                            and ignore_pipe_or_service
+        async def get_missing(list_parent=False):
+            async def eval_file(f):
+                if (
+                    is_flagged(f, "pipe") or is_flagged(f, "service")
+                ) and ignore_pipe_or_service:
+                    return None
+                if (
+                    isinstance(f, _IOFile)
+                    and f not in consider_local
+                    and f.is_storage
+                    and (not wait_for_local or f.should_not_be_retrieved_from_storage)
+                ):
+                    if not await f.exists_in_storage():
+                        return f"{f.storage_object.print_query} (missing in storage)"
+                elif not os.path.exists(f):
+                    parent_dir = os.path.dirname(f)
+                    if list_parent:
+                        parent_msg = (
+                            f" contents: {', '.join(os.listdir(parent_dir))}"
+                            if os.path.exists(parent_dir)
+                            else " not present"
                         )
-                        else True
-                    )
-                )
-            ]
+                        return (
+                            f"{fmt_iofile(f)} (missing locally, parent dir{parent_msg})"
+                        )
+                    else:
+                        return f"{fmt_iofile(f)} (missing locally)"
+                return None
 
-        missing = get_missing()
+            return list(filter(None, [await eval_file(f) for f in files]))
+
+        missing = await get_missing()
         if missing:
-            get_logger().info(
-                f"Waiting at most {latency_wait} seconds for missing files."
+            fmt_missing = "\n".join(missing)
+
+            sleep = max(latency_wait / 10, 1)
+            before_time = time.time()
+            logger.info(
+                f"Waiting at most {latency_wait} seconds for missing files:\n"
+                f"{fmt_missing}"
             )
-            for _ in range(latency_wait):
-                missing = get_missing()
+            while time.time() - before_time < latency_wait:
+                missing = await get_missing()
+                logger.debug("still missing files, waiting...")
                 if not missing:
                     return
-                time.sleep(1)
-            missing = "\n".join(get_missing())
+                time.sleep(sleep)
+            missing = "\n".join(await get_missing(list_parent=True))
             raise exceptions.MissingFigureOutputError(
-                f"Missing files after {latency_wait} seconds:\n" f"{missing}"
+                f"Missing files after {latency_wait} seconds. "
+                "The more likely scenario is "
+                "that you (the user) simply did not code up the rule "
+                "properly, or the output file was saved with the wrong path. "
+                "This also might be due to "
+                "filesystem latency. If that is the case, consider to increase the "
+                "wait time with --latency-wait:\n"
+                f"{missing}"
             )
 
     # Apply the patch
-    snakemake.wait_for_files = wait_for_files
     snakemake.io.wait_for_files = wait_for_files
-    snakemake.dag.wait_for_files = wait_for_files
-    snakemake.jobs.wait_for_files = wait_for_files
+
+
+def _run_async_safely(coro):
+    """
+    Run an async coroutine safely, handling event loop context.
+    """
+    import concurrent.futures
+
+    try:
+        # Try to get current event loop
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # We're in an async context, need to create a task and await it
+            # Since we can't await here, we need to use the running loop
+
+            # Create a new event loop in a thread
+            def run_in_new_loop():
+                new_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(new_loop)
+                try:
+                    return new_loop.run_until_complete(coro)
+                finally:
+                    new_loop.close()
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(run_in_new_loop)
+                return future.result()
+        else:
+            # No running loop, safe to use asyncio.run
+            return asyncio.run(coro)
+    except RuntimeError:
+        # No event loop, safe to use asyncio.run
+        return asyncio.run(coro)
 
 
 def job_is_cached(job):
@@ -412,17 +494,22 @@ def job_is_cached(job):
     cache = snakemake.workflow.workflow.output_file_cache
 
     # Check if user requested caching for job
-    if not snakemake.workflow.workflow.is_cached_rule(job.rule):
+    cache_mode = snakemake.workflow.workflow.get_cache_mode(job.rule)
+    if cache_mode is None:
         logger.debug(f"Job {job.name} is not cacheable.")
         return False
 
     # Check for a local cache hit
     try:
-        if cache.exists(job):
+        # In Snakemake v9.8.1, cache.exists() is now async
+        async def check_cache_exists():
+            return await cache.exists(job, cache_mode)
+
+        cache_exists = _run_async_safely(check_cache_exists())
+
+        if cache_exists:
             logger.debug(f"Local cache exists for job {job.name}.")
             return True
-        else:
-            pass
     except Exception:
         # Job is not cacheable (no output files or multiple output files)
         logger.debug(f"Job {job.name} is not cacheable.")
@@ -490,9 +577,17 @@ def get_skippable_jobs(dag):
             parents = set()
             for file in node.input:
                 try:
-                    parents |= set(dag.file2jobs(file)).difference(nodes)
+                    # In Snakemake v9.8.1, dag.file2jobs() is now async
+                    async def get_file_jobs(f=file):
+                        return await dag.file2jobs(f)
+
+                    file_jobs = _run_async_safely(get_file_jobs())
+                    parents |= set(file_jobs).difference(nodes)
                 except snakemake.exceptions.MissingRuleException:
                     # Not all files have producers
+                    pass
+                except Exception as e:
+                    logger.debug(f"Error getting jobs for file {file}: {e}")
                     pass
 
             # Find parents whose children are all in `nodes`
@@ -519,41 +614,57 @@ def patch_snakemake_cache_optimization(dag):
     See the full discussion about this feature
     `here <https://github.com/showyourwork/showyourwork/issues/124>`__.
 
+    Note: Updated for Snakemake v9.8.1's async architecture.
     """
     logger = get_logger()
 
     if snakemake.workflow.workflow.output_file_cache is not None:
-        # Get list of jobs we can skip
-        skippable_jobs = get_skippable_jobs(dag)
-        logger.debug("Skipping the following jobs because of downstream cache hits:")
-        logger.debug("    " + " ".join([job.name for job in skippable_jobs]))
+        try:
+            # Get list of jobs we can skip
+            skippable_jobs = get_skippable_jobs(dag)
+            logger.debug(
+                "Skipping the following jobs because of downstream cache hits:"
+            )
+            logger.debug("    " + " ".join([job.name for job in skippable_jobs]))
 
-        # Patch the Snakemake method that executes jobs
-        scheduler = snakemake.workflow.workflow.scheduler
-        for executor in scheduler._executor, scheduler._local_executor:
-            if executor:
-                # Original method
-                _cached_or_run = executor.cached_or_run
+            # Patch the Snakemake method that executes jobs
+            scheduler = snakemake.workflow.workflow.scheduler
 
-                # Intercept jobs we don't need to run
-                def wrapper(self, job, run_func, *args, _cached_or_run):
-                    if job in skippable_jobs:
-                        # Instead of running this job, we create empty temp
-                        # outputs to trick Snakemake & keep going
-                        for output in job.output:
-                            if not output.exists:
-                                logger.warning(
-                                    f"Skipping job {job.name} because "
-                                    "of a downstream cache hit."
-                                )
-                                output.set_flags({"temp": True})
-                                output.touch_or_create()
-                        return
-                    else:
-                        # We need to run this rule
-                        _cached_or_run(job, run_func, *args)
+            for executor_name in ["_executor", "_local_executor"]:
+                executor = getattr(scheduler, executor_name, None)
+                if executor and hasattr(executor, "cached_or_run"):
+                    # Original method
+                    _cached_or_run = executor.cached_or_run
 
-                # Patch the method
-                executor.cached_or_run = types.MethodType(
-                    partial(wrapper, _cached_or_run=_cached_or_run), executor
-                )
+                    # Intercept jobs we don't need to run
+                    def wrapper(
+                        self, job, run_func, *args, _cached_or_run=_cached_or_run
+                    ):
+                        if job in skippable_jobs:
+                            # Instead of running this job, we create empty temp
+                            # outputs to trick Snakemake & keep going
+                            for output in job.output:
+                                # Check if output exists using async-safe method
+                                async def check_output_exists(out=output):
+                                    return await out.exists()
+
+                                output_exists = _run_async_safely(check_output_exists())
+                                if not output_exists:
+                                    logger.warning(
+                                        f"Skipping job {job.name} because "
+                                        "of a downstream cache hit."
+                                    )
+                                    output.set_flags({"temp": True})
+                                    output.touch_or_create()
+                            return
+                        else:
+                            # We need to run this rule - call original method
+                            return _cached_or_run(job, run_func, *args)
+
+                    # Patch the method
+                    executor.cached_or_run = types.MethodType(wrapper, executor)
+
+        except Exception as e:
+            logger.warning(f"Cache optimization failed: {e}")
+    else:
+        logger.warning("Output file cache is None, skipping cache optimization")
