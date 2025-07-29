@@ -8,5 +8,6 @@ dependencies:
   - sphinx-book-theme
   - jinja2
   - sphinxcontrib-programoutput
-  - sphinx-changelog
   - towncrier
+  - pip:
+    - sphinx-changelog
