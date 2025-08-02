@@ -41,15 +41,24 @@ jobs:
           create-args: >-
             python=3.11
             mamba
+            conda
+
+      - name: Set channel priority
+        shell: micromamba-shell {0}
+        run: |
+          conda config --remove channels defaults || true
+          conda config --add channels conda-forge
+          conda config --set channel_priority strict
 
       - name: Install showyourwork
-        shell: bash -l {0}
+        shell: micromamba-shell {0}
         run: |
+          echo $CONDA_PREFIX
           python -m pip install -U pip
           python -m pip install 'showyourwork[tests] @ ${{ matrix.showyourwork-spec }}'
 
       - name: Run remote integration tests
-        shell: bash -l {0}
+        shell: micromamba-shell {0}
         run: python -m pytest --remote -m "remote" tests/integration --action-spec "${{ matrix.showyourwork-spec }}#egg=showyourwork"
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
