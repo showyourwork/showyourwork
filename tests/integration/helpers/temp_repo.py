@@ -361,30 +361,33 @@ class TemporaryShowyourworkRepository:
 
 
 class ShowyourworkRepositoryActions:
-    def add_figure_environment(self, add_script=True, label="fig:test_figure"):
-        """Adds a figure environment to the TeX file that includes `test_figure.pdf`."""
+    def add_figure_environment(
+        self, figure_path="test_figure.pdf", label="fig:test_figure", add_script=True
+    ):
+        """Adds a figure environment to the TeX file."""
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms) as f:
-            ms_orig = f.read()
-        with open(ms, "w") as f:
-            ms_new = ms_orig.replace(
-                r"\end{document}",
-                "\n".join(
-                    [
-                        r"\begin{figure}[ht!]",
-                        r"\script{test_figure.py}" if add_script else "",
-                        r"\begin{centering}",
-                        r"\includegraphics[width=\linewidth]{figures/test_figure.pdf}",
-                        r"\caption{A test figure.}",
-                        r"\label{" + label + "}",
-                        r"\end{centering}",
-                        r"\end{figure}",
-                        "",
-                        r"\end{document}",
-                    ]
-                ),
-            )
-            print(ms_new, file=f)
+        lines = ms.read_text().splitlines()
+
+        figure_block = "\n".join(
+            [
+                r"\begin{figure}[ht!]",
+                r"\script{test_figure.py}" if add_script else "",
+                r"\begin{centering}",
+                rf"\includegraphics[width=\linewidth]{{figures/{figure_path}}}",
+                r"\caption{A test figure.}",
+                r"\label{" + label + "}",
+                r"\end{centering}",
+                r"\end{figure}",
+                "",
+            ]
+        )
+
+        for idx, line in enumerate(lines):
+            if line.strip() == r"\end{document}":
+                lines.insert(idx, figure_block)
+                break
+
+        ms.write_text("\n".join(lines) + "\n")
 
     def add_figure_script(self, load_data=False, batch=False):
         """Creates a figure script `test_figure.py` that generates `test_figure.pdf`."""
