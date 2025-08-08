@@ -61,7 +61,7 @@ class TestStaticFigures(TemporaryShowyourworkRepository, ShowyourworkRepositoryA
         )
 
     def check_build(self):
-        """Check that static images have been copied to figures respecting directory structure."""
+        """Check static images are copied to figures respecting directory structure."""
         assert (self.cwd / "src/tex/figures/orcid-ID.png").exists()
         assert (self.cwd / "src/tex/figures/a/orcid-ID.png").exists()
         assert (self.cwd / "src/tex/figures/a/b/orcid-ID.png").exists()
