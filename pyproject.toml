@@ -39,7 +39,7 @@ showyourwork = "showyourwork.cli:entry_point"
 "Bug Tracker" = "https://github.com/showyourwork/showyourwork/issues"
 
 [project.optional-dependencies]
-tests = ["pytest>=7.0.0", "pytest-asyncio-cooperative>=0.28.0"]
+tests = ["matplotlib", "pytest>=7.0.0", "pytest-asyncio-cooperative>=0.28.0"]
 docs = [
     "datrie",
     "sphinx-book-theme",
