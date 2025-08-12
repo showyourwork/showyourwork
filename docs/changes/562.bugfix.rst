@@ -1,0 +1,2 @@
+Now static figures are allowed to be nested in subdirectories and
+the directory structure will be retained in src/figures.

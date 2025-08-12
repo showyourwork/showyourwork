@@ -286,8 +286,17 @@ def get_json_tree(xmlfile):
         # Are these static figures?
         static = all(
             [
-                (paths.user().repo / graphic).parents[0] == paths.user().figures
-                and (paths.user().static / Path(graphic).name).exists()
+                (paths.user().repo / graphic).parents[0]
+                == paths.user().figures
+                / Path(graphic).parent.relative_to(
+                    paths.user().figures.relative_to(paths.user().repo)
+                )
+                and (
+                    paths.user().static
+                    / Path(graphic).relative_to(
+                        paths.user().figures.relative_to(paths.user().repo)
+                    )
+                ).exists()
                 for graphic in graphics
             ]
         )
@@ -340,17 +349,26 @@ def get_json_tree(xmlfile):
             # If all the figures in this environment exist in the
             # static directory, set up the command to copy them over
             if static:
-                srcs = [
-                    str(
-                        (paths.user().static / Path(graphic).name).relative_to(
-                            paths.user().repo
+                extra_dependencies = []
+
+                commands_copy_single_file = []
+
+                for graphic in graphics:
+                    src = str(
+                        paths.user().static
+                        / Path(graphic).relative_to(
+                            paths.user().figures.relative_to(paths.user().repo)
                         )
                     )
-                    for graphic in graphics
-                ]
-                extra_dependencies = srcs
-                dest = paths.user().figures.relative_to(paths.user().repo)
-                command = f"cp {' '.join(srcs)} {dest}"
+
+                    extra_dependencies.append(src)
+
+                    dest = paths.user().figures.relative_to(paths.user().repo) / Path(
+                        graphic
+                    ).relative_to(paths.user().figures.relative_to(paths.user().repo))
+                    commands_copy_single_file.append(f"cp {src} {dest}")
+
+                command = " && ".join(commands_copy_single_file)
 
             else:
                 # We don't know how to generate this figure at this time.
