@@ -1,0 +1,1 @@
+Now using ``-h`` also works and will not pull anymore the help from the underlying _snakemake_ executable.
