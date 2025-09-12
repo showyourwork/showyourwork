@@ -7,6 +7,7 @@ dependencies:
   - requests
   - sphinx-book-theme
   - jinja2
+  - sphinx-design
   - sphinxcontrib-programoutput
   - towncrier
   - pip:
