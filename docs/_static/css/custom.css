@@ -35,3 +35,17 @@ div.toctree-wrapper.compound li.toctree-l2 {
 div.toctree-wrapper.compound li.toctree-l3 {
     list-style-type: '› ';
 }
+
+/* Custom style for sphinx-design cards in the template gallery */
+.sd-card .sd-card-img-top {
+    width: 100%;
+    /* span full width of card */
+    height: 120px;
+    /* fixed box height for consistency */
+    object-fit: contain;
+    /* scale proportionally, no crop */
+    background-color: white;
+    /* fill the padding with white */
+    padding: 8px;
+    /* optional inner margin */
+}
