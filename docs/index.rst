@@ -44,6 +44,7 @@ Contents
    install
    quickstart
    cli
+   templates
    layout
    config
    snakefile
