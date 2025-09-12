@@ -121,3 +121,14 @@ You can then prepare a new PR with the title "Prepare release X.Y.Z" which shoul
 before proceeding the release.
 
 TODO: Review instructions to actually make a new release.
+
+Add new templates
+-----------------
+
+To add a new template to the list of available templates, you need to:
+
+1. create a new template repository (please, make sure it works and it is up to date)
+2. transfer the new template to the list of available templates under the _showyourwork_ organization
+   (please, contact the administrators in case you do not have sufficient permissions)
+3. add a link to the new template repository in the :ref:`templates`
+   section of the documentation (start by copy-pasting an existing card entry and customize it for your use case)
