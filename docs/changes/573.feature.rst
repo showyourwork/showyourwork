@@ -1,0 +1,2 @@
+The documentation has been integrated with a new page
+which displays available public template repositories for new projects.
