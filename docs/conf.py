@@ -21,6 +21,7 @@ extensions = [
     "sphinxcontrib.programoutput",
     "sphinx.ext.napoleon",
     "sphinx_changelog",
+    "sphinx_design",
 ]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "changes"]
@@ -50,6 +51,7 @@ html_theme_options = {
     "use_download_button": True,
     "use_fullscreen_button": False,
     "path_to_docs": "docs/",
+    "show_toc_level": 1,
 }
 
 # -- Extension settings ------------------------------------------------------
