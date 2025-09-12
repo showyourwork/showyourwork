@@ -46,6 +46,7 @@ docs = [
     "sphinxcontrib-programoutput",
     "sphinx-changelog",
     "towncrier",
+    "sphinx-design"
 ]
 dev = ["showyourwork[tests]", "showyourwork[docs]", "ruff", "pre-commit"]
 
