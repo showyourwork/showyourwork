@@ -12,6 +12,7 @@ from . import commands
 
 SUBCOMMANDS = ["build", "cache", "clean", "setup", "tarball"]
 OPTIONS = ["-v", "--version", "--help"]
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 # Common options:
@@ -119,7 +120,7 @@ def echo(text="", **kwargs):
         click.echo(text, **kwargs)
 
 
-@click.group()
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.version_option(
     __version__,
     "--version",
