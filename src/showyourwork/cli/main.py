@@ -295,7 +295,16 @@ def validate_slug(context, param, slug):
     default=None,
     type=type("SPEC", (str,), {}),
 )
-def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
+@click.option(
+    "--action-version",
+    help=(
+        "Version of the showyourwork-action to use in the workflow. "
+        "If not specified, use the latest release or latest commit on main if newer."
+    ),
+    default=None,
+    type=type("ACTION_VERSION", (str,), {}),
+)
+def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec, action_version):
     """
     Set up a new article repository in the current working directory.
 
@@ -303,7 +312,7 @@ def setup(slug, yes, quiet, cache, overleaf, ssh, action_spec):
     `user/repo`, where `user` is the user's GitHub handle and `repo` is the
     name of the repository (and local directory) to create.
     """
-    commands.setup(slug, cache, overleaf, ssh, action_spec)
+    commands.setup(slug, cache, overleaf, ssh, action_spec, action_version)
 
 
 @main_command
