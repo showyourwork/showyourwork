@@ -9,7 +9,6 @@ jobs:
   process-pr:
     runs-on: ubuntu-latest
     permissions: write-all
-    name: Process pull request
     steps:
       - name: Process pull request
-        uses: showyourwork/showyourwork-action/process-pull-request@v1
+        uses: showyourwork/showyourwork-action/process-pull-request@{{ cookiecutter.action_version or 'v1' }}
