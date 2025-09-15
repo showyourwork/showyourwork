@@ -1,4 +1,7 @@
 **/__pycache__
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
 **/.showyourwork
 **/.snakemake
 **/_showyourwork_version.py
