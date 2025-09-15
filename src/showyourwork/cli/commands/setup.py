@@ -2,6 +2,7 @@ import shutil
 import time
 from pathlib import Path
 
+import requests
 from cookiecutter.main import cookiecutter
 
 from ... import __version__, exceptions, overleaf, paths
@@ -10,7 +11,7 @@ from ...subproc import get_stdout
 from ...zenodo import Zenodo
 
 
-def setup(slug, cache, overleaf_id, ssh, action_spec):
+def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
     """Set up a new article repo.
 
     Args:
@@ -20,8 +21,10 @@ def setup(slug, cache, overleaf_id, ssh, action_spec):
         ssh (bool): If True, use SSH to clone the repository. Otherwise, use HTTPS.
         action_spec (str or None): Showyourwork version passed to showyourwork-action in
             `.github/workflows/*.yml`
-
+        action_version (str or None):
+            Version of the showyourwork-action to use in the workflow.
     """
+
     # Parse the slug
     user, repo = slug.split("/")
     if Path(repo).exists():
@@ -47,6 +50,59 @@ def setup(slug, cache, overleaf_id, ssh, action_spec):
 
     name = f"@{user}".replace("_", "")
 
+    # Fetch latest showyourwork-action version if not specified
+    def get_latest_action_version():
+        # Get latest release info
+        release_url = "https://api.github.com/repos/showyourwork/showyourwork-action/releases/latest"
+        main_url = (
+            "https://api.github.com/repos/showyourwork/showyourwork-action/commits/main"
+        )
+        compare_url = "https://api.github.com/repos/showyourwork/showyourwork-action/compare/{release_tag}...main"
+        try:
+            release_resp = requests.get(release_url, timeout=5)
+            if release_resp.status_code == 200:
+                release_data = release_resp.json()
+                release_tag = release_data.get("tag_name")
+                # release_sha is not needed for comparison logic
+                # Get latest commit on main
+                main_resp = requests.get(main_url, timeout=5)
+                if main_resp.status_code == 200:
+                    main_data = main_resp.json()
+                    main_sha = main_data.get("sha")
+                    # Compare release tag with main
+                    if release_tag and main_sha:
+                        # Check if main has new commits since release
+                        comp_url = compare_url.format(release_tag=release_tag)
+                        comp_resp = requests.get(comp_url, timeout=5)
+                        if comp_resp.status_code == 200:
+                            comp_data = comp_resp.json()
+                            ahead_by = comp_data.get("ahead_by", 0)
+                            if ahead_by > 0:
+                                return main_sha
+                        # If no new commits, use release tag
+                        return release_tag
+        except Exception:
+            pass
+        # Fallback: just get latest commit SHA from main
+        try:
+            main_resp = requests.get(main_url, timeout=5)
+            if main_resp.status_code == 200:
+                main_data = main_resp.json()
+                main_sha = main_data.get("sha")
+                if main_sha:
+                    return main_sha
+        except Exception:
+            pass
+        # Final fallback
+        return "v1"
+
+    if not action_version:
+        action_version = get_latest_action_version()
+
+    # Set action_spec to local showyourwork version if not provided
+    if not action_spec:
+        action_spec = __version__
+
     # Create a Zenodo deposit draft for this repo
     if cache:
         deposit_sandbox = Zenodo("sandbox", slug=slug, branch="main")
@@ -68,6 +124,7 @@ def setup(slug, cache, overleaf_id, ssh, action_spec):
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,
             "action_spec": action_spec,
+            "action_version": action_version,
         },
         overwrite_if_exists=True,
     )
