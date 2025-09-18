@@ -372,6 +372,12 @@ your manuscript:
 
     \usepackage{showyourwork}
 
+.. tip::
+
+  We suggest putting this line after the other ``\usepackage{...}`` lines in your
+  manuscript. This should avoid option clashes between packages required by
+  |showyourwork| and packages you or your document class need to use.
+
 If you peek inside, there's not much there: it's a placeholder stylesheet that
 imports all the |showyourwork| functionality from elsewhere if the article
 is built as part of the |showyourwork| workflow. If you compile your article
