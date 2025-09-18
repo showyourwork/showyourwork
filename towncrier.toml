@@ -25,6 +25,10 @@ showcontent = true
 name = "Maintenance"
 showcontent = true
 
+[tool.towncrier.fragment.documentation]
+name = "Documentation"
+showcontent = true
+
 [[tool.towncrier.section]]
 name = ""
 path = ""
