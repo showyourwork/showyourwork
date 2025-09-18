@@ -18,7 +18,10 @@ something like this:
     % Define document class
     \documentclass[twocolumn]{aastex631}
 
-    % Import showyourwork magic
+    % Import here any package you may need
+    \usepackage{foo}
+
+    % Import showyourwork magic (last if possible)
     \usepackage{showyourwork}
 
     % Begin!
