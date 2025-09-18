@@ -1,0 +1,2 @@
+If ``showyourwork`` is imported as the last package in the preamble of your manuscript,
+the potential for package option clashes should now be greatly minimized.
