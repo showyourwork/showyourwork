@@ -23,4 +23,4 @@ jobs:
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-changelog-needed') }}
         run: |
           find docs/changes -type f | \
-          grep -P "${FRAGMENT_NAME_PREFIX}\.(feature|bugfix|api|optimization|maintenance)\.rst"
+          grep -P "${FRAGMENT_NAME_PREFIX}\.(feature|bugfix|api|optimization|maintenance|documentation)\.rst"
