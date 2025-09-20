@@ -19,7 +19,7 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
 
     # No need to test this on CI
     local_build_only = True
-    overleaf_id = "6409f16f438b5fb7c4dfa837"
+    overleaf_id = "68cd54011c99150d9045d2b6"
 
     # Overleaf rate limit error re-try settings
     auth_retries = 1

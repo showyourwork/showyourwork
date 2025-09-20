@@ -165,43 +165,59 @@ def wipe_remote(project_id, tex=None):
             cwd=cwd,
             secrets=[overleaf_token],
         )
-        get_stdout(["git", "rm", "-r", "*"], cwd=cwd)
+
+        # Try to remove all files, but don't fail if there are no files to remove
+        def rm_callback(code, stdout, stderr):
+            if code != 0:
+                # Check if the error is because no files match the pattern
+                if (
+                    "non corrisponde ad alcun file" in stderr
+                    or "did not match any files" in stderr
+                ):
+                    # This is expected when the repo is empty, so we ignore it
+                    pass
+                else:
+                    # Re-raise other git rm errors
+                    raise exceptions.CalledProcessError(stderr)
+
+        get_stdout(["git", "rm", "-r", "*"], cwd=cwd, callback=rm_callback)
         with open(Path(cwd) / "main.tex", "w") as f:
             print(tex, file=f)
         get_stdout(["git", "add", "main.tex"], cwd=cwd)
 
-        def callback(code, stdout, stderr):
+        # Check if there are changes to commit using git status
+        def status_callback(code, stdout, stderr):
             if code != 0:
-                if (
-                    "Your branch is up to date" in stdout + stderr
-                    or "nothing to commit" in stdout + stderr
-                    or "nothing added to commit" in stdout + stderr
-                ):
-                    pass
-                else:
-                    raise exceptions.CalledProcessError(stdout + "\n" + stderr)
-            else:
-                get_stdout(
-                    ["git", "push", url, "master"],
-                    cwd=cwd,
-                    secrets=[overleaf_token],
-                    callback=check_for_rate_limit,
-                )
+                raise exceptions.CalledProcessError(stderr)
+            return stdout.strip()
 
-        get_stdout(
-            [
-                "git",
-                "-c",
-                "user.name='showyourwork'",
-                "-c",
-                "user.email='showyourwork'",
-                "commit",
-                "-am",
-                "automatic showyourwork update",
-            ],
+        status_output = get_stdout(
+            ["git", "status", "--porcelain"],
             cwd=cwd,
-            callback=callback,
+            callback=status_callback,
         )
+
+        if status_output:
+            # There are changes to commit and push
+            get_stdout(
+                [
+                    "git",
+                    "-c",
+                    "user.name='showyourwork'",
+                    "-c",
+                    "user.email='showyourwork'",
+                    "commit",
+                    "-am",
+                    "automatic showyourwork update",
+                ],
+                cwd=cwd,
+            )
+            get_stdout(
+                ["git", "push", url, "master"],
+                cwd=cwd,
+                secrets=[overleaf_token],
+                callback=check_for_rate_limit,
+            )
 
 
 def setup_remote(project_id, path=None):
@@ -376,48 +392,48 @@ def push_files(files, project_id, path=None):
         logger.warning(f"Skipping missing file(s): {skip_list}")
         files = list(set(files) - set(skip))
 
-    # Commit callback
-    def callback(code, stdout, stderr):
-        if stdout:
-            logger.debug(stdout)
-        file_list = " ".join([str(s) for s in files])
+    # Check if there are changes to commit using git status
+    def status_callback(code, stdout, stderr):
         if code != 0:
-            if (
-                "Your branch is up to date" in stdout + stderr
-                or "nothing to commit" in stdout + stderr
-                or "nothing added to commit" in stdout + stderr
-            ):
-                logger.warning(f"No changes to commit to Overleaf: {file_list}")
-            else:
-                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
-        else:
-            logger.info(f"Pushing changes to Overleaf: {file_list}")
+            raise exceptions.CalledProcessError(stderr)
+        return stdout.strip()
 
-    # Commit!
-    get_stdout(
-        [
-            "git",
-            "-c",
-            "user.name='showyourwork'",
-            "-c",
-            "user.email='showyourwork'",
-            "commit",
-            "-m",
-            "[showyourwork] automatic showyourwork update",
-        ],
+    status_output = get_stdout(
+        ["git", "status", "--porcelain"],
         cwd=str(paths.user(path=path).overleaf),
-        callback=callback,
+        callback=status_callback,
     )
 
-    # Push (again being careful about secrets)
-    overleaf_token = get_overleaf_credentials()
-    url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
-    get_stdout(
-        ["git", "push", url, "master"],
-        cwd=str(paths.user(path=path).overleaf),
-        secrets=[overleaf_token],
-        callback=check_for_rate_limit,
-    )
+    file_list = " ".join([str(s) for s in files])
+    if status_output:
+        # There are changes to commit
+        get_stdout(
+            [
+                "git",
+                "-c",
+                "user.name='showyourwork'",
+                "-c",
+                "user.email='showyourwork'",
+                "commit",
+                "-m",
+                "[showyourwork] automatic showyourwork update",
+            ],
+            cwd=str(paths.user(path=path).overleaf),
+        )
+        logger.info(f"Pushing changes to Overleaf: {file_list}")
+
+        # Push (again being careful about secrets)
+        overleaf_token = get_overleaf_credentials()
+        url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
+        get_stdout(
+            ["git", "push", url, "master"],
+            cwd=str(paths.user(path=path).overleaf),
+            secrets=[overleaf_token],
+            callback=check_for_rate_limit,
+        )
+    else:
+        # No changes to commit
+        logger.warning(f"No changes to commit to Overleaf: {file_list}")
 
 
 def pull_files(
@@ -558,35 +574,37 @@ def pull_files(
             )
 
     if commit_changes:
+        # Check if there are any changes to commit using git status
+        def status_callback(code, stdout, stderr):
+            if code != 0:
+                raise exceptions.CalledProcessError(stderr)
+            return stdout.strip()
 
-        def callback(code, stdout, stderr):
-            if code == 0:
-                logger.info(
-                    "Overleaf changes committed to the repo. Don't forget to push!"
-                )
-            elif (
-                "Your branch is up to date" in stdout + stderr
-                or "nothing to commit" in stdout + stderr
-                or "nothing added to commit" in stdout + stderr
-            ):
-                logger.warning("No Overleaf changes to commit to the repo.")
-            else:
-                raise exceptions.CalledProcessError(stdout + "\n" + stderr)
-
-        get_stdout(
-            [
-                "git",
-                "-c",
-                "user.name='showyourwork'",
-                "-c",
-                "user.email='showyourwork'",
-                "commit",
-                "-m",
-                "[showyourwork] overleaf sync",
-            ],
+        status_output = get_stdout(
+            ["git", "status", "--porcelain"],
             cwd=paths.user(path=path).repo,
-            callback=callback,
+            callback=status_callback,
         )
+
+        if status_output:
+            # There are changes to commit
+            get_stdout(
+                [
+                    "git",
+                    "-c",
+                    "user.name='showyourwork'",
+                    "-c",
+                    "user.email='showyourwork'",
+                    "commit",
+                    "-m",
+                    "[showyourwork] overleaf sync",
+                ],
+                cwd=paths.user(path=path).repo,
+            )
+            logger.info("Overleaf changes committed to the repo. Don't forget to push!")
+        else:
+            # No changes to commit
+            logger.warning("No Overleaf changes to commit to the repo.")
 
         if push_changes:
             get_stdout(["git", "push"], cwd=paths.user(path=path).repo)
