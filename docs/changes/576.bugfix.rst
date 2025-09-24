@@ -1,0 +1,4 @@
+Now ``showyourwork setup`` accepts a new option ``--action-version`` to specify the version of the GitHub Action to use in the generated workflows.
+If not provided, it defaults to the latest release or the latest dev commit if newer.
+The existing option ``--action-spec`` still allows to specify the remote version of showyourwork to use for the workflow runs,
+but if not provided now it defaults to whatever local version is used to instantiate the project and not to the latest release as before.
