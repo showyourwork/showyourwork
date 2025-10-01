@@ -24,14 +24,14 @@ You can then clone it to your local machine and start editing!
 
    .. grid-item-card:: Monthly Notices of the Royal Astronomical Society (MNRAS)
       :img-top: https://academic.oup.com/data/sitebuilderassetsoriginals/live/images/mnras/mnras_ogimage.png
-      :link: https://github.com/HealthyPear/mnras-showyourwork-paper-template
+      :link: https://github.com/showyourwork/showyourwork_MNRAS_template
       :text-align: center
 
       A standard Python-based workflow with a focus on `MNRAS <https://academic.oup.com/mnras/?login=true>`_ papers.
 
    .. grid-item-card:: Journal of Cosmology and Astroparticle Physics (JCAP)
       :img-top: https://cms.iopscience.org/13e4052b-ec1f-11e5-b0b6-759f86a2008e/journal_cover?guest=true
-      :link: https://github.com/HealthyPear/showyourwork_JCAP_template
+      :link: https://github.com/showyourwork/showyourwork_JCAP_template
       :text-align: center
 
       A standard Python-based workflow with a focus on `JCAP <https://iopscience.iop.org/journal/1475-7516>`_ papers.
