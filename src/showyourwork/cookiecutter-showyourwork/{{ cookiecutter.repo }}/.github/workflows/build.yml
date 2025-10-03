@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build the article PDF
     permissions: write-all
-    concurrency: showyourwork-${{ "{{" }} github.ref {{ "}}" }}
+    concurrency: "{% raw %}showyourwork-${{ github.ref }}{% endraw %}"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,10 +17,10 @@ jobs:
 
       - name: Build the article PDF
         id: build
-        uses: showyourwork/showyourwork-action@v1
+        uses: showyourwork/showyourwork-action@{{ cookiecutter.action_version or 'v1' }}
         {%- if cookiecutter.action_spec %}
         with:
           showyourwork-spec: {{ cookiecutter.action_spec }}{% endif %}
         env:
-          SANDBOX_TOKEN: ${{ "{{" }} secrets.SANDBOX_TOKEN {{ "}}" }}
-          OVERLEAF_TOKEN: ${{ "{{" }} secrets.OVERLEAF_TOKEN {{ "}}" }}
+          SANDBOX_TOKEN: "{% raw %}${{ secrets.SANDBOX_TOKEN }}{% endraw %}"
+          OVERLEAF_TOKEN: "{% raw %}${{ secrets.OVERLEAF_TOKEN }}{% endraw %}"
