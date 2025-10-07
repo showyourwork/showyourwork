@@ -7,6 +7,7 @@
   "overleaf_id": null,
   "year": null,
   "action_spec": null,
+  "action_version": null,
   "_copy_without_render": [
     "src/tex/aasjournal.bst",
     "src/tex/aastex631.cls",
