@@ -223,5 +223,17 @@
     "doi": "10.1063/5.0260928",
     "url": "https://doi.org/10.1063/5.0260928",
     "field": "Chemical Physics"
+  },
+  "jwreep/ebtel_abundances": {
+    "title": "Modeling Time-variable Elemental Abundances in Coronal Loop Simulations",
+    "authors": [
+      "Jeffrey W. Reep",
+      "John Unverferth",
+      "Will T. Barnes",
+      "Sherry Chhabra"
+    ],
+    "doi": "10.3847/2041-8213/ad64c3",
+    "url": "https://doi.org/10.3847/2041-8213/ad64c3",
+    "field": "Astronomy"
   }
 }
