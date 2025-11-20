@@ -586,7 +586,11 @@ def pull_files(
             callback=status_callback,
         )
 
-        if status_output:
+        changes = [
+            line for line in status_output.splitlines() if not line.startswith("??")
+        ]
+
+        if changes:
             # There are changes to commit
             get_stdout(
                 [
