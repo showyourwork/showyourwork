@@ -1,0 +1,1 @@
+Ignore untracked files when checking for changes to commit to Overleaf.
