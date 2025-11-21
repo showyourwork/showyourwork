@@ -93,6 +93,11 @@
   \syw@LogMessage{<GRAPHICS>#2</GRAPHICS>}%
 }
 
+% Disable resizebox to prevent "Division by 0" errors
+% when used with includegraphics (which doesn't produce actual content)
+% Wrap in an hbox to preserve structure without actually resizing
+\renewcommand{\resizebox}[3]{\hbox{#3}}
+
 % Log graphicspath
 \renewcommand{\graphicspath}[1]{%
   \syw@LogMessage{<GRAPHICSPATH>#1</GRAPHICSPATH>}%
