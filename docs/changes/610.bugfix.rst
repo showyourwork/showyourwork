@@ -1,0 +1,5 @@
+The ``\resizebox`` command was causing "Division by 0" errors
+during the preprocessing stage when used in conjunction with ``\includegraphics``
+becasue at that stage there is not yet a figure to resize.
+This has been fixed by redefining ``\resizebox`` to simply wrap its content in an ``\hbox``,
+effectively disabling the resizing functionality during preprocessing while preserving the document structure.
