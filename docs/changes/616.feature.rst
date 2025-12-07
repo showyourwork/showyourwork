@@ -1,0 +1,2 @@
+The README from the base template has been updated: the existing "article pdf" badge has been renamed to "download pdf"
+and a new badge "view pdf" based on Mozilla's GitHub-hosted built-in PDF viewer has been added.
