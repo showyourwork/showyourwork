@@ -102,12 +102,19 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
     # Set action_spec to match local version if not provided
     if not action_spec:
         DEV_GIT_URL = "git+https://github.com/showyourwork/showyourwork"
+        # Get the directory where showyourwork is installed
+        showyourwork_dir = str(paths.showyourwork().module)
+
         # Check git status first to detect uncommitted changes
         has_uncommitted_changes = False
         try:
-            git_status = get_stdout("git status --porcelain", shell=True).strip()
+            git_status = get_stdout(
+                "git status --porcelain",
+                shell=True,
+                cwd=showyourwork_dir,
+            ).strip()
             has_uncommitted_changes = bool(git_status)
-        except Exception:
+        except exceptions.CalledProcessError:
             # If git status fails, assume no uncommitted changes
             pass
 
@@ -128,7 +135,9 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
             try:
                 # Get current branch
                 current_branch = get_stdout(
-                    "git branch --show-current", shell=True
+                    "git branch --show-current",
+                    shell=True,
+                    cwd=showyourwork_dir,
                 ).strip()
 
                 # Use git's tracking branch information to find the right remote
@@ -137,6 +146,7 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
                     upstream_branch = get_stdout(
                         "git rev-parse --abbrev-ref --symbolic-full-name @{u}",
                         shell=True,
+                        cwd=showyourwork_dir,
                     ).strip()
 
                     if upstream_branch and "/" in upstream_branch:
@@ -149,23 +159,28 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
                             git_status = get_stdout(
                                 "git status --porcelain",
                                 shell=True,
+                                cwd=showyourwork_dir,
                             ).strip()
 
                             has_uncommitted = bool(git_status)
 
                             # Check for unpushed commits
                             local_commit = get_stdout(
-                                "git rev-parse HEAD", shell=True
+                                "git rev-parse HEAD",
+                                shell=True,
+                                cwd=showyourwork_dir,
                             ).strip()
 
                             remote_commit = get_stdout(
                                 f"git rev-parse {upstream_branch}",
                                 shell=True,
+                                cwd=showyourwork_dir,
                             ).strip()
 
                             has_unpushed = local_commit != remote_commit
 
-                            # Warn if there are any local changes not reflected remotely
+                            # Warn if there are any local changes not reflected
+                            # remotely
                             if has_uncommitted or has_unpushed:
                                 logger = get_logger()
                                 if has_uncommitted and has_unpushed:
@@ -191,7 +206,7 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
                                         f"(commit {remote_commit[:8]}), which may "
                                         f"differ from your local code."
                                     )
-                        except Exception:
+                        except exceptions.CalledProcessError:
                             # If any git commands fail, just proceed
                             pass
 
@@ -199,6 +214,7 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
                         remote_url = get_stdout(
                             f"git config --get remote.{remote_name}.url",
                             shell=True,
+                            cwd=showyourwork_dir,
                         ).strip()
 
                         if "github.com" in remote_url:
@@ -213,7 +229,10 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
                                 )
 
                             owner, repo_name = repo_part.split("/")
-                            action_spec = f"git+https://github.com/{owner}/{repo_name}@{remote_branch}"
+                            action_spec = (
+                                f"git+https://github.com/{owner}/"
+                                f"{repo_name}@{remote_branch}"
+                            )
                         else:
                             # Not a GitHub remote, fallback
                             action_spec = DEV_GIT_URL
@@ -228,11 +247,11 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
                         )
                         action_spec = DEV_GIT_URL
 
-                except Exception:
+                except exceptions.CalledProcessError:
                     # If git tracking fails, fallback to main
                     action_spec = DEV_GIT_URL
 
-            except Exception:
+            except exceptions.CalledProcessError:
                 # If git commands fail, fallback to official main branch
                 action_spec = DEV_GIT_URL
 
