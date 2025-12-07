@@ -11,6 +11,10 @@ Each entry reports also the original issue tracker from GitHub.
 `Build on github is broken with 'pulp' has no attribute 'list_solvers' (#435) <https://github.com/showyourwork/showyourwork/issues/435>`_
 -----------------------------------------------------------------------------------------------------------------------------------------
 
+.. important::
+
+  Fixed after v0.4.3. Please update to a later version if you can!
+
 When using *showyourwork!*, along with the local version you installed on your computer
 another one will be installed by GitHub for its server-side action
 in order to compile the final document when you push your changes to the upstream repository.
@@ -46,6 +50,10 @@ used in this case).
 `Package 'showyourwork' requires a different Python' (#505) <https://github.com/showyourwork/showyourwork/issues/505>`_
 -----------------------------------------------------------------------------------------------------------------------
 
+.. important::
+
+  Fixed after v0.4.3. Please update to a later version if you can!
+
 This is an error that arises from a change in the conda installation on the remote.
 
 The solution is to add update the version of the Github Action used by the ``build.yml`` and ``build-pull-request.yml`` workflows
@@ -65,10 +73,10 @@ to use the latest unreleased version of the action:
 `KeyError: 'tex_files_out' (#400) <https://github.com/showyourwork/showyourwork/issues/400>`_
 -----------------------------------------------------------------------------------------------------------------------------------------
 
-This error should arise only if you are using showyourwork v0.4.3
-or if you updated your project to that specific version.
+.. important::
 
-If this is your case and you do not want to update showyourwork
-to the latest development version, please comment line 405 in
+  Fixed after v0.4.3. Please update to a later version if you can!
+
+Please comment line 405 in
 `src/showyourwork/workflow/scripts/preprocess.py` which should be
 `if graphic not in config["tex_files_out"]`.
