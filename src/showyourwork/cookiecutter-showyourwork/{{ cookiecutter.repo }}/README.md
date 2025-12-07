@@ -11,7 +11,10 @@
 <img src="https://img.shields.io/badge/article-tarball-blue.svg?style=flat" alt="Article tarball"/>
 </a>
 <a href="https://github.com/{{ cookiecutter.user }}/{{ cookiecutter.repo }}/raw/main-pdf/ms.pdf">
-<img src="https://img.shields.io/badge/article-pdf-blue.svg?style=flat" alt="Read the article"/>
+<img src="https://img.shields.io/badge/download-pdf-blue.svg?style=flat" alt="Download the PDF"/>
+</a>
+<a href="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fraw.githubusercontent.com%{{ cookiecutter.user }}%2F{{ cookiecutter.repo }}%2Fmain-pdf%2Fms.pdf">
+<img src="https://img.shields.io/badge/view-pdf-blue.svg?style=flat" alt="Read with PDF.js"/>
 </a>
 </p>
 
