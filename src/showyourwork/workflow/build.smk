@@ -9,6 +9,8 @@ from showyourwork.logging import get_logger
 from showyourwork.userrules import process_user_rules
 from showyourwork.git import get_repo_branch
 import snakemake
+import sys
+import yaml
 
 
 # Working directory is the top level of the user repo
@@ -55,6 +57,22 @@ if (paths.user().temp / "config.json").exists():
     rule syw__arxiv_entrypoint:
         input:
             "arxiv.tar.gz"
+
+
+    # Keep render_dag env python aligned with current interpreter to avoid cross-version pickle issues
+    base_render_dag_yml = paths.showyourwork().envs / "render_dag.yml"
+    with open(base_render_dag_yml, "r") as f:
+        render_dag_config = yaml.safe_load(f)
+    python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+    render_dag_config["dependencies"] = [
+        f"python={python_version}" if dep.startswith("python") else dep
+        for dep in render_dag_config["dependencies"]
+    ]
+    render_dag_env = paths.user().temp / "render_dag.dynamic.yml"
+    render_dag_env.parent.mkdir(parents=True, exist_ok=True)
+    with open(render_dag_env, "w") as f:
+        yaml.dump(render_dag_config, f, default_flow_style=False)
+    render_dag_env = render_dag_env.as_posix()
 
 
     # Include all other rules
