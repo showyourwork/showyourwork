@@ -3,7 +3,7 @@ channels:
 dependencies:
   - pip
   - python>=3.11
-  - datrie
+  - pyyaml
   - requests
   - sphinx-book-theme
   - jinja2
