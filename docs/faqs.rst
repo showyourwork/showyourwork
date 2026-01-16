@@ -189,7 +189,10 @@ please check out :doc:`reproducibility`.
 Issues with ``datrie``
 ----------------------
 
-The ``datrie`` package, a dependency  of ``snakemake``, does not currently (as of
+Note that snakemake no longer requires ``datrie`` as of version 9.
+The simplest way to avoid the issues discussed below is to use the latest showyourwork version and ``snakemake>9``.
+
+The ``datrie`` package, a dependency  of ``snakemake<9``, does not currently (as of
 the writing of these docs) have
 `wheels built for distributions of Python >= 3.9 <https://pypi.org/project/datrie/#files>`__.
 If you don't have a valid ``C/C++``
@@ -202,6 +205,7 @@ using ``conda``:
     conda install -c conda-forge datrie
 
 and then re-run ``pip install showyourwork``.
+
 
 
 `IncompleteFilesException`

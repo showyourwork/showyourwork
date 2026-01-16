@@ -41,7 +41,6 @@ showyourwork = "showyourwork.cli:entry_point"
 [project.optional-dependencies]
 tests = ["matplotlib", "pytest>=7.0.0", "pytest-asyncio-cooperative>=0.28.0"]
 docs = [
-    "datrie",
     "sphinx-book-theme",
     "sphinxcontrib-programoutput",
     "sphinx-changelog",
