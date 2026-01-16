@@ -53,6 +53,7 @@ html_theme_options = {
     "path_to_docs": "docs/",
     "show_toc_level": 1,
 }
+html_favicon = "_static/s_favicon.png"
 
 # -- Extension settings ------------------------------------------------------
 
