@@ -20,10 +20,42 @@ Building the docs includes a few extra libraries that aren't required for |showy
 users, so its helpful to create a separate environment for those. You should only ever
 have to do this step once.
 
+The simplest way to get an environment is to first create it
+
 .. code-block:: bash
 
-    conda env create -n sywdocs -f docs/environment.yml
+    conda create -n sywdocs python pip
 
+activate it
+
+.. code-block:: bash
+
+    conda activate sywdocs
+
+and install showyourwork for development
+
+.. code-block:: bash
+
+    python -m pip install -e ".[docs]"
+
+
+Alternatively, you can create a conda environment
+
+.. code-block:: bash
+
+    conda create -n sywdocs -f docs/environment.yml
+
+activate it
+
+.. code-block:: bash
+
+    conda activate sywdocs
+
+and install showyourwork
+
+.. code-block:: bash
+
+    python -m pip install -e .
 
 During development
 ^^^^^^^^^^^^^^^^^^
