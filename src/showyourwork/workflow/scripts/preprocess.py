@@ -489,7 +489,7 @@ def get_json_tree(xmlfile):
 
 if __name__ == "__main__":
     # Snakemake config (available automagically)
-    config = snakemake.config  # type:ignore
+    config = snakemake.config  # type: ignore
 
     # Parse the `datasets` key in the config
     parse_datasets()

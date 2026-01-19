@@ -12,7 +12,7 @@ from showyourwork import paths
 
 if __name__ == "__main__":
     # Snakemake config (available automagically)
-    config = snakemake.config  # type:ignore
+    config = snakemake.config  # type: ignore
 
     # Create the compile directory
     compile_dir = Path(snakemake.output.compile_dir)

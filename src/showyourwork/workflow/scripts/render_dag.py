@@ -91,8 +91,8 @@ def should_ignore(ignore, path):
 
 if __name__ == "__main__":
     # Snakemake config (available automagically)
-    config = snakemake.config  # type:ignore
-    params = snakemake.params  # type:ignore
+    config = snakemake.config  # type: ignore
+    params = snakemake.params  # type: ignore
 
     # User settings
     node_attr = config["dag"]["node_attr"]
