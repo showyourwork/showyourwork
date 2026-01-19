@@ -11,7 +11,7 @@ from showyourwork.zenodo import Zenodo
 
 if __name__ == "__main__":
     # Snakemake config (available automagically)
-    config = snakemake.config  # type:ignore
+    config = snakemake.config  # type: ignore
 
     # Get params
     doi = snakemake.params["doi"]

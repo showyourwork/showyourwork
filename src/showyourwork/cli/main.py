@@ -170,31 +170,26 @@ def validate_slug(context, param, slug):
 
         if not context.params.get("quiet"):
             # Greeting
-            echo(
-                f"""
+            echo(f"""
                 Let's get you set up with a new repository. I'm going to create
                 a folder called ``{repo}`` in the current working directory. If
                 you haven't done this yet, please visit
                 ``https://github.com/new`` at this time and create an empty
                 repository called ``{slug}``
-                """
-            )
+                """)
             pause()
 
             # Check Zenodo credentials
             cache = context.params.get("cache")
             if not cache:
-                echo(
-                    """
+                echo("""
                     By default, showyourwork does not set up remote caching for
                     this repository. To enable remote caching of datasets to
                     Zenodo, cancel this run and re-run `showyourwork setup` with
                     the `--cache` command-line option.
-                    """
-                )
+                    """)
             else:
-                echo(
-                    f"""
+                echo(f"""
                     You requested remote caching, so I'm
                     going to create a deposit draft on Zenodo Sandbox
                     where intermediate results will be cached.
@@ -211,24 +206,20 @@ def validate_slug(context, param, slug):
                     ``https://github.com/{slug}/settings/secrets/actions/new``
                     at this time to create a corresponding repository secret
                     with the same name containing the API key.
-                    """
-                )
+                    """)
             pause()
 
             # Check Overleaf credentials
             if not context.params.get("overleaf"):
-                echo(
-                    """
+                echo("""
                     By default, showyourwork does not set up Overleaf
                     integration. To enable Overleaf integration with this
                     repository, cancel this run and re-run `showyourwork setup`
                     with the `--overleaf` command-line option and pass in your
                     Overleaf project ID.
-                    """
-                )
+                    """)
             else:
-                echo(
-                    f"""
+                echo(f"""
                     You provided an Overleaf project id, so I'm going to set up
                     Overleaf integration for this repository. Please make sure
                     at this time that you have defined the `OVERLEAF_TOKEN`
@@ -237,8 +228,7 @@ def validate_slug(context, param, slug):
                     ``https://github.com/{slug}/settings/secrets/actions/new``
                     at this time and create `OVERLEAF_TOKEN` secret with
                     your Overleaf token.
-                    """
-                )
+                    """)
             pause()
 
         return slug

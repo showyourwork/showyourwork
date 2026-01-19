@@ -14,7 +14,7 @@ from showyourwork.logging import get_logger
 
 if __name__ == "__main__":
     # Snakemake config (available automagically)
-    config = snakemake.config  # type:ignore
+    config = snakemake.config  # type: ignore
 
     # Initialize the logger
     logger = get_logger()
