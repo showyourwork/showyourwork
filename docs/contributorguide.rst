@@ -7,6 +7,8 @@ Contributing to the documentation
 A great place to start contributing is to documentation. In order to do this you'll
 want to run the docs locally. Here are the steps for getting setup.
 
+.. _initial-setup:
+
 Initial setup
 ^^^^^^^^^^^^^
 
@@ -32,30 +34,12 @@ activate it
 
     conda activate sywdocs
 
-and install showyourwork for development
+and install showyourwork with the ``[docs]`` extra (if you plan on doing :ref:`code contributions<contributing-code>`, you can replace ``[docs]`` with ``[dev]``).
 
 .. code-block:: bash
 
     python -m pip install -e ".[docs]"
 
-
-Alternatively, you can create a conda environment
-
-.. code-block:: bash
-
-    conda create -n sywdocs -f docs/environment.yml
-
-activate it
-
-.. code-block:: bash
-
-    conda activate sywdocs
-
-and install showyourwork
-
-.. code-block:: bash
-
-    python -m pip install -e .
 
 During development
 ^^^^^^^^^^^^^^^^^^
@@ -107,10 +91,18 @@ Another great way to contribute is to raise or open issues. Showyourwork issues
 can be found `in the github repo <https://github.com/showyourwork/showyourwork/issues>`_. The
 "contributions welcome" tag is a great place to start!
 
+.. _contributing-code:
+
 Contributing code
 -----------------
 
-1. start from an up-to-date branch of the main branch
+To contribute code, you will need to install showyourwork in development mode.
+The simplest way to do this is to follow the :ref:`initial-setup` instructions,
+but replace the ``[docs]`` extra with the ``[dev]`` extra.
+
+Then, follow these instructions to make your code contribution:
+
+1. Start from an up-to-date branch of the main branch
    (name your branch something descriptive like 'fix-typo-in-docs' or 'add-new-feature')
 
 .. code-block:: sh
@@ -119,13 +111,13 @@ Contributing code
     git pull upstream main # here 'upstream' is the original repo remote name, NOT your fork
     git switch -c my-feature-branch
 
-2. make your changes trying to make small well-defined commits with descriptive messages
+2. Make your changes trying to make small well-defined commits with descriptive messages
    (this will make it easier to review and understand the changes)
    and following the project's coding style
 
-2. open a pull request against the main branch of the original repo
+2. Open a pull request against the main branch of the original repo
 
-3. add a news fragment in the ``docs/changes`` directory
+3. Add a news fragment in the ``docs/changes`` directory
 
    This is required for all PRs. The news fragment should be a file named
    ``<pull_request_number>.<type>.rst``, ``<type>`` is one of the following:
