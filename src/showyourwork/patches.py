@@ -16,7 +16,6 @@ import types
 from functools import partial
 
 from snakemake.caching.local import OutputFileCache as LocalOutputFileCache
-from snakemake.caching.storage import OutputFileCache as StorageOutputFileCache
 
 from . import exceptions, paths
 from .logging import ColorizingStreamHandler, get_logger
@@ -118,10 +117,10 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     logger = get_logger()
 
     # The instance we'll patch
-    # This is called from inside smk file 
+    # This is called from inside smk file
     output_file_cache = snakemake.workflow.workflow.output_file_cache
 
-    __import__('ipdb').set_trace()
+    __import__("ipdb").set_trace()
     # if output_file_cache is not None:
     # Doing only local bc that's what showyourwork uses and don't want to overwrite with fetch from storage/remote version
     for output_file_cache in [LocalOutputFileCache]:
@@ -149,7 +148,9 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                 tarball = True
             else:
                 tarball = False
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job, cache_mode):
+            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
+                job, cache_mode
+            ):
                 file_exists = cachefile.exists()
                 if not file_exists:
                     # Attempt to download from Zenodo and then Zenodo Sandbox
