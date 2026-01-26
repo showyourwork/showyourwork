@@ -35,3 +35,11 @@ You can then clone it to your local machine and start editing!
       :text-align: center
 
       A standard Python-based workflow with a focus on `JCAP <https://iopscience.iop.org/journal/1475-7516>`_ papers.
+
+
+   .. grid-item-card:: Springer Nature Journals (SN)
+      :img-top: https://media.springernature.com/full/springer-cms/rest/v1/content/27505308/data/v1
+      :link: https://github.com/thealanjason/showyourwork_SpringerNature_template
+      :text-align: center
+
+      A standard Python-based workflow with a focus on `Springer Nature <https://www.springernature.com/gp/products/journals>`_ papers.
