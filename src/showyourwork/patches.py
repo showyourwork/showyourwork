@@ -15,6 +15,9 @@ import time
 import types
 from functools import partial
 
+from snakemake.caching.local import OutputFileCache as LocalOutputFileCache
+from snakemake.caching.storage import OutputFileCache as StorageOutputFileCache
+
 from . import exceptions, paths
 from .logging import ColorizingStreamHandler, get_logger
 from .zenodo import Zenodo
@@ -115,9 +118,13 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     logger = get_logger()
 
     # The instance we'll patch
+    # This is called from inside smk file 
     output_file_cache = snakemake.workflow.workflow.output_file_cache
 
-    if output_file_cache is not None:
+    __import__('ipdb').set_trace()
+    # if output_file_cache is not None:
+    # Doing only local bc that's what showyourwork uses and don't want to overwrite with fetch from storage/remote version
+    for output_file_cache in [LocalOutputFileCache]:
         # Instantiate our interfaces
         if zenodo_doi is not None:
             zenodo = Zenodo(zenodo_doi)
@@ -133,7 +140,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
         _store = output_file_cache.store
 
         # Define the patches
-        def fetch(self, job):
+        def fetch(self, job, cache_mode):
             # If the cache file is a directory, we must tar it up
             # Recall that cacheable jobs can only have a _single_ output
             # (unless using multiext), so checking the first output should suffice
@@ -142,7 +149,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                 tarball = True
             else:
                 tarball = False
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
+            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job, cache_mode):
                 file_exists = cachefile.exists()
                 if not file_exists:
                     # Attempt to download from Zenodo and then Zenodo Sandbox
@@ -231,11 +238,13 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                             logger.debug(str(e))
 
             # Call the original method
-            return _fetch(job)
+            # return _fetch(job)
+            return _fetch(self, job, cache_mode)
 
-        def store(self, job):
+        def store(self, job, cache_mode):
             # Call the original method
-            result = _store(job)
+            # result = _store(job)
+            result = _store(self, job, cache_mode)
 
             # GitHub Actions runs should never update the cache
             if not snakemake.workflow.config.get("github_actions"):
@@ -248,7 +257,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                 for (
                     outputfile,
                     cachefile,
-                ) in self.get_outputfiles_and_cachefiles(job):
+                ) in self.get_outputfiles_and_cachefiles(job, cache_mode):
                     logger.info(f"Caching output file on remote: {outputfile}...")
                     try:
                         sandbox.upload_file(cachefile, job.rule.name, tarball=tarball)
@@ -265,8 +274,10 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                 return result
 
         # Apply them
-        output_file_cache.fetch = types.MethodType(fetch, output_file_cache)
-        output_file_cache.store = types.MethodType(store, output_file_cache)
+        # output_file_cache.fetch = types.MethodType(fetch, output_file_cache)
+        # output_file_cache.store = types.MethodType(store, output_file_cache)
+        output_file_cache.fetch = fetch
+        output_file_cache.store = store
 
 
 def patch_snakemake_logging():

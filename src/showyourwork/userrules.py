@@ -34,8 +34,8 @@ def process_user_rules():
         patch_snakemake_cache(cache_zenodo_doi, cache_sandbox_doi)
 
     # Remind the user to publish the deposit
-    if cache_sandbox_doi and get_run_type == "build":
-        get_logger().warn("Zenodo cache not yet published for this repository.")
+    if cache_sandbox_doi and get_run_type() == "build":
+        get_logger().warning("Zenodo cache not yet published for this repository.")
 
     # Process each user rule
     for ur in user_rules:
