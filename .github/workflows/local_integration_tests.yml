@@ -42,19 +42,6 @@ jobs:
             python=${{ matrix.python }}
             mamba
 
-      - name: Accept Anaconda Terms of Service
-        shell: bash -l {0}
-        run: |
-          conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-          conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
-
-      - name: Set channel priority
-        shell: bash -l {0}
-        run: |
-          conda config --remove channels defaults || true
-          conda config --add channels conda-forge
-          conda config --set channel_priority strict
-
       - name: Install showyourwork
         shell: bash -l {0}
         run: |
