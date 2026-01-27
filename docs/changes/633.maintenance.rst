@@ -1,0 +1,3 @@
+Removed datrie dependency as it is no longer required upstream.
+Added pyyaml dependency explicitely.
+Updated contributor installation instructions to use pip for docs and for code.
