@@ -1,0 +1,1 @@
+Added template for a Python-based Springer Nature (SN) Journal paper.
