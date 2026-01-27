@@ -116,13 +116,14 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     # Get the showyourwork logger
     logger = get_logger()
 
+    # TODO: Cleanup loop and comments
     # The instance we'll patch
     # This is called from inside smk file
-    output_file_cache = snakemake.workflow.workflow.output_file_cache
+    # output_file_cache = snakemake.workflow.workflow.output_file_cache
 
-    __import__("ipdb").set_trace()
     # if output_file_cache is not None:
-    # Doing only local bc that's what showyourwork uses and don't want to overwrite with fetch from storage/remote version
+    # Doing only local bc that's what showyourwork uses and don't want to overwrite with
+    # fetch from storage/remote version
     for output_file_cache in [LocalOutputFileCache]:
         # Instantiate our interfaces
         if zenodo_doi is not None:
@@ -139,7 +140,9 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
         _store = output_file_cache.store
 
         # Define the patches
-        def fetch(self, job, cache_mode):
+        def fetch(
+            self, job, cache_mode, zenodo=zenodo, sandbox=sandbox, _fetch_fn=_fetch
+        ):
             # If the cache file is a directory, we must tar it up
             # Recall that cacheable jobs can only have a _single_ output
             # (unless using multiext), so checking the first output should suffice
@@ -240,12 +243,12 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
 
             # Call the original method
             # return _fetch(job)
-            return _fetch(self, job, cache_mode)
+            return _fetch_fn(self, job, cache_mode)
 
-        def store(self, job, cache_mode):
+        def store(self, job, cache_mode, sandbox=sandbox, _store_fn=_store):
             # Call the original method
             # result = _store(job)
-            result = _store(self, job, cache_mode)
+            result = _store_fn(self, job, cache_mode)
 
             # GitHub Actions runs should never update the cache
             if not snakemake.workflow.config.get("github_actions"):
