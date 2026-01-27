@@ -729,7 +729,7 @@ class Zenodo:
                 data = r.json()
             except Exception:
                 data = {}
-            if "PID is not registered" in data.get("message", ""):
+            if "is not registered" in data.get("message", ""):
                 # There is no published record with this id
                 pass
             else:
