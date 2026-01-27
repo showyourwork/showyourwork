@@ -19,6 +19,7 @@ jobs:
           - "3.13"
         platform:
           - ubuntu-latest
+          - windows-latest
         # include:
         #   - platform: macos-latest
         #     python: "3.9"
