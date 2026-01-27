@@ -40,6 +40,12 @@ jobs:
           create-args: >-
             python=${{ matrix.python }}
             mamba
+            
+      - name: Accept Anaconda Terms of Service
+        shell: bash -l {0}
+        run: |
+          mamba tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+          mamba tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
       - name: Install showyourwork
         shell: bash -l {0}
