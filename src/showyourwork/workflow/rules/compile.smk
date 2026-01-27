@@ -65,17 +65,17 @@ rule:
         user_args=" ".join(config["user_args"])
     run:
         tectonic_args = [
-            ' --chatter minimal',
-            ' --keep-logs',
-            ' --keep-intermediates',
-            ' {params.maybe_synctex}',
-            ' {params.user_args}',
-            ' "{input[0]}"'
+            "--chatter minimal",
+            "--keep-logs",
+            "--keep-intermediates",
+            "{params.maybe_synctex}",
+            "{params.user_args}",
+            '"{input[0]}"',
         ]
 
         commands = [
             'cd "{input.compile_dir}"',
-            'tectonic '.join(arg) for arg in tectonic_args,
+            "tectonic " + " ".join(tectonic_args),
         ]
         for c in commands:
             shell(c)
