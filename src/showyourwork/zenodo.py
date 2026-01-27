@@ -435,21 +435,22 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        for entry in data["entries"]:
+        for entry in data:
+            entry_name = entry["filename"]
             logger.debug(
-                f"Inspecting candidate file `{entry['key']}` with hash "
+                f"Inspecting candidate file `{entry_name}` with hash "
                 f"`{rule_hashes.get(rule_name, None)}`..."
             )
 
             if (
-                entry["key"] == rule_name
+                entry_name == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
                 # Download it
                 logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
-                    url = entry["links"]["content"]
+                    url = entry["links"]["download"]
                     progress_bar = (
                         ["--progress-bar"]
                         if not snakemake.workflow.config["github_actions"]
@@ -505,6 +506,7 @@ class Zenodo:
         # Logger
         logger = get_logger()
 
+        # TODO: This will likely require an update like draft did
         # Get rule hashes for the files currently on Zenodo
         metadata = record["metadata"]
         notes = metadata.get("notes", "{}")
@@ -868,6 +870,7 @@ class Zenodo:
 
     @require_access_token
     def _download_latest_draft(self):
+        # TODO: Will probably require fixes for entries as well
         # Logger
         logger = get_logger()
 
