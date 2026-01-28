@@ -85,6 +85,25 @@ def get_dataset_dois(files, datasets):
     return list(set(result))
 
 
+def _get_entries(data):
+    """
+    Given Zenodo data, extract entries and the keys to access certain data.
+    The format varies between published records and drafts.
+    """
+    if isinstance(data, dict):
+        entries = data["entries"]
+        file_key = "key"
+        content_key = "content"
+    elif isinstance(data, list):
+        entries = data
+        file_key = "filename"
+        content_key = "download"
+    else:
+        raise TypeError("Unexpected type encoutered for Zenodo data")
+
+    return entries, file_key, content_key
+
+
 services = {
     "zenodo": {
         "url": "zenodo.org",
@@ -343,9 +362,12 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            for entry in data["entries"]:
-                if entry["key"] == rule_name:
-                    file_id = entry["id"]
+            entries, file_key, _ = _get_entries(data)
+            for entry in entries:
+                if entry[file_key] == rule_name:
+                    file_id = entry.get("id", entry.get("file_id"))
+                    if file_id is None:
+                        raise KeyError("Key 'id' or 'file_id' not found in Zenodo data")
                     parse_request(
                         requests.delete(
                             f"{files_url}/{file_id}",
@@ -370,7 +392,7 @@ class Zenodo:
             else []
         )
         try:
-            subprocess.run(
+            curl_output = subprocess.run(
                 [
                     "curl",
                     "--referer",
@@ -390,9 +412,12 @@ class Zenodo:
         except Exception:
             raise exceptions.ZenodoUploadError()
 
-        # Delete the tarball if we created it
+        # Delete the tarball if we created it, regardless of successful upload
         if tarball:
             file_to_upload.unlink()
+
+        if curl_output.returncode != 0:
+            raise exceptions.ZenodoUploadError()
 
         # Update the provenance
         rule_hashes[rule_name] = file.name
@@ -435,21 +460,23 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        for entry in data["entries"]:
+        entries, file_key, content_key = _get_entries(data)
+        for entry in entries:
+            entry_name = entry[file_key]
             logger.debug(
-                f"Inspecting candidate file `{entry['key']}` with hash "
+                f"Inspecting candidate file `{entry_name}` with hash "
                 f"`{rule_hashes.get(rule_name, None)}`..."
             )
 
             if (
-                entry["key"] == rule_name
+                entry_name == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
                 # Download it
                 logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
-                    url = entry["links"]["content"]
+                    url = entry["links"][content_key]
                     progress_bar = (
                         ["--progress-bar"]
                         if not snakemake.workflow.config["github_actions"]
@@ -727,7 +754,7 @@ class Zenodo:
                 data = r.json()
             except Exception:
                 data = {}
-            if "PID is not registered" in data.get("message", ""):
+            if "is not registered" in data.get("message", ""):
                 # There is no published record with this id
                 pass
             else:
@@ -951,8 +978,9 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        for entry in data["entries"]:
-            url = entry["links"]["content"]
+        entries, file_key, content_key = _get_entries(data)
+        for entry in entries:
+            url = entry["links"][content_key]
             try:
                 subprocess.run(
                     [
@@ -963,7 +991,7 @@ class Zenodo:
                         f"{url}?access_token={self.access_token}",
                         "--progress-bar",
                         "--output",
-                        entry["key"],
+                        entry[file_key],
                     ],
                     cwd=cache_folder,
                     check=False,
