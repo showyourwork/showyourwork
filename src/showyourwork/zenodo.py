@@ -370,7 +370,7 @@ class Zenodo:
             else []
         )
         try:
-            subprocess.run(
+            curl_output = subprocess.run(
                 [
                     "curl",
                     "--referer",
@@ -390,9 +390,12 @@ class Zenodo:
         except Exception:
             raise exceptions.ZenodoUploadError()
 
-        # Delete the tarball if we created it
+        # Delete the tarball if we created it, regardless of successful upload
         if tarball:
             file_to_upload.unlink()
+
+        if curl_output.returncode != 0:
+            raise exceptions.ZenodoUploadError()
 
         # Update the provenance
         rule_hashes[rule_name] = file.name
