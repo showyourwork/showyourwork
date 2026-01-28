@@ -141,6 +141,11 @@ if os.getenv("CI", "false") != "true":
             # We cannot delete the frozen cache
             pass
 
+        def delete_zenodo(self):
+            # Override the parent delete_zenodo()
+            # We cannot delete the frozen cache
+            pass
+
     class TestCachePublish(
         TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
     ):
