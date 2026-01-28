@@ -343,8 +343,17 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            for entry in data["entries"]:
-                if entry["key"] == rule_name:
+            # TODO: Dup with line 443
+            if isinstance(data, dict):
+                entries = data["entries"]
+                file_key = "key"
+            elif isinstance(data, list):
+                entries = data
+                file_key = "filename"
+            else:
+                raise TypeError("Unexpected type encoutered for Zenodo data")
+            for entry in entries:
+                if entry[file_key] == rule_name:
                     file_id = entry.get("id", entry.get("file_id"))
                     if file_id is None:
                         raise KeyError("Key 'id' or 'file_id' not found in Zenodo data")
@@ -969,7 +978,7 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        # TODO: Dup with line 333
+        # TODO: Dup with line 443
         if isinstance(data, dict):
             entries = data["entries"]
             file_key = "key"
