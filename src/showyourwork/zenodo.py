@@ -42,6 +42,28 @@ def require_access_token(method):
     return wrapper
 
 
+def _search_file(file, dataset):
+    if file in dataset["contents"].values():
+        return True
+
+    if "zip_files" in dataset:
+        zip_files = dataset["zip_files"]
+    else:
+        zip_files = {
+            k: v for k, v in dataset["contents"].items() if isinstance(v, dict)
+        }
+    for zip_file in zip_files:
+        leaves = [
+            item
+            for v in zip_files[zip_file].values()
+            for item in (v.values() if isinstance(v, dict) else [v])
+        ]
+        if file in leaves:
+            return True
+
+    return False
+
+
 def get_dataset_urls(files, datasets):
     """
     Given a list of `files`, return all associated Zenodo and/or Zenodo Sandbox
@@ -55,13 +77,8 @@ def get_dataset_urls(files, datasets):
         deposit = Zenodo(doi)
         url = f"https://{deposit.url}/records/{deposit.deposit_id}"
         for file in files:
-            if file in datasets[doi]["contents"].values():
+            if _search_file(file, datasets[doi]):
                 result.append(url)
-            else:
-                for zip_file in datasets[doi]["zip_files"]:
-                    if file in datasets[doi]["zip_files"][zip_file].values():
-                        result.append(url)
-                        break
     return list(set(result))
 
 
@@ -73,15 +90,9 @@ def get_dataset_dois(files, datasets):
     """
     result = []
     for doi in datasets:
-        Zenodo(doi)
         for file in files:
-            if file in datasets[doi]["contents"].values():
+            if _search_file(file, datasets[doi]):
                 result.append(doi)
-            else:
-                for zip_file in datasets[doi]["zip_files"]:
-                    if file in datasets[doi]["zip_files"][zip_file].values():
-                        result.append(doi)
-                        break
     return list(set(result))
 
 
