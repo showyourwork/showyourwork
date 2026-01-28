@@ -345,7 +345,9 @@ class Zenodo:
             )
             for entry in data["entries"]:
                 if entry["key"] == rule_name:
-                    file_id = entry["id"]
+                    file_id = entry.get("id", entry.get("file_id"))
+                    if file_id is None:
+                        raise KeyError("Key 'id' or 'file_id' not found in Zenodo data")
                     parse_request(
                         requests.delete(
                             f"{files_url}/{file_id}",
