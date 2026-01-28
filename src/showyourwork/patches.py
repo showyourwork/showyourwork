@@ -245,10 +245,9 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             # return _fetch(job)
             return _fetch_fn(self, job, cache_mode)
 
-        def store(self, job, cache_mode, sandbox=sandbox, _store_fn=_store):
-            # Call the original method
-            # result = _store(job)
-            result = _store_fn(self, job, cache_mode)
+        async def store(self, job, cache_mode, sandbox=sandbox, _store_fn=_store):
+            # Call the original async method and await it
+            result = await _store_fn(self, job, cache_mode)
 
             # GitHub Actions runs should never update the cache
             if not snakemake.workflow.config.get("github_actions"):
@@ -275,7 +274,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         if len(str(e)):
                             logger.debug(str(e))
 
-                return result
+            return result
 
         # Apply them
         # output_file_cache.fetch = types.MethodType(fetch, output_file_cache)
