@@ -969,8 +969,19 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        for entry in data["entries"]:
-            url = entry["links"]["content"]
+        # TODO: Dup with line 333
+        if isinstance(data, dict):
+            entries = data["entries"]
+            file_key = "key"
+            content_key = "content"
+        elif isinstance(data, list):
+            entries = data
+            file_key = "filename"
+            content_key = "download"
+        else:
+            raise TypeError("Unexpected type encoutered for Zenodo data")
+        for entry in entries:
+            url = entry["links"][content_key]
             try:
                 subprocess.run(
                     [
@@ -981,7 +992,7 @@ class Zenodo:
                         f"{url}?access_token={self.access_token}",
                         "--progress-bar",
                         "--output",
-                        entry["key"],
+                        entry[file_key],
                     ],
                     cwd=cache_folder,
                     check=False,
