@@ -1,0 +1,1 @@
+Update Zenodo integration to be compatible with the latest API.
