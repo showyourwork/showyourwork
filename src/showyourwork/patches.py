@@ -116,10 +116,6 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     # Get the showyourwork logger
     logger = get_logger()
 
-    output_file_cache = snakemake.workflow.workflow.output_file_cache
-    if output_file_cache is None:
-        return
-
     # Instantiate our interfaces
     if zenodo_doi is not None:
         zenodo = Zenodo(zenodo_doi)
