@@ -133,6 +133,11 @@ if os.getenv("CI", "false") != "true":
             self.git_commit()
             self.build_local(pre="SYW_NO_RUN=true")
 
+        def delete_zenodo(self):
+            # Override the parent delete_zenodo()
+            # We cannot delete the frozen cache
+            pass
+
     class TestCachePublish(
         TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
     ):
