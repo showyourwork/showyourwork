@@ -85,6 +85,25 @@ def get_dataset_dois(files, datasets):
     return list(set(result))
 
 
+def _get_entries(data):
+    """
+    Given Zenodo data, extract entries and the keys to access certain data.
+    The format varies between published records and drafts.
+    """
+    if isinstance(data, dict):
+        entries = data["entries"]
+        file_key = "key"
+        content_key = "content"
+    elif isinstance(data, list):
+        entries = data
+        file_key = "filename"
+        content_key = "download"
+    else:
+        raise TypeError("Unexpected type encoutered for Zenodo data")
+
+    return entries, file_key, content_key
+
+
 services = {
     "zenodo": {
         "url": "zenodo.org",
@@ -343,15 +362,7 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            # TODO: Dup with line 443
-            if isinstance(data, dict):
-                entries = data["entries"]
-                file_key = "key"
-            elif isinstance(data, list):
-                entries = data
-                file_key = "filename"
-            else:
-                raise TypeError("Unexpected type encoutered for Zenodo data")
+            entries, file_key, _ = _get_entries(data)
             for entry in entries:
                 if entry[file_key] == rule_name:
                     file_id = entry.get("id", entry.get("file_id"))
@@ -449,16 +460,7 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        if isinstance(data, dict):
-            entries = data["entries"]
-            file_key = "key"
-            content_key = "content"
-        elif isinstance(data, list):
-            entries = data
-            file_key = "filename"
-            content_key = "download"
-        else:
-            raise TypeError("Unexpected type encoutered for Zenodo data")
+        entries, file_key, content_key = _get_entries(data)
         for entry in entries:
             entry_name = entry[file_key]
             logger.debug(
@@ -530,7 +532,6 @@ class Zenodo:
         # Logger
         logger = get_logger()
 
-        # TODO: This will likely require an update like draft did
         # Get rule hashes for the files currently on Zenodo
         metadata = record["metadata"]
         notes = metadata.get("notes", "{}")
@@ -894,7 +895,6 @@ class Zenodo:
 
     @require_access_token
     def _download_latest_draft(self):
-        # TODO: Will probably require fixes for entries as well
         # Logger
         logger = get_logger()
 
@@ -978,17 +978,7 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        # TODO: Dup with line 443
-        if isinstance(data, dict):
-            entries = data["entries"]
-            file_key = "key"
-            content_key = "content"
-        elif isinstance(data, list):
-            entries = data
-            file_key = "filename"
-            content_key = "download"
-        else:
-            raise TypeError("Unexpected type encoutered for Zenodo data")
+        entries, file_key, content_key = _get_entries(data)
         for entry in entries:
             url = entry["links"][content_key]
             try:
