@@ -440,8 +440,18 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        for entry in data:
-            entry_name = entry["filename"]
+        if isinstance(data, dict):
+            entries = data["entries"]
+            file_key = "key"
+            content_key = "content"
+        elif isinstance(data, list):
+            entries = data
+            file_key = "filename"
+            content_key = "download"
+        else:
+            raise TypeError("Unexpected type encoutered for Zenodo data")
+        for entry in entries:
+            entry_name = entry[file_key]
             logger.debug(
                 f"Inspecting candidate file `{entry_name}` with hash "
                 f"`{rule_hashes.get(rule_name, None)}`..."
@@ -455,7 +465,7 @@ class Zenodo:
                 logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
-                    url = entry["links"]["download"]
+                    url = entry["links"][content_key]
                     progress_bar = (
                         ["--progress-bar"]
                         if not snakemake.workflow.config["github_actions"]
