@@ -38,8 +38,8 @@ jobs:
         with:
           environment-name: test-env
           init-shell: >-
-            bash          # [not win]
-            powershell    # [win]
+            bash
+            powershell
           create-args: >-
             python=${{ matrix.python }}
             mamba
