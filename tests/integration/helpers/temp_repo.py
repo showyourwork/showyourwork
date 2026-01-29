@@ -175,10 +175,11 @@ class TemporaryShowyourworkRepository:
                 raise Exception(stdout + "\n" + stderr)
 
         get_stdout(
-            f"{pre} CI=false showyourwork build",
+            f"{pre} showyourwork build",
             shell=True,
             cwd=self.cwd,
             callback=callback,
+            env={"CI": "false"},
         )
 
     @pytest.mark.asyncio_cooperative

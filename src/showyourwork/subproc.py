@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 
 def process_run_result(code, stdout, stderr):
@@ -20,7 +21,7 @@ def process_run_result(code, stdout, stderr):
     return stdout
 
 
-def get_stdout(args, shell=False, cwd=None, secrets=(), callback=process_run_result):
+def get_stdout(args, shell=False, cwd=None, secrets=(), callback=process_run_result, env={}):
     """
     A thin wrapper around ``subprocess.run`` that hides secrets and decodes
     ``stdout`` and ``stderr`` output into ``utf-8``.
@@ -32,11 +33,14 @@ def get_stdout(args, shell=False, cwd=None, secrets=(), callback=process_run_res
             from current working directory.
         secrets (list, optional): Secrets to be masked in the output.
         callback (callable, optional): Callback to process the result.
+        env (dict): Additional environment variables to be passed to the ``subprocess.run``
 
     """
     # Run the command and capture all output
+    subprocess_env = os.environ.copy()
+    subprocess_env.update(env)
     result = subprocess.run(
-        args, shell=shell, cwd=cwd, capture_output=True, check=False
+        args, shell=shell, cwd=cwd, capture_output=True, check=False, env=subprocess_env
     )
 
     # Parse the output
