@@ -22,7 +22,7 @@ def process_run_result(code, stdout, stderr):
 
 
 def get_stdout(
-    args, shell=False, cwd=None, secrets=(), callback=process_run_result, env={}
+    args, shell=False, cwd=None, secrets=(), callback=process_run_result, env=None
 ):
     """
     A thin wrapper around ``subprocess.run`` that hides secrets and decodes
@@ -38,9 +38,12 @@ def get_stdout(
         env (dict): Extra environment variables to be passed to the ``subprocess.run``
 
     """
+    #  Update the environment variables if passed
+    if env != None:
+        subprocess_env = os.environ.copy()
+        subprocess_env.update(env)
+
     # Run the command and capture all output
-    subprocess_env = os.environ.copy()
-    subprocess_env.update(env)
     result = subprocess.run(
         args, shell=shell, cwd=cwd, capture_output=True, check=False, env=subprocess_env
     )
