@@ -45,7 +45,7 @@ jobs:
             mamba
             
       - name: Accept Anaconda Terms of Service
-        shell: micromamba-shelll {0}
+        shell: micromamba-shell {0}
         run: |
           conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
           conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
