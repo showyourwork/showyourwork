@@ -74,7 +74,11 @@ class BaseClass(TemporaryShowyourworkRepository):
     def build_local(self):
         # Run once to cache things
         print(f"[{self.repo}] Building the article locally (1/2)...")
-        get_stdout("CI=false showyourwork build --conda-frontend mamba", shell=True, cwd=self.cwd)
+        get_stdout(
+            "CI=false showyourwork build --conda-frontend mamba",
+            shell=True,
+            cwd=self.cwd,
+        )
 
         # Delete all output, but keep the cache
         if not self.cache:
@@ -89,7 +93,11 @@ class BaseClass(TemporaryShowyourworkRepository):
 
         # Run a second time so we can restore from the cache
         print(f"[{self.repo}] Building the article locally (2/2)...")
-        get_stdout("CI=false showyourwork build --conda-frontend mamba", shell=True, cwd=self.cwd)
+        get_stdout(
+            "CI=false showyourwork build --conda-frontend mamba",
+            shell=True,
+            cwd=self.cwd,
+        )
 
     def check_build(self):
         # Rule `A` should not have run!
