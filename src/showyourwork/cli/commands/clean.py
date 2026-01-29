@@ -72,6 +72,3 @@ def clean(force, deep, snakemake_args=(), cores=1, conda_frontend="conda"):
             shutil.rmtree(paths.user().repo / ".snakemake", onerror=onerror)
         if (paths.user().repo / ".showyourwork").exists():
             shutil.rmtree(paths.user().repo / ".showyourwork", onerror=onerror)
-
-
-
