@@ -17,7 +17,7 @@ class TestSynctex(TemporaryShowyourworkRepository):
             path = line.split(":")[-1].strip()
             if not len(path):
                 continue
-            path = Path(path).relative_to(self.cwd)
+            path = Path(path).resolve().relative_to(self.cwd)
             if path.name == "ms.tex":
                 assert path.as_posix() == "src/tex/ms.tex"
                 return
