@@ -39,7 +39,7 @@ def get_stdout(
 
     """
     #  Update the environment variables if passed
-    if env != None:
+    if env is not None:
         subprocess_env = os.environ.copy()
         subprocess_env.update(env)
 
