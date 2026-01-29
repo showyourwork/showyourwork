@@ -4,6 +4,6 @@ dependencies:
   - python
   - pillow
   - python-graphviz
-  - pip 
+  - pip
   - pip:
     - PyMuPDF
