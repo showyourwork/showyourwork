@@ -166,7 +166,7 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
         )
 
-    def build_local(self, pre=""):
+    def build_local(self, env_var={}):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
 
@@ -175,11 +175,11 @@ class TemporaryShowyourworkRepository:
                 raise Exception(stdout + "\n" + stderr)
 
         get_stdout(
-            f"{pre} showyourwork build",
+            f"showyourwork build",
             shell=True,
             cwd=self.cwd,
             callback=callback,
-            env={"CI": "false"},
+            env=env_var.update({"CI": "false"}),
         )
 
     @pytest.mark.asyncio_cooperative
