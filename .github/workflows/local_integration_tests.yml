@@ -45,17 +45,17 @@ jobs:
             mamba
             
       - name: Accept Anaconda Terms of Service
-        shell: bash -l {0}
+        shell: micromamba-shelll {0}
         run: |
           conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
           conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
       - name: Install showyourwork
-        shell: bash -l {0}
+        shell: micromamba-shell {0}
         run: |
           python -m pip install -U pip
           python -m pip install -e ".[tests]"
 
       - name: Run local integration tests
-        shell: bash -l {0}
+        shell: micromamba-shell {0}
         run: python -m pytest tests/integration
