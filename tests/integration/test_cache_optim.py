@@ -85,19 +85,11 @@ class BaseClass(TemporaryShowyourworkRepository):
             get_stdout("mv .showyourwork/cache .", shell=True, cwd=self.cwd)
         get_stdout("CI=false showyourwork clean --force", shell=True, cwd=self.cwd)
         if not self.cache:
-            get_stdout(
-                "mkdir -p .showyourwork && mv cache .showyourwork/",
-                shell=True,
-                cwd=self.cwd,
-            )
+            get_stdout("CI=false showyourwork build", shell=True, cwd=self.cwd)
 
         # Run a second time so we can restore from the cache
         print(f"[{self.repo}] Building the article locally (2/2)...")
-        get_stdout(
-            "CI=false showyourwork build",
-            shell=True,
-            cwd=self.cwd,
-        )
+        get_stdout("CI=false showyourwork build", shell=True, cwd=self.cwd)
 
     def check_build(self):
         # Rule `A` should not have run!
