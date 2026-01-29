@@ -80,7 +80,7 @@ class BaseClass(TemporaryShowyourworkRepository):
         if not self.cache:
             get_stdout("mv .showyourwork/cache .", shell=True, cwd=self.cwd)
         get_stdout(
-            "showyourwork clean --force", shell=True, cwd=self.cwd, env={"CI": "false"}
+            "showyourwork clean --deep", shell=True, cwd=self.cwd, env={"CI": "false"}
         )
         if not self.cache:
             get_stdout(
