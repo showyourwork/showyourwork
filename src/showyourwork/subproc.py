@@ -22,7 +22,7 @@ def process_run_result(code, stdout, stderr):
 
 
 def get_stdout(
-    args, shell=False, cwd=None, secrets=(), callback=process_run_result, env=None
+    args, shell=False, cwd=None, secrets=(), callback=process_run_result, env={}
 ):
     """
     A thin wrapper around ``subprocess.run`` that hides secrets and decodes
