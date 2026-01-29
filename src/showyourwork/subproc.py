@@ -1,5 +1,5 @@
-import subprocess
 import os
+import subprocess
 
 
 def process_run_result(code, stdout, stderr):
@@ -21,7 +21,9 @@ def process_run_result(code, stdout, stderr):
     return stdout
 
 
-def get_stdout(args, shell=False, cwd=None, secrets=(), callback=process_run_result, env=None):
+def get_stdout(
+    args, shell=False, cwd=None, secrets=(), callback=process_run_result, env=None
+):
     """
     A thin wrapper around ``subprocess.run`` that hides secrets and decodes
     ``stdout`` and ``stderr`` output into ``utf-8``.

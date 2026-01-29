@@ -79,7 +79,9 @@ class BaseClass(TemporaryShowyourworkRepository):
         # Delete all output, but keep the cache
         if not self.cache:
             get_stdout("mv .showyourwork/cache .", shell=True, cwd=self.cwd)
-        get_stdout("showyourwork clean --force", shell=True, cwd=self.cwd, env={"CI": "false"})
+        get_stdout(
+            "showyourwork clean --force", shell=True, cwd=self.cwd, env={"CI": "false"}
+        )
         if not self.cache:
             get_stdout(
                 "mkdir -p .showyourwork && mv cache .showyourwork/",
