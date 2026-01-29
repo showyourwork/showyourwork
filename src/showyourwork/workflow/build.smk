@@ -64,10 +64,13 @@ if (paths.user().temp / "config.json").exists():
     with open(base_render_dag_yml, "r") as f:
         render_dag_config = yaml.safe_load(f)
     python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-    render_dag_config["dependencies"] = [
-        f"python={python_version}" if dep.startswith("python") else dep
-        for dep in render_dag_config["dependencies"]
-    ]
+    new_deps = []
+    for dep in render_dag_config["dependencies"]:
+        if isinstance(dep, str) and dep.startswith("python"):
+            new_deps.append(f"python={python_version}")
+        else:
+            new_deps.append(dep)
+    render_dag_config["dependencies"] = new_deps
     render_dag_env = paths.user().temp / "render_dag.dynamic.yml"
     render_dag_env.parent.mkdir(parents=True, exist_ok=True)
     with open(render_dag_env, "w") as f:
