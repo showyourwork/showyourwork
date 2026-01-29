@@ -175,7 +175,7 @@ class TemporaryShowyourworkRepository:
                 raise Exception(stdout + "\n" + stderr)
 
         get_stdout(
-            f"{pre} CI=false showyourwork build --conda-frontend mamba",
+            f"{pre} CI=false showyourwork build",
             shell=True,
             cwd=self.cwd,
             callback=callback,
