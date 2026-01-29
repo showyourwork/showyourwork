@@ -121,6 +121,7 @@ if os.getenv("CI", "false") != "true":
 
             # Edit the pipeline script and re-build. This will
             # update the latest draft of the Sandbox cache
+            # TODO: Need a proper way to test this. It is not happening right now
             self.add_pipeline_script(seed=1)
             self.git_commit()
             self.build_local()
@@ -135,6 +136,16 @@ if os.getenv("CI", "false") != "true":
             self.add_pipeline_script(seed=0)
             self.git_commit()
             self.build_local(env={"SYW_NO_RUN": "true"})
+
+            # Clean so we delete the local cache
+            get_stdout("showyourwork clean", cwd=self.cwd, shell=True)
+
+            # TODO: Fix this
+            # Test fetching the second frozen version to make sure another cache got
+            # uploaded
+            self.add_pipeline_script(seed=1)
+            self.git_commit()
+            self.build_local(pre="SYW_NO_RUN=true")
 
         def delete_zenodo(self):
             # Override the parent delete_zenodo()
