@@ -80,3 +80,11 @@ to use the latest unreleased version of the action:
 Please comment line 405 in
 `src/showyourwork/workflow/scripts/preprocess.py` which should be
 `if graphic not in config["tex_files_out"]`.
+
+.. _frozen_cache_bug:
+
+`No new Zenodo drafts created after freezing cache #638 <https://github.com/showyourwork/showyourwork/issues/638>`_
+-----------------------------------------------------------------------------------------------------------
+
+Once the Zenodo cache is frozen, no new Zenodo drafts are created by |showyourwork|.
+As a workaround while we work on a solution, we recommend users do not freeze the cache until it is ready to be published.

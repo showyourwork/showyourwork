@@ -371,6 +371,13 @@ be repeated as often as you need, so that at any given time the workflow is
 able to restore intermediate results from any number of deposits on Zenodo
 Sandbox.
 
+.. warning::
+
+    As of writing these docs, once the Zenodo cache is frozen, no new Zenodo
+    drafts are created by |showyourwork|. This is a :ref:`known bug <frozen_cache_bug>`
+    and we are working on a fix. In the meantime, we recommend users do not
+    freeze the cache until it is ready to be published.
+
 One useful side effect of freezing a deposit is that an API token is not
 required to access it. This is especially convenient for working with
 outside collaborators, who will not in general have access to your
