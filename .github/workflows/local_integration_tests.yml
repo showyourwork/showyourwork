@@ -42,7 +42,7 @@ jobs:
             powershell
           create-args: >-
             python=${{ matrix.python }}
-            mamba
+            conda
 
       - name: Install showyourwork
         shell: bash -l {0}
