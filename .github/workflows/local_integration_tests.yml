@@ -37,6 +37,9 @@ jobs:
         uses: mamba-org/setup-micromamba@v2
         with:
           environment-name: test-env
+          init-shell: >-
+            bash          # [not win]
+            powershell    # [win]
           create-args: >-
             python=${{ matrix.python }}
             mamba
