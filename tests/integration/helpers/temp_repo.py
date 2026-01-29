@@ -93,12 +93,12 @@ class TemporaryShowyourworkRepository:
         # Provide git name & email
         if os.getenv("CI", "false") == "true":
             get_stdout(
-                "git config --global user.name 'gh-actions'",
+                'git config --global user.name "gh-actions"',
                 cwd=self.root_path,
                 shell=True,
             )
             get_stdout(
-                "git config --global user.email 'gh-actions'",
+                'git config --global user.email "gh-actions"',
                 cwd=self.root_path,
                 shell=True,
             )
@@ -160,8 +160,8 @@ class TemporaryShowyourworkRepository:
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             "git diff-index --quiet HEAD || "
-            "git -c user.name='gh-actions' -c user.email='gh-actions' "
-            "commit -q -m 'auto commit from showyourwork tests'",
+            'git -c user.name="gh-actions" -c user.email="gh-actions" '
+            'commit -q -m "auto commit from showyourwork tests"',
             shell=True,
             cwd=self.cwd,
         )
