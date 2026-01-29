@@ -75,10 +75,10 @@ rule:
 
         commands = [
             'cd "{input.compile_dir}"',
-            " tectonic " + " ".join(tectonic_args),
+            "&&",
+            "tectonic " + " ".join(tectonic_args),
         ]
-        for c in commands:
-            shell(c)
+        shell(" ".join(commands))
 
 # TODO: Add config options for verbosity?
 # See config.py and old tex.py for missing configs.

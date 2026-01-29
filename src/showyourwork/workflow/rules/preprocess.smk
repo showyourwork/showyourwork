@@ -68,10 +68,10 @@ rule:
 
         commands = [
             'cd "{input.compile_dir}"',
+            "&&",
             " tectonic " + " ".join(tectonic_args),
         ]
-        for c in commands:
-            shell(c)
+        shell(" ".join(commands))
 
 rule:
     """
