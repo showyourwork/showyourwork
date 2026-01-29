@@ -173,11 +173,12 @@ class TemporaryShowyourworkRepository:
         def callback(code, stdout, stderr):
             if code != 0:
                 raise Exception(stdout + "\n" + stderr)
+
         env_var = {"CI": "false"}
         if env is not None:
             env_var.update(env)
         get_stdout(
-            f"showyourwork build",
+            "showyourwork build",
             shell=True,
             cwd=self.cwd,
             callback=callback,
