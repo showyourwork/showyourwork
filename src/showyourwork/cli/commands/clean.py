@@ -51,6 +51,7 @@ def clean(force, deep, snakemake_args=(), cores=1, conda_frontend="conda"):
         if (paths.user().repo / ".showyourwork").exists():
             shutil.rmtree(paths.user().repo / ".showyourwork", onerror=onerror)
 
+
 # To handle WindowsError: [Error 5] Access is denied:  https://stackoverflow.com/a/2656405
 def onerror(func, path, exc_info):
     """
