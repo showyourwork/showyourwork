@@ -75,7 +75,7 @@ class BaseClass(TemporaryShowyourworkRepository):
         # Run once to cache things
         print(f"[{self.repo}] Building the article locally (1/2)...")
         get_stdout(
-            "CI=false showyourwork build --conda-frontend mamba",
+            "CI=false showyourwork build",
             shell=True,
             cwd=self.cwd,
         )
@@ -94,7 +94,7 @@ class BaseClass(TemporaryShowyourworkRepository):
         # Run a second time so we can restore from the cache
         print(f"[{self.repo}] Building the article locally (2/2)...")
         get_stdout(
-            "CI=false showyourwork build --conda-frontend mamba",
+            "CI=false showyourwork build",
             shell=True,
             cwd=self.cwd,
         )
