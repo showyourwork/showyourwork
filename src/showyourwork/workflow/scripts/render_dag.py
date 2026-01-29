@@ -7,8 +7,8 @@ import subprocess
 from pathlib import Path
 
 import graphviz
-from PIL import Image
 import pymupdf  # PyMuPDF
+from PIL import Image
 
 
 def is_relative_to(path, other):
@@ -44,40 +44,43 @@ def convert_to_png(file):
         # Open PDF and get first page
         pdf_doc = pymupdf.open(file)
         page = pdf_doc[0]
-        
+
         # Render page to image (300 DPI for good quality)
-        mat = pymupdf.Matrix(300/72, 300/72)  # Convert from points to pixels at 300 DPI
+        mat = pymupdf.Matrix(
+            300 / 72, 300 / 72
+        )  # Convert from points to pixels at 300 DPI
         pix = page.get_pixmap(matrix=mat, alpha=False)
-        
+
         # Convert to PIL Image
         img_data = pix.tobytes("ppm")
         from io import BytesIO
+
         img = Image.open(BytesIO(img_data))
-        
+
         # Calculate aspect ratio
         width_px, height_px = img.size
         aspect = width_px / height_px
-        
+
         # Resize to fit in 500px height while maintaining aspect ratio
         new_width = int(aspect * 500)
         img = img.resize((new_width, 500), Image.Resampling.LANCZOS)
-        
+
         # Add border (15 pixels, black)
         border_size = 15
         border_color = (0, 0, 0)  # black
         bordered_img = Image.new(
-            'RGB',
+            "RGB",
             (img.width + 2 * border_size, img.height + 2 * border_size),
-            border_color
+            border_color,
         )
         bordered_img.paste(img, (border_size, border_size))
-        
+
         # Save as PNG
         bordered_img.save(f"{file}.png", "PNG")
-        
+
         # Close PDF
         pdf_doc.close()
-        
+
     except Exception:
         return None
     else:
