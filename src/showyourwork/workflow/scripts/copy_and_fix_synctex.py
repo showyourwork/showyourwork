@@ -13,7 +13,7 @@ if __name__ == "__main__":
     with gzip.open(snakemake.output[0], "wb") as f:
         for line in data.split(b"\n"):
             if line.decode().startswith("Input:"):
-                parts = line.decode().split(":")
+                parts = line.decode().split(":", 2)
                 path = parts[-1].strip()
                 if len(path):
                     path = Path(path)

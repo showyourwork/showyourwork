@@ -14,10 +14,10 @@ class TestSynctex(TemporaryShowyourworkRepository):
         for line in data.splitlines():
             if not line.startswith("Input:"):
                 continue
-            path = line.split(":")[-1].strip()
+            path = line.split(":", 2)[-1].strip()
             if not len(path):
                 continue
-            path = Path(path).resolve().relative_to(self.cwd)
+            path = Path(path).relative_to(self.cwd)
             if path.name == "ms.tex":
                 assert path.as_posix() == "src/tex/ms.tex"
                 return
