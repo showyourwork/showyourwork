@@ -272,6 +272,7 @@ class TemporaryShowyourworkRepository:
             Usage : ``shutil.rmtree(path, onerror=onerror)``
             """
             import stat
+
             # Is the error an access error?
             if not os.access(path, os.W_OK):
                 os.chmod(path, stat.S_IWUSR)
@@ -282,7 +283,6 @@ class TemporaryShowyourworkRepository:
         if (self.cwd).exists():
             print(f"[{self.repo}] Deleting local repo `tests/sandbox/{self.repo}`...")
             shutil.rmtree(self.cwd, onerror=onerror)
-
 
     def disable_logging(self):
         """Disable showyourwork screen output."""
