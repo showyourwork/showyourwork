@@ -5,6 +5,28 @@ from ... import paths
 from .run_snakemake import run_snakemake
 
 
+# To handle WindowsError: [Error 5] Access is denied:  https://stackoverflow.com/a/2656405
+def onerror(func, path, exc_info):
+    """
+    Error handler for ``shutil.rmtree``.
+
+    If the error is due to an access error (read only file)
+    it attempts to add write permission and then retries.
+
+    If the error is for another reason it re-raises the error.
+
+    Usage : ``shutil.rmtree(path, onerror=onerror)``
+    """
+    import stat
+
+    # Is the error an access error?
+    if not os.access(path, os.W_OK):
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
+    else:
+        raise
+
+
 def clean(force, deep, snakemake_args=(), cores=1, conda_frontend="conda"):
     """Clean the article build.
 
@@ -52,23 +74,4 @@ def clean(force, deep, snakemake_args=(), cores=1, conda_frontend="conda"):
             shutil.rmtree(paths.user().repo / ".showyourwork", onerror=onerror)
 
 
-# To handle WindowsError: [Error 5] Access is denied:  https://stackoverflow.com/a/2656405
-def onerror(func, path, exc_info):
-    """
-    Error handler for ``shutil.rmtree``.
 
-    If the error is due to an access error (read only file)
-    it attempts to add write permission and then retries.
-
-    If the error is for another reason it re-raises the error.
-
-    Usage : ``shutil.rmtree(path, onerror=onerror)``
-    """
-    import stat
-
-    # Is the error an access error?
-    if not os.access(path, os.W_OK):
-        os.chmod(path, stat.S_IWUSR)
-        func(path)
-    else:
-        raise
