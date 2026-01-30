@@ -68,6 +68,7 @@ rule:
             "--chatter minimal",
             "--keep-logs",
             "--keep-intermediates",
+            "--print",
             "{params.maybe_synctex}",
             "{params.user_args}",
             '"{input[0]}"',
