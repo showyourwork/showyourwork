@@ -1,0 +1,3 @@
+Added a generic pre-commit configuration to the base template generated with
+``showyourwork setup``. This configuration includes hooks for formatting Python
+code with Black and Ruff, as well as formatting Snakemake files with snakefmt.
