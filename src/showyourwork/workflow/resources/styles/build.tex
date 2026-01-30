@@ -27,10 +27,10 @@
 
 % Key-value pairs used to assemble the hyperlinks for figures
 % See https://tex.stackexchange.com/a/48931
-\def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{#2}}
+\def\addvalue#1#2{\expandafter\gdef\csname syw@data@\detokenize{#1}\endcsname{\detokenize{#2}}}
 \def\usevalue#1{%
-  \ifcsname syw@data@#1\endcsname%
-    \csname syw@data@#1\expandafter\endcsname%
+  \ifcsname syw@data@\detokenize{#1}\endcsname%
+    \csname syw@data@\detokenize{#1}\expandafter\endcsname%
   \else%
     KEYNOTFOUND%
   \fi%
