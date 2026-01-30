@@ -4,10 +4,12 @@ Defines the rule ``syw__render_dag`` to render the article DAG.
 Runs the script :doc:`render_dag` to generate ``dag.pdf``.
 
 """
+
 from showyourwork import paths
 
 # All figure output files
 figures = config["tree"]["figures"].keys()
+
 
 rule:
     """
@@ -22,9 +24,9 @@ rule:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
         WORKFLOW_GRAPH,
-        "showyourwork.yml"
+        "showyourwork.yml",
     output:
-       "dag.pdf"
+        "dag.pdf",
     conda:
         (paths.showyourwork().envs / "render_dag.yml").as_posix()
     params:
