@@ -131,7 +131,7 @@ if os.getenv("CI", "false") != "true":
             # of the cache and use that to bypass the pipeline script run.
             self.add_pipeline_script(seed=0)
             self.git_commit()
-            self.build_local(pre="SYW_NO_RUN=true")
+            self.build_local(env={"SYW_NO_RUN": "true"})
 
     class TestCachePublish(
         TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
@@ -189,4 +189,4 @@ if os.getenv("CI", "false") != "true":
             # of the cache and use that to bypass the pipeline script run.
             self.add_pipeline_script(seed=0)
             self.git_commit()
-            self.build_local(pre="SYW_NO_RUN=true")
+            self.build_local(env={"SYW_NO_RUN": "true"})

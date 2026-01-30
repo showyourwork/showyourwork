@@ -62,8 +62,8 @@ class TestPullRequests(TemporaryShowyourworkRepository):
         print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}@small-change`...")
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
-            "git -c user.name='gh-actions' -c user.email='gh-actions' "
-            "commit -q -m 'auto commit from showyourwork tests'",
+            'git -c user.name="gh-actions" -c user.email="gh-actions" '
+            'commit -q -m "auto commit from showyourwork tests"',
             shell=True,
             cwd=self.cwd,
         )

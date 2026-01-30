@@ -286,7 +286,7 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
         get_stdout("git init -q", shell=True, cwd=repo)
         get_stdout("git add .", shell=True, cwd=repo)
         get_stdout(
-            "git commit -q -m '[showyourwork] first commit'",
+            'git commit -q -m "[showyourwork] first commit"',
             shell=True,
             cwd=repo,
         )

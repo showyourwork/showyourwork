@@ -140,7 +140,7 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
 
         # Commit the changes and check that the exception is still raised
         get_stdout(
-            f"git add -f {ms} && git commit -m 'changing ms.tex locally'",
+            f'git add -f {ms} && git commit -m "changing ms.tex locally"',
             cwd=self.cwd,
             shell=True,
         )
@@ -166,7 +166,7 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
         # Amend the commit message with the magical `[showyourwork]` label
         # and check that the merge works
         get_stdout(
-            "git commit --amend -m '[showyourwork] changing ms.tex locally'",
+            'git commit --amend -m "[showyourwork] changing ms.tex locally"',
             cwd=self.cwd,
             shell=True,
         )

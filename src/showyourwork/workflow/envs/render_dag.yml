@@ -2,5 +2,8 @@ channels:
   - conda-forge
 dependencies:
   - python
-  - imagemagick
+  - pillow
   - python-graphviz
+  - pip
+  - pip:
+    - PyMuPDF

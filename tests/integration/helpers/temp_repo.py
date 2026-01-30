@@ -93,12 +93,12 @@ class TemporaryShowyourworkRepository:
         # Provide git name & email
         if os.getenv("CI", "false") == "true":
             get_stdout(
-                "git config --global user.name 'gh-actions'",
+                'git config --global user.name "gh-actions"',
                 cwd=self.root_path,
                 shell=True,
             )
             get_stdout(
-                "git config --global user.email 'gh-actions'",
+                'git config --global user.email "gh-actions"',
                 cwd=self.root_path,
                 shell=True,
             )
@@ -160,13 +160,13 @@ class TemporaryShowyourworkRepository:
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             "git diff-index --quiet HEAD || "
-            "git -c user.name='gh-actions' -c user.email='gh-actions' "
-            "commit -q -m 'auto commit from showyourwork tests'",
+            'git -c user.name="gh-actions" -c user.email="gh-actions" '
+            'commit -q -m "auto commit from showyourwork tests"',
             shell=True,
             cwd=self.cwd,
         )
 
-    def build_local(self, pre=""):
+    def build_local(self, env=None):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
 
@@ -174,11 +174,15 @@ class TemporaryShowyourworkRepository:
             if code != 0:
                 raise Exception(stdout + "\n" + stderr)
 
+        env_var = {"CI": "false"}
+        if env is not None:
+            env_var.update(env)
         get_stdout(
-            f"{pre} CI=false showyourwork build",
+            "showyourwork build",
             shell=True,
             cwd=self.cwd,
             callback=callback,
+            env=env_var,
         )
 
     @pytest.mark.asyncio_cooperative
@@ -254,9 +258,31 @@ class TemporaryShowyourworkRepository:
 
     def delete_local(self):
         """Delete the local repo."""
+
+        # To handle WindowsError: [Error 5] Access is denied:  https://stackoverflow.com/a/2656405
+        def onerror(func, path, exc_info):
+            """
+            Error handler for ``shutil.rmtree``.
+
+            If the error is due to an access error (read only file)
+            it attempts to add write permission and then retries.
+
+            If the error is for another reason it re-raises the error.
+
+            Usage : ``shutil.rmtree(path, onerror=onerror)``
+            """
+            import stat
+
+            # Is the error an access error?
+            if not os.access(path, os.W_OK):
+                os.chmod(path, stat.S_IWUSR)
+                func(path)
+            else:
+                raise
+
         if (self.cwd).exists():
             print(f"[{self.repo}] Deleting local repo `tests/sandbox/{self.repo}`...")
-            shutil.rmtree(self.cwd)
+            shutil.rmtree(self.cwd, onerror=onerror)
 
     def disable_logging(self):
         """Disable showyourwork screen output."""

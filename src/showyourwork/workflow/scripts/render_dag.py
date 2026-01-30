@@ -7,6 +7,8 @@ import subprocess
 from pathlib import Path
 
 import graphviz
+import pymupdf  # PyMuPDF
+from PIL import Image
 
 
 def is_relative_to(path, other):
@@ -34,27 +36,50 @@ def removeprefix(s, prefix):
 # Convert to PNG & get aspect ratio
 def convert_to_png(file):
     """
-    Convert a file to a PNG thumbnail w/ a border and return its aspect ratio.
+    Convert a PDF file to a PNG thumbnail w/ a border and return its aspect ratio.
 
     On error, returns None.
     """
     try:
-        result = subprocess.run(
-            f'convert "{file}" -format "%[fx:w/h]" info:',
-            shell=True,
-            stdout=subprocess.PIPE,
-            check=False,
+        # Open PDF and get first page
+        pdf_doc = pymupdf.open(file)
+        page = pdf_doc[0]
+
+        # Render page to image (300 DPI for good quality)
+        mat = pymupdf.Matrix(
+            300 / 72, 300 / 72
+        )  # Convert from points to pixels at 300 DPI
+        pix = page.get_pixmap(matrix=mat, alpha=False)
+
+        # Convert to PIL Image
+        img_data = pix.tobytes("ppm")
+        from io import BytesIO
+
+        img = Image.open(BytesIO(img_data))
+
+        # Calculate aspect ratio
+        width_px, height_px = img.size
+        aspect = width_px / height_px
+
+        # Resize to fit in 500px height while maintaining aspect ratio
+        new_width = int(aspect * 500)
+        img = img.resize((new_width, 500), Image.Resampling.LANCZOS)
+
+        # Add border (15 pixels, black)
+        border_size = 15
+        border_color = (0, 0, 0)  # black
+        bordered_img = Image.new(
+            "RGB",
+            (img.width + 2 * border_size, img.height + 2 * border_size),
+            border_color,
         )
-        assert result.returncode == 0
-        aspect = float(result.stdout.decode())
-        width = aspect * 500
-        result = subprocess.run(
-            f"convert -resize {width}x500 -background white -alpha remove "
-            f'-bordercolor black -border 15 "{file}" "{file}.png"',
-            shell=True,
-            check=False,
-        )
-        assert result.returncode == 0
+        bordered_img.paste(img, (border_size, border_size))
+
+        # Save as PNG
+        bordered_img.save(f"{file}.png", "PNG")
+
+        # Close PDF
+        pdf_doc.close()
 
     except Exception:
         return None

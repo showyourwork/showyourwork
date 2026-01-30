@@ -56,17 +56,22 @@ rule:
         tectonic_yml.as_posix()
     params:
         user_args=" ".join(config["user_args"])
-    shell:
-        """
-        cd "{input.compile_dir}"
-        tectonic                      \\
-            --chatter minimal         \\
-            --keep-logs               \\
-            --keep-intermediates      \\
-            -r 0                      \\
-            {params.user_args}        \\
-            "{input[0]}"
-        """
+    run:
+        tectonic_args = [
+            "--chatter minimal",
+            "--keep-logs",
+            "--keep-intermediates",
+            "-r 0",
+            "{params.user_args}",
+            '"{input[0]}"',
+        ]
+
+        commands = [
+            'cd "{input.compile_dir}"',
+            "&&",
+            " tectonic " + " ".join(tectonic_args),
+        ]
+        shell(" ".join(commands))
 
 rule:
     """

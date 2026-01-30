@@ -63,17 +63,23 @@ rule:
     params:
         maybe_synctex="--synctex" if config["synctex"] else "",
         user_args=" ".join(config["user_args"])
-    shell:
-        """
-        cd "{input.compile_dir}"
-        tectonic                      \\
-            --chatter minimal         \\
-            --keep-logs               \\
-            --keep-intermediates      \\
-            {params.maybe_synctex}    \\
-            {params.user_args}        \\
-            "{input[0]}"
-        """
+    run:
+        tectonic_args = [
+            "--chatter minimal",
+            "--keep-logs",
+            "--keep-intermediates",
+            "--print",
+            "{params.maybe_synctex}",
+            "{params.user_args}",
+            '"{input[0]}"',
+        ]
+
+        commands = [
+            'cd "{input.compile_dir}"',
+            "&&",
+            "tectonic " + " ".join(tectonic_args),
+        ]
+        shell(" ".join(commands))
 
 # TODO: Add config options for verbosity?
 # See config.py and old tex.py for missing configs.

@@ -20,6 +20,7 @@ jobs:
           - "3.13"
         platform:
           - ubuntu-latest
+          - windows-latest
         # include:
         #   - platform: macos-latest
         #     python: "3.9"
@@ -36,21 +37,16 @@ jobs:
         uses: mamba-org/setup-micromamba@v2
         with:
           environment-name: test-env
+          init-shell: >-
+            bash
+            powershell
           create-args: >-
             python=${{ matrix.python }}
-            mamba
-
-      - name: Accept Anaconda Terms of Service
-        shell: bash -l {0}
-        run: |
-          conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-          conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+            conda
 
       - name: Set channel priority
         shell: bash -l {0}
         run: |
-          conda config --remove channels defaults || true
-          conda config --add channels conda-forge
           conda config --set channel_priority strict
 
       - name: Install showyourwork
