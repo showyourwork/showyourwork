@@ -2,6 +2,7 @@
 The Snakefile for the article pre-processing step.
 
 """
+
 from showyourwork import paths, overleaf
 from showyourwork.config import render_config, parse_config, get_run_type
 from showyourwork.patches import patch_snakemake_logging
@@ -18,6 +19,8 @@ run_type = get_run_type()
 
 # User config. Allow Jinja2 templating syntax.
 render_config()
+
+
 configfile: (paths.user().temp / "showyourwork.yml").as_posix()
 
 
@@ -46,21 +49,21 @@ parse_config()
 # Hack to make the configfile generation the default rule
 rule syw__main:
     input:
-        config["config_json"]
+        config["config_json"],
 
 
 # Include all other rules
 include: "rules/common.smk"
 include: "rules/preprocess.smk"
 
+
 onstart:
-
-
     # Overleaf sync: pull in changes
     if run_type == "preprocess" and get_repo_branch() == "main":
         overleaf.pull_files(
             config["overleaf"]["pull"],
             config["overleaf"]["id"],
             commit_changes=not config["github_actions"],
-            push_changes=config["github_actions"] and config["overleaf"]["gh_actions_sync"]
+            push_changes=config["github_actions"]
+            and config["overleaf"]["gh_actions_sync"],
         )

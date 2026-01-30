@@ -3,6 +3,7 @@ Defines rules ``syw__figX`` to generate figure output, where ``X`` is the
 figure number.
 
 """
+
 from showyourwork import paths
 
 
@@ -49,12 +50,12 @@ for figure_name in figures:
         input:
             figscript,
             dependencies,
-            "environment.yml" if not static else []
+            "environment.yml" if not static else [],
         output:
-            report(graphics, category="Figure")
+            report(graphics, category="Figure"),
         conda:
             (paths.user().repo / "environment.yml").as_posix()
         params:
-            command=command
+            command=command,
         shell:
             "{params.command}"
