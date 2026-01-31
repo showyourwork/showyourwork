@@ -38,6 +38,7 @@ class TestCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
             config["dependencies"] = {
                 "src/scripts/test_figure.py": "src/data/test_data.npz"
             }
+            config["run_cache_rules_on_ci"] = True
 
         # Add the figure environment to the tex file
         self.add_figure_environment()
@@ -70,6 +71,7 @@ class TestDirCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
             config["dependencies"] = {
                 "src/scripts/test_figure.py": "src/data/test_data"
             }
+            config["run_cache_rules_on_ci"] = True
 
         # Add the figure environment to the tex file
         self.add_figure_environment()
@@ -108,6 +110,7 @@ if os.getenv("CI", "false") != "true":
                 config["dependencies"] = {
                     "src/scripts/test_figure.py": "src/data/test_data.npz"
                 }
+                config["run_cache_rules_on_ci"] = True
 
             # Add the figure environment to the tex file
             self.add_figure_environment()
@@ -132,6 +135,11 @@ if os.getenv("CI", "false") != "true":
             self.add_pipeline_script(seed=0)
             self.git_commit()
             self.build_local(pre="SYW_NO_RUN=true")
+
+        def delete_zenodo(self):
+            # Override the parent delete_zenodo()
+            # We cannot delete the frozen cache
+            pass
 
     class TestCachePublish(
         TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
@@ -160,6 +168,7 @@ if os.getenv("CI", "false") != "true":
                 config["dependencies"] = {
                     "src/scripts/test_figure.py": "src/data/test_data.npz"
                 }
+                config["run_cache_rules_on_ci"] = True
 
             # Add the figure environment to the tex file
             self.add_figure_environment()

@@ -42,6 +42,28 @@ def require_access_token(method):
     return wrapper
 
 
+def _search_file(file, dataset):
+    if file in dataset["contents"].values():
+        return True
+
+    if "zip_files" in dataset:
+        zip_files = dataset["zip_files"]
+    else:
+        zip_files = {
+            k: v for k, v in dataset["contents"].items() if isinstance(v, dict)
+        }
+    for zip_file in zip_files:
+        leaves = [
+            item
+            for v in zip_files[zip_file].values()
+            for item in (v.values() if isinstance(v, dict) else [v])
+        ]
+        if file in leaves:
+            return True
+
+    return False
+
+
 def get_dataset_urls(files, datasets):
     """
     Given a list of `files`, return all associated Zenodo and/or Zenodo Sandbox
@@ -55,13 +77,8 @@ def get_dataset_urls(files, datasets):
         deposit = Zenodo(doi)
         url = f"https://{deposit.url}/records/{deposit.deposit_id}"
         for file in files:
-            if file in datasets[doi]["contents"].values():
+            if _search_file(file, datasets[doi]):
                 result.append(url)
-            else:
-                for zip_file in datasets[doi]["zip_files"]:
-                    if file in datasets[doi]["zip_files"][zip_file].values():
-                        result.append(url)
-                        break
     return list(set(result))
 
 
@@ -73,16 +90,29 @@ def get_dataset_dois(files, datasets):
     """
     result = []
     for doi in datasets:
-        Zenodo(doi)
         for file in files:
-            if file in datasets[doi]["contents"].values():
+            if _search_file(file, datasets[doi]):
                 result.append(doi)
-            else:
-                for zip_file in datasets[doi]["zip_files"]:
-                    if file in datasets[doi]["zip_files"][zip_file].values():
-                        result.append(doi)
-                        break
     return list(set(result))
+
+
+def _get_entries(data):
+    """
+    Given Zenodo data, extract entries and the keys to access certain data.
+    The format varies between published records and drafts.
+    """
+    if isinstance(data, dict):
+        entries = data["entries"]
+        file_key = "key"
+        content_key = "content"
+    elif isinstance(data, list):
+        entries = data
+        file_key = "filename"
+        content_key = "download"
+    else:
+        raise TypeError("Unexpected type encoutered for Zenodo data")
+
+    return entries, file_key, content_key
 
 
 services = {
@@ -343,9 +373,12 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-            for entry in data["entries"]:
-                if entry["key"] == rule_name:
-                    file_id = entry["id"]
+            entries, file_key, _ = _get_entries(data)
+            for entry in entries:
+                if entry[file_key] == rule_name:
+                    file_id = entry.get("id", entry.get("file_id"))
+                    if file_id is None:
+                        raise KeyError("Key 'id' or 'file_id' not found in Zenodo data")
                     parse_request(
                         requests.delete(
                             f"{files_url}/{file_id}",
@@ -370,7 +403,7 @@ class Zenodo:
             else []
         )
         try:
-            subprocess.run(
+            curl_output = subprocess.run(
                 [
                     "curl",
                     "--referer",
@@ -390,9 +423,12 @@ class Zenodo:
         except Exception:
             raise exceptions.ZenodoUploadError()
 
-        # Delete the tarball if we created it
+        # Delete the tarball if we created it, regardless of successful upload
         if tarball:
             file_to_upload.unlink()
+
+        if curl_output.returncode != 0:
+            raise exceptions.ZenodoUploadError()
 
         # Update the provenance
         rule_hashes[rule_name] = file.name
@@ -435,21 +471,23 @@ class Zenodo:
 
         # Look for a match
         logger.debug(f"Searching for file `{rule_name}` with hash `{file.name}`...")
-        for entry in data["entries"]:
+        entries, file_key, content_key = _get_entries(data)
+        for entry in entries:
+            entry_name = entry[file_key]
             logger.debug(
-                f"Inspecting candidate file `{entry['key']}` with hash "
+                f"Inspecting candidate file `{entry_name}` with hash "
                 f"`{rule_hashes.get(rule_name, None)}`..."
             )
 
             if (
-                entry["key"] == rule_name
+                entry_name == rule_name
                 and rule_hashes.get(rule_name, None) == file.name
             ):
                 # Download it
                 logger.debug("File name and hash both match.")
                 if not dry_run:
                     logger.debug("Downloading...")
-                    url = entry["links"]["content"]
+                    url = entry["links"][content_key]
                     progress_bar = (
                         ["--progress-bar"]
                         if not snakemake.workflow.config["github_actions"]
@@ -727,7 +765,7 @@ class Zenodo:
                 data = r.json()
             except Exception:
                 data = {}
-            if "PID is not registered" in data.get("message", ""):
+            if "is not registered" in data.get("message", ""):
                 # There is no published record with this id
                 pass
             else:
@@ -951,8 +989,9 @@ class Zenodo:
                 params={"access_token": self.access_token},
             )
         )
-        for entry in data["entries"]:
-            url = entry["links"]["content"]
+        entries, file_key, content_key = _get_entries(data)
+        for entry in entries:
+            url = entry["links"][content_key]
             try:
                 subprocess.run(
                     [
@@ -963,7 +1002,7 @@ class Zenodo:
                         f"{url}?access_token={self.access_token}",
                         "--progress-bar",
                         "--output",
-                        entry["key"],
+                        entry[file_key],
                     ],
                     cwd=cache_folder,
                     check=False,
