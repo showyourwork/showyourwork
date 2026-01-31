@@ -517,7 +517,7 @@ def job_is_cached(job):
         return False
 
     # Loop over cache files for the job (should really only be one)
-    for _outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job):
+    for _outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job, cache_mode):
 
         def _file_exists(cachefile, doi):
             """
