@@ -8,5 +8,5 @@ def test_patch_snakemake_cache():
     old_store = LocalOutputFileCache.store
     old_fetch = LocalOutputFileCache.fetch
     patches.patch_snakemake_cache(None, None)
-    assert old_store == LocalOutputFileCache.store
-    assert old_fetch == LocalOutputFileCache.fetch
+    assert old_store != LocalOutputFileCache.store
+    assert old_fetch != LocalOutputFileCache.fetch
