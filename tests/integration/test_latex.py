@@ -13,7 +13,7 @@ workflow_replace_with = """      - name: Install TinyTex for matplotlib LaTeX re
         shell: bash -l {0}
         run: |
           wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
-          sudo ~/bin/tlmgr install type1cm cm-super
+          sudo ~/bin/tlmgr install type1cm cm-super underscore
 
       - name: Build the article PDF
 """
