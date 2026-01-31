@@ -110,7 +110,7 @@ if os.getenv("CI", "false") != "true":
                 config["dependencies"] = {
                     "src/scripts/test_figure.py": "src/data/test_data.npz"
                 }
-            config["run_cache_rules_on_ci"] = True
+                config["run_cache_rules_on_ci"] = True
 
             # Add the figure environment to the tex file
             self.add_figure_environment()
@@ -168,7 +168,7 @@ if os.getenv("CI", "false") != "true":
                 config["dependencies"] = {
                     "src/scripts/test_figure.py": "src/data/test_data.npz"
                 }
-            config["run_cache_rules_on_ci"] = True
+                config["run_cache_rules_on_ci"] = True
 
             # Add the figure environment to the tex file
             self.add_figure_environment()
