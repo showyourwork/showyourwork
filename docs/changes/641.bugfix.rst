@@ -1,1 +1,0 @@
-Install underscore.sty latex package in test_latex.py
