@@ -1,0 +1,19 @@
+    - Update `shell` in snakefiles to handle new lines correctly on Windows
+
+    - Add `onerror` function to handle file deletion on Windows
+
+    - Using `PyMuPDF` instead of `imagemagick` to generate PNG images for rendering the DAG
+
+    - Fix stylesheet (build.tex) to handle paths with `\` on Windows
+
+    - Update synctex fix to handle paths with `:` on Windows
+
+    - Allow using `pip` dependencies in conda `.yml` environment files
+
+- Updates to Tests:
+
+    - Add `onerror` function to handle file deletion on Windows
+
+    - Separate passing environment variables from the command subprocess calls
+
+    - Fix quotation marks for string literals
