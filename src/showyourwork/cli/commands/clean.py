@@ -24,7 +24,7 @@ def onerror(func, path, exc_info):
         os.chmod(path, stat.S_IWUSR)
         func(path)
     else:
-        raise
+        raise OSError(f"Could not delete {path}")
 
 
 def clean(force, deep, snakemake_args=(), cores=1, conda_frontend="conda"):

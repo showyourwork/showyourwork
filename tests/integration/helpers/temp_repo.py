@@ -278,7 +278,7 @@ class TemporaryShowyourworkRepository:
                 os.chmod(path, stat.S_IWUSR)
                 func(path)
             else:
-                raise
+                raise OSError(f"Could not delete {path}")
 
         if (self.cwd).exists():
             print(f"[{self.repo}] Deleting local repo `tests/sandbox/{self.repo}`...")
