@@ -11,7 +11,7 @@ repos:
       - id: black-jupyter
         exclude: "^docs/|^tests/projects/"
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.14.14"
+    rev: "v0.15.1"
     hooks:
       - id: ruff
         exclude: "^docs/|^tests/projects/"
