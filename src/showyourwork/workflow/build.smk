@@ -110,7 +110,7 @@ if (paths.user().temp / "config.json").exists():
 else:
 
 
-    if run_type != "clean":
+    if run_type != "clean" and not workflow.dryrun:
         raise exceptions.MissingConfigFile()
 
 

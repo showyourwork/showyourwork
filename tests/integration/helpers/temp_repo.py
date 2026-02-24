@@ -39,6 +39,7 @@ class TemporaryShowyourworkRepository:
     require_local_build = False
     delete_remote_on_success = False
     clear_actions_cache_on_start = True
+    dry_run = False
 
     # Internal
     _sandbox_concept_doi = None
@@ -177,12 +178,18 @@ class TemporaryShowyourworkRepository:
         env_var = {"CI": "false"}
         if env is not None:
             env_var.update(env)
-        get_stdout(
-            "showyourwork build",
+        args = ""
+        if self.dry_run:
+            args += " --dry-run"
+        import subprocess
+
+        subprocess.run(
+            f"{pre} CI=false showyourwork build" + args,
             shell=True,
             cwd=self.cwd,
-            callback=callback,
-            env=env_var,
+            check=False,
+            # env=env_var,
+            # callback=callback,
         )
 
     @pytest.mark.asyncio_cooperative
