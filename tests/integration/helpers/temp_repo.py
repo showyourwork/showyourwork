@@ -181,15 +181,13 @@ class TemporaryShowyourworkRepository:
         args = ""
         if self.dry_run:
             args += " --dry-run"
-        import subprocess
 
-        subprocess.run(
+        get_stdout(
             f"{pre} CI=false showyourwork build" + args,
             shell=True,
             cwd=self.cwd,
-            check=False,
-            # env=env_var,
-            # callback=callback,
+            env=env_var,
+            callback=callback,
         )
 
     @pytest.mark.asyncio_cooperative
