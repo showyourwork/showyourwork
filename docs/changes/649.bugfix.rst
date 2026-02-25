@@ -1,0 +1,1 @@
+Do not throw MissingConfigFile error when `--dry-run` is passed to Snakemake.
