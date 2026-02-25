@@ -183,7 +183,7 @@ class TemporaryShowyourworkRepository:
             args += " --dry-run"
 
         get_stdout(
-            f"{pre} CI=false showyourwork build" + args,
+            "showyourwork build" + args,
             shell=True,
             cwd=self.cwd,
             env=env_var,
