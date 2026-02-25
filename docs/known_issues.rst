@@ -88,3 +88,10 @@ Please comment line 405 in
 
 Once the Zenodo cache is frozen, no new Zenodo drafts are created by |showyourwork|.
 As a workaround while we work on a solution, we recommend users do not freeze the cache until it is ready to be published.
+
+`Snakemake's --dry-run argument completely skips the workflow #653 <https://github.com/showyourwork/showyourwork/issues/653>`_
+-----------------------------------------------------------------------------------------------------------
+
+showyourwork passes the `--dry-run` argument to snakemake, but internally it will skip the entire workflow.
+This results in a message saying no steps need to be run even when, in fact, steps would be run in an actual build.
+There is a warning printed at the CLI about this.
