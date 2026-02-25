@@ -110,6 +110,12 @@ if (paths.user().temp / "config.json").exists():
 else:
 
 
+    if workflow.output_settings.dryrun:
+        get_logger().warn(
+            "--dry-run is only partially supported with showyourwork."
+            "The output will not be representative of what would actually run."
+        )
+
     if run_type != "clean" and not workflow.output_settings.dryrun:
         raise exceptions.MissingConfigFile()
 
