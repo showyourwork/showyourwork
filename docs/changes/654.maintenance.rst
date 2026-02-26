@@ -1,0 +1,2 @@
+Add command line arguments to run the remote test as a regular user (`--no-org`) or with a specific org (`--github-org`).
+This allows users and contributors to run the remote tests without having to push a PR, making debugging easier.
