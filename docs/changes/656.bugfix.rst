@@ -1,0 +1,2 @@
+Fixed a bug where using ``\begin{figure}[H]`` would cause the build to crash
+with an XML parsing error during preprocessing.
