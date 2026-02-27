@@ -10,6 +10,7 @@ main article build step.
 
 """
 
+import copy
 import json
 import re
 from collections.abc import MutableMapping
@@ -487,6 +488,51 @@ def get_json_tree(xmlfile):
     return tree
 
 
+def check_dependency_keys(dependencies, tree, ms_tex, repo):
+    """
+    Validate that keys in the ``dependencies`` config match known figure
+    scripts or the manuscript TeX file.
+
+    This catches typos in script names (see
+    `<https://github.com/showyourwork/showyourwork/issues/242>`_): if a user
+    misspells a script path in the ``dependencies`` section of
+    ``showyourwork.yml``, the mapping is silently ignored. This function
+    detects that situation by comparing keys against the set of scripts
+    actually referenced by the article, and also verifying they exist on disk.
+
+    Raises :class:`~showyourwork.exceptions.ConfigError` on mismatch.
+
+    Args:
+        dependencies (dict): The user-provided ``dependencies`` mapping from
+            the config.
+        tree (dict): The article tree returned by :func:`get_json_tree`.
+        ms_tex (str): The path to the manuscript TeX file.
+        repo (Path): The root path of the user repository.
+
+    """
+    # Collect all scripts referenced by figures in the article
+    known_scripts = set()
+    for fig_info in tree["figures"].values():
+        if fig_info["script"] is not None:
+            known_scripts.add(fig_info["script"])
+
+    # The manuscript TeX file is also a valid dependency key
+    known_scripts.add(ms_tex)
+
+    for key in dependencies:
+        if key not in known_scripts:
+            raise exceptions.ConfigError(
+                f"'{key}' is listed as a key in the `dependencies` section "
+                f"of showyourwork.yml but does not correspond to any figure "
+                f"script or the manuscript TeX file. Is there a typo?"
+            )
+        elif not (repo / key).exists():
+            raise exceptions.ConfigError(
+                f"'{key}' is listed as a key in the `dependencies` section "
+                f"of showyourwork.yml but does not exist on disk."
+            )
+
+
 if __name__ == "__main__":
     # Snakemake config (available automagically)
     config = snakemake.config  # type: ignore
@@ -496,6 +542,18 @@ if __name__ == "__main__":
 
     # Get the article tree
     config["tree"] = get_json_tree(snakemake.input[0])
+
+    # Warn about dependency keys that don't match any known script
+    check_dependency_keys(
+        config["dependencies"],
+        config["tree"],
+        config["ms_tex"],
+        paths.user().repo,
+    )
+
+    # Save the original user-provided dependencies before modification,
+    # so we can validate dependency values against the DAG later
+    config["user_dependencies"] = copy.deepcopy(config["dependencies"])
 
     # Make all of the graphics dependencies of the article
     config["dependencies"][config["ms_tex"]] = config["dependencies"].get(
