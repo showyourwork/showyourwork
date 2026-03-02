@@ -3,7 +3,7 @@ package = "showyourwork"
 directory = "docs/changes"
 filename = "CHANGES.rst"
 # let towncrier create proper links to the merged PR
-issue_format = "`#{issue} <https://github.com/showyourwork/showyourwork/pulls/{issue}>`__"
+issue_format = "`#{issue} <https://github.com/showyourwork/showyourwork/pull/{issue}>`__"
 
 [tool.towncrier.fragment.feature]
 name = "New Features"
