@@ -4,7 +4,7 @@ import re
 
 import pytest
 import requests
-from helpers import TemporaryShowyourworkRepository
+from helpers import GITHUB_ORG, GITHUB_USER, TemporaryShowyourworkRepository
 
 from showyourwork import gitapi
 from showyourwork.subproc import get_stdout, parse_request
@@ -23,11 +23,11 @@ class TestPullRequests(TemporaryShowyourworkRepository):
     async def run_github_action(self):
         """Make changes in a new branch, issue a PR, and inspect the rendered diff."""
         # Push the initial commit to main
-        print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}@main`...")
+        print(f"[{self.repo}] Pushing to `{GITHUB_USER}/{self.repo}@main`...")
         get_stdout(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
-            f"@github.com/showyourwork/{self.repo} main",
+            f"@github.com/{GITHUB_USER}/{self.repo} main",
             shell=True,
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
@@ -59,7 +59,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
             f.write(contents)
 
         # Add, commit, and push to the new branch
-        print(f"[{self.repo}] Pushing to `showyourwork/{self.repo}@small-change`...")
+        print(f"[{self.repo}] Pushing to `{GITHUB_USER}/{self.repo}@small-change`...")
         get_stdout("git add .", shell=True, cwd=self.cwd)
         get_stdout(
             'git -c user.name="gh-actions" -c user.email="gh-actions" '
@@ -70,7 +70,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
         get_stdout(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
-            f"@github.com/showyourwork/{self.repo} small-change",
+            f"@github.com/{GITHUB_USER}/{self.repo} small-change",
             shell=True,
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
@@ -78,7 +78,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
 
         # Create the PR for the main branch
         print(f"[{self.repo}] Creating PR for small-change -> main...")
-        url = f"https://api.github.com/repos/showyourwork/{self.repo}/pulls"
+        url = f"https://api.github.com/repos/{GITHUB_USER}/{self.repo}/pulls"
         data = parse_request(
             requests.post(
                 url,
@@ -116,7 +116,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
                 url,
             ) = gitapi.get_workflow_run_status(
                 self.repo,
-                org="showyourwork",
+                org=GITHUB_ORG,
                 q={
                     "event": "workflow_run",
                     "head_sha": head_sha,
@@ -145,7 +145,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
             )
 
         # Get the bot comment
-        url = f"https://api.github.com/repos/showyourwork/{self.repo}/issues/{pr_number}/comments"
+        url = f"https://api.github.com/repos/{GITHUB_USER}/{self.repo}/issues/{pr_number}/comments"
         data = parse_request(
             requests.get(
                 url,
@@ -195,7 +195,9 @@ class TestPullRequests(TemporaryShowyourworkRepository):
 
         # Close the PR
         print(f"[{self.repo}] Closing the PR...")
-        url = f"https://api.github.com/repos/showyourwork/{self.repo}/pulls/{pr_number}"
+        url = (
+            f"https://api.github.com/repos/{GITHUB_USER}/{self.repo}/pulls/{pr_number}"
+        )
         data = parse_request(
             requests.patch(
                 url,
