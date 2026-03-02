@@ -169,10 +169,24 @@ class TestPullRequests(TemporaryShowyourworkRepository):
         else:
             raise Exception("Cannot find bot comment on PR.")
 
-        # Download the PDF diff
-        response = requests.get(diff_url)
-        if response.status_code > 204:
-            raise Exception("Diff PDF was not pushed to the -pdf branch.")
+        # Download the PDF diff (allow for propagation delays / transient 5xx)
+        last_status = None
+        for _i in range(12):
+            response = requests.get(diff_url, timeout=60)
+            last_status = response.status_code
+            if last_status <= 204 and len(response.content) > 0:
+                break
+            await asyncio.sleep(10)
+
+        if last_status is None or last_status > 204:
+            pytest.fail(
+                "Diff PDF not available yet.\n"
+                f"diff_url: {diff_url}\n"
+                f"HTTP status: {last_status}\n"
+                f"Response headers: {dict(response.headers)}\n"
+                f"Response text (first 500 chars): {response.text[:500]!r}"
+            )
+
         with open(self.cwd / "diff.pdf", "wb") as f:
             f.write(response.content)
 
