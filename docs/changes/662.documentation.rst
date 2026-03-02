@@ -1,0 +1,1 @@
+Added instructions on how to test open Pull Requests.
