@@ -1,6 +1,49 @@
 Contributor Guide
 ===================
 
+Open Issues
+---------------------------------
+The first way to contribute is to test the software and raise or open issues. Showyourwork issues
+can be found `in the github repo <https://github.com/showyourwork/showyourwork/issues>`_. The
+"contributions welcome" tag is a great place to start!
+
+Testing an existing pull request
+--------------------------------
+
+You might have opened an issue or someone else might have, and a pull request (PR) has been opened to address it.
+
+You can test the PR by following these steps:
+
+if you did not clone the repository yet
+
+1. ``git clone https://github.com/showyourwork/showyourwork.git``
+
+find which is the correct remote name with ``git remote -v``,
+so you sure to fetch the remote branch from the real upstream repository
+and someone else's fork
+
+2. ``git fetch``
+
+now you should see the branch associated with the open PR, which should be named something like ``remote-name/branch-name``
+
+3. ``git switch branch-name``
+
+now you have a local copy of the remote branch, and you can test it by installing _showyourwork_ in editable mode
+(just so you can switch branches later easily without having to reinstall)
+
+4. ``pip install -e .``
+
+now move to another directory where to test a new project
+
+5. ``showyourwork setup -a git+https://github.com/showyourwork/showyourwork@branch-name foo/bar``
+
+edit your new test project with what reproduces the bug
+
+6. ``showyourwork build``
+
+and then let's hope everything works as expected :)
+
+
 Contributing to the documentation
 ---------------------------------
 
@@ -85,11 +128,7 @@ files and want to view them. Because of this it can be nice to run them together
 That's the setup! Open documentation issues can be perused
 `here <https://github.com/showyourwork/showyourwork/issues?q=is%3Aissue+is%3Aopen+label%3A%22%3Amemo%3A+documentation%22>`_ .
 
-Open Issues
----------------------------------
-Another great way to contribute is to raise or open issues. Showyourwork issues
-can be found `in the github repo <https://github.com/showyourwork/showyourwork/issues>`_. The
-"contributions welcome" tag is a great place to start!
+
 
 .. _contributing-code:
 
