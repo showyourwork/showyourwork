@@ -6,3 +6,4 @@ updates:
       interval: "weekly"
     labels:
       - "no-changelog-needed"
+      - "safe to test"
