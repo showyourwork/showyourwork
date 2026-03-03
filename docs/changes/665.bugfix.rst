@@ -1,0 +1,2 @@
+Fixed a bug that prevented a Pull Request to produe the PDF file with
+highlighted changes (see `this issue <https://github.com/showyourwork/showyourwork-action/issues/24>`_ for the original cause).
