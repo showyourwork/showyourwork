@@ -149,6 +149,49 @@ def as_dict(x, depth=0, maxdepth=30):
     return x
 
 
+def expand_dependency_directories(dependency, repo_root=None):
+    """
+    Expand a dependency path that may be a directory into a list of files.
+
+    If the dependency is a directory, recursively returns all files within it.
+    Otherwise, returns the dependency as-is in a list.
+
+    Args:
+        dependency (str): Path to a file or directory, relative to the repo root.
+            Should use forward slashes (/) as path separators for consistency
+            across platforms.
+        repo_root (Path, optional): Root path of the repository. If not provided,
+            defaults to the user's repo root via paths.user().repo.
+
+    Returns:
+        list: A list of file paths (as strings) with forward slashes as separators
+            for platform-independent consistency.
+
+    """
+    if repo_root is None:
+        repo_root = paths.user().repo
+    else:
+        repo_root = Path(repo_root)
+
+    # Normalize dependency to use forward slashes (platform-independent representation)
+    # pathlib.Path handles both forward and backward slashes on all platforms
+    dep_path = repo_root / dependency.replace("\\", "/")
+
+    if dep_path.is_dir():
+        # Get all files in the directory recursively
+        files = []
+        for file_path in sorted(dep_path.rglob("*")):
+            if file_path.is_file():
+                # Return relative path from repo root with forward slashes
+                # This ensures consistency across Windows, macOS, and Linux
+                rel_path = file_path.relative_to(repo_root)
+                files.append(rel_path.as_posix())
+        return files
+    else:
+        # Not a directory, return as-is with forward slashes normalized
+        return [dependency.replace("\\", "/")]
+
+
 def get_upstream_dependencies(file, dependencies, depth=0):
     """
     Collect user-defined dependencies of a file recursively.
@@ -158,8 +201,12 @@ def get_upstream_dependencies(file, dependencies, depth=0):
     if deps := dependencies.get(file, []):
         res = set()
         for dep in deps:
-            res |= set([dep])
-            res |= get_upstream_dependencies(dep, dependencies, depth + 1)
+            # Expand directories into individual files
+            expanded_deps = expand_dependency_directories(dep)
+            res |= set(expanded_deps)
+            # Recursively get dependencies of each expanded dependency
+            for expanded_dep in expanded_deps:
+                res |= get_upstream_dependencies(expanded_dep, dependencies, depth + 1)
     else:
         res = set()
     if not depth:
