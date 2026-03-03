@@ -1,0 +1,3 @@
+Fixed a formatting error message which was erroneously suggesting
+to call ``showyourwork --cleanup-metadata`` in case of incomplete files.
+Of course it has always been ``showyourwork build --cleanup-metadata``.
