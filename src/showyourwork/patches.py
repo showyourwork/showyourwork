@@ -37,7 +37,7 @@ class SnakemakeFormatter(logging.Formatter):
     """
 
     replacements = {
-        "snakemake --cleanup-metadata": "showyourwork --cleanup-metadata",
+        "snakemake --cleanup-metadata": "showyourwork build --cleanup-metadata",
     }
 
     def format(self, record):
