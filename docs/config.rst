@@ -402,11 +402,15 @@ the path to a script (either a figure script or the TeX manuscript itself)
 relative to the repository root. Following each entry, provide a list of
 all files on which the script depends. These dependencies may either be
 static (such as helper scripts) or programmatically generated (such as
-datsets downloaded from Zenodo). In the latter case, instructions on how
+datasets downloaded from Zenodo). In the latter case, instructions on how
 to generate them must be provided elsewhere (either via the ``zenodo`` key
 below or via a custom ``rule`` in the ``Snakefile``). In both cases, changes
 to the dependency will result in a re-run of the section of the workflow that
 executes the script.
+
+Dependencies may be specified as individual files or as entire directories.
+When a directory is specified, all files within it will be treated as
+dependencies of the script.
 
 **Required:** no
 
@@ -421,6 +425,15 @@ the helper script ``utils/helper_script.py``:
   dependencies:
     src/scripts/my_figure.py:
       - src/scripts/utils/helper_script.py
+
+You can also specify a dependency on an entire directory. All files within
+the directory will be treated as dependencies:
+
+.. code-block:: yaml
+
+  dependencies:
+    src/scripts/my_figure.py:
+      - src/scripts/utils/
 
 You can also specify a dependency on a programmatically-generated file:
 
