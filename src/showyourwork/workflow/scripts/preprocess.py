@@ -17,7 +17,7 @@ from pathlib import Path
 from xml.etree.ElementTree import parse as ParseXMLTree
 
 from showyourwork import exceptions, paths, zenodo
-from showyourwork.config import get_upstream_dependencies
+from showyourwork.config import expand_dependency_directories, get_upstream_dependencies
 from showyourwork.zenodo import Zenodo, get_dataset_urls
 
 
@@ -379,6 +379,12 @@ def get_json_tree(xmlfile):
         dependencies = config["dependencies"].get(script, [])
         if isinstance(dependencies, str):
             dependencies = [dependencies]
+
+        # Expand any directory dependencies into individual files
+        expanded_dependencies = []
+        for dep in dependencies:
+            expanded_dependencies.extend(expand_dependency_directories(dep))
+        dependencies = expanded_dependencies
         dependencies += list(extra_dependencies)
 
         # Same, but recursing all the way up the graph
