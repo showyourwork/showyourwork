@@ -23,8 +23,14 @@ def pytest_addoption(parser):
     parser.addoption(
         "--action-spec",
         action="store",
-        default="showyourwork",
+        default="",
         help="version spec of showyourwork to install on GH Actions",
+    )
+    parser.addoption(
+        "--action-version",
+        action="store",
+        default="",
+        help="version of the showyourwork-action to use in the workflow",
     )
     parser.addoption(
         "--github-org",
@@ -43,6 +49,7 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     config.addinivalue_line("markers", "remote: a test that requires remote access")
     os.environ["ACTION_SPEC"] = str(config.getoption("--action-spec"))
+    os.environ["ACTION_VERSION"] = str(config.getoption("--action-version"))
 
     # Set GITHUB_ORG from CLI option or environment variable
     if config.getoption("--no-org"):

@@ -95,7 +95,12 @@ class TemporaryShowyourworkRepository:
 
         # Parse options
         command = "showyourwork setup"
-        options = f"--quiet --action-spec={os.getenv('ACTION_SPEC')} "
+        options = "--quiet "
+        if os.getenv("ACTION_SPEC"):
+            options += f"--action-spec={os.getenv('ACTION_SPEC')} "
+        if os.getenv("ACTION_VERSION"):
+            options += f"--action-version={os.getenv('ACTION_VERSION')} "
+
         if self.cache:
             # Enable zenodo caching
             options += "--cache"
