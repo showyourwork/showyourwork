@@ -5,6 +5,8 @@
 
    1. Install the latest version of |showyourwork|:
 
+      .. include:: dev_version_banner.rst
+
       .. code-block:: bash
 
          pip install -U showyourwork

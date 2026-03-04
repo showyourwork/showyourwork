@@ -1,23 +1,24 @@
 Quickstart
 ==========
 
-.. important::
+Requirements
+------------
 
-    A known issue until the next release requires to use the latest version of showyourwork
-    so the use of the latest version is recommended both locally and on the remote.
-    For the latter, please run the setup command with the option ``-a git+https://github.com/showyourwork/showyourwork``.
+You'll need to have the ``conda`` package manager installed, which you
+can download from `this url <https://www.anaconda.com/products/distribution>`_.
 
 Install
 -------
 
 To get started with |showyourwork|, install the latest version using the ``pip`` command:
 
+.. include:: dev_version_banner.rst
+
 .. code-block:: bash
 
     pip install -U showyourwork
 
-You'll also need to have the ``conda`` package manager installed, which you
-can download from `this url <https://www.anaconda.com/products/distribution>`_.
+
 
 
 Setup a new article
