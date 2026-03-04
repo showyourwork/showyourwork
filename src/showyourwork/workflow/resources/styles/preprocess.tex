@@ -42,23 +42,14 @@
 }
 
 % Log figures
+% Use etoolbox hooks so that logging works regardless of how the figure
+% environment is internally implemented (e.g. the float package's [H]
+% specifier completely replaces \endfigure, which broke previous approaches).
 \ifcsmacro{figure}{
-  \let\oldfigure\figure
-  \let\oldendfigure\endfigure
-  \renewenvironment{figure}{%
-    \syw@LogMessage{<FIGURE>}%
-    \oldfigure%
-  }{%
-    \oldendfigure%
-    \syw@LogMessage{</FIGURE>}%
-  }
-  \renewenvironment{figure*}{%
-    \syw@LogMessage{<FIGURE>}%
-    \oldfigure%
-  }{%
-    \oldendfigure%
-    \syw@LogMessage{</FIGURE>}%
-  }
+  \AtBeginEnvironment{figure}{\syw@LogMessage{<FIGURE>}}
+  \AtEndEnvironment{figure}{\syw@LogMessage{</FIGURE>}}
+  \AtBeginEnvironment{figure*}{\syw@LogMessage{<FIGURE>}}
+  \AtEndEnvironment{figure*}{\syw@LogMessage{</FIGURE>}}
 }{}
 
 % Log equations
