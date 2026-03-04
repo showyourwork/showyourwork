@@ -14,6 +14,7 @@ import snakemake
 import os
 import re
 from collections import defaultdict
+from pathlib import Path
 
 
 def check_dependency_values(dag):
@@ -57,10 +58,11 @@ def check_dependency_values(dag):
     static_dir = paths.user().static.relative_to(repo)
 
     # Collect all outputs from every rule in the DAG
+    # Normalize to forward slashes for cross-platform compatibility
     dag_outputs = set()
     for job in dag.jobs:
         for output in job.output:
-            dag_outputs.add(str(output))
+            dag_outputs.add(Path(str(output)).as_posix())
 
     # Check the original user-provided dependencies
     user_deps = config.get("user_dependencies", {})
@@ -69,9 +71,11 @@ def check_dependency_values(dag):
         if isinstance(deps, str):
             deps = [deps]
         for dep in deps:
+            # Normalize dependency path to forward slashes for comparison
+            dep_posix = Path(dep).as_posix()
             dep_path = Path(dep)
             exists_on_disk = (repo / dep).exists()
-            is_dag_output = dep in dag_outputs
+            is_dag_output = dep_posix in dag_outputs
 
             # Determine which category the dependency falls into
             is_in_figures = dep_path.is_relative_to(figures_dir)
