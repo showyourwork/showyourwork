@@ -276,11 +276,10 @@ def get_json_tree(xmlfile):
 
         # Find all graphics included in this figure environment
         graphics = [
-            str(
-                (paths.user().tex / graphicspath / graphic.text)
-                .resolve()
-                .relative_to(paths.user().repo)
-            )
+            (paths.user().tex / graphicspath / graphic.text)
+            .resolve()
+            .relative_to(paths.user().repo)
+            .as_posix()
             for graphic in figure.findall("GRAPHICS")
         ]
 
@@ -319,9 +318,11 @@ def get_json_tree(xmlfile):
         if len(scripts) and scripts[0].text is not None:
             # The user provided an argument to \script{}, which we assume
             # is the name of the script relative to the figure scripts
-            # directory
-            script = str(
-                (paths.user().scripts / scripts[0].text).relative_to(paths.user().repo)
+            # directory. Normalize to forward slashes for cross-platform compatibility
+            script = (
+                (paths.user().scripts / scripts[0].text)
+                .relative_to(paths.user().repo)
+                .as_posix()
             )
 
             # Infer the command we'll use to execute the script based on its
@@ -355,18 +356,21 @@ def get_json_tree(xmlfile):
                 commands_copy_single_file = []
 
                 for graphic in graphics:
-                    src = str(
+                    src = (
                         paths.user().static
                         / Path(graphic).relative_to(
                             paths.user().figures.relative_to(paths.user().repo)
                         )
-                    )
+                    ).as_posix()
 
                     extra_dependencies.append(src)
 
-                    dest = paths.user().figures.relative_to(paths.user().repo) / Path(
-                        graphic
-                    ).relative_to(paths.user().figures.relative_to(paths.user().repo))
+                    dest = (
+                        paths.user().figures.relative_to(paths.user().repo)
+                        / Path(graphic).relative_to(
+                            paths.user().figures.relative_to(paths.user().repo)
+                        )
+                    ).as_posix()
                     commands_copy_single_file.append(f"cp {src} {dest}")
 
                 command = " && ".join(commands_copy_single_file)
@@ -411,11 +415,10 @@ def get_json_tree(xmlfile):
 
     # Parse free-floating graphics
     free_floating_graphics = [
-        str(
-            (paths.user().tex / graphicspath / graphic.text)
-            .resolve()
-            .relative_to(paths.user().repo)
-        )
+        (paths.user().tex / graphicspath / graphic.text)
+        .resolve()
+        .relative_to(paths.user().repo)
+        .as_posix()
         for graphic in xml_tree.findall("GRAPHICS")
     ] + unlabeled_graphics
 
@@ -462,10 +465,12 @@ def get_json_tree(xmlfile):
     # Add entries to the tree: static figures
     # (copy them over from the static folder)
     srcs = [
-        str((paths.user().static / Path(graphic).name).relative_to(paths.user().repo))
+        (paths.user().static / Path(graphic).name)
+        .relative_to(paths.user().repo)
+        .as_posix()
         for graphic in free_floating_static
     ]
-    dest = paths.user().figures.relative_to(paths.user().repo)
+    dest = paths.user().figures.relative_to(paths.user().repo).as_posix()
     figures["free-floating-static"] = {
         "script": None,
         "graphics": free_floating_static,
@@ -478,7 +483,10 @@ def get_json_tree(xmlfile):
     # Parse files included using the \input statement;
     # these will be made explicit dependencies of the build
     files = [
-        str((paths.user().tex / file.text).resolve().relative_to(paths.user().repo))
+        (paths.user().tex / file.text)
+        .resolve()
+        .relative_to(paths.user().repo)
+        .as_posix()
         for file in xml_tree.findall("INPUT")
     ]
 
@@ -511,16 +519,19 @@ def check_dependency_keys(dependencies, tree, ms_tex, repo):
 
     """
     # Collect all scripts referenced by figures in the article
+    # Normalize paths to forward slashes for cross-platform compatibility
     known_scripts = set()
     for fig_info in tree["figures"].values():
         if fig_info["script"] is not None:
-            known_scripts.add(fig_info["script"])
+            known_scripts.add(Path(fig_info["script"]).as_posix())
 
     # The manuscript TeX file is also a valid dependency key
-    known_scripts.add(ms_tex)
+    known_scripts.add(Path(ms_tex).as_posix())
 
     for key in dependencies:
-        if key not in known_scripts:
+        # Normalize the key to forward slashes for comparison
+        key_posix = Path(key).as_posix()
+        if key_posix not in known_scripts:
             raise exceptions.ConfigError(
                 f"'{key}' is listed as a key in the `dependencies` section "
                 f"of showyourwork.yml but does not correspond to any figure "
