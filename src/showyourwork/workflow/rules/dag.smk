@@ -6,9 +6,13 @@ access the workflow graph and use information about it within the workflow
 itself.
 
 """
+
 from showyourwork import paths, logging
 from showyourwork.config import get_upstream_dependencies
-from showyourwork.patches import get_snakemake_variable, patch_snakemake_cache_optimization
+from showyourwork.patches import (
+    get_snakemake_variable,
+    patch_snakemake_cache_optimization,
+)
 from showyourwork.zenodo import get_dataset_urls
 import snakemake
 import os
@@ -99,11 +103,7 @@ def add_dag_metadata_to_config(dag):
     dependencies = defaultdict(set)
     for job in dag.jobs:
         outputs = [str(file) for file in job.output]
-        inputs = [
-            str(file)
-            for file in job.input
-            if type(file) is snakemake.io._IOFile
-        ]
+        inputs = [str(file) for file in job.input if type(file) is snakemake.io._IOFile]
         for file in outputs:
             dependencies[file] |= set(inputs)
     for key in dependencies.keys():
@@ -113,9 +113,7 @@ def add_dag_metadata_to_config(dag):
     # Find recursive input-output dependencies
     recursive_dependencies = {}
     for output in dependencies.keys():
-        recursive_dependencies[output] = get_upstream_dependencies(
-            output, dependencies
-        )
+        recursive_dependencies[output] = get_upstream_dependencies(output, dependencies)
 
     # Add to the global config
     config = snakemake.workflow.config
@@ -175,9 +173,7 @@ def WORKFLOW_GRAPH(*args):
     if dag is None:
 
         # Fail with a warning
-        logger.warning(
-            "Unable to query the DAG. Functionality will be limited."
-        )
+        logger.warning("Unable to query the DAG. Functionality will be limited.")
 
     else:
 
@@ -209,7 +205,6 @@ checkpoint:
         "syw__dag"
     message:
         "Building the workflow graph..."
-    priority:
-        snakemake.jobs.Job.HIGHEST_PRIORITY
+    priority: snakemake.jobs.Job.HIGHEST_PRIORITY
     output:
-        touch(paths.user().flags / "SYW__DAG")
+        touch(paths.user().flags / "SYW__DAG"),
