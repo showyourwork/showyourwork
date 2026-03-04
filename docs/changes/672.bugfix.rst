@@ -1,0 +1,5 @@
+The dependency ``chardet`` has been pinned to ``>5,<7`` due to a breaking change
+in version 7.0.0. This change caused the ``cookiecutter`` dependency to break
+with ``NameError: name 'unicode' is not defined``,
+which is used by ``showyourwork`` to create new projects.
+The issue will be likely fixed upstream with ``cookiecutter>2.7.1``.
