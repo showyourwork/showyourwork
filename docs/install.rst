@@ -1,28 +1,30 @@
+.. _install:
+
 Installation
 ============
 
-Install the latest version using `pip <https://pypi.org/project/pip/>`_:
+| In order to use |showyourwork|, you'll also need a working installation of the *conda* package manager.
+| We recommend using `miniforge <https://conda-forge.org/download/>`_.
+
+Create a new conda environment with the necessary dependencies:
 
 .. code-block:: bash
 
-    pip install -U showyourwork
+    mamba create -n showyourwork pip
+    mamba activate showyourwork
 
-Note that in order to use |showyourwork|, you'll also need a working installation
-of the `conda package manager <https://docs.continuum.io/anaconda/install/>`_.
+.. include:: dev_version_banner.rst
 
-You can also install the latest development version from GitHub:
+.. tab-set::
 
-.. code-block:: bash
+    .. tab-item:: Latest release
 
-    pip install git+https://github.com/showyourwork/showyourwork
+        .. code-block:: bash
 
-.. note::
+            pip install showyourwork
 
-    |showyourwork| is constantly under development, so users should upgrade
-    frequently (just pass the ``-U`` argument to ``pip`` as shown above).
-    Check out the latest release on
-    `PyPI <https://pypi.python.org/pypi/showyourwork>`__ and read the release
-    notes at :doc:`changelog`.
+    .. tab-item:: Development version
 
-    See :ref:`known_issues` for a list of issues known by the developers,
-    but which have not yet been fixed in a stable release.
+        .. code-block:: bash
+
+            pip install git+https://github.com/showyourwork/showyourwork

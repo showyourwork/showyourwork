@@ -3,13 +3,9 @@
    Find an open source article you'd like to reproduce or tinker with?
    Build it in 3 easy steps.
 
-   1. Install the latest version of |showyourwork|:
+   1. :ref:`Install <install>` |showyourwork|:
 
       .. include:: dev_version_banner.rst
-
-      .. code-block:: bash
-
-         pip install -U showyourwork
 
       .. raw:: html
 

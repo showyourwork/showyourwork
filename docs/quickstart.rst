@@ -1,26 +1,6 @@
 Quickstart
 ==========
 
-Requirements
-------------
-
-You'll need to have the ``conda`` package manager installed, which you
-can download from `this url <https://www.anaconda.com/products/distribution>`_.
-
-Install
--------
-
-To get started with |showyourwork|, install the latest version using the ``pip`` command:
-
-.. include:: dev_version_banner.rst
-
-.. code-block:: bash
-
-    pip install -U showyourwork
-
-
-
-
 Setup a new article
 -------------------
 
