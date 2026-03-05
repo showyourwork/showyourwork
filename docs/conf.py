@@ -63,3 +63,4 @@ autoclass_content = "both"
 autosummary_generate = True
 autodoc_docstring_signature = True
 autodoc_default_options = {"members": True}
+autodoc_mock_imports = ["pymupdf"]
