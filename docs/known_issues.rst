@@ -71,7 +71,7 @@ to use the latest unreleased version of the action:
           OVERLEAF_TOKEN: ${{ secrets.OVERLEAF_TOKEN }}
 
 `KeyError: 'tex_files_out' (#400) <https://github.com/showyourwork/showyourwork/issues/400>`_
------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
 
 .. important::
 
@@ -84,7 +84,7 @@ Please comment line 405 in
 .. _frozen_cache_bug:
 
 `No new Zenodo drafts created after freezing cache #638 <https://github.com/showyourwork/showyourwork/issues/638>`_
------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
 
 Once the Zenodo cache is frozen, no new Zenodo drafts are created by |showyourwork|.
 As a workaround while we work on a solution, we recommend users do not freeze the cache until it is ready to be published.
