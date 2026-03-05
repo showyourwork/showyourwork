@@ -1,6 +1,8 @@
 Intro to Snakemake
 ==================
 
+.. _rules: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html
+
 Under the hood, |showyourwork| is essentially a wrapper around Snakemake. The
 code builds the article PDF by parsing the ``showyourwork.yml`` config file and
 the ``ms.tex`` manuscript to build the computational graph for the workflow,
@@ -23,8 +25,7 @@ Every ``showyourwork`` article repository is instantiated with a blank Snakefile
 at the repository root. This file gets included at the start of the main (build) step of the
 workflow, and may thus be used to define custom rules or to run custom ``python``
 code during the workflow. Almost everything you need to know about Snakefiles can
-be found in the
-`Snakemake documentation <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html>`_,
+be found in the Snakemake documentation about `rules`_,
 but we'll go over the basics below.
 
 Snakefiles are, at their core, Python scripts with a little extra functionality.
@@ -88,8 +89,7 @@ There are a lot of other features supported within rules; for instance,
 input files and parameters can be provided as *functions*, adding another
 layer of flexibility to your workflow. Rules can also be declared within
 for loops, if statements, etc. For the full list of features, please refer
-to the
-`Snakemake documentation <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html>`_.
+to the `rules`_.
 
 
 Intermediate results
@@ -204,7 +204,6 @@ When starting up a project or when in a rapid development phase, it can be usefu
 tell Snakemake to ignore changes to a file or timestamp when running the build. For
 example, you may have a slow rule to generate a data file from querying an external data
 archive and you just want to use a temporary subset of the data or existing copy of the
-data. Snakemake supports this with the ``ancient()`` command. See the `Snakemake
-documentation
-<https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#ignoring-timestamps>`_
+data. Snakemake supports this with the ``ancient()`` command.
+See the `how to ignore timestamps <https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#ignoring-timestamps>`_
 for more information about how to use this in a rule.
