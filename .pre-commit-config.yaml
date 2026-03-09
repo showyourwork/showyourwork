@@ -6,17 +6,17 @@ repos:
       - id: end-of-file-fixer
         exclude_types: [json, binary]
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: "26.1.0"
+    rev: "26.3.0"
     hooks:
       - id: black-jupyter
         exclude: "^docs/|^tests/projects/"
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.15.4"
+    rev: "v0.15.5"
     hooks:
       - id: ruff
         exclude: "^docs/|^tests/projects/"
         args: [--fix, --exit-non-zero-on-fix]
   - repo: https://github.com/snakemake/snakefmt
-    rev: v0.11.3
+    rev: v0.11.4
     hooks:
       - id: snakefmt
