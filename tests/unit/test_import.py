@@ -1,4 +1,5 @@
 import sys
+import warnings
 
 import pytest
 
@@ -10,8 +11,9 @@ def test_requests_import_no_dependency_warning():
     for module in modules_to_remove:
         del sys.modules[module]
 
-    # Use pytest's warning recorder to capture all warnings
-    with pytest.warns() as warning_list:
+    # Use warnings.catch_warnings to capture all warnings
+    with warnings.catch_warnings(record=True) as warning_list:
+        warnings.simplefilter("always")
         import requests  # noqa: F401
 
     # Check if any RequestsDependencyWarning was raised
