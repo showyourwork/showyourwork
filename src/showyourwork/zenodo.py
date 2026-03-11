@@ -519,7 +519,7 @@ class Zenodo:
 
                 return
 
-            elif entry["key"] == rule_name:
+            elif entry[file_key] == rule_name:
                 # We're done with this deposit
                 logger.debug(
                     f"File {rule_name} found, but it has the wrong hash. Skipping..."
