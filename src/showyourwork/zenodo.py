@@ -344,6 +344,89 @@ class Zenodo:
         cache_file_false.touch()
         return False
 
+    def _get_draft(self):
+        """Get the latest draft associated with a deposit or create one
+
+        Returns:
+            Returns the draft JSON dictionary
+        """
+        # Logger
+        logger = get_logger()
+
+        # Check if a draft already exists, and create it if not.
+        # If authentication fails, return with a gentle warning
+        concept_id = self.deposit_id
+        r = requests.get(
+            f"https://{self.url}/api/deposit/depositions",
+            params={
+                "q": f"conceptrecid:{concept_id}",
+                "all_versions": 1,
+                "access_token": self.access_token,
+            },
+        )
+        if r.status_code > 204:
+            logger.warning(
+                f"{self.service} authentication failed. Unable to upload cache for "
+                f"rule {rule_name}."
+            )
+            try:
+                data = r.json()
+            except Exception:
+                pass
+            else:
+                logger.debug(data["message"])
+            return
+
+        # Make sure we have some deposits and sort them based on time
+        try:
+            data = r.json()
+        except Exception:
+            data = []
+        if len(data):
+            # latest first
+            data = sorted(data, key=lambda x: x.get("modified", ""), reverse=True)
+        else:
+            logger.warning(
+                f"{self.service} authentication failed. Unable to upload cache for "
+                f"rule {rule_name}."
+            )
+            return
+
+        # Save an id in case we need to create a new draft
+        data_id = data[0]["id"]
+
+        # Only keep unsubmitted deposits
+        data = [d for d in data if not d["submitted"]]
+
+        # Find out if there is a draft available
+        if len(data) == 0:
+            draft_url = None
+        else:
+            data = data[0]
+            draft_url = data.get("links", {}).get("latest_draft", None)
+            if not draft_url:
+                draft_url = data["links"]["self"]
+
+        # Create a new draft if needed
+        if draft_url is None:
+            # Create a new draft
+            data = parse_request(
+                requests.post(
+                    f"https://{self.url}/api/deposit/depositions/{data_id}/actions/newversion",
+                    params={"access_token": self.access_token},
+                )
+            )
+            draft_url = data["links"]["latest_draft"]
+
+        draft = parse_request(
+            requests.get(
+                draft_url,
+                params={"access_token": self.access_token},
+            )
+        )
+
+        return draft
+
     @require_access_token
     def upload_file_to_draft(self, draft, file, rule_name, tarball=False):
         """
@@ -835,149 +918,13 @@ class Zenodo:
         Upload a file to the latest deposit draft.
 
         """
-        # Logger
-        logger = get_logger()
-
-        # Check if a draft already exists, and create it if not.
-        # If authentication fails, return with a gentle warning
-        concept_id = self.deposit_id
-        r = requests.get(
-            f"https://{self.url}/api/deposit/depositions",
-            params={
-                "q": f"conceptrecid:{concept_id}",
-                "all_versions": 1,
-                "access_token": self.access_token,
-            },
-        )
-        if r.status_code > 204:
-            logger.warning(
-                f"{self.service} authentication failed. Unable to upload cache for "
-                f"rule {rule_name}."
-            )
-            try:
-                data = r.json()
-            except Exception:
-                pass
-            else:
-                logger.debug(data["message"])
-            return
-
-        try:
-            data = r.json()
-        except Exception:
-            data = []
-        if len(data):
-            # Sort deposits based on their modified time to get latest first
-            data = sorted(data, key=lambda x: x.get("modified", ""), reverse=True)
-        else:
-            logger.warning(
-                f"{self.service} authentication failed. Unable to upload cache for "
-                f"rule {rule_name}."
-            )
-            return
-
-        # Only keep unsubmitted deposits
-        data = [d for d in data if not d["submitted"]]
-        data_id = data[0]["id"]  # Save an id in case we need to create a new draft
-        if len(data) == 0:
-            draft_url = None
-        else:
-            data = data[0]
-            draft_url = data.get("links", {}).get("latest_draft", None)
-            if not draft_url:
-                draft_url = data["links"]["self"]
-        if draft_url:
-            # Draft exists
-            draft = parse_request(
-                requests.get(
-                    draft_url,
-                    params={"access_token": self.access_token},
-                )
-            )
-        else:
-            # Create a new draft
-            data = parse_request(
-                requests.post(
-                    f"https://{self.url}/api/deposit/depositions/{data_id}/actions/newversion",
-                    params={"access_token": self.access_token},
-                )
-            )
-            draft_url = data["links"]["latest_draft"]
-            draft = parse_request(
-                requests.get(
-                    draft_url,
-                    params={"access_token": self.access_token},
-                )
-            )
+        draft = self._get_draft()
 
         self.upload_file_to_draft(draft, file, rule_name, tarball=tarball)
 
     @require_access_token
     def _download_latest_draft(self):
-        # Logger
-        logger = get_logger()
-
-        # Grab the deposit
-        concept_id = self.deposit_id
-        logger.debug(
-            f"Attempting to access {self.service} deposit with DOI {self.doi}..."
-        )
-        r = requests.get(
-            f"https://{self.url}/api/deposit/depositions",
-            params={
-                "q": f"conceptrecid:{concept_id}",
-                "all_versions": 1,
-                "access_token": self.access_token,
-            },
-        )
-        if r.status_code <= 204:
-            try:
-                data = r.json()
-            except Exception:
-                raise exceptions.ZenodoError(
-                    message=f"Error accessing latest draft for DOI {self.doi}."
-                )
-
-            # Look for a draft
-            if len(data):
-                data = data[0]
-                draft_url = data.get("links", {}).get("latest_draft", None)
-                if not draft_url and not data["submitted"]:
-                    draft_url = data["links"]["self"]
-
-                # Create a new draft if needed
-                if not draft_url:
-                    r = requests.post(
-                        f"https://{self.url}/api/deposit/depositions/{data['id']}/actions/newversion",
-                        params={"access_token": self.access_token},
-                    )
-                    try:
-                        data = r.json()
-                    except Exception:
-                        raise exceptions.ZenodoError(
-                            message=f"Error accessing latest draft for DOI {self.doi}."
-                        )
-                    draft_url = data["links"]["latest_draft"]
-
-                # Grab the draft
-                r = requests.get(
-                    draft_url,
-                    params={"access_token": self.access_token},
-                )
-                if r.status_code <= 204:
-                    draft = r.json()
-                else:
-                    raise exceptions.ZenodoError(
-                        message=f"Error accessing latest draft for DOI {self.doi}."
-                    )
-            else:
-                raise exceptions.ZenodoError(
-                    message=f"Error accessing latest draft for DOI {self.doi}."
-                )
-        else:
-            raise exceptions.ZenodoError(
-                message=f"Error accessing latest draft for DOI {self.doi}."
-            )
+        draft = self._get_draft()
 
         # Local folder to save to
         cache_folder = self.path() / f"{self.deposit_id}" / "download"
@@ -1058,6 +1005,8 @@ class Zenodo:
 
             # Look for a draft
             if len(data):
+                # TODO: Add failing test for this
+                # TODO: Update the code here like upload_file
                 data = data[0]
                 draft_url = data.get("links", {}).get("latest_draft", None)
                 if not draft_url and not data["submitted"]:
