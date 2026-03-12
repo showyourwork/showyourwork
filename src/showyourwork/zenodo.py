@@ -867,16 +867,25 @@ class Zenodo:
         except Exception:
             data = []
         if len(data):
-            data = data[0]
+            # Sort deposits based on their modified time to get latest first
+            data = sorted(data, key=lambda x: x.get("modified", ""), reverse=True)
         else:
             logger.warning(
                 f"{self.service} authentication failed. Unable to upload cache for "
                 f"rule {rule_name}."
             )
             return
-        draft_url = data.get("links", {}).get("latest_draft", None)
-        if not draft_url and not data["submitted"]:
-            draft_url = data["links"]["self"]
+
+        # Only keep unsubmitted deposits
+        data = [d for d in data if not d["submitted"]]
+        data_id = data[0]["id"]  # Save an id in case we need to create a new draft
+        if len(data) == 0:
+            draft_url = None
+        else:
+            data = data[0]
+            draft_url = data.get("links", {}).get("latest_draft", None)
+            if not draft_url:
+                draft_url = data["links"]["self"]
         if draft_url:
             # Draft exists
             draft = parse_request(
@@ -885,12 +894,11 @@ class Zenodo:
                     params={"access_token": self.access_token},
                 )
             )
-
         else:
             # Create a new draft
             data = parse_request(
                 requests.post(
-                    f"https://{self.url}/api/deposit/depositions/{data['id']}/actions/newversion",
+                    f"https://{self.url}/api/deposit/depositions/{data_id}/actions/newversion",
                     params={"access_token": self.access_token},
                 )
             )
