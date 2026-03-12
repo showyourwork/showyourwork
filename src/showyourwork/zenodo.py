@@ -344,6 +344,7 @@ class Zenodo:
         cache_file_false.touch()
         return False
 
+    @require_access_token
     def _get_draft(self):
         """Get the latest draft associated with a deposit or create one
 
@@ -985,69 +986,8 @@ class Zenodo:
         # The target deposit (creates if needed)
         target_deposit = Zenodo(target_doi_or_service, **kwargs)
 
-        # Grab the target deposit
-        r = requests.get(
-            f"https://{target_deposit.url}/api/deposit/depositions",
-            params={
-                "q": f"conceptrecid:{target_deposit.deposit_id}",
-                "all_versions": 1,
-                "access_token": target_deposit.access_token,
-            },
-        )
-        if r.status_code <= 204:
-            try:
-                data = r.json()
-            except Exception:
-                raise exceptions.ZenodoError(
-                    message="Error accessing latest draft for DOI "
-                    f"{target_deposit.doi}."
-                )
-
-            # Look for a draft
-            if len(data):
-                # TODO: Add failing test for this
-                # TODO: Update the code here like upload_file
-                data = data[0]
-                draft_url = data.get("links", {}).get("latest_draft", None)
-                if not draft_url and not data["submitted"]:
-                    draft_url = data["links"]["self"]
-
-                # Create a new draft if needed
-                if not draft_url:
-                    r = requests.post(
-                        f"https://{target_deposit.url}/api/deposit/depositions/{data['id']}/actions/newversion",
-                        params={"access_token": target_deposit.access_token},
-                    )
-                    try:
-                        data = r.json()
-                    except Exception:
-                        raise exceptions.ZenodoError(
-                            message="Error accessing latest draft for DOI "
-                            f"{target_deposit.doi}."
-                        )
-                    draft_url = data["links"]["latest_draft"]
-
-                # Grab the draft
-                r = requests.get(
-                    draft_url,
-                    params={"access_token": target_deposit.access_token},
-                )
-                if r.status_code <= 204:
-                    draft = r.json()
-                else:
-                    raise exceptions.ZenodoError(
-                        message="Error accessing latest draft for DOI "
-                        f"{target_deposit.doi}."
-                    )
-            else:
-                raise exceptions.ZenodoError(
-                    message="Error accessing latest draft for DOI "
-                    f"{target_deposit.doi}."
-                )
-        else:
-            raise exceptions.ZenodoError(
-                message=f"Error accessing latest draft for DOI {target_deposit.doi}."
-            )
+        # Get a draft from the target to upload the new copied files
+        draft = target_deposit._get_draft()
 
         # Get the bucket to upload files to
         bucket_url = draft["links"]["bucket"]

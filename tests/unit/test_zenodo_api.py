@@ -81,9 +81,6 @@ def test_get_id_type(config):
     assert deposit.get_id_type() == "version"
 
 
-# TODO: Try and reduce uploads to zenodo in these tests, maybe using existing deposit
-# TODO: Properly mark to test only when remote access?
-# TODO: xfail when no access token?
 def test_download_latest_draft():
     sandbox = Zenodo("sandbox")
 
@@ -93,7 +90,7 @@ def test_download_latest_draft():
     with open(cache_dir / ".metadata.json") as f:
         metadata = json.load(f)
 
-    # Upload a file and publish to test automated creation
+    # Upload a file and publish
     draft = sandbox._get_draft()
     sandbox.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
     sandbox.publish()
@@ -115,7 +112,7 @@ def test_download_latest_draft():
 def test_get_draft():
     sandbox = Zenodo("sandbox")
 
-    # Test that we can recover the intiial draft
+    # Test that we can recover the intial draft
     draft = sandbox._get_draft()
     assert isinstance(draft, dict)
     assert "created" in draft
@@ -130,3 +127,24 @@ def test_get_draft():
     assert not draft_post["submitted"]
     assert draft != draft_post
     assert draft["created"] < draft_post["created"]
+
+
+def test_copy_draft():
+    sandbox = Zenodo("sandbox")
+
+    # Test that copying an unpublished draft works
+    sandbox.copy_draft("sandbox")
+
+    draft = sandbox._get_draft()
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
+    sandbox.publish()
+
+    # Test that copying a published draft works
+    sandbox.copy_draft("sandbox")
+
+    sandbox_cp = Zenodo("sandbox")
+    draft = sandbox_cp._get_draft()
+    sandbox_cp.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
+    sandbox_cp.publish()
+
+    sandbox.copy_draft(sandbox_cp.doi)
