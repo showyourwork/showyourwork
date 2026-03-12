@@ -132,7 +132,7 @@ if os.getenv("CI", "false") != "true":
             # This should download from the cache with seed=1
             self.add_pipeline_script(seed=1)
             self.git_commit()
-            self.build_local(pre="SYW_NO_RUN=true")
+            self.build_local(env={"SYW_NO_RUN": "true"})
 
             # Clean so we delete the local cache
             get_stdout("showyourwork clean", cwd=self.cwd, shell=True)
@@ -144,11 +144,6 @@ if os.getenv("CI", "false") != "true":
             self.add_pipeline_script(seed=0)
             self.git_commit()
             self.build_local(env={"SYW_NO_RUN": "true"})
-
-        def delete_zenodo(self):
-            # Override the parent delete_zenodo()
-            # We cannot delete the frozen cache
-            pass
 
         def delete_zenodo(self):
             # Override the parent delete_zenodo()
