@@ -50,3 +50,5 @@ jobs:
         shell: bash -l {0}
         run: |
           python -m pytest tests/unit
+        env:
+          SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
