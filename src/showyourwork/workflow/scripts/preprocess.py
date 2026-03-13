@@ -10,6 +10,7 @@ main article build step.
 
 """
 
+import copy
 import json
 import re
 from collections.abc import MutableMapping
@@ -275,11 +276,10 @@ def get_json_tree(xmlfile):
 
         # Find all graphics included in this figure environment
         graphics = [
-            str(
-                (paths.user().tex / graphicspath / graphic.text)
-                .resolve()
-                .relative_to(paths.user().repo)
-            )
+            (paths.user().tex / graphicspath / graphic.text)
+            .resolve()
+            .relative_to(paths.user().repo)
+            .as_posix()
             for graphic in figure.findall("GRAPHICS")
         ]
 
@@ -318,9 +318,11 @@ def get_json_tree(xmlfile):
         if len(scripts) and scripts[0].text is not None:
             # The user provided an argument to \script{}, which we assume
             # is the name of the script relative to the figure scripts
-            # directory
-            script = str(
-                (paths.user().scripts / scripts[0].text).relative_to(paths.user().repo)
+            # directory. Normalize to forward slashes for cross-platform compatibility
+            script = (
+                (paths.user().scripts / scripts[0].text)
+                .relative_to(paths.user().repo)
+                .as_posix()
             )
 
             # Infer the command we'll use to execute the script based on its
@@ -354,18 +356,21 @@ def get_json_tree(xmlfile):
                 commands_copy_single_file = []
 
                 for graphic in graphics:
-                    src = str(
+                    src = (
                         paths.user().static
                         / Path(graphic).relative_to(
                             paths.user().figures.relative_to(paths.user().repo)
                         )
-                    )
+                    ).as_posix()
 
                     extra_dependencies.append(src)
 
-                    dest = paths.user().figures.relative_to(paths.user().repo) / Path(
-                        graphic
-                    ).relative_to(paths.user().figures.relative_to(paths.user().repo))
+                    dest = (
+                        paths.user().figures.relative_to(paths.user().repo)
+                        / Path(graphic).relative_to(
+                            paths.user().figures.relative_to(paths.user().repo)
+                        )
+                    ).as_posix()
                     commands_copy_single_file.append(f"cp {src} {dest}")
 
                 command = " && ".join(commands_copy_single_file)
@@ -410,11 +415,10 @@ def get_json_tree(xmlfile):
 
     # Parse free-floating graphics
     free_floating_graphics = [
-        str(
-            (paths.user().tex / graphicspath / graphic.text)
-            .resolve()
-            .relative_to(paths.user().repo)
-        )
+        (paths.user().tex / graphicspath / graphic.text)
+        .resolve()
+        .relative_to(paths.user().repo)
+        .as_posix()
         for graphic in xml_tree.findall("GRAPHICS")
     ] + unlabeled_graphics
 
@@ -461,10 +465,12 @@ def get_json_tree(xmlfile):
     # Add entries to the tree: static figures
     # (copy them over from the static folder)
     srcs = [
-        str((paths.user().static / Path(graphic).name).relative_to(paths.user().repo))
+        (paths.user().static / Path(graphic).name)
+        .relative_to(paths.user().repo)
+        .as_posix()
         for graphic in free_floating_static
     ]
-    dest = paths.user().figures.relative_to(paths.user().repo)
+    dest = paths.user().figures.relative_to(paths.user().repo).as_posix()
     figures["free-floating-static"] = {
         "script": None,
         "graphics": free_floating_static,
@@ -477,7 +483,10 @@ def get_json_tree(xmlfile):
     # Parse files included using the \input statement;
     # these will be made explicit dependencies of the build
     files = [
-        str((paths.user().tex / file.text).resolve().relative_to(paths.user().repo))
+        (paths.user().tex / file.text)
+        .resolve()
+        .relative_to(paths.user().repo)
+        .as_posix()
         for file in xml_tree.findall("INPUT")
     ]
 
@@ -485,6 +494,54 @@ def get_json_tree(xmlfile):
     tree = {"figures": figures, "files": files}
 
     return tree
+
+
+def check_dependency_keys(dependencies, tree, ms_tex, repo):
+    """
+    Validate that keys in the ``dependencies`` config match known figure
+    scripts or the manuscript TeX file.
+
+    This catches typos in script names (see
+    `<https://github.com/showyourwork/showyourwork/issues/242>`_): if a user
+    misspells a script path in the ``dependencies`` section of
+    ``showyourwork.yml``, the mapping is silently ignored. This function
+    detects that situation by comparing keys against the set of scripts
+    actually referenced by the article, and also verifying they exist on disk.
+
+    Raises :class:`~showyourwork.exceptions.ConfigError` on mismatch.
+
+    Args:
+        dependencies (dict): The user-provided ``dependencies`` mapping from
+            the config.
+        tree (dict): The article tree returned by :func:`get_json_tree`.
+        ms_tex (str): The path to the manuscript TeX file.
+        repo (Path): The root path of the user repository.
+
+    """
+    # Collect all scripts referenced by figures in the article
+    # Normalize paths to forward slashes for cross-platform compatibility
+    known_scripts = set()
+    for fig_info in tree["figures"].values():
+        if fig_info["script"] is not None:
+            known_scripts.add(Path(fig_info["script"]).as_posix())
+
+    # The manuscript TeX file is also a valid dependency key
+    known_scripts.add(Path(ms_tex).as_posix())
+
+    for key in dependencies:
+        # Normalize the key to forward slashes for comparison
+        key_posix = Path(key).as_posix()
+        if key_posix not in known_scripts:
+            raise exceptions.ConfigError(
+                f"'{key}' is listed as a key in the `dependencies` section "
+                f"of showyourwork.yml but does not correspond to any figure "
+                f"script or the manuscript TeX file. Is there a typo?"
+            )
+        elif not (repo / key).exists():
+            raise exceptions.ConfigError(
+                f"'{key}' is listed as a key in the `dependencies` section "
+                f"of showyourwork.yml but does not exist on disk."
+            )
 
 
 if __name__ == "__main__":
@@ -496,6 +553,18 @@ if __name__ == "__main__":
 
     # Get the article tree
     config["tree"] = get_json_tree(snakemake.input[0])
+
+    # Warn about dependency keys that don't match any known script
+    check_dependency_keys(
+        config["dependencies"],
+        config["tree"],
+        config["ms_tex"],
+        paths.user().repo,
+    )
+
+    # Save the original user-provided dependencies before modification,
+    # so we can validate dependency values against the DAG later
+    config["user_dependencies"] = copy.deepcopy(config["dependencies"])
 
     # Make all of the graphics dependencies of the article
     config["dependencies"][config["ms_tex"]] = config["dependencies"].get(
