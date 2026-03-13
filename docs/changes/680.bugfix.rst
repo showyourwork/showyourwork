@@ -1,0 +1,4 @@
+Fixes various issues with ``showyourwork cache freeze``.
+Old versions of the file can now be downloaded from frozen caches even when a draft exists.
+A new draft is now created automatically when required and the code to do this has been extracted to a function.
+Updated integration and unit tests to test these fixes.

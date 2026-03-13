@@ -128,6 +128,15 @@ if os.getenv("CI", "false") != "true":
             # Clean so we delete the local cache
             get_stdout("showyourwork clean", cwd=self.cwd, shell=True)
 
+            # Edit the pipeline script and re-build with seed=1
+            # This should download from the cache with seed=1
+            self.add_pipeline_script(seed=1)
+            self.git_commit()
+            self.build_local(env={"SYW_NO_RUN": "true"})
+
+            # Clean so we delete the local cache
+            get_stdout("showyourwork clean", cwd=self.cwd, shell=True)
+
             # Revert the script to `seed=0` and re-build, telling showyourwork
             # to raise an exception if the rule actually gets executed.
             # The expected behavior is for showyourwork to find the frozen version
