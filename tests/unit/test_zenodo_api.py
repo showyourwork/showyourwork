@@ -82,6 +82,7 @@ def test_get_id_type(config):
     assert deposit.get_id_type() == "version"
 
 
+@pytest.mark.zenodo
 def test_download_latest_draft():
     sandbox = Zenodo("sandbox")
 
@@ -110,6 +111,7 @@ def test_download_latest_draft():
     )
 
 
+@pytest.mark.zenodo
 def test_download_file_from_draft():
     sandbox = Zenodo("sandbox")
 
@@ -123,6 +125,7 @@ def test_download_file_from_draft():
     sandbox.download_file_from_draft(draft, TEST_DATA_FILE_README, "testing_readme")
 
 
+@pytest.mark.zenodo
 def test_get_draft():
     sandbox = Zenodo("sandbox")
 
@@ -143,6 +146,7 @@ def test_get_draft():
     assert draft["created"] < draft_post["created"]
 
 
+@pytest.mark.zenodo
 def test_copy_draft():
     sandbox = Zenodo("sandbox")
 

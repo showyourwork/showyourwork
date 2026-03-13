@@ -1,0 +1,25 @@
+import os
+
+import pytest
+
+
+def pytest_configure(config):
+    """Register custom pytest markers."""
+    config.addinivalue_line(
+        "markers",
+        "zenodo: a test that requires Zenodo/Zenodo Sandbox API access",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    """Skip zenodo tests if SANDBOX_TOKEN is not set."""
+    sandbox_token = os.getenv("SANDBOX_TOKEN")
+    zenodo_token = os.getenv("ZENODO_TOKEN")
+
+    if not sandbox_token or not zenodo_token:
+        skipper = pytest.mark.skip(
+            reason="SANDBOX_TOKEN or ZENODO_TOKEN environment variable not set"
+        )
+        for item in items:
+            if "zenodo" in item.keywords:
+                item.add_marker(skipper)
