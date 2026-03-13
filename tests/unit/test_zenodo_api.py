@@ -15,7 +15,8 @@ class DummyWorkflow:
 snakemake.workflow = DummyWorkflow()
 
 # Test data file path
-TEST_DATA_FILE = Path(__file__).parent / "data" / "TOI640b.json"
+TEST_DATA_FILE_JSON = Path(__file__).parent / "data" / "TOI640b.json"
+TEST_DATA_FILE_README = Path(__file__).parent / "data" / "README.md"
 
 
 @pytest.fixture
@@ -92,7 +93,7 @@ def test_download_latest_draft():
 
     # Upload a file and publish
     draft = sandbox._get_draft()
-    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
     sandbox.publish()
 
     cache_dir_post = sandbox._download_latest_draft()
@@ -109,6 +110,19 @@ def test_download_latest_draft():
     )
 
 
+def test_download_file_from_draft():
+    sandbox = Zenodo("sandbox")
+
+    # Upload a files
+    draft = sandbox._get_draft()
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing_json")
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_README, "testing_readme")
+
+    # Run the downlOd to make sure no error happens
+    sandbox.download_file_from_draft(draft, TEST_DATA_FILE_JSON, "testing_json")
+    sandbox.download_file_from_draft(draft, TEST_DATA_FILE_README, "testing_readme")
+
+
 def test_get_draft():
     sandbox = Zenodo("sandbox")
 
@@ -119,7 +133,7 @@ def test_get_draft():
     assert not draft["submitted"]
 
     # Upload a file and publish to test automated creation
-    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
     sandbox.publish()
 
     # Make sure a new draft is created on request
@@ -136,7 +150,7 @@ def test_copy_draft():
     sandbox.copy_draft("sandbox")
 
     draft = sandbox._get_draft()
-    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
     sandbox.publish()
 
     # Test that copying a published draft works
@@ -144,7 +158,7 @@ def test_copy_draft():
 
     sandbox_cp = Zenodo("sandbox")
     draft = sandbox_cp._get_draft()
-    sandbox_cp.upload_file_to_draft(draft, TEST_DATA_FILE, "testing")
+    sandbox_cp.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
     sandbox_cp.publish()
 
     sandbox.copy_draft(sandbox_cp.doi)

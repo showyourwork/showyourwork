@@ -612,7 +612,7 @@ class Zenodo:
 
             else:
                 # Keep looking in this deposit for a file with the right name
-                logger.debug(f"Cache miss for file {entry['key']}. Skipping...")
+                logger.debug(f"Cache miss for file {entry[file_key]}. Skipping...")
 
         # This is caught in the enclosing scope and treated as a cache miss
         raise exceptions.FileNotFoundOnZenodo(rule_name)
