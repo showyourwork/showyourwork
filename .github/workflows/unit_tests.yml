@@ -49,6 +49,6 @@ jobs:
       - name: Run tests
         shell: bash -l {0}
         run: |
-          python -m pytest tests/unit
+          python -m pytest tests/unit --require-zenodo
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
