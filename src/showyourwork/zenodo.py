@@ -242,6 +242,7 @@ class Zenodo:
 
         return id_type
 
+    @require_access_token
     def _create(self, slug=None, branch=None):
         """
         Create a draft of a Zenodo deposit for the current repo & branch.
