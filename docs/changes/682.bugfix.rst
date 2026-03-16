@@ -1,0 +1,1 @@
+Fix the Snakemake caching by removing the deprecated `cache_mode` argument from the cache API.
