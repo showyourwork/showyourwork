@@ -27,7 +27,7 @@ dependencies = [
     "cookiecutter",
     "chardet>=5.0.0,<7.0.0", # see https://github.com/cookiecutter/cookiecutter/pull/2196
     "packaging",
-    "snakemake",
+    "snakemake<9.17",
     "pulp",
 ]
 
