@@ -131,7 +131,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     _store = LocalOutputFileCache.store
 
     # Define the patches
-    def fetch(self, job, cache_mode, zenodo=zenodo, sandbox=sandbox, _fetch_fn=_fetch):
+    def fetch(self, job, zenodo=zenodo, sandbox=sandbox, _fetch_fn=_fetch):
         # If the cache file is a directory, we must tar it up
         # Recall that cacheable jobs can only have a _single_ output
         # (unless using multiext), so checking the first output should suffice
@@ -140,9 +140,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             tarball = True
         else:
             tarball = False
-        for outputfile, cachefile in self.get_outputfiles_and_cachefiles(
-            job, cache_mode
-        ):
+        for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
             file_exists = cachefile.exists()
             if not file_exists:
                 # Attempt to download from Zenodo and then Zenodo Sandbox
@@ -224,11 +222,11 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         logger.debug(str(e))
 
         # Call the original method
-        return _fetch_fn(self, job, cache_mode)
+        return _fetch_fn(self, job)
 
-    async def store(self, job, cache_mode, sandbox=sandbox, _store_fn=_store):
+    async def store(self, job, sandbox=sandbox, _store_fn=_store):
         # Call the original async method and await it
-        result = await _store_fn(self, job, cache_mode)
+        result = await _store_fn(self, job)
 
         # GitHub Actions runs should never update the cache
         if not snakemake.workflow.config.get("github_actions"):
@@ -238,10 +236,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             else:
                 tarball = False
 
-            for (
-                outputfile,
-                cachefile,
-            ) in self.get_outputfiles_and_cachefiles(job, cache_mode):
+            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
                 logger.info(f"Caching output file on remote: {outputfile}...")
                 try:
                     sandbox.upload_file(cachefile, job.rule.name, tarball=tarball)
@@ -489,8 +484,13 @@ def job_is_cached(job):
     cache = snakemake.workflow.workflow.output_file_cache
 
     # Check if user requested caching for job
-    cache_mode = snakemake.workflow.workflow.get_cache_mode(job.rule)
-    if cache_mode is None:
+    cache = (
+        self.workflow.workflow_settings.cache is not None
+        and job.rule.cache
+        and job.rule.cache.output
+    )
+
+    if not cache:
         logger.debug(f"Job {job.name} is not cacheable.")
         return False
 
@@ -498,7 +498,7 @@ def job_is_cached(job):
     try:
         # In Snakemake v9.8.1, cache.exists() is now async
         async def check_cache_exists():
-            return await cache.exists(job, cache_mode)
+            return await cache.exists(job)
 
         cache_exists = _run_async_safely(check_cache_exists())
 
@@ -519,7 +519,7 @@ def job_is_cached(job):
         return False
 
     # Loop over cache files for the job (should really only be one)
-    for _outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job, cache_mode):
+    for _outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job):
 
         def _file_exists(cachefile, doi):
             """
