@@ -1,6 +1,22 @@
+import json
+from pathlib import Path
+
 import pytest
+import snakemake
 
 from showyourwork.zenodo import Zenodo, get_dataset_dois, get_dataset_urls
+
+
+# Mock snakemake workflow for tests
+class DummyWorkflow:
+    config = {"github_actions": False}
+
+
+snakemake.workflow = DummyWorkflow()
+
+# Test data file path
+TEST_DATA_FILE_JSON = Path(__file__).parent / "data" / "TOI640b.json"
+TEST_DATA_FILE_README = Path(__file__).parent / "data" / "README.md"
 
 
 @pytest.fixture
@@ -64,3 +80,89 @@ def test_get_id_type(config):
     doi = next(iter(config["datasets"]))
     deposit = Zenodo(doi)
     assert deposit.get_id_type() == "version"
+
+
+@pytest.mark.zenodo
+def test_download_latest_draft():
+    sandbox = Zenodo("sandbox")
+
+    cache_dir = sandbox._download_latest_draft()
+    assert cache_dir.is_dir()
+
+    with open(cache_dir / ".metadata.json") as f:
+        metadata = json.load(f)
+
+    # Upload a file and publish
+    draft = sandbox._get_draft()
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
+    sandbox.publish()
+
+    cache_dir_post = sandbox._download_latest_draft()
+    assert cache_dir_post.is_dir()
+
+    assert cache_dir == cache_dir_post
+
+    with open(cache_dir_post / ".metadata.json") as f:
+        metadata_post = json.load(f)
+
+    # Ensure DOI is different, i.e. new draft was created
+    assert (
+        metadata_post["prereserve_doi"]["recid"] != metadata["prereserve_doi"]["recid"]
+    )
+
+
+@pytest.mark.zenodo
+def test_download_file_from_draft():
+    sandbox = Zenodo("sandbox")
+
+    # Upload a files
+    draft = sandbox._get_draft()
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing_json")
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_README, "testing_readme")
+
+    # Run the downlOd to make sure no error happens
+    sandbox.download_file_from_draft(draft, TEST_DATA_FILE_JSON, "testing_json")
+    sandbox.download_file_from_draft(draft, TEST_DATA_FILE_README, "testing_readme")
+
+
+@pytest.mark.zenodo
+def test_get_draft():
+    sandbox = Zenodo("sandbox")
+
+    # Test that we can recover the intial draft
+    draft = sandbox._get_draft()
+    assert isinstance(draft, dict)
+    assert "created" in draft
+    assert not draft["submitted"]
+
+    # Upload a file and publish to test automated creation
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
+    sandbox.publish()
+
+    # Make sure a new draft is created on request
+    draft_post = sandbox._get_draft()
+    assert not draft_post["submitted"]
+    assert draft != draft_post
+    assert draft["created"] < draft_post["created"]
+
+
+@pytest.mark.zenodo
+def test_copy_draft():
+    sandbox = Zenodo("sandbox")
+
+    # Test that copying an unpublished draft works
+    sandbox.copy_draft("sandbox")
+
+    draft = sandbox._get_draft()
+    sandbox.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
+    sandbox.publish()
+
+    # Test that copying a published draft works
+    sandbox.copy_draft("sandbox")
+
+    sandbox_cp = Zenodo("sandbox")
+    draft = sandbox_cp._get_draft()
+    sandbox_cp.upload_file_to_draft(draft, TEST_DATA_FILE_JSON, "testing")
+    sandbox_cp.publish()
+
+    sandbox.copy_draft(sandbox_cp.doi)
