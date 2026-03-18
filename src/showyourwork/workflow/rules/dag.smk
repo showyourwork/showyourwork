@@ -131,6 +131,7 @@ def check_dependency_values(dag):
 
     if errors:
         from showyourwork import exceptions
+
         msg = (
             "The following dependencies listed in the `dependencies` "
             "section of showyourwork.yml could not be resolved. "
