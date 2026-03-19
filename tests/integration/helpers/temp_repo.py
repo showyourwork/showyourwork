@@ -69,6 +69,11 @@ class TemporaryShowyourworkRepository:
     def cwd(self):
         return self.root_path / self.repo
 
+    def run_command(self, *args, **kwargs):
+        """Run a command, streaming output when debugging locally."""
+        kwargs.setdefault("capture_output", not self.debug)
+        return get_stdout(*args, **kwargs)
+
     def startup(self):
         """Subclass me to run things at startup."""
         pass
@@ -110,12 +115,12 @@ class TemporaryShowyourworkRepository:
 
         # Provide git name & email
         if os.getenv("CI", "false") == "true":
-            get_stdout(
+            self.run_command(
                 'git config --global user.name "gh-actions"',
                 cwd=self.root_path,
                 shell=True,
             )
-            get_stdout(
+            self.run_command(
                 'git config --global user.email "gh-actions"',
                 cwd=self.root_path,
                 shell=True,
@@ -123,7 +128,7 @@ class TemporaryShowyourworkRepository:
 
         # Create a new one
         print(f"[{self.repo}] Creating local repo `tests/sandbox/{self.repo}`...")
-        get_stdout(
+        self.run_command(
             f"{command} {options} {GITHUB_USER}/{self.repo}",
             cwd=self.root_path,
             shell=True,
@@ -175,8 +180,8 @@ class TemporaryShowyourworkRepository:
 
     def git_commit(self):
         """Add and commit all files in the local repo."""
-        get_stdout("git add .", shell=True, cwd=self.cwd)
-        get_stdout(
+        self.run_command("git add .", shell=True, cwd=self.cwd)
+        self.run_command(
             "git diff-index --quiet HEAD || "
             'git -c user.name="gh-actions" -c user.email="gh-actions" '
             'commit -q -m "auto commit from showyourwork tests"',
@@ -198,7 +203,7 @@ class TemporaryShowyourworkRepository:
         args = ""
         if self.dry_run:
             args += " --dry-run"
-        get_stdout(
+        self.run_command(
             "showyourwork build" + args,
             shell=True,
             cwd=self.cwd,
@@ -215,7 +220,7 @@ class TemporaryShowyourworkRepository:
 
         """
         print(f"[{self.repo}] Pushing to `{GITHUB_USER}/{self.repo}`...")
-        get_stdout(
+        self.run_command(
             "git push --force https://x-access-token:"
             f"{gitapi.get_access_token()}"
             f"@github.com/{GITHUB_USER}/{self.repo} main",
@@ -223,9 +228,9 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
         )
-        head_sha = get_stdout("git rev-parse HEAD", shell=True, cwd=self.cwd).replace(
-            "\n", ""
-        )
+        head_sha = self.run_command(
+            "git rev-parse HEAD", shell=True, cwd=self.cwd
+        ).replace("\n", "")
         print(
             f"[{self.repo}] Waiting {self.action_wait} seconds for workflow "
             f"to finish (1/{self.action_max_tries})..."

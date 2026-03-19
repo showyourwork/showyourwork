@@ -22,7 +22,13 @@ def process_run_result(code, stdout, stderr):
 
 
 def get_stdout(
-    args, shell=False, cwd=None, secrets=(), callback=process_run_result, env=None
+    args,
+    shell=False,
+    cwd=None,
+    secrets=(),
+    callback=process_run_result,
+    env=None,
+    capture_output=True,
 ):
     """
     A thin wrapper around ``subprocess.run`` that hides secrets and decodes
@@ -36,6 +42,9 @@ def get_stdout(
         secrets (list, optional): Secrets to be masked in the output.
         callback (callable, optional): Callback to process the result.
         env (dict): Extra environment variables to be passed to the ``subprocess.run``
+        capture_output (bool, optional): If ``True`` (default), capture ``stdout`` and
+            ``stderr`` and pass decoded strings to ``callback``. If ``False``, stream
+            command output directly to the terminal.
 
     """
     #  Update the environment variables if passed
@@ -43,14 +52,25 @@ def get_stdout(
     if env is not None:
         subprocess_env.update(env)
 
-    # Run the command and capture all output
+    # Run the command
     result = subprocess.run(
-        args, shell=shell, cwd=cwd, capture_output=True, check=False, env=subprocess_env
+        args,
+        shell=shell,
+        cwd=cwd,
+        env=subprocess_env,
+        check=False,
+        capture_output=capture_output,
     )
 
     # Parse the output
-    stdout = result.stdout.decode()
-    stderr = result.stderr.decode()
+    stdout = (
+        result.stdout.decode() if isinstance(result.stdout, bytes) else result.stdout
+    )
+    stderr = (
+        result.stderr.decode() if isinstance(result.stderr, bytes) else result.stderr
+    )
+    stdout = stdout or ""
+    stderr = stderr or ""
     code = result.returncode
 
     # Hide secrets from the command output
