@@ -14,4 +14,5 @@ from .zenodo import (
     zenodo_delete as zenodo_delete,
     zenodo_freeze as zenodo_freeze,
     zenodo_publish as zenodo_publish,
+    zenodo_reserve as zenodo_reserve,
 )

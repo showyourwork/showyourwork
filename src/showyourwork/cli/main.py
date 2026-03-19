@@ -415,6 +415,21 @@ def freeze(ctx, branch):
 @cache.command()
 @click.pass_context
 @click.option(*branch_option.args, **branch_option.kwargs)
+def reserve(ctx, branch):
+    """
+    Reserves a permanent, static DOI on Zenodo that can later be used by
+    ``zenodo cache publish``.
+
+    Requires a Zenodo API token provided as the environment variable
+    `ZENODO_TOKEN`.
+    """
+    ensure_top_level()
+    commands.zenodo_reserve(branch)
+
+
+@cache.command()
+@click.pass_context
+@click.option(*branch_option.args, **branch_option.kwargs)
 def publish(ctx, branch):
     """
     Publishes the current Zenodo Sandbox deposit draft for the given branch

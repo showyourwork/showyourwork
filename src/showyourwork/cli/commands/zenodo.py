@@ -6,6 +6,41 @@ from ...git import get_repo_branch
 from ...zenodo import Zenodo
 
 
+def zenodo_reserve(branch):
+    """Reserve a DOI on Zenodo
+
+    Reserves a permanent DOI for the deposit on the main Zenodo service.
+    This does not push any data, but pre-reserves the DOI that will later
+    be used by ``zenodo cache publish``.
+
+    Args:
+        branch (str): Branch to publish.
+    """
+    # Ensure there's a sandbox cache record for this branch
+    if branch is None:
+        branch = get_repo_branch()
+
+    # Get the Zenodo doi, or create one if needed
+    with edit_yaml("zenodo.yml") as config:
+        zenodo_doi = config["cache"].get(branch, {}).get("zenodo", None)
+    if "SANDBOX_ONLY" in os.environ:
+        # Publish to Sandbox if we're in a test run
+        service = "sandbox"
+    else:
+        service = "zenodo"
+    # TODO: This should be tested
+    if zenodo_doi is not None:
+        raise exceptions.ZenodoError(f"There is already a DOI for branch {branch}")
+
+    zenodo = Zenodo(service)
+    zenodo_doi = zenodo.doi
+
+    # Fill in the config
+    with edit_yaml("zenodo.yml") as config:
+        config["cache"][branch] = config["cache"].get(branch, {})
+        config["cache"][branch]["zenodo"] = zenodo_doi
+
+
 def zenodo_publish(branch):
     """Publish the cache.
 
