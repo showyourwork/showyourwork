@@ -1,0 +1,1 @@
+Add the ``showyourwork cache reserve`` subcommand to reserve a DOI on the main Zenodo service without publishing.
