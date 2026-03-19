@@ -96,6 +96,18 @@ the output from the Python script.
 That's it! The parent class (``TemporaryShowyourworkRepository``) takes care
 of the rest.
 
+Debugging within the tests
+--------------------------
+
+By default, the integration tests capture the output when running the ``showyourwork`` command.
+This will cause problems when trying to debug parts of the main ``showyourwork`` code within the tests.
+To do so, you will need to enable debug mode to let the output pass through:
+
+.. code-block:: bash
+
+    DEBUG=1 python -m pytest tests/integration/test_default.py -s
+
+
 Remote tests
 ------------
 
