@@ -16,6 +16,7 @@ import types
 from functools import partial
 
 from snakemake.caching.local import OutputFileCache as LocalOutputFileCache
+from snakemake.workflow import Workflow
 
 from . import exceptions, paths
 from .logging import ColorizingStreamHandler, get_logger
@@ -97,6 +98,30 @@ def get_snakemake_variable(name, default=None):
         if value is not None:
             return value
     return default
+
+
+def patch_snakemake_onsuccess():
+
+    _onsuccess = Workflow.onsuccess
+
+    def onsuccess(self, func):
+        """Register onsuccess function."""
+
+        old_onsuccess = self._onsuccess
+
+        # TODO: Could we be more selective on which old functions we keep?
+        # Inspect and ensure they are from user's snaekefile or build.smk
+        def _new_onsuccess(log):
+            old_onsuccess(log)
+            func(log)
+
+        if self.modifier.is_main_snakefile():
+            self._onsuccess = _new_onsuccess
+        self.globals["onsuccess"] = partial(
+            _new_onsuccess, log=self.logger_manager.get_logfile()
+        )
+
+    Workflow.onsuccess = onsuccess
 
 
 def patch_snakemake_cache(zenodo_doi, sandbox_doi):

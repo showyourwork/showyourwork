@@ -7,6 +7,7 @@ from showyourwork import paths, exceptions, overleaf
 from showyourwork.patches import (
     patch_snakemake_wait_for_files,
     patch_snakemake_logging,
+    patch_snakemake_onsuccess,
     patch_snakemake_missing_input_leniency,
 )
 from showyourwork.config import parse_config, get_run_type
@@ -45,6 +46,7 @@ else:
 
         # Set up custom logging for Snakemake
     patch_snakemake_logging()
+    patch_snakemake_onsuccess()
 
     # Parse the config file
     parse_config()
