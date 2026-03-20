@@ -1,0 +1,1 @@
+Adds support for Snakemake's ``include`` statement for files in subdirectories.
