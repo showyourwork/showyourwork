@@ -100,10 +100,21 @@ def get_snakemake_variable(name, default=None):
     return default
 
 
-def patch_snakemake_onsuccess():
+def patch_snakemake_hooks():
+    """
+    Patches the Snakemake onsuccess, onerror and onstart to
+
+    - Process all user hook directives using snakemake's default behaviour
+    - Merge the user rule with showyourwork's hook directives
+    - onerror and onsuccess run the user's directive first and then showyourwork's
+    - onstart runs showyourk's rule first and then the user's
+    """
+
     from snakemake.workflow import Workflow
 
     _onsuccess = Workflow.onsuccess
+    _onerror = Workflow.onerror
+    _onstart = Workflow.onstart
 
     def onsuccess(self, func):
         """Register onsuccess function."""
@@ -128,7 +139,55 @@ def patch_snakemake_onsuccess():
             _new_onsuccess, log=self.logger_manager.get_logfile()
         )
 
+    def onerror(self, func):
+        """Register onerror function."""
+
+        # For all user files, process normally with snakemake
+        source_file = Path(inspect.getsourcefile(func))
+        if source_file.name != "build.smk":
+            _onerror(self, func)
+            return
+
+        # When we reach build.smk, preserve user's latest onerror
+        # and merge it with the one from build.smk
+        old_onerror = self._onerror
+
+        def _new_onerror(log):
+            old_onerror(log)
+            func(log)
+
+        if self.modifier.is_main_snakefile():
+            self._onerror = _new_onerror
+        self.globals["onerror"] = partial(
+            _new_onerror, log=self.logger_manager.get_logfile()
+        )
+
+    def onstart(self, func):
+        """Register onstart function."""
+
+        # For all user files, process normally with snakemake
+        source_file = Path(inspect.getsourcefile(func))
+        if source_file.name != "build.smk":
+            _onstart(self, func)
+            return
+
+        # When we reach build.smk, preserve user's latest onstart
+        # and merge it with the one from build.smk
+        old_onstart = self._onstart
+
+        def _new_onstart(log):
+            func(log)
+            old_onstart(log)
+
+        if self.modifier.is_main_snakefile():
+            self._onstart = _new_onstart
+        self.globals["onstart"] = partial(
+            _new_onstart, log=self.logger_manager.get_logfile()
+        )
+
     Workflow.onsuccess = onsuccess
+    Workflow.onerror = onerror
+    Workflow.onstart = onstart
 
 
 def patch_snakemake_cache(zenodo_doi, sandbox_doi):
