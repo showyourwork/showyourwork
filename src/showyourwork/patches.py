@@ -14,6 +14,7 @@ import os
 import time
 import types
 from functools import partial
+from pathlib import Path
 
 from snakemake.caching.local import OutputFileCache as LocalOutputFileCache
 from snakemake.workflow import Workflow
@@ -107,10 +108,16 @@ def patch_snakemake_onsuccess():
     def onsuccess(self, func):
         """Register onsuccess function."""
 
+        # For all user files, process normally with snakemake
+        source_file = Path(inspect.getsourcefile(func))
+        if source_file.name != "build.smk":
+            _onsuccess(self, func)
+            return
+
+        # When we reach build.smk, preserve user's latest onsuccess
+        # and merge it with the one from build.smk
         old_onsuccess = self._onsuccess
 
-        # TODO: Could we be more selective on which old functions we keep?
-        # Inspect and ensure they are from user's snaekefile or build.smk
         def _new_onsuccess(log):
             old_onsuccess(log)
             func(log)
