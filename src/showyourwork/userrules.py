@@ -1,4 +1,4 @@
-from . import exceptions
+from . import exceptions, paths
 from .config import get_run_type
 from .git import get_repo_branch
 from .logging import get_logger
@@ -59,6 +59,6 @@ def process_user_rules():
 
         # Ensure we're running in a conda env
         if not ur.conda_env:
-            ur.conda_env = "environment.yml"
+            ur.conda_env = (paths.user().repo / "environment.yml").as_posix()
 
     snakemake.workflow.config["cached_deps"] = cached_deps
