@@ -7,7 +7,7 @@ from showyourwork import paths, exceptions, overleaf
 from showyourwork.patches import (
     patch_snakemake_wait_for_files,
     patch_snakemake_logging,
-    patch_snakemake_onsuccess,
+    patch_snakemake_hooks,
     patch_snakemake_missing_input_leniency,
 )
 from showyourwork.config import parse_config, get_run_type
@@ -44,9 +44,11 @@ else:
     for file in paths.user().flags.glob("*"):
         file.unlink()
 
-        # Set up custom logging for Snakemake
+    # Set up custom logging for Snakemake
     patch_snakemake_logging()
-    patch_snakemake_onsuccess()
+
+    # Patch snakemake onstart, onerror and onsuccess (merge syw and user)
+    patch_snakemake_hooks()
 
     # Parse the config file
     parse_config()
