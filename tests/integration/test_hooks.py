@@ -68,6 +68,7 @@ class TestHooksError(TestHooks):
     """
 
     hooks = ["onstart", "onerror"]
+    local_build_only = True
 
     def customize(self):
         super().customize()
