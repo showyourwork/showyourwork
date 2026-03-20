@@ -1,0 +1,2 @@
+Ensure that ``onstart``, ``onsuccess`` and ``onerror`` hook directives created by the user
+get executed normally with Snakemake by merging with showyourwork's internal hooks.
