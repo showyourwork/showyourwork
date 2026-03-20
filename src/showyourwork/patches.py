@@ -17,7 +17,6 @@ from functools import partial
 from pathlib import Path
 
 from snakemake.caching.local import OutputFileCache as LocalOutputFileCache
-from snakemake.workflow import Workflow
 
 from . import exceptions, paths
 from .logging import ColorizingStreamHandler, get_logger
@@ -102,6 +101,7 @@ def get_snakemake_variable(name, default=None):
 
 
 def patch_snakemake_onsuccess():
+    from snakemake.workflow import Workflow
 
     _onsuccess = Workflow.onsuccess
 
