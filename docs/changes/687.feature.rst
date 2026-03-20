@@ -1,1 +1,2 @@
-Adds support for Snakemake's ``include`` statement for files in subdirectories.
+showyourwork did support the inclusion of .smk files from subdirectories of the repo via the ``include`` directive.
+It is now possible to use this feature.
