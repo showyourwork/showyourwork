@@ -1,2 +1,2 @@
-showyourwork did support the inclusion of .smk files from subdirectories of the repo via the ``include`` directive.
+showyourwork did not support the inclusion of .smk files from subdirectories of the repo via the ``include`` directive.
 It is now possible to use this feature.
