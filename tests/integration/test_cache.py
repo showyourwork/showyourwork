@@ -6,6 +6,7 @@ from helpers import (
     TemporaryShowyourworkRepository,
 )
 
+from showyourwork import exceptions
 from showyourwork.config import edit_yaml
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import Zenodo
@@ -270,9 +271,12 @@ if os.getenv("CI", "false") != "true":
             assert "notes" not in draft["metadata"]
 
             # Now publish and ensure the same DOI was used and files were uploaded
-            get_stdout(
-                "SANDBOX_ONLY=true showyourwork cache publish", cwd=self.cwd, shell=True
-            )
+            with pytest.raises(exceptions.CalledProcessError):
+                get_stdout(
+                    "SANDBOX_ONLY=true showyourwork cache publish",
+                    cwd=self.cwd,
+                    shell=True,
+                )
             with edit_yaml(self.cwd / "zenodo.yml") as config:
                 zenodo_doi_pub = config["cache"].get("main", {}).get("zenodo", None)
             assert zenodo_doi_pub == zenodo_doi
