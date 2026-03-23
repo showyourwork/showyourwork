@@ -315,7 +315,7 @@ class TemporaryShowyourworkRepository:
             if isinstance(handler, logging.StreamHandler):
                 handler.setLevel(logging.ERROR)
 
-    def test_local(self):
+    def test_local(self, caplog):
         """
         Test functionality by creating a new repo, customizing it,
         pushing it to GitHub, and awaiting the article build action to
@@ -340,6 +340,9 @@ class TemporaryShowyourworkRepository:
 
             # Build the article locally
             self.build_local()
+
+            # Make captured logs available to subclasses that need them
+            self._caplog = caplog
 
             # Run local checks
             self.check_build()

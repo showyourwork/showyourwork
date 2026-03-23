@@ -264,14 +264,13 @@ if os.getenv("CI", "false") != "true":
 
             # Test that reserving with existing DOI raises an error
             # and leaves the DOI unchanged
-            with pytest.raises(
-                exceptions.CalledProcessError, match="There is already a DOI"
-            ):
+            with pytest.raises(exceptions.CalledProcessError):
                 get_stdout(
                     "SANDBOX_ONLY=true showyourwork cache reserve",
                     cwd=self.cwd,
                     shell=True,
                 )
+            assert "already a DOI" in self._caplog.text
             with edit_yaml(self.cwd / "zenodo.yml") as config:
                 zenodo_doi_twice = config["cache"].get("main", {}).get("zenodo", None)
             assert zenodo_doi == zenodo_doi_twice
