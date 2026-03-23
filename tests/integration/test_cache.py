@@ -256,6 +256,14 @@ if os.getenv("CI", "false") != "true":
             zenodo = Zenodo(zenodo_doi)
             assert zenodo.check_if_user_is_owner()
 
+            # Test that reserving with existing DOI does not modify it
+            get_stdout(
+                "SANDBOX_ONLY=true showyourwork cache reserve", cwd=self.cwd, shell=True
+            )
+            with edit_yaml(self.cwd / "zenodo.yml") as config:
+                zenodo_doi_twice = config["cache"].get("main", {}).get("zenodo", None)
+            assert zenodo_doi == zenodo_doi_twice
+
             # Make sure that no files have been uploaded
             draft = zenodo._get_draft()
             assert len(draft["files"]) == 0
