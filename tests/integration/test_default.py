@@ -10,4 +10,5 @@ class TestDefault(TemporaryShowyourworkRepository):
 class TestDefaultDry(TemporaryShowyourworkRepository):
     """Test setting up and building the default repo with a dry-run"""
 
-    dry_run = True
+    def build_local(self):
+        super().build_local(args=["--dry-run"])

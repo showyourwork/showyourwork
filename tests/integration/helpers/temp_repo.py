@@ -51,7 +51,6 @@ class TemporaryShowyourworkRepository:
     require_local_build = False
     delete_remote_on_success = False
     clear_actions_cache_on_start = True
-    dry_run = False
 
     # Internal
     _sandbox_concept_doi = None
@@ -189,7 +188,7 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
         )
 
-    def build_local(self, env=None):
+    def build_local(self, env=None, args=None):
         """Run showyourwork locally to build the article."""
         print(f"[{self.repo}] Building the article locally...")
 
@@ -200,11 +199,12 @@ class TemporaryShowyourworkRepository:
         env_var = {"CI": "false"}
         if env is not None:
             env_var.update(env)
-        args = ""
-        if self.dry_run:
-            args += " --dry-run"
+        if args is None:
+            args = ""
+        else:
+            args = " ".join(args)
         self.run_command(
-            "showyourwork build" + args,
+            "showyourwork build " + args,
             shell=True,
             cwd=self.cwd,
             env=env_var,
