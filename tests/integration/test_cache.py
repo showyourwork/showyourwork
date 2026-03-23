@@ -257,26 +257,29 @@ if os.getenv("CI", "false") != "true":
             zenodo = Zenodo(zenodo_doi)
             assert zenodo.check_if_user_is_owner()
 
-            # Test that reserving with existing DOI does not modify it
-            get_stdout(
-                "SANDBOX_ONLY=true showyourwork cache reserve", cwd=self.cwd, shell=True
-            )
-            with edit_yaml(self.cwd / "zenodo.yml") as config:
-                zenodo_doi_twice = config["cache"].get("main", {}).get("zenodo", None)
-            assert zenodo_doi == zenodo_doi_twice
-
             # Make sure that no files have been uploaded
             draft = zenodo._get_draft()
             assert len(draft["files"]) == 0
             assert "notes" not in draft["metadata"]
 
-            # Now publish and ensure the same DOI was used and files were uploaded
-            with pytest.raises(exceptions.CalledProcessError):
+            # Test that reserving with existing DOI raises an error
+            # and leaves the DOI unchanged
+            with pytest.raises(
+                exceptions.CalledProcessError, match="There is already a DOI"
+            ):
                 get_stdout(
-                    "SANDBOX_ONLY=true showyourwork cache publish",
+                    "SANDBOX_ONLY=true showyourwork cache reserve",
                     cwd=self.cwd,
                     shell=True,
                 )
+            with edit_yaml(self.cwd / "zenodo.yml") as config:
+                zenodo_doi_twice = config["cache"].get("main", {}).get("zenodo", None)
+            assert zenodo_doi == zenodo_doi_twice
+
+            # Now publish and ensure the same DOI was used and files were uploaded
+            get_stdout(
+                "SANDBOX_ONLY=true showyourwork cache publish", cwd=self.cwd, shell=True
+            )
             with edit_yaml(self.cwd / "zenodo.yml") as config:
                 zenodo_doi_pub = config["cache"].get("main", {}).get("zenodo", None)
             assert zenodo_doi_pub == zenodo_doi
