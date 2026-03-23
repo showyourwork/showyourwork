@@ -29,7 +29,7 @@ def zenodo_reserve(branch):
     else:
         service = "zenodo"
     if zenodo_doi is not None:
-        raise exceptions.ZenodoError(f"There is already a DOI for branch {branch}")
+        raise exceptions.ExistingZenodoDOI(zenodo_doi, branch)
 
     zenodo = Zenodo(service)
     zenodo_doi = zenodo.doi

@@ -40,6 +40,7 @@ from .overleaf import (
     OverleafRateLimitExceeded as OverleafRateLimitExceeded,
 )
 from .zenodo import (
+    ExistingZenodoDOI as ExistingZenodoDOI,
     FileNotFoundOnZenodo as FileNotFoundOnZenodo,
     InvalidZenodoDOI as InvalidZenodoDOI,
     InvalidZenodoIdType as InvalidZenodoIdType,
