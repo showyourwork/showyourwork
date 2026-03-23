@@ -13,6 +13,9 @@ class TestTargetRule(TemporaryShowyourworkRepository, ShowyourworkRepositoryActi
     def build_local(self):
         super().build_local(args=["generate_data"])
 
+    def check_build(self):
+        assert (self.cwd / "src/data/test_data.npz").is_file()
+
 
 class TestTargetFile(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """The setting up and building the repo with target rule"""
@@ -24,6 +27,9 @@ class TestTargetFile(TemporaryShowyourworkRepository, ShowyourworkRepositoryActi
 
     def build_local(self):
         super().build_local(args=["src/data/test_data.npz"])
+
+    def check_build(self):
+        assert (self.cwd / "src/data/test_data.npz").is_file()
 
 
 class TestTargetMulti(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
@@ -53,3 +59,7 @@ class TestTargetMulti(TemporaryShowyourworkRepository, ShowyourworkRepositoryAct
 
     def build_local(self):
         super().build_local(args=["generate_data", "touchfile"])
+
+    def check_build(self):
+        assert (self.cwd / "src/data/test_data.npz").is_file()
+        assert (self.cwd / "src/data/afile.txt").is_file()
