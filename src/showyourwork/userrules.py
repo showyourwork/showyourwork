@@ -27,6 +27,7 @@ def process_user_rules():
     # Patch the Snakemake caching functionality so we
     # can cache things on Zenodo
     branch = get_repo_branch()
+    cache_on_zenodo = snakemake.workflow.config["cache_on_zenodo"]
     cache_zenodo_doi = snakemake.workflow.config["cache"][branch]["zenodo"]
     cache_sandbox_doi = snakemake.workflow.config["cache"][branch]["sandbox"]
     cached_deps = []
@@ -34,7 +35,7 @@ def process_user_rules():
         patch_snakemake_cache(cache_zenodo_doi, cache_sandbox_doi)
 
     # Remind the user to publish the deposit
-    if not cache_zenodo_doi and get_run_type() == "build":
+    if cache_on_zenodo and not cache_zenodo_doi and get_run_type() == "build":
         get_logger().warning("Zenodo cache not yet published for this repository.")
 
     # Process each user rule
