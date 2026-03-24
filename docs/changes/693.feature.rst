@@ -1,0 +1,3 @@
+Adds a `--no-conda` flag to the `showyourwork build` and `showyourwork tarball` commands.
+These commands skip the creation of isolated conda environments for the the tex compilation and figure generation.
+Users are expected to have a working Python environment and tectonic installation when using this flag.
