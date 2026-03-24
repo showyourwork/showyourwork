@@ -54,6 +54,24 @@ def render_and_validate_workflow(
         shutil.rmtree(temp_dir)
 
 
+def render_and_load_showyourwork_config(template_dir, context):
+    temp_dir = tempfile.mkdtemp()
+    try:
+        cookiecutter(
+            template_dir,
+            no_input=True,
+            extra_context=context,
+            output_dir=temp_dir,
+        )
+        repo_name = context["repo"]
+        config_path = os.path.join(temp_dir, repo_name, "showyourwork.yml")
+        assert os.path.exists(config_path), "showyourwork.yml not found!"
+        with open(config_path) as f:
+            return yaml.safe_load(f)
+    finally:
+        shutil.rmtree(temp_dir)
+
+
 class BaseSetupTest:
     """Base class for setup command tests with common functionality."""
 
@@ -146,6 +164,7 @@ def test_build_workflow_valid():
         "repo": "testrepo",
         "name": "Test User",
         "showyourwork_version": "v0.4.3",
+        "cache_on_zenodo": True,
         "cache_sandbox_doi": "",
         "overleaf_id": None,
         "year": 2025,
@@ -167,6 +186,7 @@ def test_build_pull_request_workflow_valid():
         "repo": "testrepo",
         "name": "Test User",
         "showyourwork_version": "v0.4.3",
+        "cache_on_zenodo": True,
         "cache_sandbox_doi": "",
         "overleaf_id": None,
         "year": 2025,
@@ -188,6 +208,7 @@ def test_process_pull_request_workflow_valid():
         "repo": "testrepo",
         "name": "Test User",
         "showyourwork_version": "v0.4.3",
+        "cache_on_zenodo": True,
         "cache_sandbox_doi": "",
         "overleaf_id": None,
         "year": 2025,
@@ -207,6 +228,36 @@ def test_process_pull_request_workflow_valid():
         "v1",
         action_path="showyourwork/showyourwork-action/process-pull-request",
     )
+
+
+def test_showyourwork_config_cache_flag_matches_context():
+    template_dir = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "../../src/showyourwork/cookiecutter-showyourwork",
+        )
+    )
+    base_context = {
+        "user": "testuser",
+        "repo": "testrepo",
+        "name": "Test User",
+        "showyourwork_version": "v0.4.3",
+        "cache_sandbox_doi": "",
+        "overleaf_id": None,
+        "year": 2025,
+        "action_spec": None,
+        "action_version": "v1",
+    }
+
+    config = render_and_load_showyourwork_config(
+        template_dir, {**base_context, "cache_on_zenodo": True}
+    )
+    assert config["cache_on_zenodo"] is True
+
+    config = render_and_load_showyourwork_config(
+        template_dir, {**base_context, "cache_on_zenodo": False}
+    )
+    assert config["cache_on_zenodo"] is False
 
 
 class TestSetupCommandGitScenarios(BaseSetupTest):

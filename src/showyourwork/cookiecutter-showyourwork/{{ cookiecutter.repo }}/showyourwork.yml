@@ -1,5 +1,5 @@
 # Enable rule caching on Zenodo?
-cache_on_zenodo: true
+cache_on_zenodo: {{ cookiecutter.cache_on_zenodo | lower }}
 
 # Workflow graph (DAG) generation
 dag:

@@ -3,6 +3,7 @@
   "repo": null,
   "name": null,
   "showyourwork_version": null,
+  "cache_on_zenodo": true,
   "cache_sandbox_doi": null,
   "overleaf_id": null,
   "year": null,
