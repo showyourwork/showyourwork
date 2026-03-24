@@ -6,6 +6,7 @@ from pathlib import Path
 import jinja2
 import yaml
 from packaging import version
+from ruamel.yaml import YAML
 
 from . import __version__, exceptions, git, paths
 
@@ -38,6 +39,20 @@ def edit_yaml(file):
     finally:
         with open(file, "w") as f:
             print(yaml.dump(contents, Dumper=Dumper), file=f)
+
+
+@contextmanager
+def edit_yaml_roundtrip(file):
+    yaml_rt = YAML()
+    yaml_rt.preserve_quotes = True
+    yaml_rt.indent(mapping=2, sequence=4, offset=2)
+    p = Path(file)
+    data = yaml_rt.load(p.read_text()) if p.exists() else {}
+    try:
+        yield data
+    finally:
+        with open(file, "w") as f:
+            yaml_rt.dump(data, f)
 
 
 def render_config(cwd="."):
@@ -175,14 +190,14 @@ def parse_overleaf():
         config["overleaf"]["push"] = []
     elif not isinstance(config["overleaf"]["push"], list):
         raise exceptions.ConfigError(
-            "Error parsing the config. " "The `overleaf.push` field must be a list."
+            "Error parsing the config. The `overleaf.push` field must be a list."
         )
     config["overleaf"]["pull"] = config["overleaf"].get("pull", [])
     if config["overleaf"]["pull"] is None:
         config["overleaf"]["pull"] = []
     elif not isinstance(config["overleaf"]["pull"], list):
         raise exceptions.ConfigError(
-            "Error parsing the config. " "The `overleaf.pull` field must be a list."
+            "Error parsing the config. The `overleaf.pull` field must be a list."
         )
 
     # Ensure all files in `push` and `pull` are in the `src/tex` directory

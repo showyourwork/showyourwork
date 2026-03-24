@@ -22,6 +22,7 @@ dependencies = [
     "graphviz",
     "jinja2",
     "pyyaml",
+    "ruamel.yaml",
     "requests",
     "click",
     "cookiecutter",
