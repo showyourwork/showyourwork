@@ -87,7 +87,7 @@ stamp:
     maxlen: 40
 
 # Enable SyncTeX?
-synctex: True
+synctex: true
 
 # Command-line options to be passed to tectonic when building the manuscript
 tectonic_args: []
