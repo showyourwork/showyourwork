@@ -1,0 +1,4 @@
+Adds support for snakemake targets with `showyourwork build`.
+For example, `showyourwork build myrule` will now execute only up to `myrule`
+and `showyourwork build src/data/myfile.txt` will now execute only the rules required to generate `myfile.txt`.
+This is equivalent to `snakemake myrule`.
