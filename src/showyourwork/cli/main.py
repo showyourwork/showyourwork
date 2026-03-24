@@ -31,6 +31,14 @@ conda_frontend_option = option_spec(
         help="The conda frontend to use; passed to snakemake.",
     ),
 )
+no_conda_option = option_spec(
+    args=["--no-conda"],
+    kwargs=dict(
+        is_flag=True,
+        help="Do not use conda environments with rules. "
+        "Fall back to the current virtual environment",
+    ),
+)
 project_option = option_spec(
     args=["-p", "--project"],
     kwargs=dict(
@@ -135,10 +143,11 @@ def main():
 
 @main_command
 @click.option(*cores_option.args, **cores_option.kwargs)
+@click.option(*no_conda_option.args, **no_conda_option.kwargs)
 @click.option(*conda_frontend_option.args, **conda_frontend_option.kwargs)
 @click.option(*project_option.args, **project_option.kwargs)
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
-def build(cores, conda_frontend, project, snakemake_args):
+def build(cores, no_conda, conda_frontend, project, snakemake_args):
     """Build an article in the current working directory."""
     with cwd_as(project):
         ensure_top_level()
@@ -146,11 +155,13 @@ def build(cores, conda_frontend, project, snakemake_args):
             snakemake_args=snakemake_args,
             cores=cores,
             conda_frontend=conda_frontend,
+            use_conda=not no_conda,
         )
         commands.build(
             snakemake_args=snakemake_args,
             cores=cores,
             conda_frontend=conda_frontend,
+            use_conda=not no_conda,
         )
 
 
@@ -338,10 +349,11 @@ def clean(cores, conda_frontend, project, force, deep, snakemake_args):
 
 @main_command
 @click.option(*cores_option.args, **cores_option.kwargs)
+@click.option(*no_conda_option.args, **no_conda_option.kwargs)
 @click.option(*conda_frontend_option.args, **conda_frontend_option.kwargs)
 @click.option(*project_option.args, **project_option.kwargs)
 @click.argument("snakemake_args", nargs=-1, type=click.UNPROCESSED)
-def tarball(cores, conda_frontend, project, snakemake_args):
+def tarball(cores, no_conda, conda_frontend, project, snakemake_args):
     """Generate a tarball of the build in the current working directory."""
     with cwd_as(project):
         ensure_top_level()
@@ -349,11 +361,13 @@ def tarball(cores, conda_frontend, project, snakemake_args):
             snakemake_args=snakemake_args,
             cores=cores,
             conda_frontend=conda_frontend,
+            use_conda=not no_conda,
         )
         commands.tarball(
             snakemake_args=snakemake_args,
             cores=cores,
             conda_frontend=conda_frontend,
+            use_conda=not no_conda,
         )
 
 

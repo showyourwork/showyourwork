@@ -2,7 +2,7 @@ from ... import paths
 from .run_snakemake import run_snakemake
 
 
-def tarball(snakemake_args=(), cores=1, conda_frontend="conda"):
+def tarball(snakemake_args=(), cores=1, conda_frontend="conda", use_conda=True):
     """Build the article tarball.
 
     Args:
@@ -16,4 +16,5 @@ def tarball(snakemake_args=(), cores=1, conda_frontend="conda"):
         conda_frontend=conda_frontend,
         extra_args=list(snakemake_args) + ["syw__arxiv_entrypoint"],
         check=True,
+        use_conda=use_conda,
     )
