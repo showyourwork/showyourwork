@@ -176,25 +176,6 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         )
                     else:
                         logger.warning("Running rule from scratch...")
-                # TODO: Are there specific cases where we should still skip this?
-                # E.g. user does not haev access to Zenodo?
-                # except Exception as e:
-                #     # NOTE: we treat all Zenodo caching errors as non-fatal
-                #     exceptions.restore_trace()
-                #     logger.warning(
-                #         "File not found on remote cache. See logs for details."
-                #     )
-                #     if len(str(e)):
-                #         logger.debug(str(e))
-                #     if config.get("github_actions") and not config.get(
-                #         "run_cache_rules_on_ci"
-                #     ):
-                #         raise exceptions.ShowyourworkException(
-                #             f"Cache for {outputfile} not found, and "
-                #             "`run_cache_rules_on_ci` is set to `False`."
-                #         )
-                #     else:
-                #         logger.warning("Running rule from scratch...")
             else:
                 # We're good
                 logger.info(f"Restoring from local cache: {outputfile}...")
@@ -207,25 +188,17 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             # never update the cache
             if file_exists and not snakemake.workflow.config.get("github_actions"):
                 logger.info(f"Syncing file with Zenodo Sandbox cache: {outputfile}...")
-                try:
+                if sandbox.user_is_owner:
                     sandbox.upload_file(
                         cachefile,
                         job.rule.name,
                         tarball=tarball,
                     )
-                # TODO: Remove the try/except if we always raise anyway
-                except Exception as e:
-                    raise e
-                    # TODO: Are there specific cases where we should still skip this?
-                    # E.g. user does not haev access to Zenodo?
-                    # # NOTE: we treate all Zenodo caching errors as non-fatal
-                    # exceptions.restore_trace()
-                    # logger.warning(
-                    #     f"Failed to sync {outputfile} with Zenodo Sandbox cache. "
-                    #     "See logs for details."
-                    # )
-                    # if len(str(e)):
-                    #     logger.debug(str(e))
+                else:
+                    logger.warning(
+                        "The user does not have permission to push"
+                        "to the Zenodo deposit."
+                    )
 
         # Call the original method
         return _fetch_fn(self, job)
@@ -244,21 +217,13 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
 
             for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
                 logger.info(f"Caching output file on remote: {outputfile}...")
-                try:
+                if sandbox.user_is_owner:
                     sandbox.upload_file(cachefile, job.rule.name, tarball=tarball)
-                except Exception as e:
-                    # TODO: Remove try/except if not needed
-                    raise e
-                    # NOTE: we treate all Zenodo caching errors as non-fatal
-                    # TODO: Are there specific cases where we should still skip this?
-                    # E.g. user does not haev access to Zenodo?
-                    # exceptions.restore_trace()
-                    # logger.warning(
-                    #     f"Failed to upload {outputfile} to Zenodo Sandbox cache. "
-                    #     "See logs for details."
-                    # )
-                    # if len(str(e)):
-                    #     logger.debug(str(e))
+                else:
+                    logger.warning(
+                        "The user does not have permission to push"
+                        "to the Zenodo deposit."
+                    )
 
         return result
 
