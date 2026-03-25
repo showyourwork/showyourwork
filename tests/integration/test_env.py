@@ -32,6 +32,7 @@ class TestNoConda(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
         self.add_figure_environment()
 
         if os.getenv("CI", "false") == "true":
+            get_stdout("mamba install tectonic=0.14.1", cwd=self.cwd, shell=True)
             get_stdout(
                 "python -m pip install numpy matplotlib", cwd=self.cwd, shell=True
             )
