@@ -1,0 +1,3 @@
+All Zenodo caching errors were treated as non-fatal by showyourwork and printed to the logs.
+Unexpected errors will now be raised and prevent the workflow from completing.
+This should make the interface more predictable and easier to debug.
