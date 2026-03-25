@@ -853,6 +853,8 @@ class Zenodo:
             if "is not registered" in data.get("message", ""):
                 # There is no published record with this id
                 pass
+            elif "persistent identifier does not exist" in data.get("message", ""):
+                raise exceptions.ZenodoRecordNotFound(self.deposit_id)
             else:
                 # Something unexpected happened
                 raise exceptions.ZenodoError(

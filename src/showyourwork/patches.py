@@ -130,6 +130,15 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
     _fetch = LocalOutputFileCache.fetch
     _store = LocalOutputFileCache.store
 
+    def _raise_on_ci(config, outputfile):
+        if config.get("github_actions") and not config.get("run_cache_rules_on_ci"):
+            raise exceptions.ShowyourworkException(
+                f"Cache for {outputfile} not found, and "
+                "`run_cache_rules_on_ci` is set to `False`."
+            )
+        else:
+            logger.warning("Running rule from scratch...")
+
     # Define the patches
     def fetch(self, job, zenodo=zenodo, sandbox=sandbox, _fetch_fn=_fetch):
         # If the cache file is a directory, we must tar it up
@@ -155,27 +164,30 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                         file_exists = True
                         logger.info(f"Restoring from Zenodo cache: {outputfile}...")
                     except exceptions.FileNotFoundOnZenodo:
-                        logger.debug("Searching Zenodo Sandbox cache...")
-                        sandbox.download_file(cachefile, job.rule.name, tarball=tarball)
-                        file_exists = True
-                        logger.info(
-                            f"Restoring from Zenodo Sandbox cache: {outputfile}..."
-                        )
+                        try:
+                            logger.debug("Searching Zenodo Sandbox cache...")
+                            sandbox.download_file(
+                                cachefile, job.rule.name, tarball=tarball
+                            )
+                            file_exists = True
+                            logger.info(
+                                f"Restoring from Zenodo Sandbox cache: {outputfile}..."
+                            )
+                        except exceptions.ZenodoRecordNotFound:
+                            exceptions.restore_trace()
+                            logger.warning(
+                                f"Zenodo sandbox record {sandbox.doi} does not exist. "
+                                "It should probably be removed from zenodo.yml."
+                            )
+                            _raise_on_ci(config, outputfile)
+
                 except exceptions.FileNotFoundOnZenodo:
                     # Cache miss; not fatal
                     exceptions.restore_trace()
                     logger.warning(
                         f"Required version of file not found in cache: {outputfile}."
                     )
-                    if config.get("github_actions") and not config.get(
-                        "run_cache_rules_on_ci"
-                    ):
-                        raise exceptions.ShowyourworkException(
-                            f"Cache for {outputfile} not found, and "
-                            "`run_cache_rules_on_ci` is set to `False`."
-                        )
-                    else:
-                        logger.warning("Running rule from scratch...")
+                    _raise_on_ci(config, outputfile)
             else:
                 # We're good
                 logger.info(f"Restoring from local cache: {outputfile}...")
