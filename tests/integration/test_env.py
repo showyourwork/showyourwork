@@ -2,13 +2,9 @@ import os
 
 from helpers import ShowyourworkRepositoryActions, TemporaryShowyourworkRepository
 
+from showyourwork.subproc import get_stdout
 
-# TODO: Run locally and make sure they both work
-# TODO: Since output is captured, the simplest thing is probably to include a
-# niche package in the environment and test that it compiles with it and does not w/o
-# TODO: Run on CI
-# TODO: Then would also be nice to have a way to compile it without conda and not
-# get an error
+
 class TestConda(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """Test that showyourwork creates a conda environment by default"""
 
