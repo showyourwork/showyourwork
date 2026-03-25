@@ -32,7 +32,9 @@ class TestNoConda(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
         self.add_figure_environment()
 
         if os.getenv("CI", "false") == "true":
-            get_stdout("python -m pip install numpy matplotlib", self.cwd, shell=True)
+            get_stdout(
+                "python -m pip install numpy matplotlib", cwd=self.cwd, shell=True
+            )
 
     def build_local(self):
         super().build_local(args=["--no-conda"])
