@@ -15,7 +15,11 @@ import json
 import re
 from collections.abc import MutableMapping
 from pathlib import Path
+from typing import TYPE_CHECKING
 from xml.etree.ElementTree import parse as ParseXMLTree
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 from showyourwork import exceptions, paths, zenodo
 from showyourwork.config import get_upstream_dependencies

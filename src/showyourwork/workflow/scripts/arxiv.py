@@ -10,6 +10,10 @@ import subprocess
 import tarfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 from showyourwork import paths
 

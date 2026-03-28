@@ -4,6 +4,10 @@ Downloads a publically available file from a Zenodo or Zenodo Sandbox record.
 """
 
 import subprocess
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 from showyourwork import exceptions
 from showyourwork.logging import get_logger

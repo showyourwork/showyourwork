@@ -5,10 +5,14 @@ Generates a directed acyclic graph (DAG) of the build process.
 
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import graphviz
 import pymupdf  # PyMuPDF
 from PIL import Image
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 
 def is_relative_to(path, other):

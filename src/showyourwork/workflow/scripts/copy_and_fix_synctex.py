@@ -1,5 +1,9 @@
 import gzip
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 from showyourwork import paths
 

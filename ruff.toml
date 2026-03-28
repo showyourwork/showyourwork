@@ -39,7 +39,6 @@ target-version = "py39"
 select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW", "UP"]
 ignore = [
     "B904",    # Don't require explicit raise ... from in expections for now
-    "F821",    # Allow undefined names (for now!) to handle MAGIC snakemake
     "PLR0912", # Allow more branches
     "PLR0913", # Allow more function arguments
     "PLR0915", # Allow more statements
