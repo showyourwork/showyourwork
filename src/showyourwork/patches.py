@@ -553,7 +553,7 @@ def _run_async_safely(coro):
         return asyncio.run(coro)
 
 
-async def job_is_cached(job):
+def job_is_cached(job):
     """
     Return True if a job's outputs will be restored from cache.
 
@@ -597,7 +597,9 @@ async def job_is_cached(job):
         return False
 
     # Loop over cache files for the job (should really only be one)
-    for _outputfile, cachefile in await cache.get_outputfiles_and_cachefiles(job):
+    for _outputfile, cachefile in _run_async_safely(
+        cache.get_outputfiles_and_cachefiles(job)
+    ):
 
         def _file_exists(cachefile, doi):
             """
@@ -625,6 +627,7 @@ async def job_is_cached(job):
     return True
 
 
+# TODO: Test if this and job_is_cached work
 def get_skippable_jobs(dag):
     """
     Search the DAG and return jobs we can safely skip due to
