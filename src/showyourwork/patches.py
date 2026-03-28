@@ -627,7 +627,6 @@ def job_is_cached(job):
     return True
 
 
-# TODO: Test if this and job_is_cached work
 def get_skippable_jobs(dag):
     """
     Search the DAG and return jobs we can safely skip due to
