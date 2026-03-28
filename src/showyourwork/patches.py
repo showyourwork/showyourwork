@@ -231,7 +231,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             logger.warning("Running rule from scratch...")
 
     # Define the patches
-    def fetch(self, job, zenodo=zenodo, sandbox=sandbox, _fetch_fn=_fetch):
+    async def fetch(self, job, zenodo=zenodo, sandbox=sandbox, _fetch_fn=_fetch):
         # If the cache file is a directory, we must tar it up
         # Recall that cacheable jobs can only have a _single_ output
         # (unless using multiext), so checking the first output should suffice
@@ -240,7 +240,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             tarball = True
         else:
             tarball = False
-        for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
+        for outputfile, cachefile in await self.get_outputfiles_and_cachefiles(job):
             file_exists = cachefile.exists()
             if not file_exists:
                 # Attempt to download from Zenodo and then Zenodo Sandbox
@@ -304,7 +304,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
                     )
 
         # Call the original method
-        return _fetch_fn(self, job)
+        return await _fetch_fn(self, job)
 
     async def store(self, job, sandbox=sandbox, _store_fn=_store):
         # Call the original async method and await it
@@ -318,7 +318,7 @@ def patch_snakemake_cache(zenodo_doi, sandbox_doi):
             else:
                 tarball = False
 
-            for outputfile, cachefile in self.get_outputfiles_and_cachefiles(job):
+            for outputfile, cachefile in await self.get_outputfiles_and_cachefiles(job):
                 logger.info(f"Caching output file on remote: {outputfile}...")
                 if sandbox.user_is_owner:
                     sandbox.upload_file(cachefile, job.rule.name, tarball=tarball)
@@ -553,7 +553,7 @@ def _run_async_safely(coro):
         return asyncio.run(coro)
 
 
-def job_is_cached(job):
+async def job_is_cached(job):
     """
     Return True if a job's outputs will be restored from cache.
 
@@ -597,7 +597,7 @@ def job_is_cached(job):
         return False
 
     # Loop over cache files for the job (should really only be one)
-    for _outputfile, cachefile in cache.get_outputfiles_and_cachefiles(job):
+    for _outputfile, cachefile in await cache.get_outputfiles_and_cachefiles(job):
 
         def _file_exists(cachefile, doi):
             """
