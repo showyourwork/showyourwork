@@ -1,2 +1,3 @@
 Snakemake updates in version 9.18.1 caused showyourwork caching to raise an error.
 Caching code in showyourwork has been updated to work with the latest version of Snakemake.
+Snakemake version `snakemake>=9.18.1` is now required.

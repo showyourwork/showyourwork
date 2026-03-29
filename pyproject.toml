@@ -27,7 +27,7 @@ dependencies = [
     "click",
     "cookiecutter",
     "packaging",
-    "snakemake>=9.18.0",
+    "snakemake>=9.18.1",
     "pulp",
 ]
 
