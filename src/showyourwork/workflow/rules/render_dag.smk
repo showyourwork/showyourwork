@@ -13,13 +13,11 @@ figures = config["tree"]["figures"].keys()
 
 rule:
     """
-    Render the article DAG.
+Render the article DAG.
 
-    """
+"""
     name:
         "syw__render_dag"
-    message:
-        "Rendering the article DAG..."
     input:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
@@ -39,5 +37,7 @@ rule:
         compile=paths.user().compile,
         preprocess=paths.user().preprocess,
         resources=paths.showyourwork().resources,
+    message:
+        "Rendering the article DAG..."
     script:
         "../scripts/render_dag.py"

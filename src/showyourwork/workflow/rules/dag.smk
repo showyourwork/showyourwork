@@ -321,13 +321,13 @@ def WORKFLOW_GRAPH(*args):
 
 checkpoint:
     """
-    Dummy checkpoint to allow us to query the DAG before running other rules.
+Dummy checkpoint to allow us to query the DAG before running other rules.
 
-    """
+"""
     name:
         "syw__dag"
-    message:
-        "Building the workflow graph..."
-    priority: snakemake.jobs.Job.HIGHEST_PRIORITY
     output:
         touch(paths.user().flags / "SYW__DAG"),
+    priority: snakemake.jobs.Job.HIGHEST_PRIORITY
+    message:
+        "Building the workflow graph..."
