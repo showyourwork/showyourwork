@@ -64,8 +64,7 @@ if (
         config["overleaf"]["pull"],
         config["overleaf"]["id"],
         commit_changes=not config["github_actions"],
-        push_changes=config["github_actions"]
-        and config["overleaf"]["gh_actions_sync"],
+        push_changes=config["github_actions"] and config["overleaf"]["gh_actions_sync"],
     )
     os.environ["_SYW_OVERLEAF_PULLED"] = "1"
 
