@@ -221,6 +221,6 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
         self.build_local()
 
         # The marker must now be present in the local manuscript
-        assert marker in ms.read_text(), (
-            "Second build did not pull the new Overleaf changes (issue #603)"
-        )
+        assert (
+            marker in ms.read_text()
+        ), "Second build did not pull the new Overleaf changes (issue #603)"
