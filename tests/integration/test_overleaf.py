@@ -186,3 +186,41 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
                 time.sleep(self.auth_sleep)
             else:
                 break
+
+        # ---- Regression test for issue #603 --------------------------------
+        # After the first successful build, simulate a *new* Overleaf-side
+        # edit and rebuild WITHOUT cleaning.  Before #603 was fixed the
+        # Overleaf pull lived inside the ``onstart`` handler, which Snakemake
+        # skips when it considers everything up-to-date, so the changes were
+        # silently ignored.
+        ms_after_first_build = ms.read_text()
+        marker = "% issue-603-test-marker"
+        ms.write_text(ms_after_first_build + "\n" + marker + "\n")
+
+        for _n in range(self.auth_retries):
+            try:
+                overleaf.push_files(
+                    [ms],
+                    self.overleaf_id,
+                    path=self.cwd,
+                )
+            except exceptions.OverleafRateLimitExceeded:
+                get_logger().warn(
+                    "Overleaf authentication failed. "
+                    f"Re-trying in {self.auth_sleep} seconds..."
+                )
+                time.sleep(self.auth_sleep)
+            else:
+                break
+
+        # Revert locally so the rebuild must pull from Overleaf
+        ms.write_text(ms_after_first_build)
+        get_stdout("git checkout -- src/tex/ms.tex", shell=True, cwd=self.cwd)
+
+        # Rebuild without cleaning
+        self.build_local()
+
+        # The marker must now be present in the local manuscript
+        assert marker in ms.read_text(), (
+            "Second build did not pull the new Overleaf changes (issue #603)"
+        )
