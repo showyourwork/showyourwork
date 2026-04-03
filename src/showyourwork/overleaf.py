@@ -468,7 +468,7 @@ def pull_files(
     """
     # Disable if user didn't specify an id or if there are no files
     if not project_id or not files:
-        return
+        return False
 
     # Setup logging
     logger = logging.get_logger()
@@ -482,7 +482,7 @@ def pull_files(
     ):
         # Not fatal!
         exceptions.restore_trace()
-        return
+        return False
 
     # Copy over the files
     file_list = " ".join([str(file) for file in files])
@@ -574,24 +574,28 @@ def pull_files(
             )
 
     if commit_changes:
-        # Check if there are any changes to commit using git status
-        def status_callback(code, stdout, stderr):
+        # Check if any of the pulled files were staged by the diff callback
+        # above.  We use ``git diff --cached`` scoped to the specific files
+        # so that unrelated staged changes in the repo don't trigger (or
+        # get swept into) our commit.
+        file_paths_to_check = [
+            str(Path(fp).absolute().relative_to(paths.user(path=path).repo))
+            for fp in files
+        ]
+
+        def staged_callback(code, stdout, stderr):
             if code != 0:
                 raise exceptions.CalledProcessError(stderr)
             return stdout.strip()
 
-        status_output = get_stdout(
-            ["git", "status", "--porcelain"],
+        staged_output = get_stdout(
+            ["git", "diff", "--cached", "--name-only", "--"] + file_paths_to_check,
             cwd=paths.user(path=path).repo,
-            callback=status_callback,
+            callback=staged_callback,
         )
 
-        changes = [
-            line for line in status_output.splitlines() if not line.startswith("??")
-        ]
-
-        if changes:
-            # There are changes to commit
+        if staged_output:
+            # There are Overleaf-related changes to commit
             get_stdout(
                 [
                     "git",
@@ -602,13 +606,20 @@ def pull_files(
                     "commit",
                     "-m",
                     "[showyourwork] overleaf sync",
-                ],
+                    "--",
+                ]
+                + file_paths_to_check,
                 cwd=paths.user(path=path).repo,
             )
             logger.info("Overleaf changes committed to the repo. Don't forget to push!")
+
+            if push_changes:
+                get_stdout(["git", "push"], cwd=paths.user(path=path).repo)
+
+            return True
         else:
             # No changes to commit
             logger.warning("No Overleaf changes to commit to the repo.")
-
-        if push_changes:
-            get_stdout(["git", "push"], cwd=paths.user(path=path).repo)
+            return False
+    else:
+        return False
