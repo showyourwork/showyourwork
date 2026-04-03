@@ -1,0 +1,4 @@
+In a project with Overleaf integration, when files were updated on
+Overleaf a local build required the use of `showyourwork clean`
+before `build` in order to see the changes, now only `build`
+is sufficient.
