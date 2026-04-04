@@ -427,7 +427,7 @@ the helper script ``utils/helper_script.py``:
       - src/scripts/utils/helper_script.py
 
 You can also specify a dependency on an entire directory. All files within
-the directory will be treated as dependencies:
+the directory will be treated as dependencies (the trailing slash is optional):
 
 .. code-block:: yaml
 
