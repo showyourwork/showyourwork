@@ -5,8 +5,12 @@ Compiles the article manuscript into a PDF.
 
 import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from jinja2 import BaseLoader, Environment
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 from showyourwork import paths
 

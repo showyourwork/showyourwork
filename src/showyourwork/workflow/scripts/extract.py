@@ -7,7 +7,11 @@ import shutil
 import tarfile
 import tempfile
 from pathlib import Path
+from typing import TYPE_CHECKING
 from zipfile import ZipFile
+
+if TYPE_CHECKING:
+    from snakemake.iocontainers import snakemake
 
 from showyourwork import exceptions
 from showyourwork.logging import get_logger

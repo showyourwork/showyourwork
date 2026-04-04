@@ -68,6 +68,23 @@ within the script via the ``snakemake.params`` dictionary
 (e.g., ``snakemake.params["seed"]``). Note that there's
 no need to explicitly import ``snakemake`` within ``run_simulation.py``, as
 it gets automagically inserted into the namespace.
+However, your code editor, linter or type checker may still show an error
+or warning about ``snakemake`` being undefined. To fix this, when using
+``snakemake`` version 9.17.3 or above, you can import it explicitly at the
+top of your script using the following snippet:
+
+.. code-block:: python
+
+    from typing import TYPE_CHECKING
+
+    if TYPE_CHECKING:
+        from snakemake.iocontainers import snakemake
+
+For ``snakemake`` versions lower than 9.17.0, the following could be used:
+
+.. code-block:: python
+
+    from snakemake.script import snakemake
 
 .. note::
 

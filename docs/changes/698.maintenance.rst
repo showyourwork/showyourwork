@@ -1,0 +1,2 @@
+Adds a mention of explcit snakemake imports in the showyourwork documentation.
+Enforces ``snakemake>=9.17.3`` to ensure that the internal snakemake imports work.

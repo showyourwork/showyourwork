@@ -346,7 +346,7 @@ class Zenodo:
         return False
 
     @require_access_token
-    def _get_draft(self):
+    def _get_draft(self, rule_name=None):
         """Get the latest draft associated with a deposit or create one
 
         Returns:
@@ -354,6 +354,10 @@ class Zenodo:
         """
         # Logger
         logger = get_logger()
+
+        err_msg = f"{self.service} authentication failed."
+        if rule_name is not None:
+            err_msg += f" Unable to upload cache for rule {rule_name}."
 
         # Check if a draft already exists, and create it if not.
         # If authentication fails, return with a gentle warning
@@ -367,10 +371,7 @@ class Zenodo:
             },
         )
         if r.status_code > 204:
-            logger.warning(
-                f"{self.service} authentication failed. Unable to upload cache for "
-                f"rule {rule_name}."
-            )
+            logger.warning(err_msg)
             try:
                 data = r.json()
             except Exception:
@@ -388,10 +389,7 @@ class Zenodo:
             # latest first
             data = sorted(data, key=lambda x: x.get("modified", ""), reverse=True)
         else:
-            logger.warning(
-                f"{self.service} authentication failed. Unable to upload cache for "
-                f"rule {rule_name}."
-            )
+            logger.warning(err_msg)
             return
 
         # Save an id in case we need to create a new draft
@@ -922,7 +920,7 @@ class Zenodo:
         Upload a file to the latest deposit draft.
 
         """
-        draft = self._get_draft()
+        draft = self._get_draft(rule_name)
 
         self.upload_file_to_draft(draft, file, rule_name, tarball=tarball)
 
