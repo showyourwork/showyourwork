@@ -4,7 +4,7 @@ from ... import paths
 from .run_snakemake import run_snakemake
 
 
-def preprocess(snakemake_args=(), cores=1, conda_frontend="conda"):
+def preprocess(snakemake_args=(), cores=1, conda_frontend="conda", use_conda=True):
     """Pre-processing step for the article build.
 
     Args:
@@ -26,4 +26,5 @@ def preprocess(snakemake_args=(), cores=1, conda_frontend="conda"):
         conda_frontend=conda_frontend,
         extra_args=snakemake_args_notargets,
         check=True,
+        use_conda=use_conda,
     )

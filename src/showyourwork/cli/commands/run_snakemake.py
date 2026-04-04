@@ -12,18 +12,24 @@ def run_snakemake(
     conda_frontend="conda",
     extra_args=(),
     check=True,
+    use_conda=True,
 ):
     env = dict(os.environ)
     env["SNAKEMAKE_OUTPUT_CACHE"] = paths.user().cache.as_posix()
     if run_type is not None:
         env["SNAKEMAKE_RUN_TYPE"] = run_type
+    conda_args = []
+    if use_conda:
+        conda_args += [
+            "--use-conda",
+            "--conda-frontend",
+            conda_frontend,
+        ]
     cmd = [
         "snakemake",
         "--cores",
         f"{cores}",
-        "--use-conda",
-        "--conda-frontend",
-        conda_frontend,
+        *conda_args,
         "--cache",
         "-s",
         snakefile,
