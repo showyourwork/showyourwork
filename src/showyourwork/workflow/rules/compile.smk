@@ -16,13 +16,11 @@ if not tectonic_yml.exists():
 
 rule:
     """
-    Setup the temporary files for compilation.
+Setup the temporary files for compilation.
 
-    """
+"""
     name:
         "syw__compile_setup"
-    message:
-        "Generating the article stylesheet metadata..."
     input:
         config["ms_tex"],
         config["dependencies"][config["ms_tex"]],
@@ -37,19 +35,19 @@ rule:
         compile_dir=directory(paths.user().compile.as_posix()),
     params:
         metadata=True,
+    message:
+        "Generating the article stylesheet metadata..."
     script:
         "../scripts/compile_setup.py"
 
 
 rule:
     """
-    Compile the manuscript into the article PDF.
+Compile the manuscript into the article PDF.
 
-    """
+"""
     name:
         "syw__compile_pdf"
-    message:
-        "Compiling the article PDF..."
     input:
         temporary_tex_files(),
         # TODO(dfm): Can probably remove the following once stylesheet is rm'd
@@ -68,6 +66,8 @@ rule:
     params:
         maybe_synctex="--synctex" if config["synctex"] else "",
         user_args=" ".join(config["user_args"]),
+    message:
+        "Compiling the article PDF..."
     run:
         tectonic_args = [
             "--chatter minimal",
@@ -93,12 +93,12 @@ rule:
 rule:
     name:
         "syw__compile_copy_pdf"
-    message:
-        "Copying the article PDF..."
     input:
         (paths.user().compile / f'{config["ms_name"]}.pdf').as_posix(),
     output:
         config["ms_pdf"],
+    message:
+        "Copying the article PDF..."
     shell:
         """
         cp "{input}" "{output}"
@@ -108,27 +108,27 @@ rule:
 rule:
     name:
         "syw__compile_copy_synctex"
-    message:
-        "Copying the article synctex..."
     input:
         (paths.user().compile / f'{config["ms_name"]}.synctex.gz').as_posix(),
     output:
         config["ms_name"] + ".synctex.gz",
+    message:
+        "Copying the article synctex..."
     script:
         "../scripts/copy_and_fix_synctex.py"
 
 
 rule:
     """
-    Compile the manuscript into the article PDF.
+Compile the manuscript into the article PDF.
 
-    """
+"""
     name:
         "syw__compile"
-    message:
-        "Generating the article PDF..."
     input:
         config["ms_pdf"],
         (config["ms_name"] + ".synctex.gz" if config["synctex"] else []),
     output:
         touch(paths.user().flags / "SYW__COMPILE"),
+    message:
+        "Generating the article PDF..."

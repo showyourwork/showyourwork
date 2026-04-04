@@ -9,7 +9,6 @@ file containing metadata about the build and the workflow graph.
 
 from showyourwork import paths
 
-
 # Allow user to define their own tectonic.yml file in their repo:
 tectonic_yml = paths.user().repo / "tectonic.yml"
 if not tectonic_yml.exists():
@@ -18,13 +17,11 @@ if not tectonic_yml.exists():
 
 rule:
     """
-    Setup the temporary files for compilation.
+Setup the temporary files for compilation.
 
-    """
+"""
     name:
         "syw__preprocess_setup"
-    message:
-        "Preprocess: Setting up..."
     input:
         config["ms_tex"],
         config["tex_files_in"],
@@ -38,19 +35,19 @@ rule:
         compile_dir=directory(paths.user().preprocess.as_posix()),
     params:
         metadata=False,
+    message:
+        "Preprocess: Setting up..."
     script:
         "../scripts/compile_setup.py"
 
 
 rule:
     """
-    Compile the manuscript into the article PDF.
+Compile the manuscript into the article PDF.
 
-    """
+"""
     name:
         "syw__preprocess_xml"
-    message:
-        "Preprocess: Generating XML tree..."
     input:
         temporary_tex_files(root=paths.user().preprocess),
         "showyourwork.yml",
@@ -61,6 +58,8 @@ rule:
         tectonic_yml.as_posix()
     params:
         user_args=" ".join(config["user_args"]),
+    message:
+        "Preprocess: Generating XML tree..."
     run:
         tectonic_args = [
             "--chatter minimal",
@@ -81,29 +80,29 @@ rule:
 
 rule:
     """
-    Generate a `config.json` file for the main build.
+Generate a `config.json` file for the main build.
 
-    This rule builds the article using ``tectonic``, but re-defines ``figure``,
-    ``caption``, and ``label`` commands to print XML tags to a special log file.
-    This way, we can use TeX to construct a full XML tree of the document for us,
-    without any need for parsing the TeX file ourselves. This XML tree is then
-    used to determine relationships between the figure scripts and the figure
-    files.
+This rule builds the article using ``tectonic``, but re-defines ``figure``,
+``caption``, and ``label`` commands to print XML tags to a special log file.
+This way, we can use TeX to construct a full XML tree of the document for us,
+without any need for parsing the TeX file ourselves. This XML tree is then
+used to determine relationships between the figure scripts and the figure
+files.
 
-    This rule also assembles information about the datasets and other script
-    dependencies, as well as metadata about the git repo. It then packages
-    all this up alongside the user's config settings into the file
-    `config.json`, which is used as input to the main `showyourwork`
-    workflow.
+This rule also assembles information about the datasets and other script
+dependencies, as well as metadata about the git repo. It then packages
+all this up alongside the user's config settings into the file
+`config.json`, which is used as input to the main `showyourwork`
+workflow.
 
-    """
+"""
     name:
         "syw__preprocess"
-    message:
-        "Preprocess: Setting up the workflow..."
     input:
         (paths.user().preprocess / "showyourwork.xml").as_posix(),
     output:
         config["config_json"],
+    message:
+        "Preprocess: Setting up the workflow..."
     script:
         "../scripts/preprocess.py"

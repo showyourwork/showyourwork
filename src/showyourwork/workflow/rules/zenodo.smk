@@ -9,7 +9,6 @@ Runs the scripts :doc:`download` and :doc:`extract`.
 
 from showyourwork import zenodo
 
-
 xnum = 1
 dnum = 1
 for doi, entry in config["datasets"].items():
@@ -30,13 +29,13 @@ for doi, entry in config["datasets"].items():
             """
             name:
                 rulename
-            message:
-                "Downloading {output} from Zenodo..."
             output:
                 report(local_file, category="Dataset"),
             params:
                 doi=doi,
                 remote_file=remote_file,
+            message:
+                "Downloading {output} from Zenodo..."
             script:
                 "../scripts/download.py"
 
@@ -58,13 +57,13 @@ for doi, entry in config["datasets"].items():
                 """
                 name:
                     rulename
-                message:
-                    "Extracting {output}..."
                 input:
                     local_zip_file,
                 output:
                     report(extracted_file, category="Dataset"),
                 params:
                     compressed_file=compressed_file,
+                message:
+                    "Extracting {output}..."
                 script:
                     "../scripts/extract.py"

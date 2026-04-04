@@ -6,7 +6,6 @@ figure number.
 
 from showyourwork import paths
 
-
 figures = config["tree"]["figures"]
 fignum = 1
 graphics_with_rules = []
@@ -45,8 +44,6 @@ for figure_name in figures:
         """
         name:
             rulename
-        message:
-            "Generating figure output: {output}..."
         input:
             figscript,
             dependencies,
@@ -57,5 +54,7 @@ for figure_name in figures:
             (paths.user().repo / "environment.yml").as_posix()
         params:
             command=command,
+        message:
+            "Generating figure output: {output}..."
         shell:
             "{params.command}"
