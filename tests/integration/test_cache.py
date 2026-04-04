@@ -6,8 +6,10 @@ from helpers import (
     TemporaryShowyourworkRepository,
 )
 
+from showyourwork import exceptions
 from showyourwork.config import edit_yaml
 from showyourwork.subproc import get_stdout
+from showyourwork.zenodo import Zenodo
 
 pytestmark = pytest.mark.remote
 
@@ -208,3 +210,78 @@ if os.getenv("CI", "false") != "true":
             self.add_pipeline_script(seed=0)
             self.git_commit()
             self.build_local(env={"SYW_NO_RUN": "true"})
+
+    class TestCacheReservePublish(
+        TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
+    ):
+        """Test the Zenodo Sandbox cache publish feature."""
+
+        # Enable caching
+        cache = True
+
+        # No need to test this on CI
+        local_build_only = True
+
+        def customize(self):
+            """Add all necessary files for the build."""
+            # Add the pipeline script
+            self.add_pipeline_script(seed=0)
+
+            # Add the Snakefile rule to generate the dataset
+            self.add_pipeline_rule()
+
+            # Add the script to generate the figure
+            self.add_figure_script(load_data=True)
+
+            # Make the dataset a dependency of the figure
+            with edit_yaml(self.cwd / "showyourwork.yml") as config:
+                config["dependencies"] = {
+                    "src/scripts/test_figure.py": "src/data/test_data.npz"
+                }
+                config["run_cache_rules_on_ci"] = True
+
+            # Add the figure environment to the tex file
+            self.add_figure_environment()
+
+        def check_build(self):
+            # Reserve a DOI without publishing anything
+            # This normally creates a record *Zenodo*, but we can hack it
+            # to use Sandbox so we don't create an actual DOI every time we test!
+            get_stdout(
+                "SANDBOX_ONLY=true showyourwork cache reserve", cwd=self.cwd, shell=True
+            )
+            with edit_yaml(self.cwd / "zenodo.yml") as config:
+                zenodo_doi = config["cache"].get("main", {}).get("zenodo", None)
+            # Make sure the doi was added to the config and that the deposit exists
+            assert zenodo_doi is not None
+            zenodo = Zenodo(zenodo_doi)
+            assert zenodo.check_if_user_is_owner()
+
+            # Make sure that no files have been uploaded
+            draft = zenodo._get_draft()
+            assert len(draft["files"]) == 0
+            assert "notes" not in draft["metadata"]
+
+            # Test that reserving with existing DOI raises an error
+            # and leaves the DOI unchanged
+            with pytest.raises(exceptions.CalledProcessError):
+                get_stdout(
+                    "SANDBOX_ONLY=true showyourwork cache reserve",
+                    cwd=self.cwd,
+                    shell=True,
+                )
+            assert "already a DOI" in self._caplog.text
+            with edit_yaml(self.cwd / "zenodo.yml") as config:
+                zenodo_doi_twice = config["cache"].get("main", {}).get("zenodo", None)
+            assert zenodo_doi == zenodo_doi_twice
+
+            # Now publish and ensure the same DOI was used and files were uploaded
+            get_stdout(
+                "SANDBOX_ONLY=true showyourwork cache publish", cwd=self.cwd, shell=True
+            )
+            with edit_yaml(self.cwd / "zenodo.yml") as config:
+                zenodo_doi_pub = config["cache"].get("main", {}).get("zenodo", None)
+            assert zenodo_doi_pub == zenodo_doi
+            # Files are uploaded
+            assert len(draft["files"]) == 0
+            assert "notes" not in draft["metadata"]

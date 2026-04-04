@@ -44,6 +44,12 @@ class InvalidZenodoDOI(ZenodoException):
         super().__init__(message)
 
 
+class ExistingZenodoDOI(ZenodoException):
+    def __init__(self, doi, branch):
+        message = f"There is already a DOI {doi} for branch {branch}"
+        super().__init__(message)
+
+
 class ZenodoUploadError(ZenodoException):
     def __init__(self):
         super().__init__("An error occurred while uploading the dataset from Zenodo.")
