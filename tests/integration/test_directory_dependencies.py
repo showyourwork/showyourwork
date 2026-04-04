@@ -104,9 +104,9 @@ class TestDirectoryDependency(
     def check_build(self):
         """Verify build and that modifying a dependency triggers a rebuild."""
         figure_path = self.cwd / "src" / "tex" / "figures" / "test_figure.pdf"
-        assert figure_path.exists(), (
-            "Figure was not generated with directory dependencies"
-        )
+        assert (
+            figure_path.exists()
+        ), "Figure was not generated with directory dependencies"
 
         # Record the modification time of the generated figure
         mtime_before = figure_path.stat().st_mtime
@@ -122,6 +122,6 @@ class TestDirectoryDependency(
 
         # The figure should have been regenerated
         mtime_after = figure_path.stat().st_mtime
-        assert mtime_after > mtime_before, (
-            "Figure was not regenerated after modifying a dependency inside a directory"
-        )
+        assert (
+            mtime_after > mtime_before
+        ), "Figure was not regenerated after modifying a dependency inside a directory"
