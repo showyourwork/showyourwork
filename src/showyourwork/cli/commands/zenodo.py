@@ -1,7 +1,7 @@
 import os
 
 from ... import exceptions, logging
-from ...config import edit_yaml
+from ...config import edit_yaml, edit_yaml_roundtrip
 from ...git import get_repo_branch
 from ...zenodo import Zenodo
 
@@ -136,6 +136,8 @@ def zenodo_create(branch):
         config["cache"] = config.get("cache", {})
         config["cache"][branch] = config["cache"].get(branch, {})
         config["cache"][branch]["sandbox"] = deposit.doi
+    with edit_yaml_roundtrip("showyourwork.yml") as config:
+        config["cache_on_zenodo"] = True
 
 
 def zenodo_delete(branch):

@@ -1,0 +1,3 @@
+Previously, `showyourwork.yml` always had `cache_on_zenodo: true` by default.
+Now, this is only the case when running `showyourwork setup` with `--cache` or after running `showyourwork cache create`.
+The "Zenodo cache not yet published" warning is also skipped when `cache_on_zenodo` is false.

@@ -272,6 +272,7 @@ def setup(slug, cache, overleaf_id, ssh, action_spec, action_version):
             "repo": repo,
             "name": name,
             "showyourwork_version": __version__,
+            "cache_on_zenodo": cache,
             "cache_sandbox_doi": cache_sandbox_doi,
             "overleaf_id": overleaf_id,
             "year": time.localtime().tm_year,

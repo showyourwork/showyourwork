@@ -7,7 +7,7 @@ from helpers import (
 )
 
 from showyourwork import exceptions
-from showyourwork.config import edit_yaml
+from showyourwork.config import edit_yaml, edit_yaml_roundtrip
 from showyourwork.subproc import get_stdout
 from showyourwork.zenodo import Zenodo
 
@@ -37,13 +37,73 @@ class TestCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
 
         # Make the dataset a dependency of the figure
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
+            cache_is_set = config["cache_on_zenodo"]
             config["dependencies"] = {
                 "src/scripts/test_figure.py": "src/data/test_data.npz"
             }
             config["run_cache_rules_on_ci"] = True
 
+        assert cache_is_set
+
         # Add the figure environment to the tex file
         self.add_figure_environment()
+
+
+class TestCacheCreate(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
+    """
+    Test the creation of a Zenodo cache after creating the repository
+
+    """
+
+    require_local_build = True
+
+    def customize(self):
+        """Add all necessary files for the build."""
+        # Add the pipeline script
+        self.add_pipeline_script()
+
+        # Add the Snakefile rule to generate the dataset
+        self.add_pipeline_rule()
+
+        # Add the script to generate the figure
+        self.add_figure_script(load_data=True)
+
+        # Add the figure environment to the tex file
+        self.add_figure_environment()
+
+        # Make the dataset a dependency of the figure
+        with edit_yaml_roundtrip(self.cwd / "showyourwork.yml") as config:
+            config["dependencies"] = {
+                "src/scripts/test_figure.py": "src/data/test_data.npz"
+            }
+            config["run_cache_rules_on_ci"] = True
+            cache_is_set = config["cache_on_zenodo"]
+
+        # Ensure no cache is set to start with
+        assert not cache_is_set
+
+        # Save for later
+        with open(self.cwd / "showyourwork.yml") as f:
+            lines_pre = f.readlines()
+
+        # Create the cache
+        get_stdout("showyourwork cache create", cwd=self.cwd, shell=True)
+
+        # Test that the roundtrip edit in create worked and did not mess config file
+        with open(self.cwd / "showyourwork.yml") as f:
+            lines_post = f.readlines()
+        assert lines_pre[3:] == lines_post[3:]
+
+        # Test that the cache is now set
+        with edit_yaml_roundtrip(self.cwd / "showyourwork.yml") as config:
+            cache_is_set = config["cache_on_zenodo"]
+        assert cache_is_set
+
+        # Test that the zenodo.yml file was also updated
+        with edit_yaml(self.cwd / "zenodo.yml") as config:
+            cache_sandbox_doi = config["cache"]["main"]["sandbox"]
+        assert cache_sandbox_doi is not None
+        assert len(cache_sandbox_doi.strip()) > 0
 
 
 class TestDirCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
