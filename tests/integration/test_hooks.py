@@ -48,7 +48,7 @@ class TestHooks(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
         # Make the dataset a dependency of the figure
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
             config["dependencies"] = {
-                "src/scripts/test_figure.py": "src/data/test_data.npz"
+                "src/scripts/test_figure.py": ["src/data/test_data.npz"]
             }
             config["run_cache_rules_on_ci"] = True
 
