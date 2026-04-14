@@ -1,0 +1,3 @@
+Fixed margin icons overlapping on large-format documents (e.g. A0 posters)
+and a configurable option ``vertical_offset`` has been added to ``margin_icons`` in
+``showyourwork.yml``.
