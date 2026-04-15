@@ -1,0 +1,4 @@
+Dependencies in ``showyourwork.yml`` can be specified as entire directories.
+When a directory is specified (e.g., ``src/scripts/utils/``, with or without a trailing slash),
+all files within that directory are treated as dependencies, eliminating the need to
+enumerate each helper script individually if they are too many to make it comfortable to do.

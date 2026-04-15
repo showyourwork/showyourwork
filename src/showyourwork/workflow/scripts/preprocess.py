@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from snakemake.iocontainers import snakemake
 
 from showyourwork import exceptions, paths, zenodo
-from showyourwork.config import get_upstream_dependencies
+from showyourwork.config import expand_dependency_directories, get_upstream_dependencies
 from showyourwork.zenodo import Zenodo, get_dataset_urls
 
 
@@ -281,7 +281,6 @@ def get_json_tree(xmlfile):
         # Find all graphics included in this figure environment
         graphics = [
             (paths.user().tex / graphicspath / graphic.text)
-            .resolve()
             .relative_to(paths.user().repo)
             .as_posix()
             for graphic in figure.findall("GRAPHICS")
@@ -388,6 +387,12 @@ def get_json_tree(xmlfile):
         dependencies = config["dependencies"].get(script, [])
         if isinstance(dependencies, str):
             dependencies = [dependencies]
+
+        # Expand any directory dependencies into individual files
+        expanded_dependencies = []
+        for dep in dependencies:
+            expanded_dependencies.extend(expand_dependency_directories(dep))
+        dependencies = expanded_dependencies
         dependencies += list(extra_dependencies)
 
         # Same, but recursing all the way up the graph
@@ -420,7 +425,6 @@ def get_json_tree(xmlfile):
     # Parse free-floating graphics
     free_floating_graphics = [
         (paths.user().tex / graphicspath / graphic.text)
-        .resolve()
         .relative_to(paths.user().repo)
         .as_posix()
         for graphic in xml_tree.findall("GRAPHICS")
@@ -487,10 +491,7 @@ def get_json_tree(xmlfile):
     # Parse files included using the \input statement;
     # these will be made explicit dependencies of the build
     files = [
-        (paths.user().tex / file.text)
-        .resolve()
-        .relative_to(paths.user().repo)
-        .as_posix()
+        (paths.user().tex / file.text).relative_to(paths.user().repo).as_posix()
         for file in xml_tree.findall("INPUT")
     ]
 
