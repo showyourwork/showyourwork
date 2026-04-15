@@ -281,7 +281,6 @@ def get_json_tree(xmlfile):
         # Find all graphics included in this figure environment
         graphics = [
             (paths.user().tex / graphicspath / graphic.text)
-            .resolve()
             .relative_to(paths.user().repo)
             .as_posix()
             for graphic in figure.findall("GRAPHICS")
@@ -426,7 +425,6 @@ def get_json_tree(xmlfile):
     # Parse free-floating graphics
     free_floating_graphics = [
         (paths.user().tex / graphicspath / graphic.text)
-        .resolve()
         .relative_to(paths.user().repo)
         .as_posix()
         for graphic in xml_tree.findall("GRAPHICS")
@@ -494,7 +492,6 @@ def get_json_tree(xmlfile):
     # these will be made explicit dependencies of the build
     files = [
         (paths.user().tex / file.text)
-        .resolve()
         .relative_to(paths.user().repo)
         .as_posix()
         for file in xml_tree.findall("INPUT")
