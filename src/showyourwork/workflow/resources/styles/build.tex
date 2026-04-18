@@ -125,7 +125,7 @@
 
 % Figure script icon
 \newcommand\syw@Script[1]{%
-  \raisebox{0pt}[6pt][0pt]{%
+  \raisebox{0pt}[0.9ex][0pt]{%
     \href{\syw@url/blob/\syw@sha/\usevalue{#1}}{%
       \color{github-icon}\faGithub%
     }%
@@ -134,7 +134,7 @@
 
 % Figure dataset icon
 \newcommand\syw@DatasetOne[1]{%
-  \raisebox{0pt}[6pt][6pt]{%
+  \raisebox{0pt}[0.9ex][0.9ex]{%
     \href{\usevalue{#1}}{%
       \color{dataset-icon}\faDatabase%
     }%
@@ -143,7 +143,7 @@
 
 % Figure dataset icon
 \newcommand\syw@DatasetTwo[1]{%
-  \raisebox{0pt}[6pt][6pt]{%
+  \raisebox{0pt}[0.9ex][0.9ex]{%
     \href{\usevalue{#1}}{%
       \color{dataset-icon}\faDatabase%
     }%
@@ -152,7 +152,7 @@
 
 % Figure dataset icon
 \newcommand\syw@DatasetThree[1]{%
-  \raisebox{0pt}[6pt][6pt]{%
+  \raisebox{0pt}[0.9ex][0.9ex]{%
     \href{\usevalue{#1}}{%
       \color{dataset-icon}\faDatabase%
     }%
@@ -161,7 +161,7 @@
 
 % Figure cache icon
 \newcommand\syw@Cache[1]{%
-  \raisebox{0pt}[6pt][6pt]{%
+  \raisebox{0pt}[0.9ex][0.9ex]{%
     \IfSubStr*{\usevalue{#1}}{sandbox}{%
       \href{\usevalue{#1}}{%
         \color{sandbox-icon}\faRecycle%
@@ -176,7 +176,7 @@
 
 % Variable script icon: links to a line in the Snakefile
 \newcommand\syw@Variable[1]{%
-  \raisebox{0pt}[6pt][0pt]{%
+  \raisebox{0pt}[0.9ex][0pt]{%
     \href{\syw@url/blob/\syw@sha/\usevalue{#1}}{%
       \color{github-icon}\faGithub%
     }%

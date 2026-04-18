@@ -70,7 +70,8 @@ if __name__ == "__main__":
 
         \renewcommand\showkeyslabelformat[1]{%
         \normalfont%
-        \setstackgap{S}{0pt}((- margin_icons.horizontal_offset -))
+        \setstackgap{S}{((- margin_icons.vertical_offset -))}%
+        ((- margin_icons.horizontal_offset -))
         \Shortstack[c]{
             \IfEq*{\usevalue{#1_cache}}{KEYNOTFOUND}{}{\syw@Cache{#1_cache}}
             \IfEq*{\usevalue{#1_datasetThree}}{KEYNOTFOUND}{}{\syw@DatasetThree{#1_datasetThree}}

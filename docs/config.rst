@@ -526,6 +526,17 @@ Finally, dependencies of the manuscript file are also allowed:
 
 **Required:** no
 
+.. _config.margin_icons.vertical_offset:
+
+``margin_icons.vertical_offset``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Type:** ``str``
+
+**Description:** A LaTeX length specifying the vertical gap between stacked margin icons (e.g. ``0.5ex``, ``2pt``). The default value ``0.2ex`` uses font-relative units so that spacing scales automatically with the document font size. Increase this value if icons overlap on large-format documents such as posters.
+
+**Required:** no
+
 .. _config.margin_icons.monochrome:
 
 ``margin_icons.monochrome``
