@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import tarfile
+import time
 from pathlib import Path
 
 import requests
@@ -346,7 +347,7 @@ class Zenodo:
         return False
 
     @require_access_token
-    def _get_draft(self, rule_name=None):
+    def _get_draft(self, rule_name=None, max_attempts=5, retry_delay=1.0):
         """Get the latest draft associated with a deposit or create one
 
         Returns:
@@ -359,73 +360,88 @@ class Zenodo:
         if rule_name is not None:
             err_msg += f" Unable to upload cache for rule {rule_name}."
 
-        # Check if a draft already exists, and create it if not.
-        # If authentication fails, return with a gentle warning
-        concept_id = self.deposit_id
-        r = requests.get(
-            f"https://{self.url}/api/deposit/depositions",
-            params={
-                "q": f"conceptrecid:{concept_id}",
-                "all_versions": 1,
-                "access_token": self.access_token,
-            },
-        )
-        if r.status_code > 204:
-            logger.warning(err_msg)
+        for attempt in range(max_attempts):
+            # Check if a draft already exists, and create it if not.
+            # If authentication fails, return with a gentle warning
+            concept_id = self.deposit_id
+            r = requests.get(
+                f"https://{self.url}/api/deposit/depositions",
+                params={
+                    "q": f"conceptrecid:{concept_id}",
+                    "all_versions": 1,
+                    "access_token": self.access_token,
+                },
+            )
+            if r.status_code > 204:
+                logger.warning(err_msg)
+                try:
+                    data = r.json()
+                except Exception:
+                    pass
+                else:
+                    logger.debug(data["message"])
+                return
+
+            # Make sure we have some deposits and sort them based on time
             try:
                 data = r.json()
             except Exception:
-                pass
+                data = []
+            if len(data):
+                # latest first
+                data = sorted(data, key=lambda x: x.get("modified", ""), reverse=True)
             else:
-                logger.debug(data["message"])
-            return
+                logger.warning(err_msg)
+                return
 
-        # Make sure we have some deposits and sort them based on time
-        try:
-            data = r.json()
-        except Exception:
-            data = []
-        if len(data):
-            # latest first
-            data = sorted(data, key=lambda x: x.get("modified", ""), reverse=True)
-        else:
-            logger.warning(err_msg)
-            return
+            # Save an id in case we need to create a new draft
+            data_id = data[0]["id"]
 
-        # Save an id in case we need to create a new draft
-        data_id = data[0]["id"]
+            # Only keep unsubmitted deposits
+            data = [d for d in data if not d["submitted"]]
 
-        # Only keep unsubmitted deposits
-        data = [d for d in data if not d["submitted"]]
+            # Find out if there is a draft available
+            if len(data) == 0:
+                draft_url = None
+            else:
+                data = data[0]
+                draft_url = data.get("links", {}).get("latest_draft", None)
+                if not draft_url:
+                    draft_url = data["links"]["self"]
 
-        # Find out if there is a draft available
-        if len(data) == 0:
-            draft_url = None
-        else:
-            data = data[0]
-            draft_url = data.get("links", {}).get("latest_draft", None)
-            if not draft_url:
-                draft_url = data["links"]["self"]
+            # Create a new draft if needed
+            if draft_url is None:
+                # Create a new draft
+                data = parse_request(
+                    requests.post(
+                        f"https://{self.url}/api/deposit/depositions/{data_id}/actions/newversion",
+                        params={"access_token": self.access_token},
+                    )
+                )
+                draft_url = data["links"]["latest_draft"]
 
-        # Create a new draft if needed
-        if draft_url is None:
-            # Create a new draft
-            data = parse_request(
-                requests.post(
-                    f"https://{self.url}/api/deposit/depositions/{data_id}/actions/newversion",
+            draft = parse_request(
+                requests.get(
+                    draft_url,
                     params={"access_token": self.access_token},
                 )
             )
-            draft_url = data["links"]["latest_draft"]
+            if not draft.get("submitted", False):
+                return draft
 
-        draft = parse_request(
-            requests.get(
-                draft_url,
-                params={"access_token": self.access_token},
+            if attempt < max_attempts - 1:
+                logger.debug(
+                    "Zenodo draft is still marked submitted; retrying in "
+                    f"{retry_delay:.1f}s..."
+                )
+                time.sleep(retry_delay)
+
+        raise exceptions.ZenodoError(
+            message=(
+                "Unable to obtain an editable draft from Zenodo after publishing. "
+                "Please retry in a few moments."
             )
         )
-
-        return draft
 
     @require_access_token
     def upload_file_to_draft(self, draft, file, rule_name, tarball=False):

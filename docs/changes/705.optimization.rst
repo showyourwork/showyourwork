@@ -1,0 +1,4 @@
+When fetching a draft deposity from Zenodo sandbox, showyourwork would sometimes
+mistakenly return a published repo if the draft had not yet been created.
+This fixes the issue by adding a loop that retries downloading a draft
+until one is found and otherwise errors out.
