@@ -41,10 +41,8 @@ for doi, entry in config["datasets"].items():
 
     # Rules for zip files and tarballs
     for zip_file, zip_contents in zip_files.items():
-
         # Path to the local version of the zip file
         local_zip_file = contents[zip_file]
-
         # Rules to extract files individually
         for compressed_file, extracted_file in zip_contents.items():
             rulename = f"syw__extract{xnum}"
