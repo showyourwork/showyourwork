@@ -77,7 +77,6 @@ Compile the manuscript into the article PDF.
             "{params.user_args}",
             '"{input[0]}"',
         ]
-
         commands = [
             'cd "{input.compile_dir}"',
             "&&",

@@ -43,13 +43,10 @@ else:
     # Remove old flags
     for file in paths.user().flags.glob("*"):
         file.unlink()
-
     # Set up custom logging for Snakemake
     patch_snakemake_logging()
-
     # Patch snakemake onstart, onerror and onsuccess (merge syw and user)
     patch_snakemake_hooks()
-
     # Parse the config file
     parse_config()
 
@@ -99,10 +96,8 @@ else:
     include: (paths.user().repo / "Snakefile").as_posix()
 
     process_user_rules()
-
     # Hack to display a custom message when a figure output is missing
     patch_snakemake_wait_for_files()
-
     # Snakemake workflows complete successfully if there's no rule to generate
     # a given file but it is present on disk. This is bad for third-party
     # reproducibility, so here we hack it to require all inputs to be present.
@@ -114,6 +109,5 @@ onsuccess:
     # Overleaf sync: push changes
     if run_type == "build" and get_repo_branch() == "main":
         overleaf.push_files(config["overleaf"]["push"], config["overleaf"]["id"])
-
         # We're done
     get_logger().info("Done!")
