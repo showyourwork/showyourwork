@@ -49,7 +49,7 @@ class TestNoConda(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
             get_stdout(
                 (
                     f"{micromamba_path} run {install_target} "
-                    "conda pip install numpy matplotlib"
+                    "conda pypi install numpy matplotlib"
                 ),
                 cwd=self.cwd,
                 shell=True,
