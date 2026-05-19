@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     name: Run local integration tests
     env:
-      ACTION_SHELL: ${{ runner.os == 'Windows' && 'powershell' || 'bash -l {0}' }}
+      ACTION_SHELL: ${{ matrix.platform == 'windows-latest' && 'powershell' || 'bash -l {0}' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
