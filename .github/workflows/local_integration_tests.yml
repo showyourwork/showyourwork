@@ -46,7 +46,10 @@ jobs:
             conda
 
       - name: Set channel priority
-        run: micromamba config set channel_priority strict
+        run: micromamba run -n test-env conda config --set channel_priority strict
+
+      - name: Verify conda CLI is available
+        run: micromamba run -n test-env conda info
 
       - name: Install showyourwork
         run: |
