@@ -1,5 +1,4 @@
 import os
-import sys
 
 from helpers import ShowyourworkRepositoryActions, TemporaryShowyourworkRepository
 
@@ -48,7 +47,10 @@ class TestNoConda(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
                 shell=True,
             )
             get_stdout(
-                f"{sys.executable} -m pip install numpy matplotlib",
+                (
+                    f"{micromamba_path} run {install_target} "
+                    "conda pip install numpy matplotlib"
+                ),
                 cwd=self.cwd,
                 shell=True,
             )
