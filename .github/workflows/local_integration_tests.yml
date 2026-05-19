@@ -26,6 +26,8 @@ jobs:
         #     python: "3.9"
     runs-on: ${{ matrix.platform }}
     name: Run local integration tests
+    env:
+      ACTION_SHELL: ${{ runner.os == 'Windows' && 'powershell' || 'bash -l {0}' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -46,16 +48,16 @@ jobs:
             conda
 
       - name: Set channel priority
-        shell: bash -l {0}
+        shell: ${{ env.ACTION_SHELL }}
         run: |
           conda config --set channel_priority strict
 
       - name: Install showyourwork
-        shell: bash -l {0}
+        shell: ${{ env.ACTION_SHELL }}
         run: |
           python -m pip install -U pip
           python -m pip install -e ".[tests]"
 
       - name: Run local integration tests
-        shell: bash -l {0}
+        shell: ${{ env.ACTION_SHELL }}
         run: python -m pytest tests/integration
