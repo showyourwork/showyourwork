@@ -36,7 +36,7 @@ jobs:
       - name: Set up Python and mamba
         uses: mamba-org/setup-micromamba@v3
         with:
-          micromamba-version: '2.6.0-0' # see https://github.com/mamba-org/setup-micromamba/issues/306
+          micromamba-version: '2.6.2-1' # see https://github.com/mamba-org/setup-micromamba/issues/306
           environment-name: test-env
           init-shell: >-
             bash
