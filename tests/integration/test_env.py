@@ -1,4 +1,5 @@
 import os
+import platform
 
 from helpers import ShowyourworkRepositoryActions, TemporaryShowyourworkRepository
 
@@ -32,27 +33,18 @@ class TestNoConda(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions
         self.add_figure_environment()
 
         if os.getenv("CI", "false") == "true":
-            micromamba_path = os.getenv("MAMBA_EXE", "micromamba")
-            conda_prefix = os.getenv("CONDA_PREFIX")
-
-            if conda_prefix:
-                install_target = f'-p "{conda_prefix}"'
+            if platform.system() == "Windows":
+                micromamba_path = r" C:\Users\runneradmin\micromamba-bin\micromamba.exe"
             else:
-                # Fall back to micromamba's active/default target if no prefix is set.
-                install_target = ""
+                micromamba_path = "/home/runner/micromamba-bin/micromamba"
 
             get_stdout(
-                f"{micromamba_path} install -y {install_target} tectonic=0.14.1",
+                f"{micromamba_path} install -y tectonic=0.14.1",
                 cwd=self.cwd,
                 shell=True,
             )
             get_stdout(
-                (
-                    f"{micromamba_path} run {install_target} "
-                    "conda pypi install numpy matplotlib"
-                ),
-                cwd=self.cwd,
-                shell=True,
+                "python -m pip install numpy matplotlib", cwd=self.cwd, shell=True
             )
 
     def build_local(self):

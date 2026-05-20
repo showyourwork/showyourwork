@@ -46,15 +46,16 @@ jobs:
             conda
 
       - name: Set channel priority
-        run: micromamba run -n test-env conda config --set channel_priority strict
-
-      - name: Verify conda CLI is available
-        run: micromamba run -n test-env conda info
+        shell: bash -l {0}
+        run: |
+          conda config --set channel_priority strict
 
       - name: Install showyourwork
+        shell: bash -l {0}
         run: |
-          micromamba run -n test-env python -m pip install -U pip
-          micromamba run -n test-env python -m pip install -e ".[tests]"
+          python -m pip install -U pip
+          python -m pip install -e ".[tests]"
 
       - name: Run local integration tests
-        run: micromamba run -n test-env python -m pytest tests/integration
+        shell: bash -l {0}
+        run: python -m pytest tests/integration
