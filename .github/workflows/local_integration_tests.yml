@@ -53,8 +53,8 @@ jobs:
       - name: Install showyourwork
         shell: bash 
         run: |
-          micromamba run -n test-env python -m pip install -U pip
-          micromamba run -n test-env python -m pip install -e ".[tests]"
+          micromamba run -n test-env python -m pip install -U pip --break-system-packages
+          micromamba run -n test-env python -m pip install -e ".[tests]" --break-system-packages
 
       - name: Run local integration tests
         shell: bash
