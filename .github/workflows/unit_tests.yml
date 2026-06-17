@@ -42,14 +42,14 @@ jobs:
             mamba
 
       - name: Install showyourwork
-        shell: bash -l {0}
+        shell: bash
         run: |
-          python -m pip install -U pip
-          python -m pip install -e ".[tests]"
+          micromamba run -n test-env python -m pip install -U pip --break-system-packages
+          micromamba run -n test-env python -m pip install -e ".[tests]" --break-system-packages
 
       - name: Run tests
-        shell: bash -l {0}
+        shell: bash
         run: |
-          python -m pytest tests/unit
+          micromamba run -n test-env python -m pytest tests/unit 
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
