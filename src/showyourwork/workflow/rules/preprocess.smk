@@ -17,9 +17,9 @@ if not tectonic_yml.exists():
 
 rule:
     """
-Setup the temporary files for compilation.
+    Setup the temporary files for compilation.
 
-"""
+    """
     name:
         "syw__preprocess_setup"
     input:
@@ -43,9 +43,9 @@ Setup the temporary files for compilation.
 
 rule:
     """
-Compile the manuscript into the article PDF.
+    Compile the manuscript into the article PDF.
 
-"""
+    """
     name:
         "syw__preprocess_xml"
     input:
@@ -79,22 +79,22 @@ Compile the manuscript into the article PDF.
 
 rule:
     """
-Generate a `config.json` file for the main build.
+    Generate a `config.json` file for the main build.
 
-This rule builds the article using ``tectonic``, but re-defines ``figure``,
-``caption``, and ``label`` commands to print XML tags to a special log file.
-This way, we can use TeX to construct a full XML tree of the document for us,
-without any need for parsing the TeX file ourselves. This XML tree is then
-used to determine relationships between the figure scripts and the figure
-files.
+    This rule builds the article using ``tectonic``, but re-defines ``figure``,
+    ``caption``, and ``label`` commands to print XML tags to a special log file.
+    This way, we can use TeX to construct a full XML tree of the document for us,
+    without any need for parsing the TeX file ourselves. This XML tree is then
+    used to determine relationships between the figure scripts and the figure
+    files.
 
-This rule also assembles information about the datasets and other script
-dependencies, as well as metadata about the git repo. It then packages
-all this up alongside the user's config settings into the file
-`config.json`, which is used as input to the main `showyourwork`
-workflow.
+    This rule also assembles information about the datasets and other script
+    dependencies, as well as metadata about the git repo. It then packages
+    all this up alongside the user's config settings into the file
+    `config.json`, which is used as input to the main `showyourwork`
+    workflow.
 
-"""
+    """
     name:
         "syw__preprocess"
     input:

@@ -321,9 +321,9 @@ def WORKFLOW_GRAPH(*args):
 
 checkpoint:
     """
-Dummy checkpoint to allow us to query the DAG before running other rules.
+    Dummy checkpoint to allow us to query the DAG before running other rules.
 
-"""
+    """
     name:
         "syw__dag"
     output:

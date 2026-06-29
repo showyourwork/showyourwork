@@ -13,9 +13,9 @@ figures = config["tree"]["figures"].keys()
 
 rule:
     """
-Render the article DAG.
+    Render the article DAG.
 
-"""
+    """
     name:
         "syw__render_dag"
     input:

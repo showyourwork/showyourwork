@@ -16,9 +16,9 @@ if not tectonic_yml.exists():
 
 rule:
     """
-Setup the temporary files for compilation.
+    Setup the temporary files for compilation.
 
-"""
+    """
     name:
         "syw__compile_setup"
     input:
@@ -43,9 +43,9 @@ Setup the temporary files for compilation.
 
 rule:
     """
-Compile the manuscript into the article PDF.
+    Compile the manuscript into the article PDF.
 
-"""
+    """
     name:
         "syw__compile_pdf"
     input:
@@ -119,9 +119,9 @@ rule:
 
 rule:
     """
-Compile the manuscript into the article PDF.
+    Compile the manuscript into the article PDF.
 
-"""
+    """
     name:
         "syw__compile"
     input:

@@ -8,9 +8,9 @@ Runs the script :doc:`arxiv` to generate the tarball ``arxiv.tar.gz``.
 
 rule:
     """
-Generate a tarball for arXiv submission.
+    Generate a tarball for arXiv submission.
 
-"""
+    """
     name:
         "syw__arxiv"
     input:
