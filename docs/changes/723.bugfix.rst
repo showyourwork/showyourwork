@@ -1,0 +1,1 @@
+Fixed a bug for which Overleaf integration was still targeting new default remote branches named `master` instead of `main`.
