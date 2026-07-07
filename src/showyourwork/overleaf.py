@@ -84,6 +84,38 @@ def get_overleaf_credentials(
     return val
 
 
+def get_remote_branch(url, overleaf_token, cwd=None):
+    """
+    Return the default branch advertised by the Overleaf remote.
+
+    Falls back to ``master`` when the remote HEAD cannot be parsed, which
+    preserves compatibility with older Overleaf repositories.
+
+    Args:
+        url (str): The Overleaf git URL.
+        overleaf_token (str): The URL-encoded Overleaf token.
+        cwd (str, optional): Working directory for the git command.
+
+    """
+
+    def callback(code, stdout, stderr):
+        if code != 0:
+            raise exceptions.CalledProcessError(stdout + "\n" + stderr)
+
+        match = re.search(r"ref:\s+refs/heads/(?P<branch>[^\s]+)\s+HEAD", stdout)
+        if match:
+            return match.group("branch")
+        else:
+            return "master"
+
+    return get_stdout(
+        ["git", "ls-remote", "--symref", url, "HEAD"],
+        cwd=cwd,
+        secrets=[overleaf_token],
+        callback=callback,
+    )
+
+
 def clone(project_id, path=None):
     """
     Clones an Overleaf remote locally.
@@ -111,15 +143,18 @@ def clone(project_id, path=None):
     # Get the credentials & repo url
     overleaf_token = get_overleaf_credentials()
     url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
+    branch = get_remote_branch(
+        url, overleaf_token, cwd=str(paths.user(path=path).overleaf)
+    )
 
     # Set up a local version of the repo. We don't actually _clone_ it to avoid
     # storing the url containing the password in .git/config
     get_stdout(["git", "init"], cwd=str(paths.user(path=path).overleaf))
 
-    # Overleaf uses a branch called 'master' by default. If the local config
-    # uses a different name, we need to change it.
+    # Match the remote default branch so later pulls and pushes use the correct
+    # branch name regardless of the local git init default.
     get_stdout(
-        ["git", "checkout", "-b", "master"],
+        ["git", "checkout", "-b", branch],
         cwd=str(paths.user(path=path).overleaf),
     )
 
@@ -142,6 +177,8 @@ def clone(project_id, path=None):
         callback=callback,
     )
 
+    return branch
+
 
 def wipe_remote(project_id, tex=None):
     """
@@ -156,10 +193,11 @@ def wipe_remote(project_id, tex=None):
         tex = OVERLEAF_BLANK_PROJECT
 
     with TemporaryDirectory() as cwd:
-        get_stdout(["git", "init"], cwd=cwd)
-        get_stdout(["git", "checkout", "-b", "master"], cwd=cwd)
         overleaf_token = get_overleaf_credentials()
         url = f"https://git:{overleaf_token}" f"@git.overleaf.com/{project_id}"
+        branch = get_remote_branch(url, overleaf_token, cwd=cwd)
+        get_stdout(["git", "init"], cwd=cwd)
+        get_stdout(["git", "checkout", "-b", branch], cwd=cwd)
         get_stdout(
             ["git", "pull", url],
             cwd=cwd,
@@ -213,7 +251,7 @@ def wipe_remote(project_id, tex=None):
                 cwd=cwd,
             )
             get_stdout(
-                ["git", "push", url, "master"],
+                ["git", "push", url, branch],
                 cwd=cwd,
                 secrets=[overleaf_token],
                 callback=check_for_rate_limit,
@@ -235,7 +273,7 @@ def setup_remote(project_id, path=None):
     logger = logging.get_logger()
 
     # Clone the repo
-    clone(project_id, path=path)
+    branch = clone(project_id, path=path)
 
     # Ensure this is in fact a *completely new* overleaf project
     files = list(paths.user(path=path).overleaf.glob("*"))
@@ -319,7 +357,7 @@ def setup_remote(project_id, path=None):
     overleaf_token = get_overleaf_credentials()
     url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
     get_stdout(
-        ["git", "push", url, "master"],
+        ["git", "push", url, branch],
         cwd=str(paths.user(path=path).overleaf),
         secrets=[overleaf_token],
         callback=check_for_rate_limit,
@@ -348,7 +386,7 @@ def push_files(files, project_id, path=None):
 
     # Clone the repo
     try:
-        clone(project_id, path=path)
+        branch = clone(project_id, path=path)
     except (
         exceptions.MissingOverleafCredentials,
         exceptions.OverleafAuthenticationError,
@@ -426,7 +464,7 @@ def push_files(files, project_id, path=None):
         overleaf_token = get_overleaf_credentials()
         url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
         get_stdout(
-            ["git", "push", url, "master"],
+            ["git", "push", url, branch],
             cwd=str(paths.user(path=path).overleaf),
             secrets=[overleaf_token],
             callback=check_for_rate_limit,
