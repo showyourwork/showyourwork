@@ -15,6 +15,11 @@ run
 
     showyourwork setup rodluger/article
 
+.. note::
+
+    By default, *setup* will use HTTPS to clone the repository.
+    If you prefer to use SSH, you can add the ``--ssh`` flag to the command.
+
 This will bring up the following prompt:
 
 
