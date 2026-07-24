@@ -48,6 +48,12 @@ def cache_restore():
     )
     timestamp = time.time()
     for file in files:
+        # added this snippet to avoid 
+        # dangling links creating file not found error
+        # see issue 729
+        if file.is_symlink() and not file.exists():
+            print(f"Skipping dangling symlink: {file}")
+            continue
         os.utime(file, (timestamp, timestamp))
 
     # Get the commit when the files were cached
