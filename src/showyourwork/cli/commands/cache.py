@@ -49,7 +49,7 @@ def cache_restore():
     timestamp = time.time()
     for file in files:
         # added this snippet to avoid dangling links
-        # otherwise raise file not found error 
+        # otherwise raise file not found error
         if file.is_symlink() and not file.exists():
             print(f"Skipping dangling symlink: {file}")
             continue
