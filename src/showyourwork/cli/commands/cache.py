@@ -54,7 +54,9 @@ def cache_restore():
         if file.is_symlink() and not file.exists():
             print(f"Skipping dangling symlink: {file}")
             continue
-        os.utime(file, (timestamp, timestamp))
+        else:
+            print(f"File present: {file}")
+            os.utime(file, (timestamp, timestamp))
 
     # Get the commit when the files were cached
     try:
