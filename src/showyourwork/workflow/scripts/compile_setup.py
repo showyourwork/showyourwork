@@ -21,9 +21,8 @@ if __name__ == "__main__":
     # Create the compile directory
     compile_dir = Path(snakemake.output.compile_dir)
 
+    # Remove dangling links, then
     # Copy over the source files
-    # for loop to remove danglink links
-    # fix/issue 729
     for f in (paths.user().output).glob("*"):
         if f.is_symlink() and not f.exists():
             print(f"Removing dangling symlink: {f}")
