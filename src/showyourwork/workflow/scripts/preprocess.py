@@ -98,7 +98,7 @@ def parse_datasets():
                 )
             else:
                 raise exceptions.InvalidZenodoIdType(
-                    "Error parsing the config. " f"{doi} is not a valid version DOI."
+                    f"Error parsing the config. {doi} is not a valid version DOI."
                 )
 
         # Deposit contents
