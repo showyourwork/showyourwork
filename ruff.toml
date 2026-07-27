@@ -44,6 +44,8 @@ ignore = [
     "PLR0915", # Allow more statements
     "PLR2004", # Allow magic numbers in comparisons
 ]
+[lint.pylint]
+max-positional-args = 8
 
 [lint.isort]
 known-first-party = ["showyourwork"]
