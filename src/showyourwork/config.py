@@ -183,8 +183,13 @@ def expand_dependency_directories(dependency, repo_root=None):
         for file_path in sorted(dep_path.rglob("*")):
             if file_path.is_file():
                 # Return relative path from repo root with forward slashes
-                # This ensures consistency across Windows, macOS, and Linux
-                rel_path = file_path.relative_to(repo_root)
+                # This ensures consistency across Windows, macOS, and Linux.
+                # Skip files outside the repo root (e.g. symlinks to system
+                # paths such as /boot/System.map-*) instead of crashing.
+                try:
+                    rel_path = file_path.relative_to(repo_root)
+                except ValueError:
+                    continue
                 files.append(rel_path.as_posix())
         return files
     else:
