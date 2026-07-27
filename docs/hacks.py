@@ -145,7 +145,7 @@ if API_KEY is None:
 
 For a complete list of projects linked to other GitHub repositories that make use of showyourwork,
 see `here <https://github.com/showyourwork/showyourwork-action/network/dependents>`__.
-"""
+"""  # noqa: E501
     with open("projects.rst", "w") as f:
         f.write(fallback_content)
 else:
