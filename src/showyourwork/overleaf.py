@@ -194,7 +194,7 @@ def wipe_remote(project_id, tex=None):
 
     with TemporaryDirectory() as cwd:
         overleaf_token = get_overleaf_credentials()
-        url = f"https://git:{overleaf_token}" f"@git.overleaf.com/{project_id}"
+        url = f"https://git:{overleaf_token}@git.overleaf.com/{project_id}"
         branch = get_remote_branch(url, overleaf_token, cwd=cwd)
         get_stdout(["git", "init"], cwd=cwd)
         get_stdout(["git", "checkout", "-b", branch], cwd=cwd)
@@ -293,7 +293,7 @@ def setup_remote(project_id, path=None):
                 raise Exception()
     except Exception:
         raise exceptions.OverleafError(
-            "Overleaf repository not empty! " "Refusing to rewrite files on remote."
+            "Overleaf repository not empty! Refusing to rewrite files on remote."
         )
     else:
         # Delete the file

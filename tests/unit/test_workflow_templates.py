@@ -147,15 +147,15 @@ class BaseSetupTest:
         warning_calls = [
             call.args[0] for call in mock_logger_instance.warning.call_args_list
         ]
-        assert any(
-            expected_text in msg for msg in warning_calls
-        ), f"Expected warning containing '{expected_text}', got: {warning_calls}"
+        assert any(expected_text in msg for msg in warning_calls), (
+            f"Expected warning containing '{expected_text}', got: {warning_calls}"
+        )
 
     def assert_action_spec_in_workflow(self, workflow_content, expected_spec):
         """Assert that the workflow contains the expected action spec."""
-        assert (
-            expected_spec in workflow_content
-        ), f"Expected '{expected_spec}' in workflow content"
+        assert expected_spec in workflow_content, (
+            f"Expected '{expected_spec}' in workflow content"
+        )
 
 
 def test_build_workflow_valid():
