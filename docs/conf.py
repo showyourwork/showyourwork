@@ -3,6 +3,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
+import hacks  # ruff: ignore[F401, I001]
+
 
 html_baseurl = os.environ.get("READTHEDOCS_CANONICAL_URL", "")
 if os.environ.get("READTHEDOCS", "") == "True":
@@ -42,7 +44,7 @@ html_logo = "_static/logo.png"
 html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 html_theme_options = {
-    "announcement": "The last release is 2+ years old! For the time being, please use the latest dev version. Stay tuned!",
+    "announcement": "The last release is 2+ years old! For the time being, please use the latest dev version. Stay tuned!",  # ruff: ignore[E501]
     "repository_url": "https://github.com/showyourwork/showyourwork",
     "repository_branch": "main",
     "use_edit_page_button": True,
