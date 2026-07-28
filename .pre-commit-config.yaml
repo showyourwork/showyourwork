@@ -5,17 +5,15 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
         exclude_types: [json, binary]
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: "26.5.1"
-    hooks:
-      - id: black-jupyter
-        exclude: "^docs/|^tests/projects/"
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.16.0"
+    # Ruff version.
+    rev: v0.16.0
     hooks:
-      - id: ruff
-        exclude: "^docs/|^tests/projects/"
-        args: [--fix, --exit-non-zero-on-fix]
+      # Run the linter.
+      - id: ruff-check
+        args: [ --fix, --exit-non-zero-on-fix]
+      # Run the formatter.
+      - id: ruff-format
   - repo: https://github.com/snakemake/snakefmt
     rev: v2.0.3
     hooks:

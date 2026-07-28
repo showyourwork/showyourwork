@@ -38,9 +38,7 @@ class ZenodoRecordNotFound(ZenodoException):
 
 class InvalidZenodoDOI(ZenodoException):
     def __init__(self, doi):
-        message = (
-            f"The provided `doi` {doi} does " f"not seem to be a valid Zenodo DOI."
-        )
+        message = f"The provided `doi` {doi} does not seem to be a valid Zenodo DOI."
         super().__init__(message)
 
 
