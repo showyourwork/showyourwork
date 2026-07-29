@@ -1,6 +1,10 @@
 import yaml
 
-from showyourwork.config import edit_yaml, edit_yaml_roundtrip, expand_dependency_directories
+from showyourwork.config import (
+    edit_yaml,
+    edit_yaml_roundtrip,
+    expand_dependency_directories,
+)
 
 START_YAML = """# Top-level comment
 title: "Example"
