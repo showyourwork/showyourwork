@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import yaml
 
 from showyourwork.config import (
@@ -70,6 +72,32 @@ def test_expand_dependency_directories_skips_external_paths(tmp_path):
     result = expand_dependency_directories("src/data/inputs", repo_root=repo_root)
 
     # Only the in-repo file should be returned; external paths must be skipped
+    assert result == ["src/data/inputs/data.csv"]
+
+
+def test_expand_dependency_directories_skips_unreadable_entries(tmp_path, monkeypatch):
+    """expand_dependency_directories must ignore entries that fail stat()."""
+    repo_root = tmp_path / "repo"
+    dep_dir = repo_root / "src" / "data" / "inputs"
+    dep_dir.mkdir(parents=True)
+
+    in_repo_file = dep_dir / "data.csv"
+    in_repo_file.write_text("x,y\n1,2\n")
+
+    unreadable_path = dep_dir / "proc-entry"
+    unreadable_path.write_text("placeholder")
+
+    original_is_file = Path.is_file
+
+    def fake_is_file(self):
+        if self == unreadable_path:
+            raise PermissionError("[Errno 13] Permission denied: '/proc/1/cwd'")
+        return original_is_file(self)
+
+    monkeypatch.setattr(Path, "is_file", fake_is_file)
+
+    result = expand_dependency_directories("src/data/inputs", repo_root=repo_root)
+
     assert result == ["src/data/inputs/data.csv"]
 
 

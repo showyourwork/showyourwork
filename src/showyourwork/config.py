@@ -181,16 +181,20 @@ def expand_dependency_directories(dependency, repo_root=None):
         # Get all files in the directory recursively
         files = []
         for file_path in sorted(dep_path.rglob("*")):
-            if file_path.is_file():
-                # Return relative path from repo root with forward slashes
+            # Some environments expose unreadable entries under dependency
+            # directories, such as procfs paths or symlinks to protected
+            # system files. Skip them instead of failing the build.
+            try:
+                if not file_path.is_file():
+                    continue
+                # Return relative path from repo root with forward slashes.
                 # This ensures consistency across Windows, macOS, and Linux.
                 # Skip files outside the repo root (e.g. symlinks to system
                 # paths such as /boot/System.map-*) instead of crashing.
-                try:
-                    rel_path = file_path.relative_to(repo_root)
-                except ValueError:
-                    continue
-                files.append(rel_path.as_posix())
+                rel_path = file_path.relative_to(repo_root)
+            except (OSError, ValueError):
+                continue
+            files.append(rel_path.as_posix())
         return files
     else:
         # Not a directory, return as-is with forward slashes normalized
