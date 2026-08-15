@@ -84,6 +84,7 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
                 r"\begin{figure}" "\n"
                 r"  \script{fig_gen.py}" "\n"
                 r"  \includegraphics{figures/test_fig.png}" "\n"
+                r"  \caption{Test figure}" "\n"
                 r"  \label{fig:test_fig}" "\n"
                 r"\end{figure}" "\n"
                 r"The number of points used are "
