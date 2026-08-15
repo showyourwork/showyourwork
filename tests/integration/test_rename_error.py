@@ -1,5 +1,6 @@
 from helpers import TemporaryShowyourworkRepository
 from showyourwork.config import edit_yaml
+import os
 
 # A script that generates data and text file
 # data file: read by plt script
@@ -49,7 +50,7 @@ plt.savefig(paths.figures / 'test_fig.png')
 """
 
 
-class TestSnakeRule(TemporaryShowyourworkRepository):
+class TestRenameError(TemporaryShowyourworkRepository):
     """Create the initial version of workflow:
     1. add python script for data, text gen 
     2. add python script for fig gen
@@ -134,6 +135,7 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
             a. Snakefile
             b. script_file
             c. tex file
+            d. delete old file
         2. rebuild
         """
 
@@ -170,6 +172,11 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
                 r"points_1.txt",
             )
             print(ms_new, file=f)
+        
+        # # Delete old file
+        points_file = self.cwd / "src" / "tex" / "output" / "points.txt"
+        if points_file.exists():
+            os.remove(points_file)
 
         # Rebuild
         self.build_local()
