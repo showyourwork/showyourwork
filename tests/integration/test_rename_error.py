@@ -9,15 +9,13 @@ import paths
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Compute the age of the universe
+# data gen
 N_pts=100
 x=np.linspace(0, np.pi, N_pts)
 y=np.sin(x)
-
-# Combine x and y into a 2-column array
 data = np.column_stack((x, y))
 
-# plot and save
+# data save
 np.savetxt(
     paths.data / "xy.dat",
     data,
@@ -26,17 +24,19 @@ np.savetxt(
     comments=""
 )
 
-# Write num points in disk
+# Write num points in a file
+# will be called bz variable command
 with open(paths.output / "points.txt", "w") as f:
     f.write(f"{N_pts}")
 """
 
+# A script that plots generated data
 fig_gen_script = r"""
 import paths
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Compute the age of the universe
+# read generated data
 x, y = np.loadtxt(
     paths.data / "xy.dat",
     unpack=True,
@@ -50,17 +50,13 @@ plt.savefig(paths.figures / 'test_fig.png')
 
 
 class TestSnakeRule(TemporaryShowyourworkRepository):
-    """Test the following:
+    """Create the initial version of workflow:
     1. add python script for data, text gen 
     2. add python script for fig gen
-    2. python script create cached data
-    3. python script create output text
-    4. python script plots cached data
-    5. python script appends output text
+    3. edit tex to includegraphcs and variable
+    5. edit Snakefile to add rule
+    6. edit syw.yml to add dependency
     """
-
-    # Keep this local only; remote covered elsewhere
-    local_build_only = True
 
     def customize(self):
         """Create and edit all the necessary files for the workflow."""
@@ -78,11 +74,11 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
               ) as f:
             print(fig_gen_script, file=f)
 
-        # Import the variable into the tex file
+        # Edit tex to add variable command
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r") as f:
+        with open(ms, "r", encoding="utf-8") as f:
             ms_orig = f.read()
-        with open(ms, "w") as f:
+        with open(ms, "w", encoding="utf-8") as f:
             ms_new = ms_orig.replace(
                 r"\end{document}",
                 r"\begin{figure}" "\n"
@@ -97,10 +93,11 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
             )
             print(ms_new, file=f)
 
-        # Add a Snakemake rule to run the script
-        with open(self.cwd / "Snakefile", "r") as f:
+        # Add a Snakemake rule
+        sf = self.cwd / "Snakefile"
+        with open(sf, "r", encoding="utf-8") as f:
             contents = f.read()
-        with open(self.cwd / "Snakefile", "w") as f:
+        with open(sf, "w", encoding="utf-8") as f:
             print(contents, file=f)
             print("\n", file=f)
             print(
@@ -110,7 +107,8 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
                         "    output:",
                         "        dat='src/data/xy.dat',",
                         "        out1='src/tex/output/points.txt'",
-                        "    cache: True",
+                        "    cache:",
+                        "        True",
                         "    script:",
                         "        'src/scripts/data_gen.py'",
                     ]
@@ -118,7 +116,7 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
                 file=f,
             )
 
-        # showyourwork.yml
+        # Edit showyourwork.yml to add dependency
         data_script_name='src/scripts/data_gen.py'
         fig_script_name='src/scripts/fig_gen.py'
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
@@ -130,176 +128,47 @@ class TestSnakeRule(TemporaryShowyourworkRepository):
 
 
     def check_build(self):
-        """write something
         """
-        # something
-        # Import the variable into the tex file
-        ms = self.cwd / "Snakefile"
-        with open(ms, "r") as f:
-            ms_orig = f.read()
-        with open(ms, "w") as f:
-            ms_new = ms_orig.replace(
+        1. Rename the txt file
+            a. Snakefile
+            b. script_file
+            c. tex file
+        2. rebuild
+        """
+
+        # Rename the txt file (points -> points_1)
+        # # Edit Snakefile
+        sf = self.cwd / "Snakefile"
+        with open(sf, "r", encoding="utf-8") as f:
+            sf_orig = f.read()
+        with open(sf, "w", encoding="utf-8") as f:
+            sf_new = sf_orig.replace(
                 r"points.txt",
                 r"points_1.txt",
             )
-            print(ms_new, file=f)
+            print(sf_new, file=f)
 
-        ms = self.cwd / "src" / "scripts" / "data_gen.py"
-        with open(ms, "r") as f:
-            ms_orig = f.read()
-        with open(ms, "w") as f:
-            ms_new = ms_orig.replace(
+        # # Edit data gen script
+        dat_gen_scrpt = self.cwd / "src" / "scripts" / "data_gen.py"
+        with open(dat_gen_scrpt, "r", encoding="utf-8") as f:
+            dat_gen_scrpt_orig = f.read()
+        with open(dat_gen_scrpt, "w", encoding="utf-8") as f:
+            dat_gen_scrpt_new = dat_gen_scrpt_orig.replace(
                 r"points.txt",
                 r"points_1.txt",
             )
-            print(ms_new, file=f)
+            print(dat_gen_scrpt_new, file=f)
 
+        # # Edit tex
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r") as f:
+        with open(ms, "r", encoding="utf-8") as f:
             ms_orig = f.read()
-        with open(ms, "w") as f:
+        with open(ms, "w", encoding="utf-8") as f:
             ms_new = ms_orig.replace(
                 r"points.txt",
                 r"points_1.txt",
             )
             print(ms_new, file=f)
 
+        # Rebuild
         self.build_local()
-
-        # # range output file name in snake
-        # figure = self.cwd / "src" / "tex" / "figures" / "test_figure.pdf"
-        # assert figure.exists()
-
-        # # Check that the figure is present on the remote
-        # for _n in range(self.auth_retries):
-        #     try:
-        #         overleaf.pull_files(
-        #             [figure],
-        #             self.overleaf_id,
-        #             path=self.cwd,
-        #             error_if_missing=True,
-        #         )
-        #     except exceptions.OverleafRateLimitExceeded:
-        #         get_logger().warn(
-        #             "Overleaf authentication failed. "
-        #             f"Re-trying in {self.auth_sleep} seconds..."
-        #         )
-        #         time.sleep(self.auth_sleep)
-        #     else:
-        #         break
-
-        # # Check that an exception is raised if we try to overwrite a file
-        # # with uncommitted changes
-        # ms = self.cwd / "src" / "tex" / "ms.tex"
-        # with open(ms) as f:
-        #     ms_orig = f.read()
-        # with open(ms, "w") as f:
-        #     f.write(r"% dummy comment\n" + ms_orig)
-        # for _n in range(self.auth_retries):
-        #     try:
-        #         overleaf.pull_files(
-        #             [ms],
-        #             self.overleaf_id,
-        #             path=self.cwd,
-        #             error_if_local_changes=True,
-        #         )
-        #     except exceptions.OverleafRateLimitExceeded:
-        #         get_logger().warn(
-        #             f"Overleaf authentication failed. "
-        #             f"Re-trying in {self.auth_sleep} seconds..."
-        #         )
-        #         time.sleep(self.auth_sleep)
-        #     except exceptions.OverleafError:
-        #         break
-        #     else:
-        #         raise Exception("Failed to raise exception!")
-
-        # # Commit the changes and check that the exception is still raised
-        # get_stdout(
-        #     f'git add -f {ms} && git commit -m "changing ms.tex locally"',
-        #     cwd=self.cwd,
-        #     shell=True,
-        # )
-        # for _n in range(self.auth_retries):
-        #     try:
-        #         overleaf.pull_files(
-        #             [ms],
-        #             self.overleaf_id,
-        #             path=self.cwd,
-        #             error_if_local_changes=True,
-        #         )
-        #     except exceptions.OverleafRateLimitExceeded:
-        #         get_logger().warn(
-        #             "Overleaf authentication failed. "
-        #             f"Re-trying in {self.auth_sleep} seconds..."
-        #         )
-        #         time.sleep(self.auth_sleep)
-        #     except exceptions.OverleafError:
-        #         break
-        #     else:
-        #         raise Exception("Failed to raise exception!")
-
-        # # Amend the commit message with the magical `[showyourwork]` label
-        # # and check that the merge works
-        # get_stdout(
-        #     'git commit --amend -m "[showyourwork] changing ms.tex locally"',
-        #     cwd=self.cwd,
-        #     shell=True,
-        # )
-        # for _n in range(self.auth_retries):
-        #     try:
-        #         overleaf.pull_files(
-        #             [ms],
-        #             self.overleaf_id,
-        #             path=self.cwd,
-        #             error_if_local_changes=True,
-        #         )
-        #     except exceptions.OverleafRateLimitExceeded:
-        #         get_logger().warn(
-        #             "Overleaf authentication failed. "
-        #             f"Re-trying in {self.auth_sleep} seconds..."
-        #         )
-        #         time.sleep(self.auth_sleep)
-        #     else:
-        #         break
-
-        # # ---- Regression test for issue #603 --------------------------------
-        # # After the first successful build, simulate a *new* Overleaf-side
-        # # edit and rebuild WITHOUT cleaning.  Before #603 was fixed the
-        # # Overleaf pull lived inside the ``onstart`` handler, which Snakemake
-        # # skips when it considers everything up-to-date, so the changes were
-        # # silently ignored.
-        # ms_after_first_build = ms.read_text()
-        # marker = "% issue-603-test-marker"
-        # ms.write_text(ms_after_first_build + "\n" + marker + "\n")
-
-        # for _n in range(self.auth_retries):
-        #     try:
-        #         overleaf.push_files(
-        #             [ms],
-        #             self.overleaf_id,
-        #             path=self.cwd,
-        #         )
-        #     except exceptions.OverleafRateLimitExceeded:
-        #         get_logger().warn(
-        #             "Overleaf authentication failed. "
-        #             f"Re-trying in {self.auth_sleep} seconds..."
-        #         )
-        #         time.sleep(self.auth_sleep)
-        #     else:
-        #         break
-
-        # # Revert locally so the rebuild must pull from Overleaf
-        # ms.write_text(ms_after_first_build)
-        # get_stdout("git checkout -- src/tex/ms.tex", shell=True, cwd=self.cwd)
-
-        # # Rebuild without cleaning
-        # self.build_local()
-
-        # # The marker must now be present in the local manuscript
-        # assert (
-        #     marker in ms.read_text()
-        # ), "Second build did not pull the new Overleaf changes (issue #603)"
-
-# class TestSnakeRule(TemporaryShowyourworkRepository):
-#     local_build_only = False
