@@ -1,6 +1,8 @@
-from helpers import TemporaryShowyourworkRepository
-from showyourwork.config import edit_yaml
 import os
+
+from helpers import TemporaryShowyourworkRepository
+
+from showyourwork.config import edit_yaml
 
 # A script that generates data and text file
 # data file: read by plt script
@@ -52,7 +54,7 @@ plt.savefig(paths.figures / 'test_fig.png')
 
 class TestRenameError(TemporaryShowyourworkRepository):
     """Create the initial version of workflow:
-    1. add python script for data, text gen 
+    1. add python script for data, text gen
     2. add python script for fig gen
     3. edit tex to includegraphcs and variable
     5. edit Snakefile to add rule
@@ -63,31 +65,35 @@ class TestRenameError(TemporaryShowyourworkRepository):
         """Create and edit all the necessary files for the workflow."""
         # Create the data_gen script
         with open(
-            self.cwd / "src" / "scripts" / "data_gen.py",
-              "w", encoding="utf-8"
-              ) as f:
+            self.cwd / "src" / "scripts" / "data_gen.py", "w", encoding="utf-8"
+        ) as f:
             print(data_gen_script, file=f)
-        
+
         # Create the fig_gen script
         with open(
-            self.cwd / "src" / "scripts" / "fig_gen.py",
-              "w", encoding="utf-8"
-              ) as f:
+            self.cwd / "src" / "scripts" / "fig_gen.py", "w", encoding="utf-8"
+        ) as f:
             print(fig_gen_script, file=f)
 
         # Edit tex to add variable command
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r", encoding="utf-8") as f:
+        with open(ms, encoding="utf-8") as f:
             ms_orig = f.read()
         with open(ms, "w", encoding="utf-8") as f:
             ms_new = ms_orig.replace(
                 r"\end{document}",
-                r"\begin{figure}" "\n"
-                r"  \script{fig_gen.py}" "\n"
-                r"  \includegraphics{figures/test_fig.png}" "\n"
-                r"  \caption{Test figure}" "\n"
-                r"  \label{fig:test_fig}" "\n"
-                r"\end{figure}" "\n"
+                r"\begin{figure}"
+                "\n"
+                r"  \script{fig_gen.py}"
+                "\n"
+                r"  \includegraphics{figures/test_fig.png}"
+                "\n"
+                r"  \caption{Test figure}"
+                "\n"
+                r"  \label{fig:test_fig}"
+                "\n"
+                r"\end{figure}"
+                "\n"
                 r"The number of points used are "
                 r"\variable{output/points.txt}."
                 "\n"
@@ -97,7 +103,7 @@ class TestRenameError(TemporaryShowyourworkRepository):
 
         # Add a Snakemake rule
         sf = self.cwd / "Snakefile"
-        with open(sf, "r", encoding="utf-8") as f:
+        with open(sf, encoding="utf-8") as f:
             contents = f.read()
         with open(sf, "w", encoding="utf-8") as f:
             print(contents, file=f)
@@ -119,15 +125,15 @@ class TestRenameError(TemporaryShowyourworkRepository):
             )
 
         # Edit showyourwork.yml to add dependency
-        data_script_name='src/scripts/data_gen.py'
-        fig_script_name='src/scripts/fig_gen.py'
+        data_script_name = "src/scripts/data_gen.py"
+        fig_script_name = "src/scripts/fig_gen.py"
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
             if config.get("dependencies") is None:
                 config["dependencies"] = {}
             config["dependencies"][fig_script_name] = [
                 data_script_name,
-                'src/data/xy.dat']
-
+                "src/data/xy.dat",
+            ]
 
     def check_build(self):
         """
@@ -142,7 +148,7 @@ class TestRenameError(TemporaryShowyourworkRepository):
         # Rename the txt file (points -> points_1)
         # # Edit Snakefile
         sf = self.cwd / "Snakefile"
-        with open(sf, "r", encoding="utf-8") as f:
+        with open(sf, encoding="utf-8") as f:
             sf_orig = f.read()
         with open(sf, "w", encoding="utf-8") as f:
             sf_new = sf_orig.replace(
@@ -153,7 +159,7 @@ class TestRenameError(TemporaryShowyourworkRepository):
 
         # # Edit data gen script
         dat_gen_scrpt = self.cwd / "src" / "scripts" / "data_gen.py"
-        with open(dat_gen_scrpt, "r", encoding="utf-8") as f:
+        with open(dat_gen_scrpt, encoding="utf-8") as f:
             dat_gen_scrpt_orig = f.read()
         with open(dat_gen_scrpt, "w", encoding="utf-8") as f:
             dat_gen_scrpt_new = dat_gen_scrpt_orig.replace(
@@ -164,7 +170,7 @@ class TestRenameError(TemporaryShowyourworkRepository):
 
         # # Edit tex
         ms = self.cwd / "src" / "tex" / "ms.tex"
-        with open(ms, "r", encoding="utf-8") as f:
+        with open(ms, encoding="utf-8") as f:
             ms_orig = f.read()
         with open(ms, "w", encoding="utf-8") as f:
             ms_new = ms_orig.replace(
@@ -172,7 +178,7 @@ class TestRenameError(TemporaryShowyourworkRepository):
                 r"points_1.txt",
             )
             print(ms_new, file=f)
-        
+
         # # Delete old file
         points_file = self.cwd / "src" / "tex" / "output" / "points.txt"
         if points_file.exists():
