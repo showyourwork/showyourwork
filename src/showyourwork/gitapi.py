@@ -75,7 +75,16 @@ def create_repo(name, description=None, private=False, org=None):
         url = f"https://api.github.com/repos/{org}/{name}"
     else:
         url = f"https://api.github.com/repos/{get_authenticated_user()}/{name}"
-    if requests.get(url).status_code <= 204:
+    if (
+        requests.get(
+            url,
+            headers={
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": f"token {get_access_token()}",
+            },
+        ).status_code
+        <= 204
+    ):
         return
 
     # Create a new repo
