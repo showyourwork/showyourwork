@@ -27,6 +27,11 @@ except ModuleNotFoundError:
 # Supported tarball extensions
 zip_exts = ["tar", "tar.gz", "zip"]
 
+# Default timeout (in seconds) for all Zenodo API requests. Without this,
+# a stalled connection can block indefinitely, freezing the calling
+# asyncio event loop until GitHub Actions kills the job after 6 hours.
+REQUEST_TIMEOUT = 30
+
 
 def require_access_token(method):
     """
@@ -218,7 +223,10 @@ class Zenodo:
         else:
             # Try to find a published record (no authentication needed)
             try:
-                r = requests.get(f"https://{self.url}/api/records/{self.deposit_id}")
+                r = requests.get(
+                    f"https://{self.url}/api/records/{self.deposit_id}",
+                    timeout=REQUEST_TIMEOUT,
+                )
                 data = r.json()
             except Exception as e:
                 r = None
@@ -267,6 +275,7 @@ class Zenodo:
                     "access_token": self.access_token,
                 },
                 json={},
+                timeout=REQUEST_TIMEOUT,
             )
         )
 
@@ -294,6 +303,7 @@ class Zenodo:
                 params={"access_token": self.access_token},
                 data=json.dumps(metadata),
                 headers={"Content-Type": "application/json"},
+                timeout=REQUEST_TIMEOUT,
             )
         )
         doi = f"{self.doi_prefix}{data['conceptrecid']}"
@@ -325,6 +335,7 @@ class Zenodo:
                     "all_versions": 1,
                     "access_token": self.access_token,
                 },
+                timeout=REQUEST_TIMEOUT,
             )
 
             # See if we find the deposit
@@ -371,6 +382,7 @@ class Zenodo:
                     "all_versions": 1,
                     "access_token": self.access_token,
                 },
+                timeout=REQUEST_TIMEOUT,
             )
             if r.status_code > 204:
                 logger.warning(err_msg)
@@ -416,6 +428,7 @@ class Zenodo:
                     requests.post(
                         f"https://{self.url}/api/deposit/depositions/{data_id}/actions/newversion",
                         params={"access_token": self.access_token},
+                        timeout=REQUEST_TIMEOUT,
                     )
                 )
                 draft_url = data["links"]["latest_draft"]
@@ -424,6 +437,7 @@ class Zenodo:
                 requests.get(
                     draft_url,
                     params={"access_token": self.access_token},
+                    timeout=REQUEST_TIMEOUT,
                 )
             )
             if not draft.get("submitted", False):
@@ -470,6 +484,7 @@ class Zenodo:
                 requests.get(
                     files_url,
                     params={"access_token": self.access_token},
+                    timeout=REQUEST_TIMEOUT,
                 )
             )
             entries, file_key, _ = _get_entries(data)
@@ -482,6 +497,7 @@ class Zenodo:
                         requests.delete(
                             f"{files_url}/{file_id}",
                             params={"access_token": self.access_token},
+                            timeout=REQUEST_TIMEOUT,
                         )
                     )
                     break
@@ -538,6 +554,7 @@ class Zenodo:
                 params={"access_token": self.access_token},
                 data=json.dumps({"metadata": metadata}),
                 headers={"Content-Type": "application/json"},
+                timeout=REQUEST_TIMEOUT,
             )
         )
 
@@ -565,6 +582,7 @@ class Zenodo:
             requests.get(
                 draft["links"]["files"],
                 params={"access_token": self.access_token},
+                timeout=REQUEST_TIMEOUT,
             )
         )
 
@@ -715,6 +733,7 @@ class Zenodo:
                 "all_versions": 1,
                 "access_token": self.access_token,
             },
+            timeout=REQUEST_TIMEOUT,
         )
         try:
             for data in r.json():
@@ -731,6 +750,7 @@ class Zenodo:
                 params={
                     "access_token": self.access_token,
                 },
+                timeout=REQUEST_TIMEOUT,
             )
         )
         logger.info(f"Successfully deleted deposit {self.doi}.")
@@ -753,6 +773,7 @@ class Zenodo:
                 "all_versions": 1,
                 "access_token": self.access_token,
             },
+            timeout=REQUEST_TIMEOUT,
         )
         try:
             for data in r.json():
@@ -769,6 +790,7 @@ class Zenodo:
                 params={
                     "access_token": self.access_token,
                 },
+                timeout=REQUEST_TIMEOUT,
             )
         )
         logger.info(f"Successfully published deposit {self.doi}.")
@@ -799,6 +821,7 @@ class Zenodo:
                 "all_versions": 1,
                 "access_token": self.access_token,
             },
+            timeout=REQUEST_TIMEOUT,
         )
         if r.status_code <= 204:
             try:
@@ -812,6 +835,7 @@ class Zenodo:
                     r = requests.get(
                         draft_url,
                         params={"access_token": self.access_token},
+                        timeout=REQUEST_TIMEOUT,
                     )
                     if r.status_code <= 204:
                         try:
@@ -858,7 +882,9 @@ class Zenodo:
         logger.debug(
             f"Attempting to access {self.service} record with DOI {self.doi}..."
         )
-        r = requests.get(f"https://{self.url}/api/records/{concept_id}")
+        r = requests.get(
+            f"https://{self.url}/api/records/{concept_id}", timeout=REQUEST_TIMEOUT
+        )
         if r.status_code > 204:
             try:
                 data = r.json()
@@ -888,6 +914,7 @@ class Zenodo:
                     "access_token": self.access_token,
                     "all_versions": 1,
                 },
+                timeout=REQUEST_TIMEOUT,
             )
             if r.status_code <= 204:
                 try:
@@ -960,6 +987,7 @@ class Zenodo:
             requests.get(
                 draft["links"]["files"],
                 params={"access_token": self.access_token},
+                timeout=REQUEST_TIMEOUT,
             )
         )
         entries, file_key, content_key = _get_entries(data)
@@ -1027,6 +1055,7 @@ class Zenodo:
                 params={"access_token": target_deposit.access_token},
                 data=json.dumps(metadata),
                 headers={"Content-Type": "application/json"},
+                timeout=REQUEST_TIMEOUT,
             )
         )
 

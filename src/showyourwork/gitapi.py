@@ -7,6 +7,11 @@ import requests
 from . import exceptions
 from .subproc import parse_request
 
+# Default timeout (in seconds) for all GitHub API requests. Without this,
+# a stalled connection can block indefinitely, freezing the calling
+# asyncio event loop until GitHub Actions kills the job after 6 hours.
+REQUEST_TIMEOUT = 30
+
 
 def flatten_dict(d, parent_key="", sep="__"):
     """
@@ -53,6 +58,7 @@ def get_authenticated_user():
                 "Accept": "application/vnd.github.v3+json",
                 "Authorization": f"token {get_access_token()}",
             },
+            timeout=REQUEST_TIMEOUT,
         )
     )
     return data["login"]
@@ -82,6 +88,7 @@ def create_repo(name, description=None, private=False, org=None):
                 "Accept": "application/vnd.github.v3+json",
                 "Authorization": f"token {get_access_token()}",
             },
+            timeout=REQUEST_TIMEOUT,
         ).status_code
         <= 204
     ):
@@ -112,6 +119,7 @@ def create_repo(name, description=None, private=False, org=None):
                 "Accept": "application/vnd.github.v3+json",
                 "Authorization": f"token {get_access_token()}",
             },
+            timeout=REQUEST_TIMEOUT,
         )
     )
 
@@ -137,6 +145,7 @@ def delete_repo(name, org=None, quiet=False):
             "Accept": "application/vnd.github.v3+json",
             "Authorization": f"token {get_access_token()}",
         },
+        timeout=REQUEST_TIMEOUT,
     )
     if not quiet:
         parse_request(result)
@@ -163,6 +172,7 @@ def clear_cache(name, org=None):
                 "Accept": "application/vnd.github.v3+json",
                 "Authorization": f"token {get_access_token()}",
             },
+            timeout=REQUEST_TIMEOUT,
         )
     )
     for cache in data["actions_caches"]:
@@ -173,6 +183,7 @@ def clear_cache(name, org=None):
                     "Accept": "application/vnd.github.v3+json",
                     "Authorization": f"token {get_access_token()}",
                 },
+                timeout=REQUEST_TIMEOUT,
             )
         )
 
@@ -227,6 +238,7 @@ def get_workflow_run_status(name, org=None, q=None):
                 "Accept": "application/vnd.github.v3+json",
                 "Authorization": f"token {get_access_token()}",
             },
+            timeout=REQUEST_TIMEOUT,
         )
     )
 
