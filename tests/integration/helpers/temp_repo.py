@@ -52,6 +52,18 @@ class TemporaryShowyourworkRepository:
     delete_remote_on_success = False
     clear_actions_cache_on_start = True
 
+    # Timeouts (seconds) for the different kinds of subprocess calls we make.
+    # These exist so a stalled command (e.g. a hung network call several
+    # subprocess layers down) fails the single test quickly with a clear
+    # error, instead of blocking silently until GitHub Actions' 6-hour job
+    # cap kills the whole workflow. Values are generous on purpose --
+    # they're meant to catch genuine hangs, not to race a slow-but-healthy
+    # command.
+    quick_command_timeout = 120  # short git/config plumbing (git add, rev-parse...)
+    push_timeout = 300  # git push to GitHub
+    setup_timeout = 600  # `showyourwork setup`
+    build_timeout = 2700  # `showyourwork build` (LaTeX, data gen, figures...)
+
     # Internal
     _sandbox_concept_doi = None
 
@@ -69,8 +81,14 @@ class TemporaryShowyourworkRepository:
         return self.root_path / self.repo
 
     def run_command(self, *args, **kwargs):
-        """Run a command, streaming output when debugging locally."""
+        """Run a command, streaming output when debugging locally.
+
+        Defaults to ``quick_command_timeout`` unless the caller passes an
+        explicit ``timeout=`` (e.g. the much longer ``setup_timeout`` /
+        ``build_timeout`` used for the actual showyourwork CLI calls).
+        """
         kwargs.setdefault("capture_output", not self.debug)
+        kwargs.setdefault("timeout", self.quick_command_timeout)
         return get_stdout(*args, **kwargs)
 
     def startup(self):
@@ -131,6 +149,7 @@ class TemporaryShowyourworkRepository:
             f"{command} {options} {GITHUB_USER}/{self.repo}",
             cwd=self.root_path,
             shell=True,
+            timeout=self.setup_timeout,
         )
 
         # Get the Zenodo Sandbox cache concept doi for the main branch (if any)
@@ -209,6 +228,7 @@ class TemporaryShowyourworkRepository:
             cwd=self.cwd,
             env=env_var,
             callback=callback,
+            timeout=self.build_timeout,
         )
 
     @pytest.mark.asyncio_cooperative
@@ -227,6 +247,7 @@ class TemporaryShowyourworkRepository:
             shell=True,
             cwd=self.cwd,
             secrets=[gitapi.get_access_token()],
+            timeout=self.push_timeout,
         )
         head_sha = self.run_command(
             "git rev-parse HEAD", shell=True, cwd=self.cwd
