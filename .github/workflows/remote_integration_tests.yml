@@ -66,7 +66,7 @@ jobs:
         # TEMPORARY: -u/-s/-vv disable output buffering and capturing so we
         # can see live progress while diagnosing the timeout issue. Revert
         # once confirmed.
-        run: python -u -m pytest --remote -s -vv -m "remote" tests/integration --action-spec "${{ matrix.showyourwork-spec }}#egg=showyourwork"
+        run: python -u -m pytest --remote -s -vv -m "remote" tests/integration --action-spec "${{ matrix.showyourwork-spec }}#egg=showyourwork" -k 'TestCache' --max-asyncio-tasks 1
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
           OVERLEAF_TOKEN: ${{ secrets.OVERLEAF_TOKEN }}
