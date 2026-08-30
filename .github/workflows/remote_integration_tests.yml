@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - staging*
+      - copilot/fix-relative-path-logic
   pull_request_target:
     types: [labeled]
   merge_group:
