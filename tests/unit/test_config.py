@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import yaml
@@ -98,6 +99,40 @@ def test_expand_dependency_directories_skips_unreadable_entries(tmp_path, monkey
 
     result = expand_dependency_directories("src/data/inputs", repo_root=repo_root)
 
+    assert result == ["src/data/inputs/data.csv"]
+
+
+def test_expand_dependency_directories_survives_vanishing_subdirectory(
+    tmp_path, monkeypatch
+):
+    """expand_dependency_directories must not raise if a subdirectory
+    disappears between being listed and being scanned (a TOCTOU race) --
+    e.g. a symlink to a live process's /proc/<pid> that exits mid-walk.
+    Path.rglob() raises FileNotFoundError in this case; os.walk() does not.
+    """
+    repo_root = tmp_path / "repo"
+    dep_dir = repo_root / "src" / "data" / "inputs"
+    dep_dir.mkdir(parents=True)
+
+    in_repo_file = dep_dir / "data.csv"
+    in_repo_file.write_text("x,y\n1,2\n")
+
+    ghost_subdir = dep_dir / "ghost_subdir"
+    ghost_subdir.mkdir()
+    (ghost_subdir / "unreachable.txt").write_text("unreachable")
+
+    real_scandir = os.scandir
+
+    def flaky_scandir(path="."):
+        if str(path) == str(ghost_subdir):
+            raise FileNotFoundError(f"[Errno 2] No such file or directory: '{path}'")
+        return real_scandir(path)
+
+    monkeypatch.setattr("os.scandir", flaky_scandir)
+
+    result = expand_dependency_directories("src/data/inputs", repo_root=repo_root)
+
+    # The vanished subdirectory is skipped; the readable file is still found
     assert result == ["src/data/inputs/data.csv"]
 
 

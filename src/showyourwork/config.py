@@ -178,24 +178,35 @@ def expand_dependency_directories(dependency, repo_root=None):
     dep_path = repo_root / dependency.replace("\\", "/")
 
     if dep_path.is_dir():
-        # Get all files in the directory recursively
+        # Get all files in the directory recursively.
+        #
+        # We deliberately use os.walk() here instead of Path.rglob(): rglob()
+        # eagerly raises if a directory entry disappears between being listed
+        # and being scanned (a TOCTOU race) -- for example a symlink to a
+        # live process's /proc/<pid> that exits mid-walk, or any other
+        # transient filesystem entry. os.walk() tolerates exactly this: by
+        # default it silently skips a directory it can no longer read rather
+        # than propagating the OSError, so one vanishing entry doesn't crash
+        # the whole dependency scan.
         files = []
-        for file_path in sorted(dep_path.rglob("*")):
-            # Some environments expose unreadable entries under dependency
-            # directories, such as procfs paths or symlinks to protected
-            # system files. Skip them instead of failing the build.
-            try:
-                if not file_path.is_file():
+        for dirpath, _dirnames, filenames in os.walk(dep_path):
+            for name in sorted(filenames):
+                file_path = Path(dirpath) / name
+                # Some environments expose unreadable entries under dependency
+                # directories, such as procfs paths or symlinks to protected
+                # system files. Skip them instead of failing the build.
+                try:
+                    if not file_path.is_file():
+                        continue
+                    # Return relative path from repo root with forward slashes.
+                    # This ensures consistency across Windows, macOS, and Linux.
+                    # Skip files outside the repo root (e.g. symlinks to system
+                    # paths such as /boot/System.map-*) instead of crashing.
+                    rel_path = file_path.relative_to(repo_root)
+                except (OSError, ValueError):
                     continue
-                # Return relative path from repo root with forward slashes.
-                # This ensures consistency across Windows, macOS, and Linux.
-                # Skip files outside the repo root (e.g. symlinks to system
-                # paths such as /boot/System.map-*) instead of crashing.
-                rel_path = file_path.relative_to(repo_root)
-            except (OSError, ValueError):
-                continue
-            files.append(rel_path.as_posix())
-        return files
+                files.append(rel_path.as_posix())
+        return sorted(files)
     else:
         # Not a directory, return as-is with forward slashes normalized
         return [dependency.replace("\\", "/")]
