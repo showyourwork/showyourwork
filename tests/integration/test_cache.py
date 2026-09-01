@@ -39,7 +39,7 @@ class TestCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
         with edit_yaml(self.cwd / "showyourwork.yml") as config:
             cache_is_set = config["cache_on_zenodo"]
             config["dependencies"] = {
-                "src/scripts/test_figure.py": "src/data/test_data.npz"
+                "src/scripts/test_figure.py": ["src/data/test_data.npz"]
             }
             config["run_cache_rules_on_ci"] = True
 
