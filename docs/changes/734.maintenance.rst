@@ -1,0 +1,1 @@
+Both new projects and showyourwork itself are set to use `ruff <https://docs.astral.sh/ruff/>`_ for both linting and formatting.

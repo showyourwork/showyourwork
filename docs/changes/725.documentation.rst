@@ -1,0 +1,2 @@
+Updated quickstart guide to include a note about using SSH for cloning repositories
+via the ``setup`` boolean flag ``--ssh``.

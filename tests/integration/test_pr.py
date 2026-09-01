@@ -135,7 +135,7 @@ class TestPullRequests(TemporaryShowyourworkRepository):
             elif n < self.action_max_tries - 1:
                 print(
                     f"[{self.repo}] Waiting {self.action_interval} seconds for "
-                    f"PR workflow to finish ({n+2}/{self.action_max_tries})..."
+                    f"PR workflow to finish ({n + 2}/{self.action_max_tries})..."
                 )
                 await asyncio.sleep(self.action_interval)
         else:
