@@ -74,7 +74,7 @@ class TestCacheCreate(TemporaryShowyourworkRepository, ShowyourworkRepositoryAct
         # Make the dataset a dependency of the figure
         with edit_yaml_roundtrip(self.cwd / "showyourwork.yml") as config:
             config["dependencies"] = {
-                "src/scripts/test_figure.py": "src/data/test_data.npz"
+                "src/scripts/test_figure.py": ["src/data/test_data.npz"]
             }
             config["run_cache_rules_on_ci"] = True
             cache_is_set = config["cache_on_zenodo"]
