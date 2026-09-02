@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 import pytest
 import snakemake
@@ -80,12 +81,20 @@ def test_get_id_type(config):
     doi = next(iter(config["datasets"]))
     deposit = Zenodo(doi)
 
-    # Clear any stale cache before the test
     cache_file = deposit.path() / f"{deposit.deposit_id}" / "id_type.txt"
     if cache_file.exists():
         cache_file.unlink()
 
-    assert deposit.get_id_type() == "version"
+    response = Mock()
+    response.status_code = 200
+    # id should be the same as deposit.deposit_id, conceptrecid should be anything else
+    response.json.return_value = {
+        "conceptrecid": int(deposit.deposit_id) - 1,
+        "id": int(deposit.deposit_id),
+    }
+
+    with patch("showyourwork.zenodo.requests.get", return_value=response):
+        assert deposit.get_id_type() == "version"
 
 
 @pytest.mark.zenodo
