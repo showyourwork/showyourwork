@@ -79,6 +79,12 @@ def test_get_dataset_doi(config):
 def test_get_id_type(config):
     doi = next(iter(config["datasets"]))
     deposit = Zenodo(doi)
+
+    # Clear any stale cache before the test
+    cache_file = deposit.path() / f"{deposit.deposit_id}" / "id_type.txt"
+    if cache_file.exists():
+        cache_file.unlink()
+
     assert deposit.get_id_type() == "version"
 
 
