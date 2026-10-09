@@ -8,6 +8,22 @@ are not yet fixed in the latest release.
 
 Each entry reports also the original issue tracker from GitHub.
 
+`Using article as ms_name fails (#713) <https://github.com/showyourwork/showyourwork/issues/713>`_
+--------------------------------------------------------------------------------------------------
+
+If you change the name from of the manuscript file in `showyourwork.yml` to something like `article`
+you will obtain an error like this:
+
+.. code-block::
+
+    ChildIOException:
+    File/directory is a child to another output:
+    (PosixPath('/home/ajc/Work/Publications/repo/.showyourwork/compile'), syw__compile_setup)
+    (PosixPath('/home/ajc/Work/Publications/repo/.showyourwork/compile/article.pdf'), syw__compile_pdf)
+
+This happens because `article` clashes with reserved keywords from TeX, because we use the article class.
+Try to avoid names that might refer to reserved keywords.
+
 `Build on github is broken with 'pulp' has no attribute 'list_solvers' (#435) <https://github.com/showyourwork/showyourwork/issues/435>`_
 -----------------------------------------------------------------------------------------------------------------------------------------
 
