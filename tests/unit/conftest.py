@@ -26,10 +26,11 @@ def pytest_collection_modifyitems(config, items):
     Skip zenodo tests if SANDBOX_TOKEN is not set (unless --require-zenodo is passed).
     """
     sandbox_token = os.getenv("SANDBOX_TOKEN")
-    zenodo_token = os.getenv("ZENODO_TOKEN")
+    # zenodo_token = os.getenv("ZENODO_TOKEN")
     require_zenodo = config.getoption("--require-zenodo")
 
-    if not require_zenodo and (not sandbox_token or not zenodo_token):
+    # if not require_zenodo and (not sandbox_token or not zenodo_token):
+    if not require_zenodo and not sandbox_token:
         skipper = pytest.mark.skip(
             reason="SANDBOX_TOKEN or ZENODO_TOKEN environment variable not set"
         )
