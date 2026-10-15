@@ -63,3 +63,7 @@ version-file = "src/showyourwork/_showyourwork_version.py"
 [tool.pytest.ini_options]
 addopts = "-v --asyncio-task-timeout=1800"
 norecursedirs = "tests/helpers"
+markers = [
+    "remote: a test that requires remote access",
+    "zenodo: a test that requires Zenodo/Zenodo Sandbox API access",
+]
