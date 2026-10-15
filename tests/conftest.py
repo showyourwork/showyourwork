@@ -58,20 +58,17 @@ def pytest_collection_modifyitems(config, items):
         return
     skipper = pytest.mark.skip(reason="need --remote option to run")
     for item in items:
-        if "remote" in item.keywords:
+        if item.path.parent.name == "integration" and "remote" in item.keywords:
             item.add_marker(skipper)
 
     # Skip Zenodo unit tests
-    # TODO: Make sure this does not skip integration test by mistake.
-    # If it does, improve item filtering or move back to unit/conftest.py
-    # Same for remote block above
     sandbox_token = os.getenv("SANDBOX_TOKEN")
     require_zenodo = config.getoption("--require-zenodo")
 
     if not require_zenodo and not sandbox_token:
         skipper = pytest.mark.skip(reason="SANDBOX_TOKEN environment variable not set")
         for item in items:
-            if "zenodo" in item.keywords:
+            if item.path.parent.name == "unit" and "zenodo" in item.keywords:
                 item.add_marker(skipper)
 
 
