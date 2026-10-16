@@ -1,3 +1,4 @@
+import os
 import time
 
 import pytest
@@ -19,7 +20,7 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
 
     # No need to test this on CI
     local_build_only = True
-    overleaf_id = "68cd54011c99150d9045d2b6"
+    overleaf_id = os.environ["SHOWYOURWORK_TEST_OVERLEAF_ID"]
 
     # Overleaf rate limit error re-try settings
     auth_retries = 1
@@ -218,6 +219,7 @@ class TestOverleaf(TemporaryShowyourworkRepository, ShowyourworkRepositoryAction
         get_stdout("git checkout -- src/tex/ms.tex", shell=True, cwd=self.cwd)
 
         # Rebuild without cleaning
+        time.sleep(10)  # Short sleep to make sure overleaf changes are exposed
         self.build_local()
 
         # The marker must now be present in the local manuscript

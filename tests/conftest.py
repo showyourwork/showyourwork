@@ -31,6 +31,13 @@ def pytest_addoption(parser):
         help="GitHub organization for test repos (defaults to 'showyourwork')",
     )
     parser.addoption(
+        "--overleaf-id",
+        action="store",
+        default=None,
+        help="Project ID for the Overleaf integration test"
+        "(defaults to `68cd54011c99150d9045d2b6`)",
+    )
+    parser.addoption(
         "--no-org",
         action="store_true",
         default=False,
@@ -80,9 +87,18 @@ def pytest_configure(config):
     - ``ACTION_VERSION`` based on ``action-version``
     - ``SHOWYOURWORK_TEST_ORG`` based on ``--no-org`` and ``--github-org``
       (defaults to ``showyourwork``)
+    - ``o
     """
     os.environ["ACTION_SPEC"] = str(config.getoption("--action-spec"))
     os.environ["ACTION_VERSION"] = str(config.getoption("--action-version"))
+
+    overleaf_id = config.getoption("--overleaf-id")
+    if overleaf_id is not None:
+        os.environ["SHOWYOURWORK_TEST_OVERLEAF_ID"] = overleaf_id
+    else:
+        os.environ.setdefault(
+            "SHOWYOURWORK_TEST_OVERLEAF_ID", "68cd54011c99150d9045d2b6"
+        )
 
     # Set GITHUB_ORG from CLI option or environment variable
     if config.getoption("--no-org"):
