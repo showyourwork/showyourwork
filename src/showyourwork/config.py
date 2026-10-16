@@ -199,6 +199,7 @@ def get_upstream_dependencies(file, dependencies, depth=0):
 
     """
     if deps := dependencies.get(file, []):
+        deps = [deps] if isinstance(deps, (str, Path)) else deps
         res = set()
         for dep in deps:
             # Expand directories into individual files
