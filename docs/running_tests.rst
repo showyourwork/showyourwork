@@ -1,9 +1,34 @@
-.. _integration_tests:
+.. _running_tests:
 
-Integration tests
+Running the tests
 =================
 
-Integration tests for |showyourwork| are located in the `tests/integration`
+|showyourwork| uses `pytest <https://docs.pytest.org/en/stable/>`_ for unit and integration tests.
+Unit tests run specific functions in the showyourwork API on small test cases.
+Integration tests create small repositories and run the entire ``showyourwork`` workflow to test different scenarios.
+
+To run all tests, use
+
+.. code-block:: bash
+
+   python -m pytest
+
+To run only unit tests, use
+
+.. code-block:: bash
+
+   python -m pytest tests/unit
+
+And to run only integration tests use
+
+.. code-block:: bash
+
+   python -m pytest tests/integration
+
+Writing integration tests
+-------------------------
+
+Integration tests are located in the `tests/integration`
 subdirectory of the ``showyourwork`` package. Each test subclasses the
 ``TemporaryShowyourworkRepository`` class in `tests/integration/helpers/temp_repo.py`,
 which defines an asynchronous method called ``test_repo`` to test the workflow
@@ -98,8 +123,8 @@ the output from the Python script.
 That's it! The parent class (``TemporaryShowyourworkRepository``) takes care
 of the rest.
 
-Debugging within the tests
---------------------------
+Debugging the integration tests
+-------------------------------
 
 By default, the integration tests capture the output when running the ``showyourwork`` command.
 This will cause problems when trying to debug parts of the main ``showyourwork`` code within the tests.
@@ -131,7 +156,7 @@ Since most contributors and users do not have push access to the ``showyourowrk`
 there is also a flag to create the test repositories under a regular user.
 Users first need to
 `create a personal access token <https://github.com/settings/personal-access-tokens>`_
-with read access to your public repositories, and **read and write** access to actions,
+with read access to their public repositories, and **read and write** access to actions,
 administration, code, and workflows.
 The token should then be stored under the ``GH_API_KEY`` environment variable.
 Once this is done, users should be able to run the integration tests with:
