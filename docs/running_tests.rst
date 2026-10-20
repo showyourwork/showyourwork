@@ -178,3 +178,11 @@ label, in which case the `remote_integration_tests.yml` workflow is executed wit
 ``pull_request_target`` trigger. Maintainers should carefully review the proposed
 changes to check for malicious code before marking PRs as ``safe to test``, since
 the workflow will have full write privileges to the organization!
+
+Overleaf tests
+--------------
+
+The tests in `test_overleaf.py` require access to an overleaf project to pass.
+By default, they use a pre-configured overleaf project and will fail for users
+who do not have access. To run these tests, users should set up :doc:`Overleaf integration <overleaf>`,
+create a blank overleaf project, and pass its ID manually with the ``--overleaf-id`` flag.
