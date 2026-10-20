@@ -1,0 +1,11 @@
+Various minor improvements to test structure and documentation:
+
+- `test_orcid_id.py` is now under `tests/integration` with other integration tests
+
+- Move pytest CLI options to the parent `conftest.py` so they can be used without a path
+
+- Fix a small but in ``get_upstream_dependencies()`` to accept single-string dependencies
+
+- Enable specifying an overleaf project ID for the overleaf test
+
+- Move test documentation to the main TOC and mention unit tests too
