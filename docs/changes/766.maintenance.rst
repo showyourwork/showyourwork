@@ -1,0 +1,1 @@
+Removes the obsolete custom path compatibility helper in the DAG rendering script in favor of the built-in pathlib.Path.is_relative_to method.
