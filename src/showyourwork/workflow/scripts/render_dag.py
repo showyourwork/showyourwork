@@ -101,7 +101,7 @@ def should_ignore(ignore, path):
     path = Path(path).resolve()
     for pattern in ignore:
         pattern = Path(pattern).resolve()  # noqa
-        if path == pattern or path.is_relative_to(pattern):
+        if path.is_relative_to(pattern):
             return True
     return False
 
@@ -199,14 +199,17 @@ if __name__ == "__main__":
     texfiles = []
     figures = []
     others = []
+
     for file in files:
-        if Path(file).absolute().is_relative_to(params.data):
+        abs_file = Path(file).absolute()
+
+        if abs_file.is_relative_to(params.data):
             datasets.append(file)
-        elif Path(file).absolute().is_relative_to(params.scripts):
+        elif abs_file.is_relative_to(params.scripts):
             scripts.append(file)
-        elif Path(file).absolute().is_relative_to(params.figures):
+        elif abs_file.is_relative_to(params.figures):
             figures.append(file)
-        elif Path(file).absolute().is_relative_to(params.tex):
+        elif abs_file.is_relative_to(params.tex):
             texfiles.append(file)
         elif file == config["ms_pdf"]:
             pass
