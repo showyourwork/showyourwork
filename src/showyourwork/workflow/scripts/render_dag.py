@@ -15,18 +15,6 @@ if TYPE_CHECKING:
     from snakemake.iocontainers import snakemake
 
 
-def is_relative_to(path, other):
-    """
-    Local implementation of `pathlib.Path.is_relative_to` (for python < 3.9).
-
-    """
-    try:
-        path.relative_to(other)
-        return True
-    except ValueError:
-        return False
-
-
 def removeprefix(s, prefix):
     """
     Local implementation of `str.removeprefix` (for python < 3.9).
@@ -113,7 +101,7 @@ def should_ignore(ignore, path):
     path = Path(path).resolve()
     for pattern in ignore:
         pattern = Path(pattern).resolve()  # noqa
-        if path == pattern or is_relative_to(path, pattern):
+        if path.is_relative_to(pattern):
             return True
     return False
 
@@ -211,14 +199,17 @@ if __name__ == "__main__":
     texfiles = []
     figures = []
     others = []
+
     for file in files:
-        if is_relative_to(Path(file).absolute(), params.data):
+        abs_file = Path(file).absolute()
+
+        if abs_file.is_relative_to(params.data):
             datasets.append(file)
-        elif is_relative_to(Path(file).absolute(), params.scripts):
+        elif abs_file.is_relative_to(params.scripts):
             scripts.append(file)
-        elif is_relative_to(Path(file).absolute(), params.figures):
+        elif abs_file.is_relative_to(params.figures):
             figures.append(file)
-        elif is_relative_to(Path(file).absolute(), params.tex):
+        elif abs_file.is_relative_to(params.tex):
             texfiles.append(file)
         elif file == config["ms_pdf"]:
             pass
