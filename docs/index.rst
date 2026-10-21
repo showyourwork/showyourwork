@@ -58,6 +58,7 @@ Contents
    known_issues
    faqs
    contributorguide
+   running_tests
    api/showyourwork
    changelog
    attribution

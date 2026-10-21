@@ -1,6 +1,11 @@
+import pytest
 import yaml
 
-from showyourwork.config import edit_yaml, edit_yaml_roundtrip
+from showyourwork.config import (
+    edit_yaml,
+    edit_yaml_roundtrip,
+    get_upstream_dependencies,
+)
 
 START_YAML = """# Top-level comment
 title: "Example"
@@ -40,3 +45,13 @@ def test_edit_yaml_roundtrip_preserves_entire_file(tmp_path):
         config["nested"]["value"] = 42
 
     assert config_file.read_text() == START_YAML
+
+
+@pytest.mark.parametrize("deps", [["src/data/test_data.npz"], "src/data/test_data.npz"])
+def test_get_upstream_depedencies(deps):
+    file = "src/scripts/test_figure.py"
+    dependencies = {file: deps}
+    upstream_deps = get_upstream_dependencies(file, dependencies)
+    if isinstance(deps, str):
+        deps = [deps]
+    assert upstream_deps == deps

@@ -114,13 +114,6 @@ import all of the Snakemake rules defined in ``showyourwork/workflow/rules``,
 parse the user config, ingest the user's custom Snakefile, etc.
 """
 ]
-INTEGRATION_TEST_DOCS = [
-    """
-Integration tests are located in ``tests/integration`` at the root of the repo.
-See below for information on how we test all the different moving parts in
-``showyourwork``.
-"""
-]
 
 
 # Add our module to the path
@@ -226,9 +219,6 @@ for file in rules + snakefiles:
     with open(f"api/{file}.rst", "w") as f:
         f.write(f"{file}\n{'=' * len(file)}\n\n{docstring}")
 
-# Integration test docs
-integration_tests = ["../integration_tests.rst"]
-
 
 # Customize the API table of contents
 with open("api/showyourwork.rst") as f:
@@ -288,21 +278,6 @@ lines += [
     "   :maxdepth: 5\n",
     "\n   ",
     "\n   ".join(snakefiles),
-]
-lines += [
-    "\n\n",
-    ".. _api.integrationtests:",
-    "\n",
-    "\n",
-    "Integration tests\n",
-    "-----------------\n\n",
-    *INTEGRATION_TEST_DOCS,
-    "\n",
-    "\n",
-    ".. toctree::\n",
-    "   :maxdepth: 5\n",
-    "\n   ",
-    "\n   ".join(integration_tests),
 ]
 with open("api/showyourwork.rst", "w") as f:
     f.writelines(lines)
