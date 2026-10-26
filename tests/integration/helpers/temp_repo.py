@@ -58,11 +58,15 @@ class TemporaryShowyourworkRepository:
     @property
     def repo(self):
         # Name the repo after the subclass (in hyphenated-snake-case)
-        return (
+        base = (
             re.sub(r"(?<!^)(?=[A-Z])", "_", self.__class__.__name__)
             .lower()
             .replace("_", "-")
         )
+
+        # Add the GitHub Actions run ID to avoid collisions between runs
+        run_id = os.environ.get("GITHUB_RUN_ID")
+        return f"{base}-{run_id}" if run_id else base
 
     @property
     def cwd(self):
