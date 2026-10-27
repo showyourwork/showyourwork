@@ -1,0 +1,2 @@
+Ensures that the warning about Zenodo cache pubication is only printed when ``cache_on_zenodo`` is true.
+This was documented as fixed in #694 but was in fact not.

@@ -48,6 +48,10 @@ class TestCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
         # Add the figure environment to the tex file
         self.add_figure_environment()
 
+    def build_local(self, env=None, args=None):
+        stdout = super().build_local(env=env, args=args)
+        assert "Zenodo cache not yet published for this repository" in stdout
+
 
 class TestCacheCreate(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
     """
