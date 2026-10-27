@@ -50,7 +50,7 @@ class TestCache(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):
 
     def build_local(self, env=None, args=None):
         stdout = super().build_local(env=env, args=args)
-        assert "Zenodo cache not yet published for this repository." in stdout
+        assert "Zenodo cache not yet published for this repository" in stdout
 
 
 class TestCacheCreate(TemporaryShowyourworkRepository, ShowyourworkRepositoryActions):

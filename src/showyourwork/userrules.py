@@ -36,7 +36,10 @@ def process_user_rules():
 
     # Remind the user to publish the deposit
     if cache_on_zenodo and not cache_zenodo_doi and get_run_type() == "build":
-        get_logger().warning("Zenodo cache not yet published for this repository.")
+        get_logger().warning(
+            "Zenodo cache not yet published for this repository"
+            " and cache_on_zenodo is set to true in showyourwork.yml."
+        )
 
     # Process each user rule
     for ur in user_rules:
