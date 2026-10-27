@@ -195,6 +195,7 @@ class TemporaryShowyourworkRepository:
         def callback(code, stdout, stderr):
             if code != 0:
                 raise Exception(stdout + "\n" + stderr)
+            return stdout + "\n" + stderr
 
         env_var = {"CI": "false"}
         if env is not None:
@@ -203,7 +204,7 @@ class TemporaryShowyourworkRepository:
             args = ""
         else:
             args = " ".join(args)
-        self.run_command(
+        return self.run_command(
             "showyourwork build " + args,
             shell=True,
             cwd=self.cwd,
