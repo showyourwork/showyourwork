@@ -2,10 +2,18 @@
 
 ## Setup, checks, and documentation
 
-- Use Python 3.11+ and install the editable development environment with:
+- Create a virtual environment using Python 3.11+, preferably with conda or mamba:
+
+  ```bash
+  mamba create -n showyourwork python
+  ```
+
+- Install the editable development environment with:
+
   ```bash
   python -m pip install -e ".[dev]"
   ```
+
 - Run the unit suite with `python -m pytest tests/unit`. Run one unit test with
   `python -m pytest tests/unit/test_config.py::test_edit_yaml_preserves_data`.
 - Run the local integration suite with `python -m pytest tests/integration`.
@@ -16,10 +24,12 @@
 - Remote-marked integration tests are skipped unless `--remote` is supplied.
   They create and push temporary GitHub repositories. To run them against a
   personal account, set `GH_API_KEY` and use:
+
   ```bash
   python -m pytest tests/integration --remote --no-org \
     --action-spec git+https://github.com/showyourwork/showyourwork.git
   ```
+
   Zenodo tests are skipped unless both `SANDBOX_TOKEN` and `ZENODO_TOKEN` are
   available; use `--require-zenodo` only when those credentials are configured.
 - Format and lint Python with `ruff format .` and `ruff check .`; `pre-commit
@@ -52,6 +62,9 @@
 
 ## Workflow conventions
 
+- User configuration for a workflow goes into `showyourwork.yml`. It contains
+  flags for various options such as manuscript filename (`ms_name`),
+  Zenodo caching (`cache_on_zenodo`), file dependencies and overleaf info.
 - The generated project's root `Snakefile` is the supported extension point.
   User-defined rules are deliberately ordered ahead of built-in `syw__*` rules.
   Do not use Snakemake `run:` directives in user rules: the package rejects
