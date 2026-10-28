@@ -235,5 +235,26 @@
     "doi": "10.3847/2041-8213/ad64c3",
     "url": "https://doi.org/10.3847/2041-8213/ad64c3",
     "field": "Astronomy"
+  },
+    "lmorabit/hidden_AGN": {
+    "title": "A hidden Active Galactic Nuclei population: the first radio luminosity functions by physical process",
+    "authors": [
+      "Leah K. Morabito",
+      "R. Kondapally",
+      "P.N. Best",
+      "B.-H. Yue",
+      "J.M.G.H.J. de Jong",
+      "F. Sweijen",
+      "Marco Bondi",
+      "Dominik J. Schwarz",
+      "D.J.B. Smith",
+      "R.J. van Weeren",
+      "H.J.A. Röttgering",
+      "T.W. Shimwell",
+      "Isabella Prandoni"
+    ],
+    "doi": "10.1093/mnrasl/slae104",
+    "url": "https://doi.org/10.1093/mnrasl/slae104",
+    "field": "Astronomy"
   }
 }
