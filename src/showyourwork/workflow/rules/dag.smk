@@ -232,8 +232,11 @@ def add_dag_metadata_to_config(dag):
 
     # Find recursive input-output dependencies
     recursive_dependencies = {}
+    memo = {}  # Re-use the same memory across calls to speed things up
     for output in dependencies.keys():
-        recursive_dependencies[output] = get_upstream_dependencies(output, dependencies)
+        recursive_dependencies[output] = get_upstream_dependencies(
+            output, dependencies, memo=memo
+        )
 
     # Add to the global config
     config = snakemake.workflow.config
