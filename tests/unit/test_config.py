@@ -1,6 +1,10 @@
 import yaml
 
-from showyourwork.config import edit_yaml, edit_yaml_roundtrip
+from showyourwork.config import (
+    edit_yaml,
+    edit_yaml_roundtrip,
+    get_upstream_dependencies,
+)
 
 START_YAML = """# Top-level comment
 title: "Example"
@@ -40,3 +44,31 @@ def test_edit_yaml_roundtrip_preserves_entire_file(tmp_path):
         config["nested"]["value"] = 42
 
     assert config_file.read_text() == START_YAML
+
+
+def test_get_upstream_dependencies_reuses_memo():
+    dependencies = {
+        "first": ["shared"],
+        "second": ["shared"],
+        "shared": ["leaf"],
+    }
+    memo = {}
+
+    assert set(get_upstream_dependencies("first", dependencies, memo=memo)) == {
+        "shared",
+        "leaf",
+    }
+    assert set(get_upstream_dependencies("second", dependencies, memo=memo)) == {
+        "shared",
+        "leaf",
+    }
+
+
+def test_get_upstream_dependencies_handles_cycles():
+    dependencies = {
+        "first": ["second"],
+        "second": ["first"],
+    }
+
+    assert set(get_upstream_dependencies("first", dependencies)) == {"second"}
+    assert set(get_upstream_dependencies("second", dependencies)) == {"first"}

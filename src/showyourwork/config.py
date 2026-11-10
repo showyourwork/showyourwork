@@ -192,23 +192,48 @@ def expand_dependency_directories(dependency, repo_root=None):
         return [dependency.replace("\\", "/")]
 
 
-def get_upstream_dependencies(file, dependencies, depth=0):
+def get_upstream_dependencies(file, dependencies, depth=0, memo=None):
     """
     Collect user-defined dependencies of a file recursively.
-    Returns a list of strings.
 
+    Args:
+        file (str): file for which the dependencies will be searched
+        dependencies (dict): Dictionary mapping each file to a list of dependencies
+        depth (int, optional): Current recursive depth. Defaults to 0.
+        memo (dict, optional): memory mapping paths to their dependencies to avoid
+                               searching the graph twice for the same entry.
+                               Will be modified in-place.
+                               Created and used internally if ``None``.
+    Returns:
+        list: List of dependency paths (strings) for the specified file.
     """
-    if deps := dependencies.get(file, []):
+    if memo is None:
+        memo = {}
+
+    active = set()
+
+    def collect(path):
+        if path in memo:
+            return memo[path]
+        if path in active:
+            return set()
+
+        active.add(path)
         res = set()
-        for dep in deps:
-            # Expand directories into individual files
-            expanded_deps = expand_dependency_directories(dep)
-            res |= set(expanded_deps)
-            # Recursively get dependencies of each expanded dependency
-            for expanded_dep in expanded_deps:
-                res |= get_upstream_dependencies(expanded_dep, dependencies, depth + 1)
-    else:
-        res = set()
+        if deps := dependencies.get(path, []):
+            for dep in deps:
+                # Expand directories into individual files
+                expanded_deps = expand_dependency_directories(dep)
+                res |= set(expanded_deps)
+                # Recursively get dependencies of each expanded dependency
+                for expanded_dep in expanded_deps:
+                    res |= collect(expanded_dep)
+        active.remove(path)
+        memo[path] = res
+        return res
+
+    res = collect(file)
+    res.discard(file)
     if not depth:
         return list(res)
     else:
