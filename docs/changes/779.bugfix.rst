@@ -1,0 +1,1 @@
+Quote the paths in the commands that copy static figures, so they build when the repository path contains a space.
