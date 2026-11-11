@@ -13,6 +13,7 @@ main article build step.
 import copy
 import json
 import re
+import shlex
 from collections.abc import MutableMapping
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -374,7 +375,9 @@ def get_json_tree(xmlfile):
                             paths.user().figures.relative_to(paths.user().repo)
                         )
                     ).as_posix()
-                    commands_copy_single_file.append(f"cp {src} {dest}")
+                    commands_copy_single_file.append(
+                        f"cp {shlex.quote(src)} {shlex.quote(dest)}"
+                    )
 
                 command = " && ".join(commands_copy_single_file)
 
@@ -484,7 +487,7 @@ def get_json_tree(xmlfile):
         "graphics": free_floating_static,
         "datasets": [],
         "dependencies": srcs,
-        "command": f"cp {' '.join(srcs)} {dest}",
+        "command": f"cp {' '.join(map(shlex.quote, srcs))} {shlex.quote(dest)}",
         "static": True,
     }
 
