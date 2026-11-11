@@ -43,7 +43,6 @@ else:
     # Remove old flags
     for file in paths.user().flags.glob("*"):
         file.unlink()
-
     # Mark the checkpoint ``syw__dag`` as already done. Snakemake skips the
     # mtime comparison for jobs whose input depends on a checkpoint (here
     # ``WORKFLOW_GRAPH``) until that checkpoint's output is present, so with the
