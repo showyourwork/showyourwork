@@ -43,6 +43,13 @@ else:
     # Remove old flags
     for file in paths.user().flags.glob("*"):
         file.unlink()
+    # Mark the checkpoint ``syw__dag`` as already done. Snakemake skips the
+    # mtime comparison for jobs whose input depends on a checkpoint (here
+    # ``WORKFLOW_GRAPH``) until that checkpoint's output is present, so with the
+    # flag removed above, edits to the manuscript were never noticed and the
+    # build phase reported "Nothing to be done" (#778). With the flag present
+    # Snakemake re-evaluates those jobs with their real inputs.
+    (paths.user().flags / "SYW__DAG").touch()
     # Set up custom logging for Snakemake
     patch_snakemake_logging()
     # Patch snakemake onstart, onerror and onsuccess (merge syw and user)

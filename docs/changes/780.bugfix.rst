@@ -1,0 +1,1 @@
+Fix edits to the manuscript being ignored by ``showyourwork build``: the build phase reported "Nothing to be done" and ``ms.pdf`` kept the old text.
